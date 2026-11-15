@@ -8,15 +8,17 @@ import { Loading, Shell } from "@/components/shell";
 import { requireAdmin } from "@/lib/auth";
 import { dbLoadError } from "@/lib/db-error";
 
-import { CourseSettings, EnrollmentButton, UnitTable, type UnitRow } from "../panels";
+import { EnrollmentButton, UnitTable, type UnitRow } from "../panels";
 
 async function Course({ params }: { params: PageProps<"/admin/kursy/[slug]">["params"] }) {
   const { slug } = await params;
   const { supabase } = await requireAdmin(`/admin/kursy/${slug}`);
 
+  // Tylko to, z czego ta strona składa nagłówek: dane do edycji kursu bierze jego wiersz
+  // na liście kursów, bo tam się go teraz poprawia.
   const { data: course } = await supabase
     .from("courses")
-    .select("id, slug, title, description, icon, source_lang, target_lang, sort_order, is_published")
+    .select("id, slug, title, icon, target_lang")
     .eq("slug", slug)
     .maybeSingle();
 
@@ -28,8 +30,6 @@ async function Course({ params }: { params: PageProps<"/admin/kursy/[slug]">["pa
     { data: items },
     { data: students, error: studentsError },
     { data: enrolled },
-    { data: languages },
-    { count: words },
   ] = await Promise.all([
     supabase
       .from("units")
@@ -41,9 +41,6 @@ async function Course({ params }: { params: PageProps<"/admin/kursy/[slug]">["pa
     supabase.from("lesson_items").select("lesson_id, concept_id"),
     supabase.rpc("list_students"),
     supabase.from("enrollments").select("user_id").eq("course_id", course.id),
-    supabase.from("languages").select("code, name_pl").eq("is_active", true).order("code"),
-    // Liczba słówek rozstrzyga dwie rzeczy: czy wolno zmienić języki kursu i co zniknie z nim razem.
-    supabase.from("concepts").select("id", { count: "exact", head: true }).eq("course_id", course.id),
   ]);
 
   const error = unitsError ?? studentsError;
@@ -58,13 +55,6 @@ async function Course({ params }: { params: PageProps<"/admin/kursy/[slug]">["pa
   };
 
   const enrolledIds = new Set((enrolled ?? []).map((row) => row.user_id));
-  const unitIds = new Set((units ?? []).map((unit) => unit.id));
-  const counts = {
-    units: (units ?? []).length,
-    lessons: (lessons ?? []).filter((lesson) => unitIds.has(lesson.unit_id)).length,
-    words: words ?? 0,
-    students: enrolledIds.size,
-  };
 
   const unitRows: UnitRow[] = (units ?? []).map((unit) => ({
     ...unit,
@@ -82,8 +72,6 @@ async function Course({ params }: { params: PageProps<"/admin/kursy/[slug]">["pa
         }
         intro="Działy kursu i zapisani uczniowie."
       />
-
-      <CourseSettings course={course} languages={languages ?? []} counts={counts} />
 
       <UnitTable courseId={course.id} courseSlug={course.slug} units={unitRows} />
 

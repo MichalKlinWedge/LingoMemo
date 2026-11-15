@@ -9,7 +9,7 @@ import { requireAdmin } from "@/lib/auth";
 import { dbLoadError } from "@/lib/db-error";
 
 import { AddImageTask } from "../../../image-task";
-import { LessonSettings, WordSection, type WordRow } from "../../../panels";
+import { WordSection, type WordRow } from "../../../panels";
 
 async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit]/[lesson]">["params"] }) {
   const { slug, unit: unitSlug, lesson: lessonSlug } = await params;
@@ -30,41 +30,20 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
     .maybeSingle();
   if (!unit) notFound();
 
+  // Tylko to, z czego ta strona składa nagłówek: ustawienia lekcji (punkty, próg, warunek
+  // wstępny, widoczność) poprawia się w jej wierszu na stronie działu.
   const { data: lesson } = await supabase
     .from("lessons")
-    .select("id, slug, title, icon, kind, sort_order, xp_reward, pass_threshold, prerequisite_lesson_id, is_published")
+    .select("id, title, icon")
     .eq("unit_id", unit.id)
     .eq("slug", lessonSlug)
     .maybeSingle();
   if (!lesson) notFound();
 
-  // Warunek wstępny wolno postawić na lekcji z dowolnego działu kursu, więc do wyboru idą
-  // wszystkie lekcje kursu, pogrupowane działami — nie tylko te z tego działu.
-  const { data: courseUnits } = await supabase
-    .from("units")
-    .select("id, title")
-    .eq("course_id", course.id)
-    .order("sort_order");
-
-  const [
-    { data: items, error },
-    { data: siblings },
-    { data: exercises },
-    { data: languages },
-    { count: children },
-    { count: opened },
-  ] = await Promise.all([
+  const [{ data: items, error }, { data: exercises }, { data: languages }] = await Promise.all([
     supabase.from("lesson_items").select("concept_id, sort_order").eq("lesson_id", lesson.id).order("sort_order"),
-    supabase
-      .from("lessons")
-      .select("id, title, unit_id")
-      .in("unit_id", (courseUnits ?? []).map((item) => item.id))
-      .order("sort_order"),
     supabase.from("exercises").select("id, concept_id, type").eq("lesson_id", lesson.id),
     supabase.from("languages").select("code, name_pl, tts_lang"),
-    // Co przepadnie przy kasowaniu: postępy dzieci z tej lekcji i warunki wstępne innych lekcji.
-    supabase.from("lesson_progress").select("user_id", { count: "exact", head: true }).eq("lesson_id", lesson.id),
-    supabase.from("lessons").select("id", { count: "exact", head: true }).eq("prerequisite_lesson_id", lesson.id),
   ]);
 
   if (error) return <p className="msg-error">{dbLoadError(error)}</p>;
@@ -91,12 +70,6 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
   };
   const keyOf = (conceptId: string) => (concepts ?? []).find((concept) => concept.id === conceptId);
   const taskCount = (conceptId: string) => (exercises ?? []).filter((item) => item.concept_id === conceptId).length;
-
-  const others = (courseUnits ?? []).flatMap((item) =>
-    (siblings ?? [])
-      .filter((entry) => entry.unit_id === item.id && entry.id !== lesson.id)
-      .map((entry) => ({ id: entry.id, title: entry.title, unit: item.title })),
-  );
 
   // Zadanie z obrazkiem wskazuje słówko lekcji — bez niego nie wchodzi do powtórek.
   const words = (items ?? []).map((item) => ({
@@ -133,15 +106,6 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
           </>
         }
         intro="Słówka lekcji. Każde nowe słówko dostaje od razu trzy zadania."
-      />
-
-      <LessonSettings
-        lesson={lesson}
-        unitId={unit.id}
-        others={others}
-        courseSlug={course.slug}
-        unitSlug={unit.slug}
-        counts={{ exercises: (exercises ?? []).length, children: children ?? 0, opened: opened ?? 0 }}
       />
 
       <WordSection

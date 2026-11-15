@@ -7,7 +7,7 @@ import { Loading, Shell } from "@/components/shell";
 import { requireAdmin } from "@/lib/auth";
 import { dbLoadError } from "@/lib/db-error";
 
-import { LessonTable, UnitSettings, type LessonRow } from "../../panels";
+import { LessonTable, type LessonRow } from "../../panels";
 
 async function Unit({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit]">["params"] }) {
   const { slug, unit: unitSlug } = await params;
@@ -16,9 +16,11 @@ async function Unit({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit]"
   const { data: course } = await supabase.from("courses").select("id, slug, title").eq("slug", slug).maybeSingle();
   if (!course) notFound();
 
+  // Tylko to, z czego ta strona składa nagłówek: dane do edycji działu bierze jego wiersz
+  // na stronie kursu, bo tam się go teraz poprawia.
   const { data: unit } = await supabase
     .from("units")
-    .select("id, slug, title, icon, color, sort_order, is_published")
+    .select("id, slug, title, icon")
     .eq("course_id", course.id)
     .eq("slug", unitSlug)
     .maybeSingle();
@@ -105,8 +107,6 @@ async function Unit({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit]"
         }
         intro="Lekcje w dziale. Kolejność decyduje o tym, co dziecko widzi na mapie kursu."
       />
-
-      <UnitSettings unit={unit} courseSlug={course.slug} lessons={(lessons ?? []).length} />
 
       <LessonTable
         unitId={unit.id}

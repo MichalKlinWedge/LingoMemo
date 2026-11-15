@@ -36,28 +36,11 @@ function Published({ defaultChecked }: { defaultChecked?: boolean }) {
 }
 
 /**
- * Formularz edycji jako zwykła sekcja, nie rozwijanka. Schowany pod strzałką ginął — wyglądał
- * na podpis listy, a nie na miejsce, w którym zmienia się dane.
- */
-/**
- * Formularz edycji pod przyciskiem. Nagłówek „Dane działu" wyglądał jak zwykły tytuł sekcji —
- * nie było po nim widać, że to miejsce, w którym się coś zmienia. Teraz jest przycisk z czasownikiem
- * i ołówkiem, a po kliknięciu rozwija się formularz.
- */
-function Editor({ summary, children }: { summary: string; children: React.ReactNode }) {
-  return (
-    <details className="card p-6">
-      <summary className="btn-secondary w-full cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-        <span aria-hidden>✏️</span> {summary}
-      </summary>
-      <div className="mt-4 flex flex-col gap-4">{children}</div>
-    </details>
-  );
-}
-
-/**
- * Samo kasowanie, bez obudowy. Osobno od `Danger`, bo w tabeli kursów rozwijaniem jest już
- * przycisk w wierszu i druga rozwijanka w środku byłaby rozwijanką w rozwijance.
+ * Kasowanie w rozwiniętym wierszu tabeli.
+ *
+ * Potwierdza się je przepisaniem nazwy z adresu: okienko „na pewno?" klika się odruchowo,
+ * a tu znikają też postępy dziecka — przepisanie nazwy wymaga spojrzenia na to, co się kasuje.
+ * Sam formularz, bez własnego rozwijania: rozwinięciem jest już kosz w wierszu.
  */
 function DangerForm({
   action,
@@ -66,13 +49,23 @@ function DangerForm({
   hidden,
   label,
   className = "mt-4 flex flex-col gap-4",
+  pendingLabel = "Usuwam…",
+  tone = "error",
 }: {
   action: (prev: FormState, form: FormData) => Promise<FormState>;
   warning: string;
-  slug: string;
+  /**
+   * Slug do przepisania. Pominięty znaczy „bez przepisywania": tę ceremonię zakłada się tam,
+   * gdzie czegoś nie da się cofnąć. Ukrycie kursu cofa się jednym odznaczeniem w edycji, więc
+   * kazać przepisywać adres znaczyłoby tylko tyle, że nikt tego nie przeczyta.
+   */
+  slug?: string;
   hidden: Record<string, string>;
   label: string;
   className?: string;
+  pendingLabel?: string;
+  /** „warn" dla rzeczy odwracalnych — czerwień jest zarezerwowana na to, czego nie będzie. */
+  tone?: "error" | "warn";
 }) {
   const [state, formAction] = useActionState<FormState, FormData>(action, {});
 
@@ -81,43 +74,15 @@ function DangerForm({
       {Object.entries(hidden).map(([name, value]) => (
         <input key={name} type="hidden" name={name} value={value} />
       ))}
-      <p className="msg-error">{warning}</p>
-      <Field label={`Przepisz „${slug}", żeby potwierdzić`} name="confirm" autoComplete="off" placeholder={slug} />
+      <p className={tone === "warn" ? "msg-warn" : "msg-error"}>{warning}</p>
+      {slug !== undefined && (
+        <Field label={`Przepisz „${slug}", żeby potwierdzić`} name="confirm" autoComplete="off" placeholder={slug} />
+      )}
       <Status state={state} />
-      <SubmitButton variant="danger" pendingLabel="Usuwam…">
+      <SubmitButton variant="danger" pendingLabel={pendingLabel}>
         {label}
       </SubmitButton>
     </Form>
-  );
-}
-
-/**
- * Kasowanie. Zostaje pod rozwijaniem i z osobnym potwierdzeniem: tego jednego w całym panelu
- * nie da się cofnąć, a przepisanie nazwy z adresu wymaga spojrzenia na to, co znika.
- */
-function Danger({
-  action,
-  heading,
-  warning,
-  slug,
-  hidden,
-  label,
-}: {
-  action: (prev: FormState, form: FormData) => Promise<FormState>;
-  heading: string;
-  warning: string;
-  slug: string;
-  hidden: Record<string, string>;
-  label: string;
-}) {
-  return (
-    <details className="card p-6">
-      {/* Tak samo jak w `Editor`: po samym nagłówku nie widać, że to coś robi. */}
-      <summary className="btn-danger w-full cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-        <span aria-hidden>🗑️</span> {heading}
-      </summary>
-      <DangerForm action={action} warning={warning} slug={slug} hidden={hidden} label={label} />
-    </details>
   );
 }
 
@@ -136,6 +101,8 @@ function RowActions({
   whatOf,
   open,
   onToggle,
+  removeName,
+  removeTitle = "Usuń",
 }: {
   /** Biernik: „kurs", „dział", „lekcję" — do „Edytuj …" i „Usuń …". */
   what: string;
@@ -143,10 +110,22 @@ function RowActions({
   whatOf: string;
   open: "edycja" | "usuwanie" | null;
   onToggle: (co: "edycja" | "usuwanie") => void;
+  /**
+   * Inna nazwa kosza, gdy przycisk nie kasuje. Kurs, z którego ktoś się już uczył, zostaje
+   * ukryty, a nie skasowany — dymek „Usuń" obiecywałby wtedy co innego, niż się stanie.
+   */
+  removeName?: string;
+  removeTitle?: string;
 }) {
   const przyciski = [
     { co: "edycja" as const, ikona: "✏️", nazwa: `Edytuj ${what}`, zwin: `Zwiń edycję ${whatOf}`, tytul: "Edytuj" },
-    { co: "usuwanie" as const, ikona: "🗑️", nazwa: `Usuń ${what}`, zwin: `Zwiń usuwanie ${whatOf}`, tytul: "Usuń" },
+    {
+      co: "usuwanie" as const,
+      ikona: "🗑️",
+      nazwa: removeName ?? `Usuń ${what}`,
+      zwin: `Zwiń usuwanie ${whatOf}`,
+      tytul: removeTitle,
+    },
   ];
 
   return (
@@ -260,6 +239,12 @@ export type CourseRow = {
   sort_order: number;
   is_published: boolean;
   counts: CourseCounts;
+  /**
+   * Czy w kursie jest ślad nauki dziecka. Rozstrzyga, czy „Usuń" kasuje, czy tylko ukrywa —
+   * decyduje o tym baza (`course_started`), a tutaj mamy to tylko po to, żeby napisać
+   * administratorowi, co się stanie, ZANIM kliknie.
+   */
+  started: boolean;
 };
 
 /**
@@ -340,13 +325,40 @@ function CourseEditor({ course, languages }: { course: CourseRow; languages: Lan
   );
 }
 
-/** Co zniknie razem z kursem. To samo zdanie na liście i na stronie kursu. */
-function deleteWarning(counts: CourseCounts): string {
-  return (
-    `Znikną: działy (${counts.units}), lekcje (${counts.lessons}), słówka (${counts.words}) ` +
-    `oraz postępy i powtórki dzieci zapisanych na kurs (${counts.students}). Tego się nie cofnie. ` +
-    `Jeśli chodzi tylko o to, żeby dzieci tego nie widziały, odznacz „Widoczne dla dzieci".`
-  );
+/**
+ * Co się właściwie stanie po kliknięciu kosza. Decyduje o tym baza — kurs, z którego ktoś się
+ * już uczył, `admin_delete_course` tylko ukrywa. Tutaj składamy zdanie, które ma to powiedzieć
+ * administratorowi PRZED kliknięciem, bo inaczej „Usuń" kłamie w jedną albo w drugą stronę.
+ *
+ * To samo na liście kursów i na stronie kursu.
+ */
+function deleteDanger(course: { slug: string; started: boolean; counts: CourseCounts }) {
+  const { counts } = course;
+
+  if (course.started) {
+    return {
+      tone: "warn" as const,
+      // Bez przepisywania adresu: ukrycie cofa się jednym odznaczeniem w edycji.
+      slug: undefined,
+      warning:
+        `Ktoś już się uczył z tego kursu, więc nie zostanie skasowany — zniknie dzieciom z listy. ` +
+        `Działy (${counts.units}), lekcje (${counts.lessons}), słówka (${counts.words}) oraz postępy ` +
+        `i powtórki zostają nietknięte. Żeby kurs wrócił, zaznacz „Widoczne dla dzieci" w edycji.`,
+      label: "Ukryj kurs przed dziećmi",
+      pendingLabel: "Ukrywam…",
+    };
+  }
+
+  return {
+    tone: "error" as const,
+    slug: course.slug,
+    warning:
+      `Nikt jeszcze nie zaczął tego kursu, więc zniknie naprawdę: działy (${counts.units}), ` +
+      `lekcje (${counts.lessons}) i słówka (${counts.words}). Zapisane dzieci (${counts.students}) ` +
+      `stracą go z listy, ale nic w nim nie przerobiły. Tego się nie cofnie.`,
+    label: "Usuń kurs z całą zawartością",
+    pendingLabel: "Usuwam…",
+  };
 }
 
 /**
@@ -437,6 +449,8 @@ export function CourseTable({ courses, languages }: { courses: CourseRow[]; lang
                           whatOf="kursu"
                           open={otwarte?.id === course.id ? otwarte.co : null}
                           onToggle={(co) => przelacz(course.id, co)}
+                          removeName={course.started ? "Ukryj kurs przed dziećmi" : undefined}
+                          removeTitle={course.started ? "Ukryj" : undefined}
                         />
                       </td>
                     </tr>
@@ -448,11 +462,9 @@ export function CourseTable({ courses, languages }: { courses: CourseRow[]; lang
                           ) : (
                             <DangerForm
                               action={deleteCourseAction}
-                              slug={course.slug}
                               hidden={{ id: course.id, current_slug: course.slug }}
-                              warning={deleteWarning(course.counts)}
-                              label="Usuń kurs z całą zawartością"
                               className="flex flex-col gap-4 py-4"
+                              {...deleteDanger(course)}
                             />
                           )}
                         </td>
@@ -469,41 +481,10 @@ export function CourseTable({ courses, languages }: { courses: CourseRow[]; lang
   );
 }
 
-export function CourseSettings({
-  course,
-  languages,
-  counts,
-}: {
-  course: Omit<CourseRow, "counts">;
-  languages: Lang[];
-  counts: CourseCounts;
-}) {
-  const [state, action] = useActionState<FormState, FormData>(updateCourseAction, {});
-
-  return (
-    <>
-      <Editor summary="Edytuj kurs">
-        <Form action={action} state={state} className="flex flex-col gap-4">
-          <input type="hidden" name="id" value={course.id} />
-          {/* Po czym poznać, że slug się zmienił — akcja przerzuca wtedy na nowy adres. */}
-          <input type="hidden" name="current_slug" value={course.slug} />
-          <CourseFields languages={languages} course={{ ...course, counts }} />
-          <Status state={state} />
-          <SubmitButton pendingLabel="Zapisuję…">Zapisz kurs</SubmitButton>
-        </Form>
-      </Editor>
-
-      <Danger
-        action={deleteCourseAction}
-        heading="Usuń kurs"
-        slug={course.slug}
-        hidden={{ id: course.id, current_slug: course.slug }}
-        warning={deleteWarning(counts)}
-        label="Usuń kurs z całą zawartością"
-      />
-    </>
-  );
-}
+/* Strona kursu nie ma już „Edytuj kurs" ani „Usuń kurs": jedno i drugie dzieje się w wierszu
+   na liście kursów, a te same dwa przyciski jeszcze raz pod tytułem tylko zabierały miejsce
+   działom. Z nimi zniknął powód, dla którego `updateCourseAction` dostawał `current_slug` —
+   akcja obsługuje go dalej, bo działom i lekcjom przerzucenie na nowy adres jest potrzebne. */
 
 /** Ile w dziale jest zawartości. Po tym widać, czy dział żyje, i co zniknie przy kasowaniu. */
 export type UnitCounts = { lessons: number; words: number };
@@ -704,44 +685,6 @@ export function UnitTable({
         </>
       )}
     </section>
-  );
-}
-
-export function UnitSettings({
-  unit,
-  courseSlug,
-  lessons,
-}: {
-  unit: Omit<UnitRow, "counts">;
-  courseSlug: string;
-  lessons: number;
-}) {
-  const [state, action] = useActionState<FormState, FormData>(updateUnitAction, {});
-
-  return (
-    <>
-      <Editor summary="Edytuj dział">
-        <Form action={action} state={state} className="flex flex-col gap-4">
-          <input type="hidden" name="id" value={unit.id} />
-          {/* Po czym poznać, że slug się zmienił — akcja przerzuca wtedy na nowy adres. */}
-          <input type="hidden" name="current_slug" value={unit.slug} />
-          <input type="hidden" name="course_slug" value={courseSlug} />
-          <input type="hidden" name="sort_order" value={String(unit.sort_order)} />
-          <UnitFields unit={unit} />
-          <Status state={state} />
-          <SubmitButton pendingLabel="Zapisuję…">Zapisz dział</SubmitButton>
-        </Form>
-      </Editor>
-
-      <Danger
-        action={deleteUnitAction}
-        heading="Usuń dział"
-        slug={unit.slug}
-        hidden={{ id: unit.id, current_slug: unit.slug, course_slug: courseSlug }}
-        warning={unitDeleteWarning(lessons)}
-        label="Usuń dział z lekcjami"
-      />
-    </>
   );
 }
 
@@ -997,49 +940,6 @@ export function LessonTable({
         </>
       )}
     </section>
-  );
-}
-
-export function LessonSettings({
-  lesson,
-  unitId,
-  others,
-  courseSlug,
-  unitSlug,
-  counts,
-}: {
-  lesson: Omit<LessonRow, "counts">;
-  unitId: string;
-  others: LessonOption[];
-  courseSlug: string;
-  unitSlug: string;
-  counts: Omit<LessonCounts, "words">;
-}) {
-  const [state, action] = useActionState<FormState, FormData>(updateLessonAction, {});
-
-  return (
-    <>
-      <Editor summary="Edytuj lekcję">
-        <Form action={action} state={state} className="flex flex-col gap-4">
-          <input type="hidden" name="id" value={lesson.id} />
-          <input type="hidden" name="unit_id" value={unitId} />
-          <input type="hidden" name="sort_order" value={String(lesson.sort_order)} />
-          <Field label="Nazwa" name="title" defaultValue={lesson.title} />
-          <LessonFields lesson={lesson} others={others} />
-          <Status state={state} />
-          <SubmitButton pendingLabel="Zapisuję…">Zapisz lekcję</SubmitButton>
-        </Form>
-      </Editor>
-
-      <Danger
-        action={deleteLessonAction}
-        heading="Usuń lekcję"
-        slug={lesson.slug}
-        hidden={{ id: lesson.id, current_slug: lesson.slug, course_slug: courseSlug, unit_slug: unitSlug }}
-        warning={lessonDeleteWarning(counts)}
-        label="Usuń lekcję z zadaniami"
-      />
-    </>
   );
 }
 
