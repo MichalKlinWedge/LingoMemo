@@ -25,11 +25,13 @@ przechodzi (typecheck, lint, 8 testów).
 Migracje: rozszerzenia i schemat `app_private`, admin i `is_admin()`, treść (`languages`,
 `courses`, `units`, `lessons`, `concepts`, `terms`, `term_forms`, `lesson_items`, `exercises`),
 postępy (`profiles`, `enrollments`, `lesson_progress`, `lesson_sessions`, `attempts`, `srs_state`),
-grywalizacja (`points_ledger`, `badges`, `user_badges`), funkcje, RLS, Storage, seed.
+grywalizacja (`points_ledger`, `badges`, `user_badges`), FSRS-6 (`srs_params`, `fsrs_next_state`),
+funkcje, RLS, Storage, seed.
 Typy przez `npm run gen`, testy pgTAP z helperem `pg_temp.login()`.
 
 **Kryterium odbioru:** `npm run test:db` zielone, w tym testy „uczeń nie czyta cudzych prób”,
-„uczeń nie czyta `exercises`”, „uczeń nie dopisze sobie punktów”, „każda tabela w `public` ma RLS”.
+„uczeń nie czyta `exercises`”, „uczeń nie dopisze sobie punktów”, „każda tabela w `public` ma RLS”
+oraz 260 przypadków FSRS-6 zgodnych z implementacją referencyjną.
 
 ---
 
@@ -59,8 +61,8 @@ następna lekcja odblokowana, a zablokowana nie jest widoczna.
 
 ## Etap 4 — grywalizacja, powtórki, statystyki
 
-`points_ledger` w użyciu, gwiazdki, seria dni, odznaki i ekran nagród, `srs_apply`,
-`get_review_set`, lekcja powtórkowa z działu, statystyki ucznia.
+`points_ledger` w użyciu, gwiazdki, seria dni, odznaki i ekran nagród, zapis stanu FSRS przy
+każdej odpowiedzi, `get_review_set`, lekcja powtórkowa z działu, statystyki ucznia.
 
 **Kryterium odbioru:** po ukończeniu lekcji punkty i gwiazdki zgadzają się z regułami,
 a powtórka działu podaje dokładnie słówka zaległe i wcześniej pomylone.

@@ -21,6 +21,7 @@
     "db:push": "npx --yes supabase@2.122.0 db push",
     "test:db": "npx --yes supabase@2.122.0 test db",
     "gen": "npm run gen --workspace packages/db",
+    "gen:fsrs": "node scripts/fsrs-fixtures.mjs",
     "seed:dev": "npm run seed --workspace tools/seed-dev"
   },
   "engines": {

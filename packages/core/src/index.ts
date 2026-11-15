@@ -6,3 +6,4 @@
 export * from './exercises.ts';
 export * from './format.ts';
 export * from './scoring.ts';
+export * from './srs.ts';

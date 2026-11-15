@@ -26,7 +26,7 @@ Pojedynczy test: `npx vitest run src/__tests__/x.test.ts` wewnątrz pakietu.
 
 ## Reguły architektury
 
-- **Ocena odpowiedzi, punkty i powtórki liczy baza**, nie przeglądarka. Klient wysyła surową
+- **Ocena odpowiedzi, punkty i powtórki (FSRS-6) liczy baza**, nie przeglądarka. Klient wysyła surową
   odpowiedź do `submit_attempt` i dostaje werdykt. Nigdy nie wysyła wyniku ani liczby punktów.
 - **Klucze odpowiedzi nie opuszczają bazy.** `exercises` nie ma polityki SELECT dla ucznia;
   treść zadania wydaje `get_lesson_exercises`, które wycina `accepted` / `answer` / `solution`.
@@ -47,6 +47,9 @@ Pojedynczy test: `npx vitest run src/__tests__/x.test.ts` wewnątrz pakietu.
   `jsonb` w camelCase, kolumny tabel w snake_case.
 - **Import lekcji przez jedno RPC.** Server Action z trzydziestoma `insert()` nie jest transakcją
   i przy błędzie zostawia śmieci.
+- **Harmonogram powtórek to FSRS-6**, zaimplementowany w plpgsql. Po zmianie wag albo wersji
+  `ts-fsrs`: `node scripts/fsrs-fixtures.mjs` i `npm run test:db` — test pgTAP porównuje bazę
+  z implementacją referencyjną. Wzorów nie przepisuj z dokumentacji, tylko z `ts-fsrs`.
 - Po każdej migracji: `npm run gen` i `npm run test:db`.
 
 ## Konwencje
