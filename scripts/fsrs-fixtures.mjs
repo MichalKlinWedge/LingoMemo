@@ -62,7 +62,7 @@ const sql = [
   '-- Oczekiwane wyniki pochodzą z pakietu ts-fsrs (implementacja referencyjna FSRS-6).',
   `-- Wag: 21, przypadków przejścia stanu: ${rows.length}, przypadków interwału: ${intervals.length}.`,
   '',
-  'create table pg_temp.fsrs_cases (',
+  'create temporary table fsrs_cases (',
   '  stability double precision not null,',
   '  difficulty double precision not null,',
   '  elapsed_days integer not null,',
@@ -73,7 +73,7 @@ const sql = [
   '  interval_days integer not null',
   ');',
   '',
-  'insert into pg_temp.fsrs_cases values',
+  'insert into fsrs_cases values',
   rows
     .map(
       (r) =>
@@ -82,17 +82,17 @@ const sql = [
     .join(',\n'),
   ';',
   '',
-  'create table pg_temp.fsrs_interval_cases (',
+  'create temporary table fsrs_interval_cases (',
   '  stability double precision not null,',
   '  desired_retention double precision not null,',
   '  interval_days integer not null',
   ');',
   '',
-  'insert into pg_temp.fsrs_interval_cases values',
+  'insert into fsrs_interval_cases values',
   intervals.map((r) => `  (${n(r.stability)}, ${n(r.retention)}, ${r.days})`).join(',\n'),
   ';',
   '',
 ].join('\n');
 
-writeFileSync(`${root}supabase/tests/_fsrs_cases.sql`, sql);
-console.log(`supabase/tests/_fsrs_cases.sql: ${rows.length} przejść stanu, ${intervals.length} interwałów`);
+writeFileSync(`${root}supabase/tests/fsrs_cases.psql`, sql);
+console.log(`supabase/tests/fsrs_cases.psql: ${rows.length} przejść stanu, ${intervals.length} interwałów`);

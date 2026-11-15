@@ -37,6 +37,9 @@ npm run db:reset                # schemat z migracji + dane demo
 npm run web:local               # http://localhost:3000
 ```
 
+Lokalny Supabase chodzi na portach **54421–54429** (API `54421`, baza `54422`, Studio `54423`),
+a nie na domyślnych 54321–54329 — domyślne zajmuje inny projekt na tej samej maszynie.
+
 `npm run web:local` sam pobiera adres i klucz z lokalnej bazy. Do pracy na bazie w chmurze służy
 `npm run web`, które bierze wartości z `.env.local` w katalogu głównym.
 

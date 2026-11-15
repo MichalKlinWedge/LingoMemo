@@ -14,9 +14,8 @@ Monorepo npm workspaces, `apps/web` (Next 16, Tailwind v4, motyw dla dzieci),
 **Kryterium odbioru:** `npm run check` przechodzi, `npm run db:start` wstaje,
 `npm run web:local` pokazuje stronę startową.
 
-**Stan (2026-11-15):** zrobione poza uruchomieniem lokalnej bazy — Docker Desktop nie był
-włączony w trakcie pracy, więc `npm run db:start` nie zostało sprawdzone. `npm run check`
-przechodzi (typecheck, lint, 8 testów).
+**Stan (2026-11-15):** zrobione i sprawdzone. `npm run check` przechodzi, lokalna baza wstaje,
+strona startowa działa.
 
 ---
 
@@ -32,6 +31,21 @@ Typy przez `npm run gen`, testy pgTAP z helperem `pg_temp.login()`.
 **Kryterium odbioru:** `npm run test:db` zielone, w tym testy „uczeń nie czyta cudzych prób”,
 „uczeń nie czyta `exercises`”, „uczeń nie dopisze sobie punktów”, „każda tabela w `public` ma RLS”
 oraz 260 przypadków FSRS-6 zgodnych z implementacją referencyjną.
+
+**Stan (2026-11-15):** zrobione. Osiem migracji, seed z kursem demonstracyjnym PL→EN
+(2 działy, 6 lekcji, 24 słówka, 72 zadania), **41 testów pgTAP w trzech plikach — wszystkie
+zielone**. FSRS-6 w plpgsql zgadza się z implementacją referencyjną na 260 przejściach stanu
+i 15 interwałach. Typy wygenerowane do `packages/db`.
+
+Dwie rzeczy znalezione przy uruchamianiu testów, obie poprawione w migracjach:
+- administrator nie mógł czytać tabeli `exercises` — brakowało nadania SELECT; barierą dla
+  ucznia jest polityka RLS (zapytanie zwraca pustkę), a nie brak nadania;
+- „ostatnia odpowiedź na zadanie” była wybierana po `created_at`, a `now()` jest stałe w obrębie
+  transakcji — przy dwóch odpowiedziach na to samo zadanie wybór bywał przypadkowy. Teraz
+  decyduje identyfikator próby.
+
+Lokalny Supabase chodzi na portach **54421–54429** zamiast domyślnych 54321–54329, bo domyślne
+zajmuje inny projekt na tej maszynie.
 
 ---
 

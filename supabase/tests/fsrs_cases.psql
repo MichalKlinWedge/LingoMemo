@@ -2,7 +2,7 @@
 -- Oczekiwane wyniki pochodzą z pakietu ts-fsrs (implementacja referencyjna FSRS-6).
 -- Wag: 21, przypadków przejścia stanu: 260, przypadków interwału: 15.
 
-create table pg_temp.fsrs_cases (
+create temporary table fsrs_cases (
   stability double precision not null,
   difficulty double precision not null,
   elapsed_days integer not null,
@@ -13,7 +13,7 @@ create table pg_temp.fsrs_cases (
   interval_days integer not null
 );
 
-insert into pg_temp.fsrs_cases values
+insert into fsrs_cases values
   (0, 0, 0, 1, 0.212, 6.4133, null, 1),
   (0, 0, 0, 2, 1.2931, 5.11217071, null, 1),
   (0, 0, 0, 3, 2.3065, 2.11810397, null, 2),
@@ -276,13 +276,13 @@ insert into pg_temp.fsrs_cases values
   (100, 10, 90, 4, 143.41240232, 9.98522837, 0.90707367, 143)
 ;
 
-create table pg_temp.fsrs_interval_cases (
+create temporary table fsrs_interval_cases (
   stability double precision not null,
   desired_retention double precision not null,
   interval_days integer not null
 );
 
-insert into pg_temp.fsrs_interval_cases values
+insert into fsrs_interval_cases values
   (0.5, 0.8, 2),
   (0.5, 0.9, 1),
   (0.5, 0.95, 1),
