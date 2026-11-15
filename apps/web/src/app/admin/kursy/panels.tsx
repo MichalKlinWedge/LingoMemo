@@ -33,12 +33,19 @@ function Published({ defaultChecked }: { defaultChecked?: boolean }) {
  * Formularz edycji jako zwykła sekcja, nie rozwijanka. Schowany pod strzałką ginął — wyglądał
  * na podpis listy, a nie na miejsce, w którym zmienia się dane.
  */
+/**
+ * Formularz edycji pod przyciskiem. Nagłówek „Dane działu" wyglądał jak zwykły tytuł sekcji —
+ * nie było po nim widać, że to miejsce, w którym się coś zmienia. Teraz jest przycisk z czasownikiem
+ * i ołówkiem, a po kliknięciu rozwija się formularz.
+ */
 function Editor({ summary, children }: { summary: string; children: React.ReactNode }) {
   return (
-    <section className="card flex flex-col gap-4 p-6">
-      <h2 className="card-title">{summary}</h2>
-      {children}
-    </section>
+    <details className="card p-6">
+      <summary className="btn-secondary w-full cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+        <span aria-hidden>✏️</span> {summary}
+      </summary>
+      <div className="mt-4 flex flex-col gap-4">{children}</div>
+    </details>
   );
 }
 
@@ -65,7 +72,10 @@ function Danger({
 
   return (
     <details className="card p-6">
-      <summary className="card-title cursor-pointer list-none">{heading}</summary>
+      {/* Tak samo jak w `Editor`: po samym nagłówku nie widać, że to coś robi. */}
+      <summary className="btn-danger w-full cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+        <span aria-hidden>🗑️</span> {heading}
+      </summary>
       <Form action={formAction} state={state} className="mt-4 flex flex-col gap-4">
         {Object.entries(hidden).map(([name, value]) => (
           <input key={name} type="hidden" name={name} value={value} />
@@ -202,7 +212,7 @@ export function CourseSettings({
 
   return (
     <>
-      <Editor summary="Dane kursu">
+      <Editor summary="Edytuj kurs">
         <Form action={action} state={state} className="flex flex-col gap-4">
           <input type="hidden" name="id" value={course.id} />
           {/* Po czym poznać, że slug się zmienił — akcja przerzuca wtedy na nowy adres. */}
@@ -284,7 +294,7 @@ export function UnitSettings({
 
   return (
     <>
-      <Editor summary="Dane działu">
+      <Editor summary="Edytuj dział">
         <Form action={action} state={state} className="flex flex-col gap-4">
           <input type="hidden" name="id" value={unit.id} />
           <input type="hidden" name="current_slug" value={unit.slug} />
@@ -404,7 +414,7 @@ export function LessonSettings({
 
   return (
     <>
-      <Editor summary="Ustawienia lekcji">
+      <Editor summary="Edytuj lekcję">
         <Form action={action} state={state} className="flex flex-col gap-4">
           <input type="hidden" name="id" value={lesson.id} />
           <input type="hidden" name="unit_id" value={unitId} />
@@ -499,7 +509,7 @@ export function EditWord({
   const [removeState, removeAction] = useActionState<FormState, FormData>(removeWordAction, {});
 
   return (
-    <Editor summary="Popraw">
+    <Editor summary="Edytuj słówko">
       <Form action={action} state={state} className="flex flex-col gap-3">
         <input type="hidden" name="concept_id" value={conceptId} />
         <div className="grid gap-4 sm:grid-cols-2">
