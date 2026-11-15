@@ -67,8 +67,11 @@ select pg_temp.login((select id from t_ids where name = 'rodzic'));
 select public.request_child_access();
 
 reset role;
+-- Po `parent_id`, nie po całej tabeli: baza deweloperska miewa prawdziwe prośby z klikania
+-- w aplikacji, a wtedy test padał na „have: 2, want: 1" — na czymś, czego nie sprawdza.
 select is(
-  (select count(*)::integer from app_private.parent_requests),
+  (select count(*)::integer from app_private.parent_requests
+    where parent_id = (select id from t_ids where name = 'rodzic')),
   1,
   'kolejne wejście nie dubluje prośby'
 );
@@ -126,7 +129,8 @@ select public.request_child_access();
 
 reset role;
 select is(
-  (select count(*)::integer from app_private.parent_requests),
+  (select count(*)::integer from app_private.parent_requests
+    where parent_id = (select id from t_ids where name = 'rodzic')),
   0,
   'rodzic z przypisanym dzieckiem nie zostawia prośby'
 );
@@ -140,7 +144,8 @@ select public.request_child_access();
 
 reset role;
 select is(
-  (select count(*)::integer from app_private.parent_requests),
+  (select count(*)::integer from app_private.parent_requests
+    where parent_id = (select id from t_ids where name = 'rodzic')),
   1,
   'po odpięciu wszystkich dzieci prośba zgłasza się ponownie'
 );
