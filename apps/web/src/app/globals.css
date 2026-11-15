@@ -292,6 +292,16 @@ h2 {
     background: var(--color-brand-light);
   }
 
+  /* Miejsce na sowę jest w każdej kolumnie, także tam, gdzie sowy nie ma (lekcja zamknięta,
+     powtórka). Bez tego rząd kwadracików pod kafelkiem bez sowy podjeżdżał o 3,5 rem wyżej
+     niż u sąsiada. */
+  .owl-slot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3.5rem;
+  }
+
   /* Plansza: tyle kolumn, ile się zmieści. Karta ma najmniej 10 rem, bo poniżej tego dłuższe
      słowo łamie się w trzy wiersze i przestaje się dać przeczytać jednym spojrzeniem. */
   .word-grid {

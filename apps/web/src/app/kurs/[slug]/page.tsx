@@ -108,31 +108,38 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
                     </Link>
                   )}
                   <span className="text-base leading-tight">{lesson.title}</span>
-                  {/* Powtórka obejmuje wszystkie przerobione słówka działu, zaległe na
-                      początku — więc liczba jest taka sama jak przy zwykłej lekcji. */}
-                  <span className="text-sm text-zinc-500">{plural(lesson.word_count ?? 0, WORDS)}</span>
-                  {/* Sowa prowadzi na planszę ze słówkami lekcji: dziecko najpierw ich słucha,
-                      potem wchodzi w lekcję. Przy zamkniętej lekcji sowy nie ma, bo polityki
-                      bazy i tak nie wydadzą jej słówek, a przy powtórce — bo powtórka nie ma
-                      własnych słówek, składa się z przerobionych. */}
-                  {state !== "locked" && lesson.kind !== "review" && (lesson.word_count ?? 0) > 0 && (
-                    <Link
-                      href={`/lekcja/${lesson.id}/nauka`}
-                      className="owl"
-                      aria-label={`${lesson.title} — posłuchaj słówek`}
-                      title="Posłuchaj słówek"
-                    >
-                      <span aria-hidden>🦉</span>
-                    </Link>
-                  )}
-                  {/* Jedna linia kwadracików na samym dole kafelka: etapy poziomu łatwego oraz
-                      wejścia na średni i trudny. `mt-auto` trzyma ją równo w całym rzędzie, choć
-                      tytuły lekcji mają różną liczbę wierszy. */}
-                  <span className="marks">
-                    {etapy > 1 && <Stages done={etapyZrobione} total={etapy} />}
-                    {harderOf(lesson.id).map((row) => (
-                      <LevelBox key={row.level} lesson={lesson.id} title={lesson.title} row={row} />
-                    ))}
+                  {/* Wszystko pod tytułem jedzie w jednym bloku przyklejonym do dołu kolumny
+                      (`mt-auto`): tytuły mają różną liczbę wierszy, więc osobno liczba słówek
+                      i sowa stały w każdej kolumnie na innej wysokości. */}
+                  <span className="mt-auto flex flex-col items-center gap-2">
+                    {/* Powtórka obejmuje wszystkie przerobione słówka działu, zaległe na
+                        początku — więc liczba jest taka sama jak przy zwykłej lekcji. */}
+                    <span className="text-sm text-zinc-500">{plural(lesson.word_count ?? 0, WORDS)}</span>
+                    {/* Sowa prowadzi na planszę ze słówkami lekcji: dziecko najpierw ich słucha,
+                        potem wchodzi w lekcję. Przy zamkniętej lekcji sowy nie ma, bo polityki
+                        bazy i tak nie wydadzą jej słówek, a przy powtórce — bo powtórka nie ma
+                        własnych słówek, składa się z przerobionych. Miejsce po niej zostaje
+                        puste, żeby rzędy zgadzały się w całym dziale. */}
+                    <span className="owl-slot">
+                      {state !== "locked" && lesson.kind !== "review" && (lesson.word_count ?? 0) > 0 && (
+                        <Link
+                          href={`/lekcja/${lesson.id}/nauka`}
+                          className="owl"
+                          aria-label={`${lesson.title} — posłuchaj słówek`}
+                          title="Posłuchaj słówek"
+                        >
+                          <span aria-hidden>🦉</span>
+                        </Link>
+                      )}
+                    </span>
+                    {/* Jedna linia kwadracików na samym dole kafelka: etapy poziomu łatwego oraz
+                        wejścia na średni i trudny. */}
+                    <span className="marks">
+                      {etapy > 1 && <Stages done={etapyZrobione} total={etapy} />}
+                      {harderOf(lesson.id).map((row) => (
+                        <LevelBox key={row.level} lesson={lesson.id} title={lesson.title} row={row} />
+                      ))}
+                    </span>
                   </span>
                 </li>
               );

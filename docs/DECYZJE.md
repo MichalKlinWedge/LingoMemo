@@ -568,3 +568,9 @@ widać wszystkie słówka lekcji i można ich posłuchać, zanim zacznie się za
 | Wymowa pisana | `terms.ipa` pod słowem, jeśli jest | przy angielskim samo nagranie nie wystarcza dziecku, które już czyta — a kolumna jest w bazie od pierwszej migracji i dotąd nic jej nie pokazywało | brak zapisu fonetycznego |
 | Słowo główne czy synonimy | samo główne (`is_primary`) | plansza ma pokazać jedną parę słów do zapamiętania; „ziemniak, kartofel" na kafelku dla sześciolatka to dwa słowa do nauczenia naraz | wszystkie poprawne odpowiedzi po przecinku (jak w panelu) |
 | Nazwa dla czytnika ekranu | treść karty plus `sr-only` „Posłuchaj:" | gotowe `aria-label` z samym obcym słowem zasłoniłoby tłumaczenie, czyli połowę tej planszy | `aria-label="Posłuchaj: apple"` |
+| Czytanie całej listy | następne słowo startuje z wywołania zwrotnego poprzedniego, po 0,7 s przerwy | `speechSynthesis` nie mówi, ile wypowiedź potrwa, więc stała przerwa dla wszystkich albo ucinałaby dłuższe słowa, albo kazała czekać po krótkich | `setInterval` co stałą liczbę sekund; kolejkowanie wszystkich wypowiedzi naraz (nie da się wtedy przerwać w środku ani pokazać, które słowo leci) |
+| Przerwanie czytania | numer przebiegu w `useRef`, podbijany przy każdym przerwaniu | `cancel()` w części przeglądarek kończy wypowiedź zdarzeniem `onend` nie do odróżnienia od normalnego końca, więc bez tego lista jechałaby dalej po naciśnięciu „Przerwij" | flaga `boolean` (spóźnione wywołanie zwrotne z poprzedniego przebiegu i tak by ją zastało ustawioną) |
+
+Dół kafelka na mapie (liczba słówek, sowa, kwadraciki postępu) jedzie w jednym bloku z `mt-auto`,
+a miejsce po sowie zostaje puste tam, gdzie jej nie ma. Tytuły lekcji mają różną liczbę wierszy,
+więc każdy z tych elementów osobno stał w sąsiednich kolumnach na innej wysokości.
