@@ -385,3 +385,20 @@ Powtórka ma najwyżej `review_limit()` zadań, więc zawsze jest jednoetapowa.
 | Dystraktory na liście wyboru | tylko słowa główne | synonim obok swojego słowa na jednej liście daje dwie poprawne odpowiedzi, z których jedna liczy się jako błąd | losowanie ze wszystkich form |
 | Synonimy przy poprawce | wymieniane w całości, jak przy imporcie | inaczej poprawiona literówka zostawałaby w bazie jako „synonim" i dalej liczyła się jako dobra odpowiedź; dlatego formularz pokazuje wszystkie formy naraz, a nie samo słowo główne | dopisywanie nowych form bez kasowania starych |
 | Separator form | przecinek, średnik albo ukośnik | każdy z nich pisze się odruchowo, a w słówkach dla dzieci żaden nie występuje w treści odpowiedzi | sam przecinek oraz osobne pola na każdą formę |
+
+### Kolejność odpowiedzi na liście wyboru (2026-11-15)
+
+Lista z `options` wychodziła do dziecka w kolejności z `payload`, a w plikach importu poprawna
+odpowiedź stoi pierwsza — po kilku zadaniach dziecko przestawało czytać listę i dotykało
+pierwszego kafelka. Pary, dopasowanie ze słuchu i rozsypanka były tasowane od początku; lista
+wyboru została pominięta.
+
+- **Tasujemy przy wydawaniu (`get_lesson_exercises`), nie w `payload`.** Kolejność w bazie
+  zostaje czytelna dla administratora i dla importu (poprawna odpowiedź może stać pierwsza),
+  a dziecko dostaje inny układ przy każdym wejściu do lekcji. Przestawianie `payload` przy
+  zapisie dałoby jeden układ na zawsze, a tasowanie w przeglądarce — niezgodność przy
+  hydratacji (serwer wyrenderowałby inną kolejność niż klient).
+- **Pułapka w teście: funkcja `stable` liczy się raz na zapytanie.** Dwadzieścia wywołań
+  `get_lesson_exercises` w jednym `select` z `generate_series` zwraca dwadzieścia identycznych
+  list, bo Postgres ma prawo policzyć taką funkcję raz i podstawić wynik. Test musi wołać ją
+  w pętli, osobnym zapytaniem na iterację — inaczej „udowodni" brak tasowania.
