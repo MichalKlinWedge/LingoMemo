@@ -4,6 +4,7 @@
  * jest to, co musi być identyczne po obu stronach: typy zadań, etykiety, formatowanie, progi.
  */
 export * from './exercises.ts';
+export * from './import-schema.ts';
 export * from './format.ts';
 export * from './scoring.ts';
 export * from './srs.ts';

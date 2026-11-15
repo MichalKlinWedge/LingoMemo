@@ -148,3 +148,15 @@ podejść do tego samego słówka w jednej lekcji jest poprawnie uwzględnione.
   do jego typu.
 - **Dodanie nowego typu zadania wymaga ruszenia testu lekcji**, bo ten przechodzi całą lekcję
   i musi umieć odpowiedzieć na każdy typ. To dobra wiadomość: test od razu pokazał brak.
+
+## Panel administratora (2026-11-15)
+
+| Obszar | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Wprowadzanie treści | import JSON, idempotentny po kluczach naturalnych | poprawka to ponowne wklejenie pliku; plik da się napisać ręcznie albo wygenerować poza aplikacją | formularze CRUD na każde pole — druga droga do tego samego i drugie miejsce do utrzymania |
+| Zapis importu | jedno wywołanie `admin_import_lesson` | Server Action z trzydziestoma `insert()` nie jest transakcją i przy błędzie zostawia połowę lekcji | zapis z aplikacji krok po kroku |
+| Podgląd na sucho | walidacja zod + odczyt, bez zapisu | administrator widzi, czy lekcja powstanie, czy zostanie nadpisana, zanim cokolwiek ruszy | import z cofnięciem — nie da się wycofać transakcji z wnętrza funkcji |
+| Zapis słowa przy imporcie | wymieniany w całości | inaczej poprawiona literówka zostaje w bazie jako „synonim" i nadal jest uznawana za poprawną odpowiedź | dopisywanie brakujących |
+| Koncepty przy imporcie | nigdy nie kasowane | wiszą na nich stan powtórek i historia prób | wymiana razem z zadaniami |
+| Obrazki | bucket `lesson-media`, odczyt publiczny, zapis tylko dla admina | obrazek jabłka nie jest tajemnicą, a publiczny odczyt pozwala użyć zwykłego `<img>` bez podpisywanych adresów, które wygasają | bucket prywatny z podpisywaniem każdego adresu |
+| Wgrywanie plików | prosto z przeglądarki do Storage | omija limit wielkości żądania w Server Action | przesyłanie przez serwer aplikacji |

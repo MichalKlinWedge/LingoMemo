@@ -23,8 +23,8 @@ async function Home() {
         <h1>Cześć, {profile?.display_name ?? "uczniu"}!</h1>
         <div className="flex items-center gap-2">
           {isAdmin && (
-            <Link href="/admin/zaproszenia" className="btn-secondary px-4 py-2 text-base">
-              Zaproszenia
+            <Link href="/admin" className="btn-secondary px-4 py-2 text-base">
+              Panel
             </Link>
           )}
           <form action={signOut}>

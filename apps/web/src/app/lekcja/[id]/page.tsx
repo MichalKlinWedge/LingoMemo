@@ -35,6 +35,12 @@ async function Lesson({ params }: { params: PageProps<"/lekcja/[id]">["params"] 
   // Zadania wydaje funkcja w bazie: bez poprawnych odpowiedzi i tylko dla otwartej lekcji.
   const { data: exercises, error } = await supabase.rpc("get_lesson_exercises", { p_lesson: id });
 
+  // Nazwy odznak, żeby na ekranie podsumowania nie wyświetlił się kod w rodzaju `first_lesson`.
+  const { data: badges } = await supabase.from("badges").select("code, title, icon");
+  const badgeNames = Object.fromEntries(
+    (badges ?? []).map((badge) => [badge.code, `${badge.icon ?? "🏅"} ${badge.title}`]),
+  );
+
   if (error) {
     return (
       <div className="flex flex-col items-center gap-4 pt-10 text-center">
@@ -53,6 +59,7 @@ async function Lesson({ params }: { params: PageProps<"/lekcja/[id]">["params"] 
       courseSlug={course.slug}
       exercises={(exercises ?? []) as unknown as Exercise[]}
       targetLang={tts(course.target_lang)}
+      badgeNames={badgeNames}
     />
   );
 }

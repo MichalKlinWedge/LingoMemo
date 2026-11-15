@@ -1,0 +1,59 @@
+import Link from "next/link";
+import { Suspense } from "react";
+
+import { PageHeader } from "@/components/page-header";
+import { Loading, Shell } from "@/components/shell";
+import { requireAdmin } from "@/lib/auth";
+
+const KAFELKI = [
+  { href: "/admin/import", icon: "📥", title: "Import lekcji", text: "Wklej lekcję z pliku JSON." },
+  { href: "/admin/zaproszenia", icon: "✉️", title: "Zaproszenia", text: "Wygeneruj link do założenia konta." },
+  { href: "/admin/uczniowie", icon: "🧒", title: "Uczniowie", text: "Kto się uczy i jak mu idzie." },
+  { href: "/admin/konta", icon: "🔑", title: "Konta", text: "Lista kont i zmiana hasła." },
+  { href: "/admin/obrazki", icon: "🖼️", title: "Obrazki", text: "Wgraj obrazki do słówek." },
+];
+
+async function Panel() {
+  const { supabase } = await requireAdmin("/admin");
+
+  const [{ count: lessons }, { count: concepts }, { data: students }] = await Promise.all([
+    supabase.from("lessons").select("id", { count: "exact", head: true }),
+    supabase.from("concepts").select("id", { count: "exact", head: true }),
+    supabase.rpc("list_students"),
+  ]);
+
+  return (
+    <>
+      <PageHeader
+        back={{ href: "/", label: "Strona główna" }}
+        title="Panel"
+        intro={`Lekcji: ${lessons ?? 0} · słówek: ${concepts ?? 0} · kont: ${(students ?? []).length}`}
+      />
+      <ul className="grid gap-4 sm:grid-cols-2">
+        {KAFELKI.map((item) => (
+          <li key={item.href}>
+            <Link href={item.href} className="card flex h-full items-center gap-4 p-5">
+              <span className="text-4xl" aria-hidden>
+                {item.icon}
+              </span>
+              <span className="flex flex-col">
+                <span className="card-title">{item.title}</span>
+                <span className="text-base text-zinc-600 dark:text-zinc-400">{item.text}</span>
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+}
+
+export default function AdminPage() {
+  return (
+    <Shell>
+      <Suspense fallback={<Loading />}>
+        <Panel />
+      </Suspense>
+    </Shell>
+  );
+}

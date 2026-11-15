@@ -153,6 +153,19 @@ do Storage, lista uczniów z postępami, zarządzanie zaproszeniami, publikowani
 **Kryterium odbioru:** nowa lekcja powstaje wyłącznie przez panel — od wklejenia JSON-a
 do przejścia jej przez dziecko.
 
+**Stan (2026-11-15):** zrobione i przejrzane w przeglądarce. Wklejony plik z lekcją „Owoce"
+przeszedł podgląd na sucho, import, pojawił się na mapie kursu jako nowy dział i dał się
+przejść na trzy gwiazdki. Błędny plik pokazuje każdy problem ze ścieżką w pliku, np.
+`exercises[0].payload.answer: poprawna odpowiedź musi być jedną z opcji`.
+
+Powstały: panel (`/admin`), import z podglądem (`/admin/import`), lista uczniów
+(`/admin/uczniowie`) i wgrywanie obrazków do Storage (`/admin/obrazki`). 96 testów pgTAP,
+26 jednostkowych.
+
+Czego **nie ma**: edycji pojedynczych pól przez formularze. Import jest idempotentny — poprawkę
+wprowadza się przez ponowne wklejenie pliku — więc osobny CRUD byłby drugą drogą do tego samego
+i drugim miejscem do utrzymania. Jeśli okaże się potrzebny, to osobny etap.
+
 ---
 
 ## Poza planem

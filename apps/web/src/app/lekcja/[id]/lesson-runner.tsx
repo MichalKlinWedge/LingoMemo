@@ -24,11 +24,14 @@ export function LessonRunner({
   courseSlug,
   exercises,
   targetLang,
+  badgeNames,
 }: {
   lessonId: string;
   courseSlug: string;
   exercises: Exercise[];
   targetLang: string;
+  /** Kod odznaki -> nazwa z ikoną. Dziecko ma zobaczyć „Pierwszy krok”, nie `first_lesson`. */
+  badgeNames: Record<string, string>;
 }) {
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>("answering");
@@ -116,7 +119,7 @@ export function LessonRunner({
   }, [index, total]);
 
   if (phase === "done" && summary) {
-    return <SummaryScreen summary={summary} courseSlug={courseSlug} />;
+    return <SummaryScreen summary={summary} courseSlug={courseSlug} badgeNames={badgeNames} />;
   }
 
   if (!exercise) {
@@ -233,7 +236,15 @@ function Feedback({ verdict, onNext, last }: { verdict: Verdict; onNext: () => v
   );
 }
 
-function SummaryScreen({ summary, courseSlug }: { summary: Summary; courseSlug: string }) {
+function SummaryScreen({
+  summary,
+  courseSlug,
+  badgeNames,
+}: {
+  summary: Summary;
+  courseSlug: string;
+  badgeNames: Record<string, string>;
+}) {
   const stars = "⭐".repeat(summary.stars) + "☆".repeat(3 - summary.stars);
 
   return (
@@ -251,7 +262,10 @@ function SummaryScreen({ summary, courseSlug }: { summary: Summary; courseSlug: 
       {summary.xp > 0 && <p className="chip">+{summary.xp} punktów za lekcję</p>}
       {summary.streak > 1 && <p className="chip">🔥 {summary.streak} dni z rzędu</p>}
       {summary.badges.length > 0 && (
-        <p className="msg-ok">Nowa odznaka! {summary.badges.join(", ")}</p>
+        <p className="msg-ok">
+          {summary.badges.length === 1 ? "Nowa odznaka!" : "Nowe odznaki!"}{" "}
+          {summary.badges.map((code) => badgeNames[code] ?? code).join(", ")}
+        </p>
       )}
       <div className="flex flex-wrap justify-center gap-3">
         <Link href={`/kurs/${courseSlug}`} className="btn-primary">

@@ -535,7 +535,10 @@ isOneToOne: false
                 }
           }
           Functions: {
-            "award_badges":
+            "admin_import_lesson":
+{ Args: { "p_payload": Json }; Returns: Json
+                           },
+"award_badges":
 { Args: { "p_user": string }; Returns: (string)[]
                            },
 "before_user_created":
@@ -625,9 +628,19 @@ isOneToOne: false
 "lesson_exercise_count":
 { Args: { "p_lesson": string,"p_user": string }; Returns: number
                            },
+"list_accounts":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "created_at": string,"display_name": string,"email": string,"is_admin": boolean,"last_sign_in_at": string,"password_changed_at": string,"user_id": string
+            }[]
+                           },
 "list_invites":
 { Args: Record<PropertyKey, never>; Returns: {
               "course_title": string,"created_at": string,"display_name": string,"email": string,"expires_at": string,"id": string,"max_uses": number,"revoked_at": string,"role": string,"status": string,"token_prefix": string,"used_count": number
+            }[]
+                           },
+"list_students":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "created_at": string,"display_name": string,"email": string,"is_admin": boolean,"last_active_on": string,"lessons_done": number,"streak_days": number,"total_points": number,"user_id": string,"words_seen": number
             }[]
                            },
 "normalize_answer":
@@ -643,6 +656,9 @@ isOneToOne: false
                            },
 "revoke_invite":
 { Args: { "p_id": string }; Returns: undefined
+                           },
+"set_user_password":
+{ Args: { "p_password": string,"p_user": string }; Returns: undefined
                            },
 "srs_apply":
 { Args: { "p_concept": string,"p_course": string,"p_grade": number,"p_time_zone"?: string,"p_user": string }; Returns: undefined

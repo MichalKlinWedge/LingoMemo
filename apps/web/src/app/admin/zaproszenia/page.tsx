@@ -56,7 +56,7 @@ export default function InvitesPage() {
   return (
     <Shell>
       <PageHeader
-        back={{ href: "/", label: "Strona główna" }}
+        back={{ href: "/admin", label: "Panel" }}
         title="Zaproszenia"
         intro="Konto w LingoMemo zakłada się wyłącznie z linku. Każdy link działa raz."
       />
