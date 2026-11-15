@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-starter",
+  "unit": { "slug": "jedzenie", "title": "Jedzenie", "icon": "🍎", "color": "#f97316", "sortOrder": 3 },
+  "lesson": {
+    "slug": "owoce",
+    "title": "Owoce",
+    "icon": "🍏",
+    "sortOrder": 1,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": null,
+    "isPublished": true
+  },
+  "concepts": [
+    {
+      "key": "food.apple",
+      "tags": ["🍎"],
+      "terms": {
+        "pl": [{ "text": "jabłko", "pos": "noun" }],
+        "en": [{ "text": "apple", "pos": "noun", "ipa": "ˈæp.əl", "forms": [{ "label": "liczba mnoga", "text": "apples" }] }]
+      }
+    },
+    {
+      "key": "food.pear",
+      "tags": ["🍐"],
+      "terms": {
+        "pl": [{ "text": "gruszka", "pos": "noun" }],
+        "en": [{ "text": "pear", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "pears" }] }]
+      }
+    },
+    {
+      "key": "food.banana",
+      "tags": ["🍌"],
+      "terms": {
+        "pl": [{ "text": "banan", "pos": "noun" }],
+        "en": [{ "text": "banana", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "bananas" }] }]
+      }
+    },
+    {
+      "key": "food.strawberry",
+      "tags": ["🍓"],
+      "terms": {
+        "pl": [{ "text": "truskawka", "pos": "noun" }],
+        "en": [{ "text": "strawberry", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "strawberries" }] }]
+      }
+    },
+    {
+      "key": "food.plum",
+      "tags": ["🫐"],
+      "terms": {
+        "pl": [{ "text": "śliwka", "pos": "noun" }],
+        "en": [{ "text": "plum", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "plums" }] }]
+      }
+    },
+    {
+      "key": "food.orange",
+      "tags": ["🍊"],
+      "terms": {
+        "pl": [{ "text": "pomarańcza", "pos": "noun" }],
+        "en": [{ "text": "orange", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "oranges" }] }]
+      }
+    }
+  ],
+  "exercises": [
+    {
+      "type": "translate_ab",
+      "conceptKey": "food.apple",
+      "payload": {
+        "prompt": "jabłko",
+        "accepted": ["apple"],
+        "options": ["apple", "pear", "plum"],
+        "hint": "Zaczyna się na literę a."
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "food.banana",
+      "payload": { "prompt": "banan", "accepted": ["banana"], "options": ["banana", "orange", "strawberry"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "food.plum",
+      "payload": { "prompt": "śliwka", "accepted": ["plum"], "hint": "Krótkie słowo, cztery litery." }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "food.pear",
+      "payload": { "prompt": "pear", "accepted": ["gruszka"] }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "food.strawberry",
+      "payload": { "prompt": "strawberry", "accepted": ["truskawka"] }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "food.orange",
+      "payload": { "speak": "orange", "lang": "en-GB", "accepted": ["orange"] }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "food.apple",
+      "payload": { "speak": "apple", "lang": "en-GB", "accepted": ["apple"] }
+    },
+    {
+      "type": "match_pairs",
+      "payload": {
+        "instruction": "Połącz polskie słowo z angielskim.",
+        "pairs": [
+          { "a": "jabłko", "b": "apple" },
+          { "a": "gruszka", "b": "pear" },
+          { "a": "banan", "b": "banana" },
+          { "a": "truskawka", "b": "strawberry" },
+          { "a": "pomarańcza", "b": "orange" }
+        ]
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "food.banana",
+      "payload": {
+        "sentence": "The monkey eats a {{blank}}.",
+        "options": ["banana", "apple", "pear"],
+        "answer": "banana",
+        "translation": "Małpa je banana."
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "food.strawberry",
+      "payload": {
+        "sentence": "I like red {{blank}}.",
+        "options": ["strawberries", "oranges", "plums"],
+        "answer": "strawberries",
+        "translation": "Lubię czerwone truskawki."
+      }
+    },
+    {
+      "type": "sentence_order",
+      "conceptKey": "food.apple",
+      "payload": {
+        "prompt": "Ułóż zdanie: Lubię zielone jabłka.",
+        "tokens": ["I", "like", "green", "apples"],
+        "solution": ["I", "like", "green", "apples"]
+      }
+    },
+    {
+      "type": "inflection",
+      "conceptKey": "food.orange",
+      "payload": {
+        "base": "orange",
+        "formLabel": "liczba mnoga",
+        "instruction": "Napisz po angielsku: więcej niż jedna pomarańcza.",
+        "accepted": ["oranges"]
+      }
+    }
+  ]
+}
