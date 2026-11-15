@@ -4,7 +4,7 @@
 -- sprawdzamy to, co ma własną funkcję albo własną politykę.
 
 begin;
-select plan(34);
+select plan(37);
 
 create or replace function pg_temp.make_user(p_email text) returns uuid
 language plpgsql as $$
@@ -196,66 +196,6 @@ values (
   10
 );
 
--- --- zadanie z obrazkiem ---
---
--- Jedyne zadanie, które panel składa z ręki: idzie zwykłym `insert` pod polityką
--- `exercises_admin`, a kształtu payloadu pilnuje `validate_exercise_payload` jako CHECK.
-select set_config('role', 'authenticated', true),
-       set_config('request.jwt.claims',
-         (select json_build_object('sub', u.id, 'role', 'authenticated',
-                 'app_metadata', coalesce(u.raw_app_meta_data, '{}'::jsonb))::text
-            from auth.users u where u.id = (select id from t_ids where name = 'admin')), true);
-
-select lives_ok(
-  format(
-    $sql$insert into public.exercises (lesson_id, type, sort_order, concept_id, payload, points)
-         values (%L, 'image_choice', 98, %L,
-           jsonb_build_object(
-             'prompt', 'apple',
-             'options', jsonb_build_array('2026/jablko.png', '2026/gruszka.png'),
-             'answer', '2026/jablko.png'), 10)$sql$,
-    (select id from t_lesson), (select id from t_concepts where key = 'food.apple')),
-  'administrator dodaje zadanie z obrazkiem zwykłym insertem'
-);
-
-select throws_ok(
-  format(
-    $sql$insert into public.exercises (lesson_id, type, sort_order, payload, points)
-         values (%L, 'image_choice', 97,
-           jsonb_build_object(
-             'prompt', 'apple',
-             'options', jsonb_build_array('2026/jablko.png', '2026/gruszka.png'),
-             'answer', '2026/sliwka.png'), 10)$sql$,
-    (select id from t_lesson)),
-  '23514',
-  null,
-  'obrazek spoza listy nie przejdzie jako poprawna odpowiedź'
-);
-
-reset role;
-
-select set_config('role', 'authenticated', true),
-       set_config('request.jwt.claims',
-         (select json_build_object('sub', u.id, 'role', 'authenticated',
-                 'app_metadata', coalesce(u.raw_app_meta_data, '{}'::jsonb))::text
-            from auth.users u where u.id = (select id from t_ids where name = 'uczen')), true);
-
-select throws_ok(
-  format(
-    $sql$insert into public.exercises (lesson_id, type, sort_order, payload, points)
-         values (%L, 'image_choice', 96,
-           jsonb_build_object(
-             'prompt', 'apple',
-             'options', jsonb_build_array('2026/jablko.png', '2026/gruszka.png'),
-             'answer', '2026/jablko.png'), 10)$sql$,
-    (select id from t_lesson)),
-  '42501',
-  null,
-  'uczeń nie doda sobie zadania z obrazkiem'
-);
-
-reset role;
-
 select set_config('role', 'authenticated', true),
        set_config('request.jwt.claims',
          (select json_build_object('sub', u.id, 'role', 'authenticated',
@@ -321,6 +261,68 @@ select is(
   'apple',
   'zadanie ułożone ręcznie zostaje nietknięte'
 );
+
+-- --- zadanie z obrazkiem ---
+--
+-- Jedyne zadanie, które panel składa z ręki: idzie zwykłym `insert` pod polityką
+-- `exercises_admin`, a kształtu payloadu pilnuje `validate_exercise_payload` jako CHECK.
+-- Stoi po asercjach poprawiania słówka, bo każde zadanie ułożone ręcznie zmienia tam licznik
+-- pominiętych.
+select set_config('role', 'authenticated', true),
+       set_config('request.jwt.claims',
+         (select json_build_object('sub', u.id, 'role', 'authenticated',
+                 'app_metadata', coalesce(u.raw_app_meta_data, '{}'::jsonb))::text
+            from auth.users u where u.id = (select id from t_ids where name = 'admin')), true);
+
+select lives_ok(
+  format(
+    $sql$insert into public.exercises (lesson_id, type, sort_order, concept_id, payload, points)
+         values (%L, 'image_choice', 98, %L,
+           jsonb_build_object(
+             'prompt', 'apple',
+             'options', jsonb_build_array('2026/jablko.png', '2026/gruszka.png'),
+             'answer', '2026/jablko.png'), 10)$sql$,
+    (select id from t_lesson), (select id from t_concepts where key = 'food.apple')),
+  'administrator dodaje zadanie z obrazkiem zwykłym insertem'
+);
+
+select throws_ok(
+  format(
+    $sql$insert into public.exercises (lesson_id, type, sort_order, payload, points)
+         values (%L, 'image_choice', 97,
+           jsonb_build_object(
+             'prompt', 'apple',
+             'options', jsonb_build_array('2026/jablko.png', '2026/gruszka.png'),
+             'answer', '2026/sliwka.png'), 10)$sql$,
+    (select id from t_lesson)),
+  '23514',
+  null,
+  'obrazek spoza listy nie przejdzie jako poprawna odpowiedź'
+);
+
+reset role;
+
+select set_config('role', 'authenticated', true),
+       set_config('request.jwt.claims',
+         (select json_build_object('sub', u.id, 'role', 'authenticated',
+                 'app_metadata', coalesce(u.raw_app_meta_data, '{}'::jsonb))::text
+            from auth.users u where u.id = (select id from t_ids where name = 'uczen')), true);
+
+select throws_ok(
+  format(
+    $sql$insert into public.exercises (lesson_id, type, sort_order, payload, points)
+         values (%L, 'image_choice', 96,
+           jsonb_build_object(
+             'prompt', 'apple',
+             'options', jsonb_build_array('2026/jablko.png', '2026/gruszka.png'),
+             'answer', '2026/jablko.png'), 10)$sql$,
+    (select id from t_lesson)),
+  '42501',
+  null,
+  'uczeń nie doda sobie zadania z obrazkiem'
+);
+
+reset role;
 
 -- --- języki kursu ---
 --

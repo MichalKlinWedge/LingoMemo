@@ -300,3 +300,21 @@ po angielsku: odpowiedzią jest obrazek, nie napis.
   odpowiedzi, z których jedna liczy się jako błąd, a na ekranie nie widać tego wcale.
 - **`get_lesson_exercises` zostaje bez zmian.** Gałąź `else` i tak wycina `answer`, a `prompt`
   z `options` mają dojechać do przeglądarki — nie ma tu czego dopisywać.
+
+### Formularz w panelu (2026-11-15)
+
+Zadanie z obrazkiem jest jedynym, które administrator składa z ręki w panelu — reszta zadań
+układanych ręcznie wchodzi importem JSON.
+
+- **Zwykły `insert`, nie funkcja `security definer`.** To jeden wiersz, więc nie ma tu czego
+  pakować w transakcję; polityka `exercises_admin` i `validate_exercise_payload` jako CHECK
+  pilnują tego samego, co pilnowałaby funkcja. Osobne RPC byłoby kodem bez zadania.
+- **Ten sam schemat zoda, co import.** `imageChoicePayloadSchema` sprawdza payload w akcji
+  serwera i w pliku importu — inaczej panel przyjmowałby zadania, których import by odrzucił.
+- **Obrazki lecą do Storage prosto z przeglądarki.** Plik 2 MB przez Server Action przeszedłby
+  dopiero po podniesieniu limitu żądania, a do akcji i tak jedzie sama ścieżka.
+- **Poprawnego obrazka nie zaznaczamy za administratora.** Zadanie z cicho ustawionym złym
+  kluczem odpowiedzi wygląda na ekranie normalnie i wychodzi dopiero wtedy, gdy dziecko dostaje
+  błąd za dobrą odpowiedź. Lepszy jeden klik więcej niż taka pułapka.
+- **Bez wskazania słówka zadanie nie wchodzi do powtórek.** Stan FSRS wisi na słówku, nie na
+  zadaniu, więc lista słówek lekcji jest w formularzu, a nie w dokumentacji.
