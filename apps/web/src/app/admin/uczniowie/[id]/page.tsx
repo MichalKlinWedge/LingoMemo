@@ -12,7 +12,7 @@ import { ProfilePanel } from "../profile-panel";
 import { requireAdmin } from "@/lib/auth";
 import { dbLoadError } from "@/lib/db-error";
 
-const CRUMB_STUDENTS = { href: "/admin/uczniowie", label: "Uczniowie" };
+const CRUMB_STUDENTS = { href: "/admin/uczniowie", label: "Uczniowie i konta" };
 
 /**
  * Co dziecko właściwie wysłało. `raw_answer` ma inny kształt dla każdego typu zadania,

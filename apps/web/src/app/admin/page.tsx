@@ -10,8 +10,12 @@ const KAFELKI = [
   { href: "/admin/kursy", icon: "📚", title: "Kursy", text: "Kursy, działy, lekcje i słówka." },
   { href: "/admin/import", icon: "📥", title: "Import lekcji", text: "Wklej lekcję z pliku JSON." },
   { href: "/admin/zaproszenia", icon: "✉️", title: "Zaproszenia", text: "Wygeneruj link do założenia konta." },
-  { href: "/admin/uczniowie", icon: "🧒", title: "Uczniowie", text: "Kto się uczy i jak mu idzie." },
-  { href: "/admin/konta", icon: "🔑", title: "Konta", text: "Lista kont i zmiana hasła." },
+  {
+    href: "/admin/uczniowie",
+    icon: "🧒",
+    title: "Uczniowie i konta",
+    text: "Kto się uczy, jak mu idzie i zmiana hasła.",
+  },
   { href: "/admin/obrazki", icon: "🖼️", title: "Obrazki", text: "Wgraj obrazki do słówek." },
 ];
 
