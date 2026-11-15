@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 
+import { Flag } from "@/components/flag";
 import { PageHeader } from "@/components/page-header";
 import { Loading, Shell } from "@/components/shell";
 import { requireUser } from "@/lib/auth";
@@ -12,7 +13,7 @@ async function Home() {
 
   const { data: courses, error } = await supabase
     .from("courses")
-    .select("id, slug, title, description, icon")
+    .select("id, slug, title, description, icon, target_lang")
     .order("sort_order");
 
   return (
@@ -23,9 +24,7 @@ async function Home() {
         {(courses ?? []).map((course) => (
           <li key={course.id}>
             <Link href={`/kurs/${course.slug}`} className="card flex items-center gap-4 p-5 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800">
-              <span className="text-5xl" aria-hidden>
-                {course.icon ?? "📘"}
-              </span>
+              <Flag code={course.target_lang} fallback={course.icon ?? "📘"} size={56} />
               <div className="flex min-w-0 flex-col">
                 <span className="card-title">{course.title}</span>
                 <span className="text-base text-zinc-600 dark:text-zinc-400">{course.description}</span>

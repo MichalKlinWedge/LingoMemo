@@ -235,3 +235,17 @@ okazji druga pułapka: aliasu w zapytaniu nie wolno nazwać tak jak zmiennej rek
 - **Next 16 nie uruchomi drugiego `next dev` w tym samym katalogu projektu.** Przy dwóch
   sesjach pracujących na jednym checkoucie druga dostaje `Another next dev server is already
   running` — podgląd w przeglądarce ma wtedy tylko ta sesja, która serwer uruchomiła.
+
+## Flagi języków jako obrazki, nie emoji (2026-11-15)
+
+Kursy miały flagę w polu `icon` jako emoji (🇬🇧). **Windows nie rysuje flag** z par liter
+regionalnych — zamiast flagi pokazuje napis „GB". To nie jest usterka czcionki w aplikacji,
+tylko brak tych glifów w systemie, więc żadne ustawienie CSS tego nie naprawi.
+
+Flagi są teraz plikami w `apps/web/public/flagi/<kod>.svg`, a komponent `Flag` dobiera je po
+kodzie języka kursu (`target_lang`). SVG, bo cztery flagi ważą razem 1,2 kB — mniej niż jeden
+mały PNG — i są ostre w każdym rozmiarze, także na ekranach o dużej gęstości.
+
+Dodanie języka to jeden plik `public/flagi/<kod>.svg` i wiersz w `languages`; w kodzie nie
+zmienia się nic. Gdy pliku brakuje, komponent pokazuje ikonę kursu albo kod języka — nigdy
+dziurę w układzie.

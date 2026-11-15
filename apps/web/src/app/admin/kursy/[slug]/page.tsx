@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
+import { Flag } from "@/components/flag";
 import { PageHeader } from "@/components/page-header";
 import { Loading, Shell } from "@/components/shell";
 import { requireAdmin } from "@/lib/auth";
@@ -62,7 +63,7 @@ async function Course({ params }: { params: PageProps<"/admin/kursy/[slug]">["pa
         back={{ href: "/admin/kursy", label: "Kursy" }}
         title={
           <>
-            <span aria-hidden>{course.icon}</span> {course.title}
+            <Flag code={course.target_lang} fallback={course.icon} size={32} /> {course.title}
           </>
         }
         intro="Działy kursu i zapisani uczniowie."

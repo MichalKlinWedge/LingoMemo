@@ -4,6 +4,7 @@ import { Suspense } from "react";
 
 import { LESSONS, plural, WORDS } from "@lingomemo/core";
 
+import { Flag } from "@/components/flag";
 import { PageHeader } from "@/components/page-header";
 import { Loading, Shell } from "@/components/shell";
 import { requireUser } from "@/lib/auth";
@@ -15,7 +16,7 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
 
   const { data: course } = await supabase
     .from("courses")
-    .select("id, title, description, icon")
+    .select("id, title, description, icon, target_lang")
     .eq("slug", slug)
     .maybeSingle();
 
@@ -39,7 +40,7 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
         back={{ href: "/", label: "Kursy" }}
         title={
           <>
-            <span aria-hidden>{course.icon}</span> {course.title}
+            <Flag code={course.target_lang} fallback={course.icon} size={36} /> {course.title}
           </>
         }
         intro={`Ukończone: ${plural(done, LESSONS)}`}
