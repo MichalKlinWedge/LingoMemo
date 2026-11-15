@@ -275,6 +275,19 @@ export function LessonRunner({
         />
       )}
 
+      {/* Wyjście dla dziecka, które utknęło. Idzie do bazy jako odpowiedź `{"skipped": true}`,
+          więc liczy się jak błąd: zero punktów i słówko wraca w powtórkach. Alternatywą było
+          zgadywanie w kółko albo wyjście z lekcji w połowie. */}
+      {phase === "answering" && (
+        <button
+          type="button"
+          className="btn-secondary self-center"
+          onClick={() => void handleAnswer({ skipped: true })}
+        >
+          Nie wiem, pomiń
+        </button>
+      )}
+
       {error && <p className="msg-error">{error}</p>}
 
       {phase === "feedback" && verdict && (
@@ -321,9 +334,15 @@ function Feedback({
     >
       <p style={{ fontSize: "1.5rem", fontWeight: 700, color: verdict.correct ? "#0f5c37" : "#8f2420" }}>
         <span className={verdict.correct ? "anim-pop inline-block" : "inline-block"} aria-hidden>
-          {verdict.correct ? "🎉 " : "💪 "}
+          {verdict.correct ? "🎉 " : verdict.skipped ? "👀 " : "💪 "}
         </span>
-        {verdict.correct ? (verdict.nearMiss ? "Prawie! Zaliczone" : "Brawo!") : "Nie tym razem"}
+        {verdict.correct
+          ? verdict.nearMiss
+            ? "Prawie! Zaliczone"
+            : "Brawo!"
+          : verdict.skipped
+            ? "Pominięte"
+            : "Nie tym razem"}
       </p>
       {!verdict.correct && shown && (
         <p style={{ color: "#8f2420" }}>

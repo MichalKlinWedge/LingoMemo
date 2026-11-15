@@ -13,6 +13,8 @@ import { dbErrorMessage } from "@/lib/db-error";
 export type Verdict = {
   correct: boolean;
   nearMiss: boolean;
+  /** Dziecko kliknęło „Nie wiem" zamiast odpowiadać. Dla bazy to błąd, dla ekranu inny napis. */
+  skipped?: boolean;
   grade: number;
   points: number;
   correctAnswer: Json;
