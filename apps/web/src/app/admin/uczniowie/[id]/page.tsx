@@ -3,7 +3,9 @@ import { Suspense } from "react";
 
 import { DAYS, EXERCISE_LABEL, formatDuration, LESSONS, plural, POINTS, spellDuration, WORDS } from "@lingomemo/core";
 
+import { EnrollmentButton } from "@/app/admin/kursy/panels";
 import { CRUMB_HOME, CRUMB_PANEL } from "@/components/breadcrumbs";
+import { Flag } from "@/components/flag";
 import { PageHeader } from "@/components/page-header";
 import { Loading, Shell } from "@/components/shell";
 import { accuracy, Tile, WeekChart } from "@/components/stats-widgets";
@@ -62,18 +64,22 @@ async function Student({ params }: { params: PageProps<"/admin/uczniowie/[id]">[
   const { data: hints } = await supabase.rpc("hint_status", { p_user: id });
   const hintState = hints as { limit: number; usedToday: number; left: number; today: string } | null;
 
-  const [{ data: stats, error }, { data: daily }, { data: courses }, { data: weak }] = await Promise.all([
-    supabase.from("v_my_stats").select("*").eq("user_id", id).maybeSingle(),
-    supabase.from("v_my_daily").select("day, answers, correct").eq("user_id", id),
-    supabase.from("v_my_courses").select("*").eq("user_id", id).order("course_title"),
-    supabase
-      .from("v_my_weak_words")
-      .select("*")
-      .eq("user_id", id)
-      .gt("lapses", 0)
-      .order("lapses", { ascending: false })
-      .limit(8),
-  ]);
+  const [{ data: stats, error }, { data: daily }, { data: courses }, { data: offer }, { data: weak }] =
+    await Promise.all([
+      supabase.from("v_my_stats").select("*").eq("user_id", id).maybeSingle(),
+      supabase.from("v_my_daily").select("day, answers, correct").eq("user_id", id),
+      supabase.from("v_my_courses").select("*").eq("user_id", id).order("course_title"),
+      // Wszystkie kursy, nie tylko te z zapisem: na tej karcie zapisuje się dziecko na kurs,
+      // więc musi tu być widoczny także kurs, którego jeszcze nie ma na jego liście.
+      supabase.from("courses").select("id, title, icon, target_lang, is_published").order("sort_order").order("title"),
+      supabase
+        .from("v_my_weak_words")
+        .select("*")
+        .eq("user_id", id)
+        .gt("lapses", 0)
+        .order("lapses", { ascending: false })
+        .limit(8),
+    ]);
 
   if (error) return <p className="msg-error">{dbLoadError(error)}</p>;
 
@@ -168,30 +174,46 @@ async function Student({ params }: { params: PageProps<"/admin/uczniowie/[id]">[
 
       <section className="flex flex-col gap-3">
         <h2 className="card-title">Kursy</h2>
-        {(courses ?? []).length === 0 ? (
+        <p className="text-base text-zinc-600 dark:text-zinc-400">
+          Dziecko uczy się tylko tego, na co jest zapisane — kurs bez zapisu nie pokazuje mu się
+          na stronie głównej. Wypisanie nie kasuje postępów: po ponownym zapisaniu wracają.
+        </p>
+        {(offer ?? []).length === 0 ? (
           <p className="text-zinc-600 dark:text-zinc-400">
-            Dziecko nie jest zapisane na żaden kurs. Zapisuje się je na stronie kursu.
+            Nie ma jeszcze żadnego kursu, więc nie ma na co zapisywać.
           </p>
         ) : (
           <ul className="flex flex-col gap-2">
-            {(courses ?? []).map((course) => (
-              <li key={course.course_id} className="card flex flex-wrap items-center justify-between gap-3 p-4">
-                <span className="flex min-w-0 items-center gap-3">
-                  <span className="text-3xl" aria-hidden>
-                    {course.course_icon}
-                  </span>
-                  <span className="flex min-w-0 flex-col">
-                    <span className="font-semibold">{course.course_title}</span>
-                    <span className="text-base text-zinc-600 dark:text-zinc-400">
-                      {plural(course.lessons_done ?? 0, LESSONS)} z {course.lessons_total} ·{" "}
-                      {plural(course.words_seen ?? 0, WORDS)} · umianych: {course.words_mastered} · do powtórki:{" "}
-                      {course.words_due}
+            {(offer ?? []).map((course) => {
+              // Postępy są tylko dla kursów z zapisem — `v_my_courses` ma wiersz na zapis.
+              const mine = (courses ?? []).find((row) => row.course_id === course.id);
+              return (
+                <li key={course.id} className="card flex flex-wrap items-center justify-between gap-3 p-4">
+                  <span className="flex min-w-0 items-center gap-3">
+                    <Flag code={course.target_lang} fallback={course.icon} size={32} />
+                    <span className="flex min-w-0 flex-col">
+                      <span className="font-semibold">{course.title}</span>
+                      <span className="text-base text-zinc-600 dark:text-zinc-400">
+                        {mine ? (
+                          <>
+                            {plural(mine.lessons_done ?? 0, LESSONS)} z {mine.lessons_total} ·{" "}
+                            {plural(mine.words_seen ?? 0, WORDS)} · umianych: {mine.words_mastered} · do powtórki:{" "}
+                            {mine.words_due}
+                          </>
+                        ) : (
+                          "niezapisany"
+                        )}
+                      </span>
                     </span>
                   </span>
-                </span>
-                <span className="chip">⏱️ {formatDuration(course.seconds_total ?? 0)}</span>
-              </li>
-            ))}
+                  <span className="flex flex-wrap items-center gap-2">
+                    {!course.is_published && <span className="chip">kurs ukryty</span>}
+                    {mine && <span className="chip">⏱️ {formatDuration(mine.seconds_total ?? 0)}</span>}
+                    <EnrollmentButton userId={profile.id} courseId={course.id} enrolled={mine !== undefined} />
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         )}
       </section>
