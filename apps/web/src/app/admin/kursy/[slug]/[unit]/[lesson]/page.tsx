@@ -38,6 +38,14 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
     .maybeSingle();
   if (!lesson) notFound();
 
+  // Warunek wstępny wolno postawić na lekcji z dowolnego działu kursu, więc do wyboru idą
+  // wszystkie lekcje kursu, pogrupowane działami — nie tylko te z tego działu.
+  const { data: courseUnits } = await supabase
+    .from("units")
+    .select("id, title")
+    .eq("course_id", course.id)
+    .order("sort_order");
+
   const [
     { data: items, error },
     { data: siblings },
@@ -47,7 +55,11 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
     { count: opened },
   ] = await Promise.all([
     supabase.from("lesson_items").select("concept_id, sort_order").eq("lesson_id", lesson.id).order("sort_order"),
-    supabase.from("lessons").select("id, title").eq("unit_id", unit.id).order("sort_order"),
+    supabase
+      .from("lessons")
+      .select("id, title, unit_id")
+      .in("unit_id", (courseUnits ?? []).map((item) => item.id))
+      .order("sort_order"),
     supabase.from("exercises").select("id, concept_id, type").eq("lesson_id", lesson.id),
     supabase.from("languages").select("code, name_pl, tts_lang"),
     // Co przepadnie przy kasowaniu: postępy dzieci z tej lekcji i warunki wstępne innych lekcji.
@@ -80,7 +92,11 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
   const keyOf = (conceptId: string) => (concepts ?? []).find((concept) => concept.id === conceptId);
   const taskCount = (conceptId: string) => (exercises ?? []).filter((item) => item.concept_id === conceptId).length;
 
-  const others = (siblings ?? []).filter((item) => item.id !== lesson.id);
+  const others = (courseUnits ?? []).flatMap((item) =>
+    (siblings ?? [])
+      .filter((entry) => entry.unit_id === item.id && entry.id !== lesson.id)
+      .map((entry) => ({ id: entry.id, title: entry.title, unit: item.title })),
+  );
 
   // Zadanie z obrazkiem wskazuje słówko lekcji — bez niego nie wchodzi do powtórek.
   const words = (items ?? []).map((item) => ({

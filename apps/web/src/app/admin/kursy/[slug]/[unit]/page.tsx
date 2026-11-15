@@ -28,20 +28,37 @@ async function Unit({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit]"
 
   if (!unit) notFound();
 
-  const [{ data: lessons, error }, { data: items }] = await Promise.all([
+  // Warunek wstępny wolno postawić na lekcji z dowolnego działu kursu, więc do wyboru idą
+  // wszystkie lekcje kursu, pogrupowane działami — nie tylko te z tego działu.
+  const { data: courseUnits } = await supabase
+    .from("units")
+    .select("id, title")
+    .eq("course_id", course.id)
+    .order("sort_order");
+
+  const [{ data: lessons, error }, { data: items }, { data: courseLessons }] = await Promise.all([
     supabase
       .from("lessons")
       .select("id, slug, title, icon, kind, sort_order, is_published")
       .eq("unit_id", unit.id)
       .order("sort_order"),
     supabase.from("lesson_items").select("lesson_id"),
+    supabase
+      .from("lessons")
+      .select("id, title, unit_id")
+      .in("unit_id", (courseUnits ?? []).map((item) => item.id))
+      .order("sort_order"),
   ]);
 
   if (error) return <p className="msg-error">{dbLoadError(error)}</p>;
 
   const words = (lessonId: string) => (items ?? []).filter((item) => item.lesson_id === lessonId).length;
   const nextOrder = Math.max(0, ...(lessons ?? []).map((lesson) => lesson.sort_order)) + 1;
-  const others = (lessons ?? []).map((lesson) => ({ id: lesson.id, title: lesson.title }));
+  const others = (courseUnits ?? []).flatMap((item) =>
+    (courseLessons ?? [])
+      .filter((entry) => entry.unit_id === item.id)
+      .map((entry) => ({ id: entry.id, title: entry.title, unit: item.title })),
+  );
 
   return (
     <>

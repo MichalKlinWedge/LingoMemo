@@ -327,7 +327,13 @@ export function UnitSettings({
   );
 }
 
-type LessonOption = { id: string; title: string };
+/**
+ * Lekcja do wyboru jako warunek wstępny. `unit` jest tu dlatego, że warunek wolno postawić na
+ * lekcji z dowolnego działu kursu — import tak robi (zapis „dzial/lekcja"). Gdy lista zawierała
+ * tylko lekcje tego samego działu, warunek z innego działu nie miał swojej opcji, pole pokazywało
+ * „od razu dostępna", a zapis formularza po cichu kasował warunek.
+ */
+type LessonOption = { id: string; title: string; unit: string };
 
 /** Wspólne pola lekcji dla dodawania i edycji — żeby nie rozjechały się między formularzami. */
 function LessonFields({
@@ -356,10 +362,16 @@ function LessonFields({
           <span className="font-semibold">Otwiera się po lekcji</span>
           <select name="prerequisite_lesson_id" className="field" defaultValue={lesson?.prerequisite_lesson_id ?? ""}>
             <option value="">od razu dostępna</option>
-            {others.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.title}
-              </option>
+            {[...new Set(others.map((item) => item.unit))].map((unitTitle) => (
+              <optgroup key={unitTitle} label={unitTitle}>
+                {others
+                  .filter((item) => item.unit === unitTitle)
+                  .map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.title}
+                    </option>
+                  ))}
+              </optgroup>
             ))}
           </select>
         </label>
