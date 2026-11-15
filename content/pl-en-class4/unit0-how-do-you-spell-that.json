@@ -348,6 +348,36 @@
       "payload": { "speak": "G", "lang": "en-GB", "accepted": ["G"] }
     },
     {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj polskie słowo.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "dziewczynka", "b": "girl" },
+          { "a": "pudełko", "b": "box" },
+          { "a": "kanapka", "b": "sandwich" },
+          { "a": "stół", "b": "table" },
+          { "a": "lew", "b": "lion" },
+          { "a": "ryba", "b": "fish" }
+        ]
+      }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj polskie słowo.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "imię", "b": "name" },
+          { "a": "nazwisko", "b": "surname" },
+          { "a": "litera", "b": "letter" },
+          { "a": "alfabet", "b": "alphabet" }
+        ]
+      }
+    },
+    {
       "type": "sentence_order",
       "conceptKey": "ask.name",
       "points": 15,
