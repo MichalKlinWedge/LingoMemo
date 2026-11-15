@@ -6,7 +6,7 @@
 -- dziecka, że nie dostaje cudzych i że po drodze nie otwiera się dostęp do kluczy odpowiedzi.
 
 begin;
-select plan(10);
+select plan(16);
 
 create or replace function pg_temp.make_user(p_email text) returns uuid
 language plpgsql as $$
@@ -66,6 +66,12 @@ with k as (
 )
 select (select course_id from d) as course_id, (select id from l) as lesson_id;
 
+-- Druga lekcja: nietknięta i zamknięta, bo czeka na zaliczenie pierwszej. To ona jest tutaj
+-- najważniejsza — rodzic ma zobaczyć także to, czego dziecko jeszcze nie ruszyło.
+insert into public.lessons (unit_id, slug, title, sort_order, is_published, prerequisite_lesson_id)
+select l.unit_id, 'lekcja-druga', 'Lekcja o psach', 2, true, l.id
+  from public.lessons l where l.id = (select lesson_id from t_ctx);
+
 grant select on t_ids, t_ctx to authenticated;
 
 insert into public.enrollments (user_id, course_id)
@@ -115,6 +121,31 @@ select is(
   'Lekcja o kotach',
   'tytuł opublikowanej lekcji rodzic przeczyta');
 
+-- --- lekcje, także nietknięte ---
+
+select is(
+  (select count(*)::integer from public.child_lessons((select id from t_ids where name = 'moje'))),
+  2,
+  'rodzic dostaje wszystkie lekcje dziecka, nie tylko zaczęte');
+
+select is(
+  (select status from public.child_lessons((select id from t_ids where name = 'moje'))
+    where title = 'Lekcja o psach'),
+  'new',
+  'lekcja, której dziecko nie tknęło, ma status new');
+
+select is(
+  (select is_unlocked from public.child_lessons((select id from t_ids where name = 'moje'))
+    where title = 'Lekcja o psach'),
+  false,
+  'i widać, że jest jeszcze zamknięta, a nie pominięta');
+
+select throws_ok(
+  format('select * from public.child_lessons(%L)', (select id from t_ids where name = 'obce')),
+  '42501',
+  null,
+  'rodzic nie zajrzy w lekcje cudzego dziecka');
+
 -- To jest granica, której poszerzenie polityk nie miało przesunąć: w `exercises` leżą klucze
 -- odpowiedzi do całego kursu, a rodzic nie ma do tej tabeli polityki SELECT tak samo jak dziecko.
 select is(
@@ -138,6 +169,18 @@ select is(
     where user_id = (select id from t_ids where name = 'moje')),
   0,
   'ani w jego podejścia do lekcji');
+
+select throws_ok(
+  format('select * from public.child_lessons(%L)', (select id from t_ids where name = 'moje')),
+  '42501',
+  null,
+  'ani w jego mapę lekcji');
+
+-- Ta sama funkcja wydaje dziecku jego własne lekcje: nie ma potrzeby trzymać osobnej dla każdej roli.
+select is(
+  (select count(*)::integer from public.child_lessons((select id from t_ids where name = 'obce'))),
+  2,
+  'ale swoje własne lekcje widzi');
 
 reset role;
 

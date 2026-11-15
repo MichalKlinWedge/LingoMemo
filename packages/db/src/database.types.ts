@@ -778,6 +778,11 @@ isOneToOne: false
 "child_exercise":
 { Args: { "p_exercise": string }; Returns: Json
                            },
+"child_lessons":
+{ Args: { "p_child": string }; Returns: {
+              "best_score": number,"course_id": string,"icon": string,"is_unlocked": boolean,"kind": Database["public"]['Enums']["lesson_kind"],"lesson_id": string,"slug": string,"sort_order": number,"stars": number,"status": string,"title": string,"unit_id": string,"word_count": number
+            }[]
+                           },
 "course_started":
 { Args: { "p_course": string }; Returns: boolean
                            },
