@@ -8,7 +8,7 @@
 -- cofnięta przy wyjściu z niej.
 
 begin;
-select plan(16);
+select plan(19);
 
 create or replace function pg_temp.make_user(p_email text) returns uuid
 language plpgsql as $$
@@ -167,6 +167,27 @@ select ok(
 select ok(
   (select count(*) from public.lessons) >= 6,
   'administrator widzi także lekcje zamknięte dla ucznia'
+);
+
+-- Podgląd „oczami dziecka": warunek wstępny jest dla dziecka, nie dla osoby układającej lekcję,
+-- więc ta sama lekcja, która uczniowi pokazała kłódkę, administratorowi ma się otworzyć.
+select is(
+  public.is_lesson_unlocked((select id from t_lessons where nr = 2), (select id from t_ids where name = 'admin')),
+  true,
+  'administrator ma otwartą lekcję z warunkiem wstępnym'
+);
+
+select lives_ok(
+  'select public.get_lesson_exercises((select id from t_lessons where nr = 2))',
+  'administrator podejrzy zadania z lekcji zamkniętej dla ucznia'
+);
+
+-- Pytanie o cudzy postęp dalej mówi o tamtym dziecku: claim administratora nie może odemknąć
+-- lekcji na mapie ucznia, bo to jego postępy, nie oglądającego.
+select is(
+  public.is_lesson_unlocked((select id from t_lessons where nr = 2), (select id from t_ids where name = 'janek')),
+  false,
+  'patrząc na ucznia, administrator widzi jego kłódkę'
 );
 
 select set_config('role', 'postgres', true), set_config('request.jwt.claims', '', true);
