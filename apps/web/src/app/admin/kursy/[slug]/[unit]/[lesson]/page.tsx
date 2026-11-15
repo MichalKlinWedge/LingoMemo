@@ -61,6 +61,16 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
 
   return (
     <>
+      <PageHeader
+        back={{ href: `/admin/kursy/${course.slug}/${unit.slug}`, label: "Lekcje" }}
+        title={
+          <>
+            <span aria-hidden>{lesson.icon}</span> {lesson.title}
+          </>
+        }
+        intro="Słówka lekcji. Każde nowe słówko dostaje od razu trzy zadania."
+      />
+
       <LessonSettings lesson={lesson} unitId={unit.id} others={others} />
 
       <section className="flex flex-col gap-3">
@@ -113,16 +123,9 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
   );
 }
 
-export default async function LessonPage({ params }: PageProps<"/admin/kursy/[slug]/[unit]/[lesson]">) {
-  const { slug, unit, lesson } = await params;
-
+export default function LessonPage({ params }: PageProps<"/admin/kursy/[slug]/[unit]/[lesson]">) {
   return (
     <Shell>
-      <PageHeader
-        back={{ href: `/admin/kursy/${slug}/${unit}`, label: "Lekcje" }}
-        title={lesson}
-        intro="Słówka lekcji. Każde nowe słówko dostaje od razu trzy zadania."
-      />
       <Suspense fallback={<Loading />}>
         <Lesson params={params} />
       </Suspense>

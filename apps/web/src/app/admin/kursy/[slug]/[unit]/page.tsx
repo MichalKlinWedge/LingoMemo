@@ -42,6 +42,16 @@ async function Unit({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit]"
 
   return (
     <>
+      <PageHeader
+        back={{ href: `/admin/kursy/${course.slug}`, label: course.title }}
+        title={
+          <>
+            <span aria-hidden>{unit.icon}</span> {unit.title}
+          </>
+        }
+        intro="Lekcje w dziale. Kolejność decyduje o tym, co dziecko widzi na mapie kursu."
+      />
+
       <UnitSettings unit={unit} />
 
       <section className="flex flex-col gap-3">
@@ -78,16 +88,9 @@ async function Unit({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit]"
   );
 }
 
-export default async function UnitPage({ params }: PageProps<"/admin/kursy/[slug]/[unit]">) {
-  const { slug, unit } = await params;
-
+export default function UnitPage({ params }: PageProps<"/admin/kursy/[slug]/[unit]">) {
   return (
     <Shell>
-      <PageHeader
-        back={{ href: `/admin/kursy/${slug}`, label: "Dział" }}
-        title={unit}
-        intro="Lekcje w dziale. Kolejność decyduje o tym, co dziecko widzi na mapie kursu."
-      />
       <Suspense fallback={<Loading />}>
         <Unit params={params} />
       </Suspense>

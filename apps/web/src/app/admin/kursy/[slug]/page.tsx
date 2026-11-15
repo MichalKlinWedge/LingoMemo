@@ -42,6 +42,16 @@ async function Course({ params }: { params: PageProps<"/admin/kursy/[slug]">["pa
 
   return (
     <>
+      <PageHeader
+        back={{ href: "/admin/kursy", label: "Kursy" }}
+        title={
+          <>
+            <span aria-hidden>{course.icon}</span> {course.title}
+          </>
+        }
+        intro="Działy kursu i zapisani uczniowie."
+      />
+
       <CourseSettings course={course} />
 
       <section className="flex flex-col gap-3">
@@ -105,12 +115,11 @@ async function Course({ params }: { params: PageProps<"/admin/kursy/[slug]">["pa
   );
 }
 
-export default async function CoursePage({ params }: PageProps<"/admin/kursy/[slug]">) {
-  const { slug } = await params;
-
+/** Nagłówek siedzi w środku `<Suspense>`: sięgnięcie po `params` na zewnątrz blokuje
+ *  prerenderowanie całej trasy i wywala build. */
+export default function CoursePage({ params }: PageProps<"/admin/kursy/[slug]">) {
   return (
     <Shell>
-      <PageHeader back={{ href: "/admin/kursy", label: "Kursy" }} title={slug} intro="Działy kursu i zapisani uczniowie." />
       <Suspense fallback={<Loading />}>
         <Course params={params} />
       </Suspense>
