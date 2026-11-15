@@ -608,6 +608,9 @@ isOneToOne: false
 "admin_reorder_lessons":
 { Args: { "p_ids": (string)[],"p_unit": string }; Returns: Json
                            },
+"admin_reorder_units":
+{ Args: { "p_course": string,"p_ids": (string)[] }; Returns: Json
+                           },
 "admin_update_word":
 { Args: { "p_concept": string,"p_source": string,"p_tags"?: (string)[],"p_target": string }; Returns: Json
                            },

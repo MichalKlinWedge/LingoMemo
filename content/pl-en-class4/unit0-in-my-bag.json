@@ -14,22 +14,22 @@
     "isPublished": true
   },
   "concepts": [
-    { "key": "thing.book", "tags": ["📕"], "terms": { "pl": [{ "text": "książka", "pos": "noun" }], "en": [{ "text": "book", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "books" }] }] } },
-    { "key": "thing.coloured-pencil", "tags": ["🖍️"], "terms": { "pl": [{ "text": "kredka", "pos": "noun" }], "en": [{ "text": "coloured pencil", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "coloured pencils" }] }] } },
-    { "key": "thing.notebook", "tags": ["📓"], "terms": { "pl": [{ "text": "zeszyt", "pos": "noun" }], "en": [{ "text": "notebook", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "notebooks" }] }] } },
-    { "key": "thing.pen", "tags": ["🖊️"], "terms": { "pl": [{ "text": "długopis", "pos": "noun" }], "en": [{ "text": "pen", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "pens" }] }] } },
-    { "key": "thing.pencil", "tags": ["✏️"], "terms": { "pl": [{ "text": "ołówek", "pos": "noun" }], "en": [{ "text": "pencil", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "pencils" }] }] } },
-    { "key": "thing.pencil-case", "tags": ["🧰"], "terms": { "pl": [{ "text": "piórnik", "pos": "noun" }], "en": [{ "text": "pencil case", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "pencil cases" }] }] } },
-    { "key": "thing.pencil-sharpener", "tags": ["🌀"], "terms": { "pl": [{ "text": "temperówka", "pos": "noun" }], "en": [{ "text": "pencil sharpener", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "pencil sharpeners" }] }] } },
-    { "key": "thing.rubber", "tags": ["🧽"], "terms": { "pl": [{ "text": "gumka do mazania", "pos": "noun" }], "en": [{ "text": "rubber", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "rubbers" }] }] } },
-    { "key": "thing.ruler", "tags": ["📏"], "terms": { "pl": [{ "text": "linijka", "pos": "noun" }], "en": [{ "text": "ruler", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "rulers" }] }] } },
-    { "key": "spell.sandwich", "tags": ["🥪"], "terms": { "pl": [{ "text": "kanapka", "pos": "noun" }], "en": [{ "text": "sandwich", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "sandwiches" }] }] } },
-    { "key": "thing.scissors", "tags": ["✂️"], "terms": { "pl": [{ "text": "nożyczki", "pos": "noun" }], "en": [{ "text": "scissors", "pos": "noun" }] } },
-    { "key": "room.bin", "tags": ["🗑️"], "terms": { "pl": [{ "text": "kosz na śmieci", "pos": "noun" }], "en": [{ "text": "bin", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "bins" }] }] } },
-    { "key": "room.board", "tags": ["⬛"], "terms": { "pl": [{ "text": "tablica", "pos": "noun" }], "en": [{ "text": "board", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "boards" }] }] } },
-    { "key": "room.chair", "tags": ["🪑"], "terms": { "pl": [{ "text": "krzesło", "pos": "noun" }], "en": [{ "text": "chair", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "chairs" }] }] } },
-    { "key": "room.clock", "tags": ["🕐"], "terms": { "pl": [{ "text": "zegar", "pos": "noun" }], "en": [{ "text": "clock", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "clocks" }] }] } },
-    { "key": "room.desk", "tags": ["🏫"], "terms": { "pl": [{ "text": "ławka", "pos": "noun" }], "en": [{ "text": "desk", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "desks" }] }] } }
+    { "key": "thing.book", "image": "2026/rzecz-book.svg", "tags": ["📕"], "terms": { "pl": [{ "text": "książka", "pos": "noun" }], "en": [{ "text": "book", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "books" }] }] } },
+    { "key": "thing.coloured-pencil", "image": "2026/rzecz-coloured-pencil.svg", "tags": ["🖍️"], "terms": { "pl": [{ "text": "kredka", "pos": "noun" }], "en": [{ "text": "coloured pencil", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "coloured pencils" }] }] } },
+    { "key": "thing.notebook", "image": "2026/rzecz-notebook.svg", "tags": ["📓"], "terms": { "pl": [{ "text": "zeszyt", "pos": "noun" }], "en": [{ "text": "notebook", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "notebooks" }] }] } },
+    { "key": "thing.pen", "image": "2026/rzecz-pen.svg", "tags": ["🖊️"], "terms": { "pl": [{ "text": "długopis", "pos": "noun" }], "en": [{ "text": "pen", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "pens" }] }] } },
+    { "key": "thing.pencil", "image": "2026/rzecz-pencil.svg", "tags": ["✏️"], "terms": { "pl": [{ "text": "ołówek", "pos": "noun" }], "en": [{ "text": "pencil", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "pencils" }] }] } },
+    { "key": "thing.pencil-case", "image": "2026/rzecz-pencil-case.svg", "tags": ["🧰"], "terms": { "pl": [{ "text": "piórnik", "pos": "noun" }], "en": [{ "text": "pencil case", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "pencil cases" }] }] } },
+    { "key": "thing.pencil-sharpener", "image": "2026/rzecz-pencil-sharpener.svg", "tags": ["🌀"], "terms": { "pl": [{ "text": "temperówka", "pos": "noun" }], "en": [{ "text": "pencil sharpener", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "pencil sharpeners" }] }] } },
+    { "key": "thing.rubber", "image": "2026/rzecz-rubber.svg", "tags": ["🧽"], "terms": { "pl": [{ "text": "gumka do mazania", "pos": "noun" }], "en": [{ "text": "rubber", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "rubbers" }] }] } },
+    { "key": "thing.ruler", "image": "2026/rzecz-ruler.svg", "tags": ["📏"], "terms": { "pl": [{ "text": "linijka", "pos": "noun" }], "en": [{ "text": "ruler", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "rulers" }] }] } },
+    { "key": "spell.sandwich", "image": "2026/rzecz-sandwich.svg", "tags": ["🥪"], "terms": { "pl": [{ "text": "kanapka", "pos": "noun" }], "en": [{ "text": "sandwich", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "sandwiches" }] }] } },
+    { "key": "thing.scissors", "image": "2026/rzecz-scissors.svg", "tags": ["✂️"], "terms": { "pl": [{ "text": "nożyczki", "pos": "noun" }], "en": [{ "text": "scissors", "pos": "noun" }] } },
+    { "key": "room.bin", "image": "2026/rzecz-bin.svg", "tags": ["🗑️"], "terms": { "pl": [{ "text": "kosz na śmieci", "pos": "noun" }], "en": [{ "text": "bin", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "bins" }] }] } },
+    { "key": "room.board", "image": "2026/rzecz-board.svg", "tags": ["⬛"], "terms": { "pl": [{ "text": "tablica", "pos": "noun" }], "en": [{ "text": "board", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "boards" }] }] } },
+    { "key": "room.chair", "image": "2026/rzecz-chair.svg", "tags": ["🪑"], "terms": { "pl": [{ "text": "krzesło", "pos": "noun" }], "en": [{ "text": "chair", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "chairs" }] }] } },
+    { "key": "room.clock", "image": "2026/rzecz-clock.svg", "tags": ["🕐"], "terms": { "pl": [{ "text": "zegar", "pos": "noun" }], "en": [{ "text": "clock", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "clocks" }] }] } },
+    { "key": "room.desk", "image": "2026/rzecz-desk.svg", "tags": ["🏫"], "terms": { "pl": [{ "text": "ławka", "pos": "noun" }], "en": [{ "text": "desk", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "desks" }] }] } }
   ],
   "exercises": [
     { "type": "translate_ab", "conceptKey": "thing.book", "payload": { "prompt": "książka", "accepted": ["book", "a book"] } },
@@ -212,6 +212,83 @@
           { "a": "gumka do mazania", "b": "rubber" },
           { "a": "kanapka", "b": "sandwich" }
         ]
+      }
+    },
+    {
+      "type": "image_choice",
+      "conceptKey": "thing.scissors",
+      "payload": {
+        "prompt": "scissors",
+        "speak": "scissors",
+        "lang": "en-GB",
+        "options": ["2026/rzecz-scissors.svg", "2026/rzecz-ruler.svg", "2026/rzecz-pen.svg"],
+        "answer": "2026/rzecz-scissors.svg"
+      }
+    },
+    {
+      "type": "image_choice",
+      "conceptKey": "room.clock",
+      "payload": {
+        "prompt": "clock",
+        "speak": "clock",
+        "lang": "en-GB",
+        "options": ["2026/rzecz-clock.svg", "2026/rzecz-board.svg", "2026/rzecz-bin.svg"],
+        "answer": "2026/rzecz-clock.svg"
+      }
+    },
+    {
+      "type": "image_choice",
+      "conceptKey": "thing.ruler",
+      "payload": {
+        "prompt": "ruler",
+        "speak": "ruler",
+        "lang": "en-GB",
+        "options": ["2026/rzecz-ruler.svg", "2026/rzecz-pencil.svg", "2026/rzecz-notebook.svg"],
+        "answer": "2026/rzecz-ruler.svg"
+      }
+    },
+    {
+      "type": "image_choice",
+      "conceptKey": "thing.rubber",
+      "payload": {
+        "prompt": "rubber",
+        "speak": "rubber",
+        "lang": "en-GB",
+        "options": ["2026/rzecz-rubber.svg", "2026/rzecz-book.svg", "2026/rzecz-chair.svg"],
+        "answer": "2026/rzecz-rubber.svg"
+      }
+    },
+    {
+      "type": "image_choice",
+      "conceptKey": "thing.pencil-case",
+      "payload": {
+        "prompt": "pencil case",
+        "speak": "pencil case",
+        "lang": "en-GB",
+        "options": ["2026/rzecz-pencil-case.svg", "2026/rzecz-bin.svg", "2026/rzecz-desk.svg"],
+        "answer": "2026/rzecz-pencil-case.svg"
+      }
+    },
+    {
+      "type": "image_choice",
+      "conceptKey": "thing.notebook",
+      "payload": {
+        "prompt": "notebook",
+        "speak": "notebook",
+        "lang": "en-GB",
+        "options": ["2026/rzecz-notebook.svg", "2026/rzecz-book.svg", "2026/rzecz-board.svg"],
+        "answer": "2026/rzecz-notebook.svg"
+      }
+    },
+    {
+      "type": "image_choice",
+      "conceptKey": "thing.pencil-sharpener",
+      "payload": {
+        "prompt": "pencil sharpener",
+        "speak": "pencil sharpener",
+        "lang": "en-GB",
+        "options": ["2026/rzecz-pencil-sharpener.svg", "2026/rzecz-clock.svg", "2026/rzecz-sandwich.svg"],
+        "answer": "2026/rzecz-pencil-sharpener.svg"
       }
     }
   ]

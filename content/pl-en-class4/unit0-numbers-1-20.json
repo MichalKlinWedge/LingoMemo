@@ -14,26 +14,26 @@
     "isPublished": true
   },
   "concepts": [
-    { "key": "num.1", "tags": ["1️⃣"], "terms": { "pl": [{ "text": "jeden", "pos": "other" }], "en": [{ "text": "one", "pos": "other", "ipa": "/wʌn/" }] } },
-    { "key": "num.2", "tags": ["2️⃣"], "terms": { "pl": [{ "text": "dwa", "pos": "other" }], "en": [{ "text": "two", "pos": "other", "ipa": "/tuː/" }] } },
-    { "key": "num.3", "tags": ["3️⃣"], "terms": { "pl": [{ "text": "trzy", "pos": "other" }], "en": [{ "text": "three", "pos": "other", "ipa": "/θriː/" }] } },
-    { "key": "num.4", "tags": ["4️⃣"], "terms": { "pl": [{ "text": "cztery", "pos": "other" }], "en": [{ "text": "four", "pos": "other", "ipa": "/fɔː/" }] } },
-    { "key": "num.5", "tags": ["5️⃣"], "terms": { "pl": [{ "text": "pięć", "pos": "other" }], "en": [{ "text": "five", "pos": "other", "ipa": "/faɪv/" }] } },
-    { "key": "num.6", "tags": ["6️⃣"], "terms": { "pl": [{ "text": "sześć", "pos": "other" }], "en": [{ "text": "six", "pos": "other", "ipa": "/sɪks/" }] } },
-    { "key": "num.7", "tags": ["7️⃣"], "terms": { "pl": [{ "text": "siedem", "pos": "other" }], "en": [{ "text": "seven", "pos": "other", "ipa": "/ˈsevən/" }] } },
-    { "key": "num.8", "tags": ["8️⃣"], "terms": { "pl": [{ "text": "osiem", "pos": "other" }], "en": [{ "text": "eight", "pos": "other", "ipa": "/eɪt/" }] } },
-    { "key": "num.9", "tags": ["9️⃣"], "terms": { "pl": [{ "text": "dziewięć", "pos": "other" }], "en": [{ "text": "nine", "pos": "other", "ipa": "/naɪn/" }] } },
-    { "key": "num.10", "tags": ["🔟"], "terms": { "pl": [{ "text": "dziesięć", "pos": "other" }], "en": [{ "text": "ten", "pos": "other", "ipa": "/ten/" }] } },
-    { "key": "num.11", "tags": ["🔢"], "terms": { "pl": [{ "text": "jedenaście", "pos": "other" }], "en": [{ "text": "eleven", "pos": "other", "ipa": "/ɪˈlevən/" }] } },
-    { "key": "num.12", "tags": ["🔢"], "terms": { "pl": [{ "text": "dwanaście", "pos": "other" }], "en": [{ "text": "twelve", "pos": "other", "ipa": "/twelv/" }] } },
-    { "key": "num.13", "tags": ["🔢"], "terms": { "pl": [{ "text": "trzynaście", "pos": "other" }], "en": [{ "text": "thirteen", "pos": "other", "ipa": "/ˌθɜːˈtiːn/" }] } },
-    { "key": "num.14", "tags": ["🔢"], "terms": { "pl": [{ "text": "czternaście", "pos": "other" }], "en": [{ "text": "fourteen", "pos": "other", "ipa": "/ˌfɔːˈtiːn/" }] } },
-    { "key": "num.15", "tags": ["🔢"], "terms": { "pl": [{ "text": "piętnaście", "pos": "other" }], "en": [{ "text": "fifteen", "pos": "other", "ipa": "/ˌfɪfˈtiːn/" }] } },
-    { "key": "num.16", "tags": ["🔢"], "terms": { "pl": [{ "text": "szesnaście", "pos": "other" }], "en": [{ "text": "sixteen", "pos": "other", "ipa": "/ˌsɪkˈstiːn/" }] } },
-    { "key": "num.17", "tags": ["🔢"], "terms": { "pl": [{ "text": "siedemnaście", "pos": "other" }], "en": [{ "text": "seventeen", "pos": "other", "ipa": "/ˌsevənˈtiːn/" }] } },
-    { "key": "num.18", "tags": ["🔢"], "terms": { "pl": [{ "text": "osiemnaście", "pos": "other" }], "en": [{ "text": "eighteen", "pos": "other", "ipa": "/ˌeɪˈtiːn/" }] } },
-    { "key": "num.19", "tags": ["🔢"], "terms": { "pl": [{ "text": "dziewiętnaście", "pos": "other" }], "en": [{ "text": "nineteen", "pos": "other", "ipa": "/ˌnaɪnˈtiːn/" }] } },
-    { "key": "num.20", "tags": ["🔢"], "terms": { "pl": [{ "text": "dwadzieścia", "pos": "other" }], "en": [{ "text": "twenty", "pos": "other", "ipa": "/ˈtwenti/" }] } }
+    { "key": "num.1", "image": "2026/liczba-1.svg", "tags": ["1️⃣"], "terms": { "pl": [{ "text": "jeden", "pos": "other" }], "en": [{ "text": "one", "pos": "other", "ipa": "/wʌn/" }] } },
+    { "key": "num.2", "image": "2026/liczba-2.svg", "tags": ["2️⃣"], "terms": { "pl": [{ "text": "dwa", "pos": "other" }], "en": [{ "text": "two", "pos": "other", "ipa": "/tuː/" }] } },
+    { "key": "num.3", "image": "2026/liczba-3.svg", "tags": ["3️⃣"], "terms": { "pl": [{ "text": "trzy", "pos": "other" }], "en": [{ "text": "three", "pos": "other", "ipa": "/θriː/" }] } },
+    { "key": "num.4", "image": "2026/liczba-4.svg", "tags": ["4️⃣"], "terms": { "pl": [{ "text": "cztery", "pos": "other" }], "en": [{ "text": "four", "pos": "other", "ipa": "/fɔː/" }] } },
+    { "key": "num.5", "image": "2026/liczba-5.svg", "tags": ["5️⃣"], "terms": { "pl": [{ "text": "pięć", "pos": "other" }], "en": [{ "text": "five", "pos": "other", "ipa": "/faɪv/" }] } },
+    { "key": "num.6", "image": "2026/liczba-6.svg", "tags": ["6️⃣"], "terms": { "pl": [{ "text": "sześć", "pos": "other" }], "en": [{ "text": "six", "pos": "other", "ipa": "/sɪks/" }] } },
+    { "key": "num.7", "image": "2026/liczba-7.svg", "tags": ["7️⃣"], "terms": { "pl": [{ "text": "siedem", "pos": "other" }], "en": [{ "text": "seven", "pos": "other", "ipa": "/ˈsevən/" }] } },
+    { "key": "num.8", "image": "2026/liczba-8.svg", "tags": ["8️⃣"], "terms": { "pl": [{ "text": "osiem", "pos": "other" }], "en": [{ "text": "eight", "pos": "other", "ipa": "/eɪt/" }] } },
+    { "key": "num.9", "image": "2026/liczba-9.svg", "tags": ["9️⃣"], "terms": { "pl": [{ "text": "dziewięć", "pos": "other" }], "en": [{ "text": "nine", "pos": "other", "ipa": "/naɪn/" }] } },
+    { "key": "num.10", "image": "2026/liczba-10.svg", "tags": ["🔟"], "terms": { "pl": [{ "text": "dziesięć", "pos": "other" }], "en": [{ "text": "ten", "pos": "other", "ipa": "/ten/" }] } },
+    { "key": "num.11", "image": "2026/liczba-11.svg", "tags": ["🔢"], "terms": { "pl": [{ "text": "jedenaście", "pos": "other" }], "en": [{ "text": "eleven", "pos": "other", "ipa": "/ɪˈlevən/" }] } },
+    { "key": "num.12", "image": "2026/liczba-12.svg", "tags": ["🔢"], "terms": { "pl": [{ "text": "dwanaście", "pos": "other" }], "en": [{ "text": "twelve", "pos": "other", "ipa": "/twelv/" }] } },
+    { "key": "num.13", "image": "2026/liczba-13.svg", "tags": ["🔢"], "terms": { "pl": [{ "text": "trzynaście", "pos": "other" }], "en": [{ "text": "thirteen", "pos": "other", "ipa": "/ˌθɜːˈtiːn/" }] } },
+    { "key": "num.14", "image": "2026/liczba-14.svg", "tags": ["🔢"], "terms": { "pl": [{ "text": "czternaście", "pos": "other" }], "en": [{ "text": "fourteen", "pos": "other", "ipa": "/ˌfɔːˈtiːn/" }] } },
+    { "key": "num.15", "image": "2026/liczba-15.svg", "tags": ["🔢"], "terms": { "pl": [{ "text": "piętnaście", "pos": "other" }], "en": [{ "text": "fifteen", "pos": "other", "ipa": "/ˌfɪfˈtiːn/" }] } },
+    { "key": "num.16", "image": "2026/liczba-16.svg", "tags": ["🔢"], "terms": { "pl": [{ "text": "szesnaście", "pos": "other" }], "en": [{ "text": "sixteen", "pos": "other", "ipa": "/ˌsɪkˈstiːn/" }] } },
+    { "key": "num.17", "image": "2026/liczba-17.svg", "tags": ["🔢"], "terms": { "pl": [{ "text": "siedemnaście", "pos": "other" }], "en": [{ "text": "seventeen", "pos": "other", "ipa": "/ˌsevənˈtiːn/" }] } },
+    { "key": "num.18", "image": "2026/liczba-18.svg", "tags": ["🔢"], "terms": { "pl": [{ "text": "osiemnaście", "pos": "other" }], "en": [{ "text": "eighteen", "pos": "other", "ipa": "/ˌeɪˈtiːn/" }] } },
+    { "key": "num.19", "image": "2026/liczba-19.svg", "tags": ["🔢"], "terms": { "pl": [{ "text": "dziewiętnaście", "pos": "other" }], "en": [{ "text": "nineteen", "pos": "other", "ipa": "/ˌnaɪnˈtiːn/" }] } },
+    { "key": "num.20", "image": "2026/liczba-20.svg", "tags": ["🔢"], "terms": { "pl": [{ "text": "dwadzieścia", "pos": "other" }], "en": [{ "text": "twenty", "pos": "other", "ipa": "/ˈtwenti/" }] } }
   ],
   "exercises": [
     { "type": "translate_ab", "conceptKey": "num.1", "payload": { "prompt": "jeden", "accepted": ["one"] } },
@@ -245,6 +245,61 @@
           { "a": "siedemnaście", "b": "seventeen" },
           { "a": "dziewiętnaście", "b": "nineteen" }
         ]
+      }
+    },
+    {
+      "type": "image_choice",
+      "conceptKey": "num.3",
+      "payload": {
+        "prompt": "three",
+        "speak": "three",
+        "lang": "en-GB",
+        "options": ["2026/liczba-3.svg", "2026/liczba-13.svg", "2026/liczba-8.svg"],
+        "answer": "2026/liczba-3.svg"
+      }
+    },
+    {
+      "type": "image_choice",
+      "conceptKey": "num.13",
+      "payload": {
+        "prompt": "thirteen",
+        "speak": "thirteen",
+        "lang": "en-GB",
+        "options": ["2026/liczba-13.svg", "2026/liczba-3.svg", "2026/liczba-14.svg"],
+        "answer": "2026/liczba-13.svg"
+      }
+    },
+    {
+      "type": "image_choice",
+      "conceptKey": "num.17",
+      "payload": {
+        "prompt": "seventeen",
+        "speak": "seventeen",
+        "lang": "en-GB",
+        "options": ["2026/liczba-17.svg", "2026/liczba-7.svg", "2026/liczba-16.svg"],
+        "answer": "2026/liczba-17.svg"
+      }
+    },
+    {
+      "type": "image_choice",
+      "conceptKey": "num.12",
+      "payload": {
+        "prompt": "twelve",
+        "speak": "twelve",
+        "lang": "en-GB",
+        "options": ["2026/liczba-12.svg", "2026/liczba-2.svg", "2026/liczba-20.svg"],
+        "answer": "2026/liczba-12.svg"
+      }
+    },
+    {
+      "type": "image_choice",
+      "conceptKey": "num.20",
+      "payload": {
+        "prompt": "twenty",
+        "speak": "twenty",
+        "lang": "en-GB",
+        "options": ["2026/liczba-20.svg", "2026/liczba-12.svg", "2026/liczba-2.svg", "2026/liczba-10.svg"],
+        "answer": "2026/liczba-20.svg"
       }
     }
   ]

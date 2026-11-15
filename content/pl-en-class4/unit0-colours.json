@@ -14,17 +14,17 @@
     "isPublished": true
   },
   "concepts": [
-    { "key": "colour.black", "tags": ["⚫"], "terms": { "pl": [{ "text": "czarny", "pos": "adjective" }], "en": [{ "text": "black", "pos": "adjective" }] } },
-    { "key": "colour.blue", "tags": ["🔵"], "terms": { "pl": [{ "text": "niebieski", "pos": "adjective" }], "en": [{ "text": "blue", "pos": "adjective" }] } },
-    { "key": "colour.brown", "tags": ["🟤"], "terms": { "pl": [{ "text": "brązowy", "pos": "adjective" }], "en": [{ "text": "brown", "pos": "adjective" }] } },
-    { "key": "colour.green", "tags": ["🟢"], "terms": { "pl": [{ "text": "zielony", "pos": "adjective" }], "en": [{ "text": "green", "pos": "adjective" }] } },
-    { "key": "colour.grey", "tags": ["🪨"], "terms": { "pl": [{ "text": "szary", "pos": "adjective" }], "en": [{ "text": "grey", "pos": "adjective" }, { "text": "gray", "pos": "adjective", "isPrimary": false }] } },
-    { "key": "colour.orange", "tags": ["🟠"], "terms": { "pl": [{ "text": "pomarańczowy", "pos": "adjective" }], "en": [{ "text": "orange", "pos": "adjective" }] } },
-    { "key": "colour.pink", "tags": ["🌸"], "terms": { "pl": [{ "text": "różowy", "pos": "adjective" }], "en": [{ "text": "pink", "pos": "adjective" }] } },
-    { "key": "colour.purple", "tags": ["🟣"], "terms": { "pl": [{ "text": "fioletowy", "pos": "adjective" }], "en": [{ "text": "purple", "pos": "adjective" }] } },
-    { "key": "colour.red", "tags": ["🔴"], "terms": { "pl": [{ "text": "czerwony", "pos": "adjective" }], "en": [{ "text": "red", "pos": "adjective" }] } },
-    { "key": "colour.white", "tags": ["⚪"], "terms": { "pl": [{ "text": "biały", "pos": "adjective" }], "en": [{ "text": "white", "pos": "adjective" }] } },
-    { "key": "colour.yellow", "tags": ["🟡"], "terms": { "pl": [{ "text": "żółty", "pos": "adjective" }], "en": [{ "text": "yellow", "pos": "adjective" }] } },
+    { "key": "colour.black", "image": "2026/kolor-black.svg", "tags": ["⚫"], "terms": { "pl": [{ "text": "czarny", "pos": "adjective" }], "en": [{ "text": "black", "pos": "adjective" }] } },
+    { "key": "colour.blue", "image": "2026/kolor-blue.svg", "tags": ["🔵"], "terms": { "pl": [{ "text": "niebieski", "pos": "adjective" }], "en": [{ "text": "blue", "pos": "adjective" }] } },
+    { "key": "colour.brown", "image": "2026/kolor-brown.svg", "tags": ["🟤"], "terms": { "pl": [{ "text": "brązowy", "pos": "adjective" }], "en": [{ "text": "brown", "pos": "adjective" }] } },
+    { "key": "colour.green", "image": "2026/kolor-green.svg", "tags": ["🟢"], "terms": { "pl": [{ "text": "zielony", "pos": "adjective" }], "en": [{ "text": "green", "pos": "adjective" }] } },
+    { "key": "colour.grey", "image": "2026/kolor-grey.svg", "tags": ["🪨"], "terms": { "pl": [{ "text": "szary", "pos": "adjective" }], "en": [{ "text": "grey", "pos": "adjective" }, { "text": "gray", "pos": "adjective", "isPrimary": false }] } },
+    { "key": "colour.orange", "image": "2026/kolor-orange.svg", "tags": ["🟠"], "terms": { "pl": [{ "text": "pomarańczowy", "pos": "adjective" }], "en": [{ "text": "orange", "pos": "adjective" }] } },
+    { "key": "colour.pink", "image": "2026/kolor-pink.svg", "tags": ["🌸"], "terms": { "pl": [{ "text": "różowy", "pos": "adjective" }], "en": [{ "text": "pink", "pos": "adjective" }] } },
+    { "key": "colour.purple", "image": "2026/kolor-purple.svg", "tags": ["🟣"], "terms": { "pl": [{ "text": "fioletowy", "pos": "adjective" }], "en": [{ "text": "purple", "pos": "adjective" }] } },
+    { "key": "colour.red", "image": "2026/kolor-red.svg", "tags": ["🔴"], "terms": { "pl": [{ "text": "czerwony", "pos": "adjective" }], "en": [{ "text": "red", "pos": "adjective" }] } },
+    { "key": "colour.white", "image": "2026/kolor-white.svg", "tags": ["⚪"], "terms": { "pl": [{ "text": "biały", "pos": "adjective" }], "en": [{ "text": "white", "pos": "adjective" }] } },
+    { "key": "colour.yellow", "image": "2026/kolor-yellow.svg", "tags": ["🟡"], "terms": { "pl": [{ "text": "żółty", "pos": "adjective" }], "en": [{ "text": "yellow", "pos": "adjective" }] } },
     { "key": "ask.favourite-colour", "tags": ["❓"], "terms": { "pl": [{ "text": "Jaki jest twój ulubiony kolor?", "pos": "phrase" }], "en": [{ "text": "What's your favourite colour?", "pos": "phrase" }] } },
     { "key": "say.favourite-colour", "tags": ["💜"], "terms": { "pl": [{ "text": "Fioletowy.", "pos": "phrase" }], "en": [{ "text": "It's purple.", "pos": "phrase" }] } }
   ],
@@ -227,6 +227,61 @@
           { "a": "Jaki jest twój ulubiony kolor?", "b": "What's your favourite colour?" },
           { "a": "Fioletowy.", "b": "It's purple." }
         ]
+      }
+    },
+    {
+      "type": "image_choice",
+      "conceptKey": "colour.blue",
+      "payload": {
+        "prompt": "blue",
+        "speak": "blue",
+        "lang": "en-GB",
+        "options": ["2026/kolor-blue.svg", "2026/kolor-green.svg", "2026/kolor-purple.svg"],
+        "answer": "2026/kolor-blue.svg"
+      }
+    },
+    {
+      "type": "image_choice",
+      "conceptKey": "colour.yellow",
+      "payload": {
+        "prompt": "yellow",
+        "speak": "yellow",
+        "lang": "en-GB",
+        "options": ["2026/kolor-yellow.svg", "2026/kolor-orange.svg", "2026/kolor-white.svg"],
+        "answer": "2026/kolor-yellow.svg"
+      }
+    },
+    {
+      "type": "image_choice",
+      "conceptKey": "colour.brown",
+      "payload": {
+        "prompt": "brown",
+        "speak": "brown",
+        "lang": "en-GB",
+        "options": ["2026/kolor-brown.svg", "2026/kolor-grey.svg", "2026/kolor-black.svg"],
+        "answer": "2026/kolor-brown.svg"
+      }
+    },
+    {
+      "type": "image_choice",
+      "conceptKey": "colour.pink",
+      "payload": {
+        "prompt": "pink",
+        "speak": "pink",
+        "lang": "en-GB",
+        "options": ["2026/kolor-pink.svg", "2026/kolor-purple.svg", "2026/kolor-red.svg"],
+        "answer": "2026/kolor-pink.svg"
+      }
+    },
+    {
+      "type": "image_choice",
+      "conceptKey": "colour.green",
+      "payload": {
+        "prompt": "green",
+        "speak": "green",
+        "lang": "en-GB",
+        "options": ["2026/kolor-green.svg", "2026/kolor-blue.svg", "2026/kolor-yellow.svg", "2026/kolor-grey.svg"],
+        "answer": "2026/kolor-green.svg"
       }
     }
   ]
