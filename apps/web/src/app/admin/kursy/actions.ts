@@ -287,6 +287,30 @@ export async function updateLessonAction(_prev: FormState, form: FormData): Prom
 }
 
 /**
+ * Usunięcie lekcji. Zadania, pozycje słówek w lekcji oraz postępy i sesje dzieci z tej lekcji
+ * idą kaskadą — wszystkie klucze obce wskazujące lekcję mają `on delete cascade`, więc wystarczy
+ * jedno zapytanie pod polityką `lessons_admin`.
+ *
+ * Co zostaje: słówka (wiszą na kursie, razem ze stanem powtórek dziecka) i punkty w `points_ledger`.
+ * Lekcja, która otwierała się po tej, traci warunek wstępny (`on delete set null`) i staje się
+ * dostępna od razu — o tym mówi ostrzeżenie w panelu.
+ */
+export async function deleteLessonAction(_prev: FormState, form: FormData): Promise<FormState> {
+  const { supabase } = await requireAdmin();
+
+  const id = text(form, "id");
+  if (!id) return { error: "Nie wiadomo, którą lekcję usunąć." };
+
+  const confirmError = badConfirm(form, text(form, "current_slug"));
+  if (confirmError) return { error: confirmError };
+
+  const { error } = await supabase.from("lessons").delete().eq("id", id);
+  if (error) return { error: dbErrorMessage(error, "Nie udało się usunąć lekcji.") };
+
+  redirect(`/admin/kursy/${text(form, "course_slug")}/${text(form, "unit_slug")}`);
+}
+
+/**
  * Słówko razem z zadaniami. Zadań nie składa przeglądarka — robi to funkcja w bazie, w jednej
  * transakcji, więc lekcja nigdy nie zostaje ze słówkiem bez zadań ani odwrotnie.
  */

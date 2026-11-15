@@ -8,6 +8,7 @@ import {
   createLessonAction,
   createUnitAction,
   deleteCourseAction,
+  deleteLessonAction,
   deleteUnitAction,
   setEnrollmentAction,
   updateCourseAction,
@@ -387,24 +388,48 @@ export function LessonSettings({
   lesson,
   unitId,
   others,
+  courseSlug,
+  unitSlug,
+  counts,
 }: {
-  lesson: { id: string; title: string; icon: string | null; kind: string; sort_order: number; xp_reward: number; pass_threshold: number; prerequisite_lesson_id: string | null; is_published: boolean };
+  lesson: { id: string; slug: string; title: string; icon: string | null; kind: string; sort_order: number; xp_reward: number; pass_threshold: number; prerequisite_lesson_id: string | null; is_published: boolean };
   unitId: string;
   others: LessonOption[];
+  courseSlug: string;
+  unitSlug: string;
+  counts: { exercises: number; children: number; opened: number };
 }) {
   const [state, action] = useActionState<FormState, FormData>(updateLessonAction, {});
 
   return (
-    <Editor summary="Ustawienia lekcji">
-      <Form action={action} state={state} className="flex flex-col gap-4">
-        <input type="hidden" name="id" value={lesson.id} />
-        <input type="hidden" name="unit_id" value={unitId} />
-        <Field label="Nazwa" name="title" defaultValue={lesson.title} />
-        <LessonFields lesson={lesson} others={others} />
-        <Status state={state} />
-        <SubmitButton pendingLabel="Zapisuję…">Zapisz lekcję</SubmitButton>
-      </Form>
-    </Editor>
+    <>
+      <Editor summary="Ustawienia lekcji">
+        <Form action={action} state={state} className="flex flex-col gap-4">
+          <input type="hidden" name="id" value={lesson.id} />
+          <input type="hidden" name="unit_id" value={unitId} />
+          <Field label="Nazwa" name="title" defaultValue={lesson.title} />
+          <LessonFields lesson={lesson} others={others} />
+          <Status state={state} />
+          <SubmitButton pendingLabel="Zapisuję…">Zapisz lekcję</SubmitButton>
+        </Form>
+      </Editor>
+
+      <Danger
+        action={deleteLessonAction}
+        heading="Usuń lekcję"
+        slug={lesson.slug}
+        hidden={{ id: lesson.id, current_slug: lesson.slug, course_slug: courseSlug, unit_slug: unitSlug }}
+        warning={
+          `Znikną zadania lekcji (${counts.exercises}) oraz postępy dzieci z tej lekcji ` +
+          `(${counts.children}). Słówka zostają przy kursie razem ze stanem powtórek dziecka. ` +
+          (counts.opened > 0
+            ? `Lekcje otwierane po tej (${counts.opened}) staną się dostępne od razu. `
+            : "") +
+          `Tego się nie cofnie; żeby tylko schować lekcję, odznacz „Widoczne dla dzieci".`
+        }
+        label="Usuń lekcję z zadaniami"
+      />
+    </>
   );
 }
 

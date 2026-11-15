@@ -37,11 +37,21 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
     .maybeSingle();
   if (!lesson) notFound();
 
-  const [{ data: items, error }, { data: siblings }, { data: exercises }, { data: languages }] = await Promise.all([
+  const [
+    { data: items, error },
+    { data: siblings },
+    { data: exercises },
+    { data: languages },
+    { count: children },
+    { count: opened },
+  ] = await Promise.all([
     supabase.from("lesson_items").select("concept_id, sort_order").eq("lesson_id", lesson.id).order("sort_order"),
     supabase.from("lessons").select("id, title").eq("unit_id", unit.id).order("sort_order"),
     supabase.from("exercises").select("id, concept_id, type").eq("lesson_id", lesson.id),
     supabase.from("languages").select("code, name_pl"),
+    // Co przepadnie przy kasowaniu: postępy dzieci z tej lekcji i warunki wstępne innych lekcji.
+    supabase.from("lesson_progress").select("user_id", { count: "exact", head: true }).eq("lesson_id", lesson.id),
+    supabase.from("lessons").select("id", { count: "exact", head: true }).eq("prerequisite_lesson_id", lesson.id),
   ]);
 
   if (error) return <p className="msg-error">{dbLoadError(error)}</p>;
@@ -78,7 +88,14 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
         intro="Słówka lekcji. Każde nowe słówko dostaje od razu trzy zadania."
       />
 
-      <LessonSettings lesson={lesson} unitId={unit.id} others={others} />
+      <LessonSettings
+        lesson={lesson}
+        unitId={unit.id}
+        others={others}
+        courseSlug={course.slug}
+        unitSlug={unit.slug}
+        counts={{ exercises: (exercises ?? []).length, children: children ?? 0, opened: opened ?? 0 }}
+      />
 
       <section className="flex flex-col gap-3">
         <h2 className="card-title">Słówka ({(items ?? []).length})</h2>

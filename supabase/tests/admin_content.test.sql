@@ -4,7 +4,7 @@
 -- sprawdzamy to, co ma własną funkcję albo własną politykę.
 
 begin;
-select plan(29);
+select plan(34);
 
 create or replace function pg_temp.make_user(p_email text) returns uuid
 language plpgsql as $$
@@ -348,6 +348,82 @@ select is(
 );
 
 reset role;
+
+-- --- kasowanie lekcji ---
+--
+-- Lekcja idzie zwykłym `delete` pod polityką `lessons_admin`: wszystkie klucze obce wskazujące
+-- lekcję mają `on delete cascade`. Sprawdzamy, że kaskada zabiera zadania i postępy dzieci,
+-- ale zostawia dział i kurs. Kurs z poprzednich asercji już nie istnieje, więc stawiamy własny.
+create temporary table t_del as
+with k as (
+  insert into public.courses (slug, source_lang, target_lang, title, is_published)
+  values ('test-kasowanie-lekcji', 'pl', 'en', 'Kurs do kasowania lekcji', false)
+  returning id
+), d as (
+  insert into public.units (course_id, slug, title, sort_order)
+  select id, 'dzial', 'Dział', 1 from k returning id, course_id
+), l as (
+  insert into public.lessons (unit_id, slug, title, sort_order)
+  select id, 'lekcja', 'Lekcja', 1 from d returning id
+)
+select (select id from l) as lesson_id, (select id from d) as unit_id, (select course_id from d) as course_id;
+grant select on t_del to authenticated;
+
+insert into public.exercises (lesson_id, type, sort_order, payload, points)
+values (
+  (select lesson_id from t_del), 'translate_ab', 1,
+  jsonb_build_object('prompt', 'jabłko', 'accepted', jsonb_build_array('apple')), 10
+);
+
+insert into public.lesson_progress (user_id, lesson_id, status)
+values ((select id from t_ids where name = 'uczen'), (select lesson_id from t_del), 'in_progress');
+
+select set_config('role', 'authenticated', true),
+       set_config('request.jwt.claims',
+         (select json_build_object('sub', u.id, 'role', 'authenticated',
+                 'app_metadata', coalesce(u.raw_app_meta_data, '{}'::jsonb))::text
+            from auth.users u where u.id = (select id from t_ids where name = 'uczen')), true);
+
+delete from public.lessons where id = (select lesson_id from t_del);
+
+reset role;
+
+select is(
+  (select count(*)::integer from public.lessons l where l.id = (select lesson_id from t_del)),
+  1,
+  'uczeń nie usunie lekcji — polityka nie daje mu do niej żadnego wiersza'
+);
+
+select set_config('role', 'authenticated', true),
+       set_config('request.jwt.claims',
+         (select json_build_object('sub', u.id, 'role', 'authenticated',
+                 'app_metadata', coalesce(u.raw_app_meta_data, '{}'::jsonb))::text
+            from auth.users u where u.id = (select id from t_ids where name = 'admin')), true);
+
+select lives_ok(
+  format('delete from public.lessons where id = %L', (select lesson_id from t_del)),
+  'administrator usuwa lekcję'
+);
+
+reset role;
+
+select is(
+  (select count(*)::integer from public.exercises e where e.lesson_id = (select lesson_id from t_del)),
+  0,
+  'zadania lekcji znikają razem z nią'
+);
+
+select is(
+  (select count(*)::integer from public.lesson_progress p where p.lesson_id = (select lesson_id from t_del)),
+  0,
+  'postępy dzieci z tej lekcji znikają razem z nią'
+);
+
+select is(
+  (select count(*)::integer from public.units u where u.id = (select unit_id from t_del)),
+  1,
+  'dział zostaje — kasowanie lekcji nie rusza niczego wyżej'
+);
 
 select * from finish();
 rollback;
