@@ -209,7 +209,7 @@ export function CourseSettings({
           <Field label="Opis" name="description" required={false} defaultValue={course.description ?? ""} />
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Ikona" name="icon" required={false} defaultValue={course.icon ?? ""} />
-            <Field label="Kolejność" name="sort_order" type="number" defaultValue={String(course.sort_order)} />
+            <Field label="Kolejność" name="sort_order" type="number" min="0" defaultValue={String(course.sort_order)} />
           </div>
           <Languages
             languages={languages}
@@ -251,7 +251,7 @@ export function NewUnit({ courseId, nextOrder }: { courseId: string; nextOrder: 
         <div className="grid gap-4 sm:grid-cols-3">
           <Field label="Ikona" name="icon" required={false} placeholder="🍎" />
           <Field label="Kolor" name="color" required={false} placeholder="#f97316" />
-          <Field label="Kolejność" name="sort_order" type="number" defaultValue={String(nextOrder)} />
+          <Field label="Kolejność" name="sort_order" type="number" min="0" defaultValue={String(nextOrder)} />
         </div>
         <Published defaultChecked />
         <Status state={state} />
@@ -291,7 +291,7 @@ export function UnitSettings({
           <div className="grid gap-4 sm:grid-cols-3">
             <Field label="Ikona" name="icon" required={false} defaultValue={unit.icon ?? ""} />
             <Field label="Kolor" name="color" required={false} defaultValue={unit.color ?? ""} />
-            <Field label="Kolejność" name="sort_order" type="number" defaultValue={String(unit.sort_order)} />
+            <Field label="Kolejność" name="sort_order" type="number" min="0" defaultValue={String(unit.sort_order)} />
           </div>
           <Published defaultChecked={unit.is_published} />
           <Status state={state} />
@@ -329,8 +329,8 @@ function LessonFields({
     <>
       <div className="grid gap-4 sm:grid-cols-3">
         <Field label="Ikona" name="icon" required={false} defaultValue={lesson?.icon ?? ""} placeholder="🍏" />
-        <Field label="Kolejność" name="sort_order" type="number" defaultValue={String(lesson?.sort_order ?? 1)} />
-        <Field label="Punkty za ukończenie" name="xp_reward" type="number" defaultValue={String(lesson?.xp_reward ?? 50)} />
+        <Field label="Kolejność" name="sort_order" type="number" min="0" defaultValue={String(lesson?.sort_order ?? 1)} />
+        <Field label="Punkty za ukończenie" name="xp_reward" type="number" min="0" step="5" defaultValue={String(lesson?.xp_reward ?? 50)} />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="flex flex-col gap-2">
@@ -356,6 +356,9 @@ function LessonFields({
         label="Próg zaliczenia (0–1)"
         name="pass_threshold"
         type="number"
+        min="0"
+        max="1"
+        step="0.05"
         defaultValue={String(lesson?.pass_threshold ?? 0.8)}
       />
       <Published defaultChecked={lesson?.is_published ?? true} />
