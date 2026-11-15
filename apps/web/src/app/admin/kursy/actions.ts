@@ -124,8 +124,11 @@ export async function updateCourseAction(_prev: FormState, form: FormData): Prom
 
   if (error) return { error: saveError(error, "Kurs o takim adresie (slug) już jest.", "Nie udało się zapisać kursu.") };
 
-  // Slug siedzi w adresie strony, więc po jego zmianie dotychczasowy adres prowadzi donikąd.
-  if (slug !== text(form, "current_slug")) redirect(`/admin/kursy/${slug}`);
+  // Slug siedzi w adresie strony kursu, więc po jego zmianie dotychczasowy adres prowadzi donikąd.
+  // Formularz z listy kursów nie podaje `current_slug`: tam slug nie jest w adresie i nie ma dokąd
+  // przerzucać — wyrzucenie z listy na stronę kursu byłoby zaskoczeniem.
+  const from = text(form, "current_slug");
+  if (from !== "" && slug !== from) redirect(`/admin/kursy/${slug}`);
 
   refresh();
   return { ok: "Zapisane." };

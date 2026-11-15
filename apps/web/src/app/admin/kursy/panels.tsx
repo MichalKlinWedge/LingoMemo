@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Fragment, useActionState, useState } from "react";
 
 import {
@@ -17,6 +18,7 @@ import {
   updateUnitAction,
   updateWordAction,
 } from "@/app/admin/kursy/actions";
+import { Flag } from "@/components/flag";
 import { Field, Form, Status, SubmitButton, TitleAndSlug, type FormState } from "@/components/forms";
 
 /** Pole wyboru „opublikowane". Treść nieopublikowana jest widoczna tylko dla administratora. */
@@ -50,6 +52,42 @@ function Editor({ summary, children }: { summary: string; children: React.ReactN
 }
 
 /**
+ * Samo kasowanie, bez obudowy. Osobno od `Danger`, bo w tabeli kursów rozwijaniem jest już
+ * przycisk w wierszu i druga rozwijanka w środku byłaby rozwijanką w rozwijance.
+ */
+function DangerForm({
+  action,
+  warning,
+  slug,
+  hidden,
+  label,
+  className = "mt-4 flex flex-col gap-4",
+}: {
+  action: (prev: FormState, form: FormData) => Promise<FormState>;
+  warning: string;
+  slug: string;
+  hidden: Record<string, string>;
+  label: string;
+  className?: string;
+}) {
+  const [state, formAction] = useActionState<FormState, FormData>(action, {});
+
+  return (
+    <Form action={formAction} state={state} className={className}>
+      {Object.entries(hidden).map(([name, value]) => (
+        <input key={name} type="hidden" name={name} value={value} />
+      ))}
+      <p className="msg-error">{warning}</p>
+      <Field label={`Przepisz „${slug}", żeby potwierdzić`} name="confirm" autoComplete="off" placeholder={slug} />
+      <Status state={state} />
+      <SubmitButton variant="danger" pendingLabel="Usuwam…">
+        {label}
+      </SubmitButton>
+    </Form>
+  );
+}
+
+/**
  * Kasowanie. Zostaje pod rozwijaniem i z osobnym potwierdzeniem: tego jednego w całym panelu
  * nie da się cofnąć, a przepisanie nazwy z adresu wymaga spojrzenia na to, co znika.
  */
@@ -68,25 +106,13 @@ function Danger({
   hidden: Record<string, string>;
   label: string;
 }) {
-  const [state, formAction] = useActionState<FormState, FormData>(action, {});
-
   return (
     <details className="card p-6">
       {/* Tak samo jak w `Editor`: po samym nagłówku nie widać, że to coś robi. */}
       <summary className="btn-danger w-full cursor-pointer list-none [&::-webkit-details-marker]:hidden">
         <span aria-hidden>🗑️</span> {heading}
       </summary>
-      <Form action={formAction} state={state} className="mt-4 flex flex-col gap-4">
-        {Object.entries(hidden).map(([name, value]) => (
-          <input key={name} type="hidden" name={name} value={value} />
-        ))}
-        <p className="msg-error">{warning}</p>
-        <Field label={`Przepisz „${slug}", żeby potwierdzić`} name="confirm" autoComplete="off" placeholder={slug} />
-        <Status state={state} />
-        <SubmitButton variant="danger" pendingLabel="Usuwam…">
-          {label}
-        </SubmitButton>
-      </Form>
+      <DangerForm action={action} warning={warning} slug={slug} hidden={hidden} label={label} />
     </details>
   );
 }
@@ -149,42 +175,252 @@ function Languages({
   );
 }
 
-export function NewCourse({ languages }: { languages: { code: string; name_pl: string }[] }) {
+type Lang = { code: string; name_pl: string };
+
+/** Ile w kursie jest zawartości. Rozstrzyga, czy wolno zmienić języki i co zniknie przy kasowaniu. */
+export type CourseCounts = { units: number; lessons: number; words: number; students: number };
+
+export type CourseRow = {
+  id: string;
+  slug: string;
+  title: string;
+  description: string | null;
+  icon: string | null;
+  source_lang: string;
+  target_lang: string;
+  sort_order: number;
+  is_published: boolean;
+  counts: CourseCounts;
+};
+
+/**
+ * Pola kursu — te same w dodawaniu i w poprawianiu. Wspólny komponent, bo dwa osobne formularze
+ * zaczynają się rozjeżdżać przy pierwszej dołożonej kolumnie: w jednym pole jest, w drugim nie,
+ * i zapis z tego drugiego po cichu nadpisuje wartość pustą.
+ */
+function CourseFields({ languages, course }: { languages: Lang[]; course?: CourseRow }) {
+  return (
+    <>
+      <TitleAndSlug
+        titlePlaceholder="Angielski od zera"
+        slugPlaceholder="pl-en-starter"
+        defaultTitle={course?.title ?? ""}
+        defaultSlug={course?.slug ?? ""}
+      />
+      <Field
+        label="Opis"
+        name="description"
+        required={false}
+        placeholder="Pierwsze słówka i zwroty."
+        defaultValue={course?.description ?? ""}
+      />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Ikona" name="icon" required={false} placeholder="🇬🇧" defaultValue={course?.icon ?? ""} />
+        <Field
+          label="Kolejność"
+          name="sort_order"
+          type="number"
+          min="0"
+          defaultValue={String(course?.sort_order ?? 0)}
+        />
+      </div>
+      <Languages
+        languages={languages}
+        source={course?.source_lang ?? "pl"}
+        target={course?.target_lang ?? "en"}
+        // Nowy kurs nie ma jeszcze słówek, więc języki są do wyboru.
+        editable={(course?.counts.words ?? 0) === 0}
+      />
+      <Published defaultChecked={course?.is_published ?? true} />
+    </>
+  );
+}
+
+function NewCourse({ languages }: { languages: Lang[] }) {
   const [state, action] = useActionState<FormState, FormData>(createCourseAction, {});
 
   return (
     <section className="card flex flex-col gap-4 p-6">
-      <h2 className="card-title">Nowy kurs</h2>
+      <h3 className="card-title">Nowy kurs</h3>
       <Form action={action} state={state} className="flex flex-col gap-4">
-        <TitleAndSlug titlePlaceholder="Angielski od zera" slugPlaceholder="pl-en-starter" />
-        <Field label="Opis" name="description" required={false} placeholder="Pierwsze słówka i zwroty." />
-        <div className="grid gap-4 sm:grid-cols-3">
-          <Field label="Ikona" name="icon" required={false} placeholder="🇬🇧" />
-          <label className="flex flex-col gap-2">
-            <span className="font-semibold">Język dziecka</span>
-            <select name="source_lang" className="field" defaultValue="pl">
-              {languages.map((lang) => (
-                <option key={lang.code} value={lang.code}>
-                  {lang.name_pl}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="flex flex-col gap-2">
-            <span className="font-semibold">Język uczony</span>
-            <select name="target_lang" className="field" defaultValue="en">
-              {languages.map((lang) => (
-                <option key={lang.code} value={lang.code}>
-                  {lang.name_pl}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-        <Published defaultChecked />
+        <CourseFields languages={languages} />
         <Status state={state} />
         <SubmitButton pendingLabel="Dodaję…">Dodaj kurs</SubmitButton>
       </Form>
+    </section>
+  );
+}
+
+/**
+ * Poprawianie kursu bez opuszczania listy. Nie podajemy `current_slug` — to on włącza w akcji
+ * przerzucenie na stronę kursu po zmianie sluga, a tutaj adres strony się nie zmienia i wyrzucenie
+ * z listy w środku poprawiania byłoby zaskoczeniem.
+ */
+function CourseEditor({ course, languages }: { course: CourseRow; languages: Lang[] }) {
+  const [state, action] = useActionState<FormState, FormData>(updateCourseAction, {});
+
+  return (
+    <Form action={action} state={state} className="flex flex-col gap-4 py-4">
+      <input type="hidden" name="id" value={course.id} />
+      <CourseFields languages={languages} course={course} />
+      <Status state={state} />
+      <SubmitButton pendingLabel="Zapisuję…">Zapisz kurs</SubmitButton>
+    </Form>
+  );
+}
+
+/** Co zniknie razem z kursem. To samo zdanie na liście i na stronie kursu. */
+function deleteWarning(counts: CourseCounts): string {
+  return (
+    `Znikną: działy (${counts.units}), lekcje (${counts.lessons}), słówka (${counts.words}) ` +
+    `oraz postępy i powtórki dzieci zapisanych na kurs (${counts.students}). Tego się nie cofnie. ` +
+    `Jeśli chodzi tylko o to, żeby dzieci tego nie widziały, odznacz „Widoczne dla dzieci".`
+  );
+}
+
+/**
+ * Kursy jako tabela.
+ *
+ * Wcześniej każdy kurs był kartą na całą szerokość, a pod listą stał na stałe rozłożony formularz
+ * „Nowy kurs" — przy czterech kursach formularz zajmował więcej miejsca niż one wszystkie razem
+ * i to on przyciągał wzrok. Teraz formularz wychodzi spod przycisku, a kursy są wierszami:
+ * widać naraz wszystkie, ich języki i ile mają zawartości.
+ *
+ * Poprawianie i kasowanie dzieje się tutaj, w wierszu — na stronę kursu wchodzi się po działy
+ * i po zapisane dzieci, a nie po to, żeby zmienić nazwę. Otwarty jest najwyżej jeden wiersz:
+ * każdy formularz ma wartości wzięte przy wejściu na stronę, więc kilka naraz kusi, żeby wpisać
+ * coś w dwóch, a zapisać jeden.
+ */
+export function CourseTable({ courses, languages }: { courses: CourseRow[]; languages: Lang[] }) {
+  const [nowy, setNowy] = useState(false);
+  const [otwarte, setOtwarte] = useState<{ id: string; co: "edycja" | "usuwanie" } | null>(null);
+
+  const nameOf = (code: string) => languages.find((lang) => lang.code === code)?.name_pl ?? code;
+  const przelacz = (id: string, co: "edycja" | "usuwanie") =>
+    setOtwarte(otwarte?.id === id && otwarte.co === co ? null : { id, co });
+
+  return (
+    <section className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="card-title">Kursy</h2>
+        <button type="button" className="btn-secondary px-5" aria-expanded={nowy} onClick={() => setNowy(!nowy)}>
+          {nowy ? (
+            "Zwiń"
+          ) : (
+            <>
+              <span aria-hidden>➕</span> Dodaj kurs
+            </>
+          )}
+        </button>
+      </div>
+
+      {nowy && <NewCourse languages={languages} />}
+
+      {courses.length === 0 ? (
+        <p className="text-zinc-600 dark:text-zinc-400">
+          Jeszcze żadnego kursu. Zacznij od przycisku „Dodaj kurs”.
+        </p>
+      ) : (
+        <div className="card overflow-x-auto px-3 py-2">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                {/* Flaga jest ozdobą wiersza, nie danymi — nie ma czego czytać w nagłówku. */}
+                <th />
+                <th>Kurs</th>
+                <th className="hidden md:table-cell">Języki</th>
+                <th className="hidden text-right sm:table-cell">Działy</th>
+                <th className="hidden text-right sm:table-cell">Lekcje</th>
+                <th className="text-right">Słówka</th>
+                <th className="hidden text-right md:table-cell">Dzieci</th>
+                <th>Widoczny</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {courses.map((course) => {
+                const edycja = otwarte?.id === course.id && otwarte.co === "edycja";
+                const usuwanie = otwarte?.id === course.id && otwarte.co === "usuwanie";
+                return (
+                  <Fragment key={course.id}>
+                    <tr>
+                      <td className="w-10">
+                        <Flag code={course.target_lang} fallback={course.icon} size={32} />
+                      </td>
+                      <td>
+                        <Link href={`/admin/kursy/${course.slug}`} className="flex flex-col">
+                          <span className="font-semibold">{course.title}</span>
+                          <span className="font-mono text-sm text-zinc-500">{course.slug}</span>
+                        </Link>
+                      </td>
+                      <td className="hidden whitespace-nowrap text-zinc-600 md:table-cell dark:text-zinc-400">
+                        {nameOf(course.source_lang)} → {nameOf(course.target_lang)}
+                      </td>
+                      <td className="hidden text-right tabular-nums sm:table-cell">{course.counts.units}</td>
+                      <td className="hidden text-right tabular-nums sm:table-cell">{course.counts.lessons}</td>
+                      <td className="text-right tabular-nums">{course.counts.words}</td>
+                      <td className="hidden text-right tabular-nums md:table-cell">{course.counts.students}</td>
+                      <td>
+                        <span className="chip">{course.is_published ? "widoczny" : "ukryty"}</span>
+                      </td>
+                      <td className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            type="button"
+                            className="btn-row"
+                            aria-expanded={edycja}
+                            onClick={() => przelacz(course.id, "edycja")}
+                          >
+                            {edycja ? (
+                              "Zwiń"
+                            ) : (
+                              <>
+                                <span aria-hidden>✏️</span> Edytuj
+                              </>
+                            )}
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-row"
+                            aria-expanded={usuwanie}
+                            onClick={() => przelacz(course.id, "usuwanie")}
+                          >
+                            {usuwanie ? (
+                              "Zwiń"
+                            ) : (
+                              <>
+                                <span aria-hidden>🗑️</span> Usuń
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    {(edycja || usuwanie) && (
+                      <tr>
+                        <td colSpan={9}>
+                          {edycja ? (
+                            <CourseEditor course={course} languages={languages} />
+                          ) : (
+                            <DangerForm
+                              action={deleteCourseAction}
+                              slug={course.slug}
+                              hidden={{ id: course.id, current_slug: course.slug }}
+                              warning={deleteWarning(course.counts)}
+                              label="Usuń kurs z całą zawartością"
+                              className="flex flex-col gap-4 py-4"
+                            />
+                          )}
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
     </section>
   );
 }
@@ -194,19 +430,9 @@ export function CourseSettings({
   languages,
   counts,
 }: {
-  course: {
-    id: string;
-    slug: string;
-    title: string;
-    description: string | null;
-    icon: string | null;
-    source_lang: string;
-    target_lang: string;
-    sort_order: number;
-    is_published: boolean;
-  };
-  languages: { code: string; name_pl: string }[];
-  counts: { units: number; lessons: number; words: number; students: number };
+  course: Omit<CourseRow, "counts">;
+  languages: Lang[];
+  counts: CourseCounts;
 }) {
   const [state, action] = useActionState<FormState, FormData>(updateCourseAction, {});
 
@@ -217,19 +443,7 @@ export function CourseSettings({
           <input type="hidden" name="id" value={course.id} />
           {/* Po czym poznać, że slug się zmienił — akcja przerzuca wtedy na nowy adres. */}
           <input type="hidden" name="current_slug" value={course.slug} />
-          <TitleAndSlug defaultTitle={course.title} defaultSlug={course.slug} />
-          <Field label="Opis" name="description" required={false} defaultValue={course.description ?? ""} />
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Ikona" name="icon" required={false} defaultValue={course.icon ?? ""} />
-            <Field label="Kolejność" name="sort_order" type="number" min="0" defaultValue={String(course.sort_order)} />
-          </div>
-          <Languages
-            languages={languages}
-            source={course.source_lang}
-            target={course.target_lang}
-            editable={counts.words === 0}
-          />
-          <Published defaultChecked={course.is_published} />
+          <CourseFields languages={languages} course={{ ...course, counts }} />
           <Status state={state} />
           <SubmitButton pendingLabel="Zapisuję…">Zapisz kurs</SubmitButton>
         </Form>
@@ -240,11 +454,7 @@ export function CourseSettings({
         heading="Usuń kurs"
         slug={course.slug}
         hidden={{ id: course.id, current_slug: course.slug }}
-        warning={
-          `Znikną: działy (${counts.units}), lekcje (${counts.lessons}), słówka (${counts.words}) ` +
-          `oraz postępy i powtórki dzieci zapisanych na kurs (${counts.students}). Tego się nie cofnie. ` +
-          `Jeśli chodzi tylko o to, żeby dzieci tego nie widziały, odznacz „Widoczne dla dzieci".`
-        }
+        warning={deleteWarning(counts)}
         label="Usuń kurs z całą zawartością"
       />
     </>
