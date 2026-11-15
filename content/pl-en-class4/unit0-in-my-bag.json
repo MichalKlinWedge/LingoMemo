@@ -198,6 +198,21 @@
       "type": "fill_blank_choice",
       "conceptKey": "thing.pencil",
       "payload": { "sentence": "{{blank}} pencils.", "options": ["They're", "It's"], "answer": "They're", "translation": "To są ołówki." }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj przedmiot.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "kredka", "b": "coloured pencil" },
+          { "a": "ołówek", "b": "pencil" },
+          { "a": "temperówka", "b": "pencil sharpener" },
+          { "a": "gumka do mazania", "b": "rubber" },
+          { "a": "kanapka", "b": "sandwich" }
+        ]
+      }
     }
   ]
 }

@@ -148,6 +148,21 @@
         "answer": "sixteen",
         "translation": "szesnaście"
       }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj liczbę.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "dziesięć", "b": "ten" },
+          { "a": "dwadzieścia", "b": "twenty" },
+          { "a": "dwadzieścia jeden", "b": "twenty-one" },
+          { "a": "pięćdziesiąt", "b": "fifty" },
+          { "a": "siedemdziesiąt", "b": "seventy" }
+        ]
+      }
     }
   ]
 }

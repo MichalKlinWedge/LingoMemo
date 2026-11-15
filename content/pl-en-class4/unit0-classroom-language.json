@@ -325,6 +325,34 @@
         "answer": "please",
         "translation": "Wstańcie, proszę!"
       }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj polecenia i dopasuj je.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "Zamknijcie książki.", "b": "Close your books." },
+          { "a": "Posłuchajcie opowiadania.", "b": "Listen to the story." },
+          { "a": "Popatrzcie na zdjęcie.", "b": "Look at the photo." },
+          { "a": "Przeczytajcie tekst.", "b": "Read the text." }
+        ]
+      }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj polecenia i dopasuj je.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "Napiszcie swoje imię.", "b": "Write your name." },
+          { "a": "Czy możesz mi pomóc?", "b": "Can you help me?" },
+          { "a": "Czy możesz powtórzyć?", "b": "Can you repeat that?" },
+          { "a": "Jak jest „kredka\" po angielsku?", "b": "What's kredka in English?" }
+        ]
+      }
     }
   ]
 }

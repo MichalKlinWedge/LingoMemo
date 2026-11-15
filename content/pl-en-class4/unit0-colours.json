@@ -201,6 +201,33 @@
         "tokens": ["What's", "your", "favourite", "colour?"],
         "solution": ["What's", "your", "favourite", "colour?"]
       }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj kolor.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "niebieski", "b": "blue" },
+          { "a": "zielony", "b": "green" },
+          { "a": "różowy", "b": "pink" }
+        ]
+      }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj kolor.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "czerwony", "b": "red" },
+          { "a": "biały", "b": "white" },
+          { "a": "Jaki jest twój ulubiony kolor?", "b": "What's your favourite colour?" },
+          { "a": "Fioletowy.", "b": "It's purple." }
+        ]
+      }
     }
   ]
 }

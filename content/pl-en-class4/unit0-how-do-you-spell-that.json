@@ -455,6 +455,34 @@
         "answer": "surname",
         "translation": "Moje nazwisko to Mazur. M-A-Z-U-R."
       }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj polskie słowo.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "cześć", "b": "hello" },
+          { "a": "Jak masz na imię?", "b": "What's your name?" },
+          { "a": "Mam na imię Jen.", "b": "My name's Jen." },
+          { "a": "Jak masz na nazwisko?", "b": "What's your surname?" }
+        ]
+      }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj polskie słowo.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "Jak to się literuje?", "b": "How do you spell that?" },
+          { "a": "Mam dwanaście lat.", "b": "I'm twelve years old." },
+          { "a": "Jestem z Hiszpanii.", "b": "I'm from Spain." },
+          { "a": "Moje hobby to muzyka.", "b": "My hobby is music." }
+        ]
+      }
     }
   ]
 }

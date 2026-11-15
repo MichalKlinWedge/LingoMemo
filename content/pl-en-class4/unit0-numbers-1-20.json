@@ -217,6 +217,35 @@
         "answer": "four",
         "translation": "szesnaście − dwanaście = cztery"
       }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj liczbę.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "dwa", "b": "two" },
+          { "a": "cztery", "b": "four" },
+          { "a": "sześć", "b": "six" },
+          { "a": "osiem", "b": "eight" }
+        ]
+      }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj liczbę.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "jedenaście", "b": "eleven" },
+          { "a": "trzynaście", "b": "thirteen" },
+          { "a": "piętnaście", "b": "fifteen" },
+          { "a": "siedemnaście", "b": "seventeen" },
+          { "a": "dziewiętnaście", "b": "nineteen" }
+        ]
+      }
     }
   ]
 }
