@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
-import { DAYS, formatDuration, LESSONS, plural, POINTS, spellDuration, WORDS } from "@lingomemo/core";
+import { DAYS, EXERCISE_LABEL, formatDuration, LESSONS, plural, POINTS, spellDuration, WORDS } from "@lingomemo/core";
 
 import { CRUMB_HOME, CRUMB_PANEL } from "@/components/breadcrumbs";
 import { PageHeader } from "@/components/page-header";
@@ -11,6 +11,32 @@ import { requireAdmin } from "@/lib/auth";
 import { dbLoadError } from "@/lib/db-error";
 
 const CRUMB_STUDENTS = { href: "/admin/uczniowie", label: "Uczniowie" };
+
+/**
+ * Co dziecko właściwie wysłało. `raw_answer` ma inny kształt dla każdego typu zadania,
+ * a dorosły ma zobaczyć jedno zdanie, nie JSON-a.
+ */
+function givenAnswer(raw: unknown): string {
+  if (typeof raw !== "object" || raw === null) return "—";
+  const answer = raw as Record<string, unknown>;
+  if (answer.skipped === true) return "pominięte";
+  if (typeof answer.text === "string") return answer.text === "" ? "—" : answer.text;
+  if (typeof answer.choice === "string") return answer.choice;
+  if (Array.isArray(answer.tokens)) {
+    return answer.tokens.filter((token): token is string => typeof token === "string").join(" ");
+  }
+  if (Array.isArray(answer.pairs)) {
+    return answer.pairs
+      .map((pair) => {
+        if (typeof pair !== "object" || pair === null) return "";
+        const para = pair as Record<string, unknown>;
+        return `${String(para.a)} — ${String(para.b)}`;
+      })
+      .filter((text) => text !== "")
+      .join(", ");
+  }
+  return "—";
+}
 
 /**
  * Statystyki jednego dziecka oczami dorosłego. Te same widoki, co na ekranie dziecka —
@@ -38,6 +64,49 @@ async function Student({ params }: { params: PageProps<"/admin/uczniowie/[id]">[
   ]);
 
   if (error) return <p className="msg-error">{dbLoadError(error)}</p>;
+
+  // Historia: ostatnie podejścia do lekcji i ostatnie pomyłki. Polityki `*_read` puszczają
+  // administratorowi cudze wiersze, więc wystarczą zwykłe zapytania.
+  const [{ data: tries }, { data: misses }] = await Promise.all([
+    supabase
+      .from("lesson_sessions")
+      .select("id, lesson_id, started_at, finished_at, score, correct_count, total_exercises, xp_awarded")
+      .eq("user_id", id)
+      .order("started_at", { ascending: false })
+      .limit(10),
+    supabase
+      .from("attempts")
+      .select("id, created_at, exercise_id, concept_id, exercise_type, raw_answer")
+      .eq("user_id", id)
+      .eq("is_correct", false)
+      .order("created_at", { ascending: false })
+      .limit(12),
+  ]);
+
+  const lessonIds = [...new Set((tries ?? []).map((row) => row.lesson_id))];
+  const conceptIds = [...new Set((misses ?? []).map((row) => row.concept_id).filter((x) => x !== null))];
+  const exerciseIds = [...new Set((misses ?? []).map((row) => row.exercise_id).filter((x) => x !== null))];
+
+  const [{ data: lessonRows }, { data: termRows }, { data: exerciseRows }] = await Promise.all([
+    supabase.from("lessons").select("id, title").in("id", lessonIds),
+    supabase.from("terms").select("concept_id, text, is_primary").in("concept_id", conceptIds),
+    supabase.from("exercises").select("id, payload").in("id", exerciseIds),
+  ]);
+
+  const lessonTitle = (lesson: string) =>
+    (lessonRows ?? []).find((row) => row.id === lesson)?.title ?? "lekcja usunięta";
+  const wordOf = (concept: string | null) =>
+    concept === null ? null : ((termRows ?? []).find((row) => row.concept_id === concept && row.is_primary)?.text ?? null);
+  const answerOf = (exercise: string | null) => {
+    const payload = (exerciseRows ?? []).find((row) => row.id === exercise)?.payload as Record<string, unknown> | undefined;
+    if (!payload) return null;
+    if (typeof payload.answer === "string") return payload.answer;
+    if (Array.isArray(payload.accepted) && typeof payload.accepted[0] === "string") return payload.accepted[0];
+    if (Array.isArray(payload.solution)) {
+      return payload.solution.filter((token): token is string => typeof token === "string").join(" ");
+    }
+    return null;
+  };
 
   const secondsTotal = stats?.seconds_total ?? 0;
   const sessions = stats?.sessions_done ?? 0;
@@ -120,6 +189,68 @@ async function Student({ params }: { params: PageProps<"/admin/uczniowie/[id]">[
                     powtórka {word.due_on ? new Date(word.due_on).toLocaleDateString("pl-PL") : "—"}
                   </span>
                 </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="card-title">Ostatnie podejścia</h2>
+        {(tries ?? []).length === 0 ? (
+          <p className="text-zinc-600 dark:text-zinc-400">Jeszcze żadnej rozpoczętej lekcji.</p>
+        ) : (
+          <ul className="flex flex-col gap-3">
+            {(tries ?? []).map((item) => (
+              <li key={item.id} className="card flex flex-wrap items-center justify-between gap-3 p-4">
+                <span className="flex min-w-0 flex-col">
+                  <span className="font-semibold">{lessonTitle(item.lesson_id)}</span>
+                  <span className="text-base text-zinc-600 dark:text-zinc-400">
+                    {new Date(item.started_at).toLocaleString("pl-PL", {
+                      day: "numeric",
+                      month: "long",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                    {item.finished_at === null && " · przerwane"}
+                  </span>
+                </span>
+                <span className="flex flex-wrap items-center gap-2">
+                  <span className="chip">
+                    {item.correct_count}/{item.total_exercises}
+                  </span>
+                  {item.score !== null && <span className="chip">{Math.round(item.score * 100)}%</span>}
+                  {item.xp_awarded > 0 && <span className="chip">+{item.xp_awarded} pkt</span>}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="card-title">Ostatnie pomyłki</h2>
+        {(misses ?? []).length === 0 ? (
+          <p className="text-zinc-600 dark:text-zinc-400">Żadnej błędnej odpowiedzi.</p>
+        ) : (
+          <ul className="flex flex-col gap-3">
+            {(misses ?? []).map((miss) => (
+              <li key={miss.id} className="card flex flex-wrap items-center justify-between gap-3 p-4">
+                <span className="flex min-w-0 flex-col">
+                  <span className="font-semibold">
+                    {wordOf(miss.concept_id) ?? EXERCISE_LABEL[miss.exercise_type] ?? miss.exercise_type}
+                  </span>
+                  <span className="text-base text-zinc-600 dark:text-zinc-400">
+                    odpowiedź: <strong>{givenAnswer(miss.raw_answer)}</strong>
+                    {answerOf(miss.exercise_id) !== null && (
+                      <>
+                        {" · poprawnie: "}
+                        <strong>{answerOf(miss.exercise_id)}</strong>
+                      </>
+                    )}
+                  </span>
+                </span>
+                <span className="text-sm text-zinc-500">{new Date(miss.created_at).toLocaleDateString("pl-PL")}</span>
               </li>
             ))}
           </ul>
