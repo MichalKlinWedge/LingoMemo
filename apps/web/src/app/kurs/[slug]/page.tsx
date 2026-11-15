@@ -87,10 +87,7 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
                   {/* Długa lekcja idzie etapami po najwyżej 15 zadań — dziecko ma z góry
                       wiedzieć, że to kilka krótkich podejść, a nie jedno bardzo długie. */}
                   {(lesson.stage_count ?? 1) > 1 && state !== "done" && (
-                    <span className="text-sm text-zinc-500">
-                      etap {Math.min((lesson.stages_done ?? 0) + 1, lesson.stage_count ?? 1)} z{" "}
-                      {lesson.stage_count}
-                    </span>
+                    <Stages done={lesson.stages_done ?? 0} total={lesson.stage_count ?? 1} />
                   )}
                 </li>
               );
@@ -99,6 +96,26 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
         </section>
       ))}
     </>
+  );
+}
+
+/**
+ * Postęp w etapach lekcji: jeden kwadracik na etap, zrobione wypełnione.
+ *
+ * Dla czytnika ekranu to jeden obrazek z podpisem, a nie seria pustych elementów —
+ * dziesięć „kwadrat, kwadrat, kwadrat" nie niesie żadnej informacji.
+ */
+function Stages({ done, total }: { done: number; total: number }) {
+  // Zabezpieczenie przed danymi z przyszłości: gdyby lekcja skróciła się po tym, jak dziecko
+  // zrobiło etapy, `done` byłoby większe niż `total` i pętla rysowałaby za mało kwadracików.
+  const zrobione = Math.min(Math.max(done, 0), total);
+
+  return (
+    <span className="flex gap-1" role="img" aria-label={`Zrobione etapy: ${zrobione} z ${total}`}>
+      {Array.from({ length: total }, (_, index) => (
+        <span key={index} className="stage" data-done={index < zrobione} aria-hidden />
+      ))}
+    </span>
   );
 }
 

@@ -425,6 +425,20 @@ h2 {
     color: #0f5c37;
   }
 
+  /* Etapy długiej lekcji jako kwadraciki pod kafelkiem: zrobione wypełnione, pozostałe
+     na obrys. Napis „etap 1 z 2" wymagał przeczytania i porównania dwóch liczb — po
+     kwadracikach widać jednym spojrzeniem, ile podejść jeszcze zostało. */
+  .stage {
+    width: 0.875rem;
+    height: 0.875rem;
+    border-radius: 0.25rem;
+    border: 2px solid var(--color-brand);
+  }
+
+  .stage[data-done="true"] {
+    background: var(--color-brand);
+  }
+
   /* --- tabela w panelu administratora ---
      Gęsta lista do czytania i poprawiania. Reszta aplikacji jest wymierzona pod palec dziecka
      na tablecie (przycisk 56 px, tekst 20 px); tutaj przy osiemnastu słówkach liczy się
