@@ -11,7 +11,7 @@ nie zmiana w kodzie.
 |---|---|
 | Repozytorium | https://github.com/MichalKlinWedge/LingoMemo |
 | Projekt Supabase | `xyrfcawecvpwriqepodo` |
-| Hosting | Vercel (region `fra1`, ten sam co baza) |
+| Hosting | Vercel, region `dub1` — ten sam co baza (`eu-west-1`, Irlandia) |
 
 ## Katalogi
 
@@ -79,7 +79,7 @@ Bez włączonego hooka konto założy sobie każdy — to nie jest krok opcjonal
 
 W Vercel (projekt [lingo-memo](https://vercel.com/michalklinwedge/lingo-memo)):
 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_SITE_URL`.
-Build jest opisany w `vercel.json` (region `fra1`, budowanie z workspace `apps/web`).
+Build jest opisany w `vercel.json` (region `dub1` — tam, gdzie baza, budowanie z workspace `apps/web`).
 `SUPABASE_SERVICE_ROLE_KEY` **nie trafia do Vercela** — jest potrzebny tylko lokalnie.
 
 ## Dokumenty

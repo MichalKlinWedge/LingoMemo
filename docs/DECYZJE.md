@@ -35,8 +35,10 @@ Zebrane z wcześniejszego projektu na tym samym stosie — nie trzeba ich odkryw
   stąd asercja kontrolna na końcu pliku z politykami.
 - **`getVoices()` zwraca pustą tablicę przy pierwszym wywołaniu** (trzeba `onvoiceschanged`),
   iOS wymaga gestu użytkownika, część Androidów nie ma głosu `en-GB`.
-- **Region**: Vercel `fra1` i Supabase we Frankfurcie. Domyślny `iad1` dokłada ~200 ms do każdej
-  sprawdzanej odpowiedzi — przy aplikacji dla dziecka to różnica między „natychmiast” a „zacina się”.
+- **Region**: projekt Supabase stoi w `eu-west-1` (Irlandia), więc Vercel ma `dub1` (Dublin),
+  a nie `fra1` — ustawione w `vercel.json`. Domyślny `iad1` dokłada ~200 ms do każdej sprawdzanej
+  odpowiedzi; przy aplikacji dla dziecka to różnica między „natychmiast” a „zacina się”.
+  Region bazy sprawdza się przez `npm run supabase -- projects list`, a nie zgaduje.
 - **Supabase Free pauzuje projekt po 7 dniach bezczynności** — przy jednym dziecku to realne.
 - **Migracja kasująca treść kasuje też historię.** `attempts.exercise_id` ma `on delete set null`
   i zamrożony `exercise_type`; zamiast `DELETE` używamy `is_active = false`.
