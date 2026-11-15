@@ -458,10 +458,10 @@ h2 {
      i „źle", więc tutaj nie występują. */
   .level-box {
     display: inline-flex;
-    width: 1.75rem;
-    height: 1.75rem;
+    width: 1.5rem;
+    height: 1.5rem;
     flex: none;
-    border-radius: 0.5rem;
+    border-radius: 0.375rem;
     border: 2px solid var(--color-sky);
     border-bottom-width: 3px;
   }
@@ -478,9 +478,15 @@ h2 {
     background: var(--color-sun);
   }
 
+  /* Zamknięty blednie, ale ZOSTAJE w kolorze swojego poziomu: szary kwadracik nie mówiłby,
+     co się otworzy po przejściu łatwego. */
   .level-box[data-locked="true"] {
-    border-color: var(--line);
-    background: var(--color-zinc-100);
+    opacity: 0.35;
+  }
+
+  /* Odstęp między etapami a kwadracikami poziomów — inaczej czyta się to jak jeden ciąg. */
+  .marks > :not(.level-box) + .level-box {
+    margin-left: 0.375rem;
   }
 
   /* --- tabela w panelu administratora ---

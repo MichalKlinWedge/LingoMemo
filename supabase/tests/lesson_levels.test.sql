@@ -5,7 +5,7 @@
 -- do czasu przejścia łatwego, oraz że jego wynik nie miesza się z postępem lekcji.
 
 begin;
-select plan(10);
+select plan(11);
 
 create or replace function pg_temp.make_user(p_email text) returns uuid
 language plpgsql as $$
@@ -112,6 +112,13 @@ select is(
     where lesson_id = (select lesson_id from t_ctx) and level = 2),
   false,
   'mapa pokazuje średni kwadracik jako zamknięty');
+
+-- `exercises` nie ma polityki SELECT dla ucznia, a widok jest `security_invoker`. Liczba zadań
+-- musi i tak dojść — inaczej mapa uznaje, że na tym poziomie nic nie ma, i chowa kwadracik.
+select ok(
+  (select exercise_count from public.v_my_lesson_levels
+    where lesson_id = (select lesson_id from t_ctx) and level = 3) > 0,
+  'dziecko widzi, że na trudnym poziomie są zadania, choć nie widzi samych zadań');
 
 -- Łatwy poziom od początku do końca.
 do $latwy$
