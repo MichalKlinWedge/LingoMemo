@@ -199,9 +199,13 @@ select is(
 select set_config('request.jwt.claims', (select claims from t_claims where name = 'uczen'), true),
        set_config('role', 'authenticated', true);
 
+-- Nowa sesja, nie ta otwarta na początku pliku: słówko powstało dopiero teraz, więc w zadaniach
+-- wydanych tamtej sesji go nie było. Od migracji 094200 sesja przyjmuje tylko to, co sama
+-- wydała — dokładnie tak jak w aplikacji, gdzie dziecko dostaje słówko dołożone w trakcie
+-- dopiero przy następnym wejściu w lekcję.
 select is(
   (select public.submit_attempt(
-     (select id from t_session),
+     public.start_lesson_session((select id from t_lesson), 'ogonki-po-dodaniu-slowka'),
      (select id from t_potato),
      jsonb_build_object('text', 'kartofel')) ->> 'correct'),
   'true',

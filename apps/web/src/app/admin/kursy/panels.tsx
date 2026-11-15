@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { Fragment, useActionState, useState } from "react";
 
 import {
   addWordAction,
@@ -500,39 +500,46 @@ export function AddWord({
  * Poprawienie słówka. Zmiana przepisuje też treść zadań wygenerowanych z pary słów — inaczej
  * literówka poprawiona w słówku zostawałaby w zadaniu, które dziecko widzi na ekranie.
  */
-export function EditWord({
-  conceptId,
-  lessonId,
-  source,
-  target,
-  tag,
-  sourceLabel,
-  targetLabel,
-  conceptKey,
-}: {
+/** Jeden wiersz tabeli słówek — dokładnie to, co strona musi przekazać do przeglądarki. */
+export type WordRow = {
   conceptId: string;
-  lessonId: string;
+  emoji: string;
+  /** Słowo główne: to widać w wierszu. */
   source: string;
   target: string;
-  tag: string;
+  /** Wszystkie poprawne odpowiedzi po przecinku: to wchodzi do formularza edycji. */
+  sourceAll: string;
+  targetAll: string;
+  conceptKey: string;
+  tasks: number;
+};
+
+/** Formularze jednego słówka, rozwijane pod jego wierszem. */
+function WordForm({
+  row,
+  lessonId,
+  sourceLabel,
+  targetLabel,
+}: {
+  row: WordRow;
+  lessonId: string;
   sourceLabel: string;
   targetLabel: string;
-  conceptKey: string;
 }) {
   const [state, action] = useActionState<FormState, FormData>(updateWordAction, {});
   const [removeState, removeAction] = useActionState<FormState, FormData>(removeWordAction, {});
 
   return (
-    <Editor summary="Edytuj słówko">
+    <div className="flex flex-col gap-4 py-3">
       <Form action={action} state={state} className="flex flex-col gap-3">
-        <input type="hidden" name="concept_id" value={conceptId} />
+        <input type="hidden" name="concept_id" value={row.conceptId} />
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label={`Po ${sourceLabel}`} name="source" defaultValue={source} />
-          <Field label={`Po ${targetLabel}`} name="target" defaultValue={target} />
+          <Field label={`Po ${sourceLabel}`} name="source" defaultValue={row.sourceAll} />
+          <Field label={`Po ${targetLabel}`} name="target" defaultValue={row.targetAll} />
         </div>
-        <Field label="Emoji" name="tags" required={false} defaultValue={tag} />
+        <Field label="Emoji" name="tags" required={false} defaultValue={row.emoji} />
         <p className="text-base text-zinc-600 dark:text-zinc-400">
-          Klucz <code>{conceptKey}</code> zostaje — po nim import rozpoznaje to słówko. Kilka
+          Klucz <code>{row.conceptKey}</code> zostaje — po nim import rozpoznaje to słówko. Kilka
           dobrych odpowiedzi wpisz po przecinku; pierwsza jest główna.
         </p>
         <Status state={state} />
@@ -542,9 +549,9 @@ export function EditWord({
       {/* Osobny formularz, nie przycisk w tamtym: to inna akcja, z własnym komunikatem.
           Bez przepisywania nazwy — zdjęcie słówka z lekcji odwraca się jednym dodaniem,
           a stan powtórek dziecka i tak zostaje. */}
-      <Form action={removeAction} state={removeState} className="mt-4 flex flex-col gap-2">
+      <Form action={removeAction} state={removeState} className="flex flex-col gap-2">
         <input type="hidden" name="lesson_id" value={lessonId} />
-        <input type="hidden" name="concept_id" value={conceptId} />
+        <input type="hidden" name="concept_id" value={row.conceptId} />
         <p className="text-base text-zinc-600 dark:text-zinc-400">
           Zdjęcie z lekcji kasuje też jej zadania z tym słówkiem. Słówko nietknięte przez żadne
           dziecko i nieużywane gdzie indziej znika z kursu.
@@ -554,7 +561,99 @@ export function EditWord({
           Usuń słówko z lekcji
         </SubmitButton>
       </Form>
-    </Editor>
+    </div>
+  );
+}
+
+/**
+ * Słówka lekcji jako tabela.
+ *
+ * Wcześniej każde słówko było kartą z przyciskiem „Edytuj słówko" na całą szerokość — przy
+ * osiemnastu słówkach strona miała kilka ekranów i nie dało się przebiec wzrokiem, czego
+ * w lekcji brakuje. To jest widok dla dorosłego: jeden wiersz na słówko, a formularz rozwija
+ * się dopiero pod tym, które się poprawia.
+ *
+ * Otwarty jest najwyżej jeden wiersz. Nie z oszczędności miejsca, tylko dlatego, że każdy
+ * formularz ma własne pola z wartościami wziętymi przy wejściu na stronę — kilka otwartych
+ * naraz kusi, żeby wpisać coś w dwóch i zapisać jeden.
+ */
+export function WordTable({
+  rows,
+  lessonId,
+  sourceLabel,
+  targetLabel,
+}: {
+  rows: WordRow[];
+  lessonId: string;
+  sourceLabel: string;
+  targetLabel: string;
+}) {
+  const [otwarte, setOtwarte] = useState<string | null>(null);
+
+  if (rows.length === 0) {
+    return (
+      <p className="text-zinc-600 dark:text-zinc-400">
+        Lekcja jest pusta — dla dziecka nie ma w niej jeszcze nic do zrobienia.
+      </p>
+    );
+  }
+
+  return (
+    <div className="card overflow-x-auto px-3 py-2">
+      <table className="admin-table">
+        <thead>
+          <tr>
+            {/* Kolumna z emoji nie ma nagłówka do przeczytania — obrazek jest ozdobą wiersza. */}
+            <th />
+            <th>{sourceLabel}</th>
+            <th>{targetLabel}</th>
+            <th className="hidden md:table-cell">Klucz</th>
+            <th className="text-right">Zadań</th>
+            <th />
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => {
+            const open = otwarte === row.conceptId;
+            return (
+              <Fragment key={row.conceptId}>
+                <tr>
+                  <td className="w-8 text-2xl" aria-hidden>
+                    {row.emoji}
+                  </td>
+                  <td className="font-semibold">{row.source}</td>
+                  <td className="font-semibold">{row.target}</td>
+                  <td className="hidden font-mono text-sm text-zinc-500 md:table-cell">{row.conceptKey}</td>
+                  <td className="text-right tabular-nums">{row.tasks}</td>
+                  <td className="text-right">
+                    <button
+                      type="button"
+                      className="btn-row"
+                      aria-expanded={open}
+                      onClick={() => setOtwarte(open ? null : row.conceptId)}
+                    >
+                      <span aria-hidden>✏️</span> {open ? "Zwiń" : "Edytuj"}
+                    </button>
+                  </td>
+                </tr>
+                {open && (
+                  <tr>
+                    <td colSpan={6}>
+                      <WordForm
+                        row={row}
+                        lessonId={lessonId}
+                        sourceLabel={sourceLabel}
+                        targetLabel={targetLabel}
+                      />
+                    </td>
+                  </tr>
+                )}
+              </Fragment>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 }
 

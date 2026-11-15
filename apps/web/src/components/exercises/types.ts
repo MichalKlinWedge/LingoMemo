@@ -24,6 +24,12 @@ export type ExerciseProps = {
    * mniej gwiazdek i słówko cofnięte w harmonogramie powtórek za cudzy brak syntezatora.
    */
   onSkip: () => void;
+  /**
+   * Czy dziecko ma już coś wpisane. Przebieg lekcji chowa wtedy „Nie wiem, pomiń": ten przycisk
+   * nie czyta pola, więc jedno dotknięcie obok „Sprawdź" kasowało gotową, poprawną odpowiedź
+   * i cofało słówko w powtórkach. Wołają to tylko zadania z polem tekstowym.
+   */
+  onDraft?: (hasDraft: boolean) => void;
 };
 
 export const str = (value: Json | undefined): string => (typeof value === "string" ? value : "");

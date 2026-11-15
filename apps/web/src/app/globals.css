@@ -425,7 +425,65 @@ h2 {
     color: #0f5c37;
   }
 
+  /* --- tabela w panelu administratora ---
+     Gęsta lista do czytania i poprawiania. Reszta aplikacji jest wymierzona pod palec dziecka
+     na tablecie (przycisk 56 px, tekst 20 px); tutaj przy osiemnastu słówkach liczy się
+     odwrotna rzecz — ile pozycji widać naraz bez przewijania. */
+  .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+
+  .admin-table th {
+    padding: 0.25rem 0.625rem;
+    text-align: left;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--color-zinc-500);
+  }
+
+  .admin-table td {
+    padding: 0.375rem 0.625rem;
+    border-top: 2px solid var(--line);
+    vertical-align: middle;
+  }
+
+  /* Podświetlenie wiersza mieszane z fioletu — ta sama reguła działa w obu motywach. */
+  .admin-table tbody tr:hover > td {
+    background: color-mix(in srgb, var(--color-brand) 7%, transparent);
+  }
+
+  /* Przycisk wewnątrz wiersza: wygląd `.btn-secondary` bez wysokości dla palca. */
+  .btn-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.75rem;
+    border: 2px solid var(--line);
+    background: var(--surface);
+    color: var(--foreground);
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .btn-row:hover {
+    background: var(--color-zinc-100);
+  }
+
   @media (prefers-color-scheme: dark) {
+    .btn-row:hover {
+      background: var(--color-zinc-800);
+    }
+
     .msg-error {
       background: color-mix(in srgb, var(--color-coral) 28%, var(--surface));
       color: #ffd9d7;

@@ -48,6 +48,10 @@ export function LessonRunner({
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Zadanie, w którego polu dziecko już coś napisało. Trzymamy IDENTYFIKATOR, nie flagę:
+  // przy przejściu dalej wystarczy, że przestaje pasować do bieżącego zadania, więc nie trzeba
+  // go zerować w efekcie (czego linter i tak nie puszcza).
+  const [draftOf, setDraftOf] = useState<string | null>(null);
 
   const { play, enabled: soundOn, toggle: toggleSound } = useFeedbackSound();
 
@@ -168,6 +172,8 @@ export function LessonRunner({
   }
 
   const locked = phase !== "answering";
+  // Pole bieżącego zadania nie jest puste — wtedy chowamy pomijanie.
+  const hasDraft = draftOf !== null && draftOf === exercise?.id;
 
   // O tym, czy tłumaczenie jest wyborem z listy, decyduje payload, nie typ zadania: ten sam
   // `translate_ab` raz ma `options` (dodane przez panel, gdy w lekcji jest z czego wybierać),
@@ -236,6 +242,7 @@ export function LessonRunner({
           locked={locked}
           onAnswer={handleAnswer}
           onSkip={next}
+          onDraft={(has) => setDraftOf(has ? exercise.id : null)}
         />
       ) : exercise.type === "listen_match" ? (
         <ListenMatchExercise
@@ -294,6 +301,7 @@ export function LessonRunner({
           locked={locked}
           onAnswer={handleAnswer}
           onSkip={next}
+          onDraft={(has) => setDraftOf(has ? exercise.id : null)}
           // W `translate_ab` słowo nad polem jest w języku dziecka, w pozostałych w uczonym —
           // głośnik czytający „czarny" po angielsku brzmi jak awaria.
           promptLang={exercise.type === "translate_ab" ? sourceLang : targetLang}
@@ -302,11 +310,16 @@ export function LessonRunner({
 
       {/* Wyjście dla dziecka, które utknęło. Idzie do bazy jako odpowiedź `{"skipped": true}`,
           więc liczy się jak błąd: zero punktów i słówko wraca w powtórkach. Alternatywą było
-          zgadywanie w kółko albo wyjście z lekcji w połowie. */}
-      {phase === "answering" && (
+          zgadywanie w kółko albo wyjście z lekcji w połowie.
+
+          Znika, gdy w polu coś już jest: przycisk nie czyta pola, więc jedno dotknięcie tuż pod
+          „Sprawdź" kasowało gotową — czasem poprawną — odpowiedź i cofało słówko w powtórkach.
+          Jest też cichy (`back-link`, nie drugi duży klawisz), bo to wyjście awaryjne, a nie
+          równorzędny wybór. */}
+      {phase === "answering" && !hasDraft && (
         <button
           type="button"
-          className="btn-secondary self-center"
+          className="back-link self-center"
           onClick={() => void handleAnswer({ skipped: true })}
         >
           Nie wiem, pomiń

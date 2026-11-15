@@ -9,7 +9,7 @@ import { requireAdmin } from "@/lib/auth";
 import { dbLoadError } from "@/lib/db-error";
 
 import { AddImageTask } from "../../../image-task";
-import { AddWord, EditWord, LessonSettings } from "../../../panels";
+import { AddWord, LessonSettings, WordTable, type WordRow } from "../../../panels";
 
 async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit]/[lesson]">["params"] }) {
   const { slug, unit: unitSlug, lesson: lessonSlug } = await params;
@@ -106,6 +106,17 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
   // Bez `tts_lang` nie ma czym przeczytać słowa, więc głośnik w ogóle się nie pokazuje.
   const ttsLang = (languages ?? []).find((lang) => lang.code === course.target_lang)?.tts_lang ?? null;
 
+  const rows: WordRow[] = (items ?? []).map((item) => ({
+    conceptId: item.concept_id,
+    emoji: keyOf(item.concept_id)?.tags?.[0] ?? "",
+    source: termOf(item.concept_id, course.source_lang),
+    target: termOf(item.concept_id, course.target_lang),
+    sourceAll: termsOf(item.concept_id, course.source_lang),
+    targetAll: termsOf(item.concept_id, course.target_lang),
+    conceptKey: keyOf(item.concept_id)?.key ?? "",
+    tasks: taskCount(item.concept_id),
+  }));
+
   return (
     <>
       <PageHeader
@@ -134,45 +145,13 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
       />
 
       <section className="flex flex-col gap-3">
-        <h2 className="card-title">Słówka ({(items ?? []).length})</h2>
-        {(items ?? []).length === 0 && (
-          <p className="text-zinc-600 dark:text-zinc-400">
-            Lekcja jest pusta — dla dziecka nie ma w niej jeszcze nic do zrobienia.
-          </p>
-        )}
-        <ul className="flex flex-col gap-3">
-          {(items ?? []).map((item) => {
-            const concept = keyOf(item.concept_id);
-            return (
-              <li key={item.concept_id} className="card flex flex-col gap-3 p-4">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <span className="flex min-w-0 items-center gap-3">
-                    <span className="text-3xl" aria-hidden>
-                      {concept?.tags?.[0]}
-                    </span>
-                    <span className="flex min-w-0 flex-col">
-                      <span className="font-semibold">
-                        {termOf(item.concept_id, course.source_lang)} → {termOf(item.concept_id, course.target_lang)}
-                      </span>
-                      <span className="text-base text-zinc-600 dark:text-zinc-400">{concept?.key}</span>
-                    </span>
-                  </span>
-                  <span className="chip">zadań: {taskCount(item.concept_id)}</span>
-                </div>
-                <EditWord
-                  conceptId={item.concept_id}
-                  lessonId={lesson.id}
-                  source={termsOf(item.concept_id, course.source_lang)}
-                  target={termsOf(item.concept_id, course.target_lang)}
-                  tag={concept?.tags?.[0] ?? ""}
-                  conceptKey={concept?.key ?? ""}
-                  sourceLabel={nameOf(course.source_lang).toLowerCase()}
-                  targetLabel={nameOf(course.target_lang).toLowerCase()}
-                />
-              </li>
-            );
-          })}
-        </ul>
+        <h2 className="card-title">Słówka ({rows.length})</h2>
+        <WordTable
+          rows={rows}
+          lessonId={lesson.id}
+          sourceLabel={nameOf(course.source_lang).toLowerCase()}
+          targetLabel={nameOf(course.target_lang).toLowerCase()}
+        />
         <p className="text-base text-zinc-600 dark:text-zinc-400">
           Zadanie z obrazkiem dodasz niżej. Reszta złożonych ręcznie (rozsypanki, dopasowywanie par
           i ze słuchu, luki w zdaniu) wchodzi{" "}

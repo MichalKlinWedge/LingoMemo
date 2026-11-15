@@ -14,6 +14,7 @@ export function TypingExercise({
   exercise,
   locked,
   onAnswer,
+  onDraft,
   promptLang,
 }: ExerciseProps & { promptLang: string }) {
   const [value, setValue] = useState("");
@@ -24,6 +25,14 @@ export function TypingExercise({
   useEffect(() => {
     inputRef.current?.focus();
   }, [exercise.id]);
+
+  // Gdy w polu coś jest, przebieg lekcji chowa „Nie wiem, pomiń" — ten przycisk wysyła samo
+  // pominięcie i nie zagląda do pola, więc kasował wpisaną odpowiedź. Zgłaszamy to przy zmianie
+  // pola, a nie efektem: `setState` w efekcie rodzica to kaskada renderów i linter to odbija.
+  const change = (text: string) => {
+    setValue(text);
+    onDraft?.(text.trim() !== "");
+  };
 
   const send = () => {
     if (locked || value.trim() === "") return;
@@ -53,7 +62,7 @@ export function TypingExercise({
         className="field text-center"
         style={{ fontSize: "1.75rem", minHeight: "4.5rem" }}
         value={value}
-        onChange={(event) => setValue(event.target.value)}
+        onChange={(event) => change(event.target.value)}
         disabled={locked}
         autoComplete="off"
         autoCorrect="off"

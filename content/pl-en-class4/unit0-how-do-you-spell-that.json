@@ -53,7 +53,11 @@
       "key": "ask.spelling",
       "tags": ["🔠"],
       "terms": {
-        "pl": [{ "text": "Jak to się literuje?", "pos": "phrase" }],
+        "pl": [
+          { "text": "Jak to się literuje?", "pos": "phrase" },
+          { "text": "Jak to literować?", "pos": "phrase", "isPrimary": false },
+          { "text": "Jak to się pisze?", "pos": "phrase", "isPrimary": false }
+        ],
         "en": [{ "text": "How do you spell that?", "pos": "phrase" }]
       }
     },
@@ -249,7 +253,7 @@
       "conceptKey": "ask.spelling",
       "payload": {
         "prompt": "How do you spell that?",
-        "accepted": ["Jak to się literuje?", "Jak to się pisze?"],
+        "accepted": ["Jak to się literuje?", "Jak to się pisze?", "Jak to literować?"],
         "options": ["Jak to się literuje?", "Jak masz na imię?", "Skąd jesteś?", "Jakie masz hobby?"]
       }
     },

@@ -13,7 +13,7 @@ import { useSpeak } from "@/lib/use-speak";
  * Próbujemy odezwać się sami zaraz po wejściu na zadanie, ale iOS odtwarza mowę wyłącznie
  * po dotknięciu ekranu, więc duży przycisk „Posłuchaj” jest podstawą, a nie dodatkiem.
  */
-export function ListeningExercise({ exercise, locked, onAnswer, onSkip }: ExerciseProps) {
+export function ListeningExercise({ exercise, locked, onAnswer, onSkip, onDraft }: ExerciseProps) {
   const [value, setValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const text = str(exercise.payload.speak);
@@ -28,6 +28,13 @@ export function ListeningExercise({ exercise, locked, onAnswer, onSkip }: Exerci
     const timer = setTimeout(() => speak(text, audioUrl), 250);
     return () => clearTimeout(timer);
   }, [exercise.id, voicesLoaded, speak, text, audioUrl]);
+
+  // Jak w zadaniu z pisaniem: z czymś wpisanym nie pokazujemy „Nie wiem, pomiń", bo tamten
+  // przycisk nie czyta pola i skasowałby gotową odpowiedź.
+  const change = (text: string) => {
+    setValue(text);
+    onDraft?.(text.trim() !== "");
+  };
 
   const send = () => {
     if (locked || value.trim() === "") return;
@@ -67,7 +74,7 @@ export function ListeningExercise({ exercise, locked, onAnswer, onSkip }: Exerci
         className="field text-center"
         style={{ fontSize: "1.75rem", minHeight: "4.5rem" }}
         value={value}
-        onChange={(event) => setValue(event.target.value)}
+        onChange={(event) => change(event.target.value)}
         disabled={locked}
         autoComplete="off"
         autoCorrect="off"
