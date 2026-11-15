@@ -226,12 +226,28 @@ export function LessonRunner({
         </span>
       </div>
 
+      {/* Klucz z identyfikatora zadania. Bez niego React przy przejściu dalej zostawia ten
+          sam komponent, a w nim stan poprzedniego zadania: wpisaną odpowiedź, zaznaczony
+          kafelek, ułożone zdanie. Dziecko widziało wtedy w polu to, co napisało poprzednio. */}
       {exercise.type === "listening" ? (
-        <ListeningExercise exercise={exercise} locked={locked} onAnswer={handleAnswer} onSkip={next} />
+        <ListeningExercise
+          key={exercise.id}
+          exercise={exercise}
+          locked={locked}
+          onAnswer={handleAnswer}
+          onSkip={next}
+        />
       ) : exercise.type === "listen_match" ? (
-        <ListenMatchExercise exercise={exercise} locked={locked} onAnswer={handleAnswer} onSkip={next} />
+        <ListenMatchExercise
+          key={exercise.id}
+          exercise={exercise}
+          locked={locked}
+          onAnswer={handleAnswer}
+          onSkip={next}
+        />
       ) : exercise.type === "match_pairs" ? (
         <MatchPairsExercise
+          key={exercise.id}
           exercise={exercise}
           locked={locked}
           onAnswer={handleAnswer}
@@ -240,6 +256,7 @@ export function LessonRunner({
         />
       ) : exercise.type === "image_choice" ? (
         <ImageChoiceExercise
+          key={exercise.id}
           exercise={exercise}
           locked={locked}
           onAnswer={handleAnswer}
@@ -253,9 +270,16 @@ export function LessonRunner({
           }
         />
       ) : exercise.type === "sentence_order" ? (
-        <SentenceOrderExercise exercise={exercise} locked={locked} onAnswer={handleAnswer} onSkip={next} />
+        <SentenceOrderExercise
+          key={exercise.id}
+          exercise={exercise}
+          locked={locked}
+          onAnswer={handleAnswer}
+          onSkip={next}
+        />
       ) : exercise.type === "fill_blank_choice" || (exercise.type === "translate_ab" && hasOptions) ? (
         <ChoiceExercise
+          key={exercise.id}
           exercise={exercise}
           locked={locked}
           onAnswer={handleAnswer}
@@ -265,6 +289,7 @@ export function LessonRunner({
         />
       ) : (
         <TypingExercise
+          key={exercise.id}
           exercise={exercise}
           locked={locked}
           onAnswer={handleAnswer}
