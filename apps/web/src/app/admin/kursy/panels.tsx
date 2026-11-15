@@ -172,7 +172,7 @@ function RowActions({
 }
 
 /** Przycisk „Dodaj …" nad tabelą, który rozwija formularz zamiast trzymać go rozłożonego na stałe. */
-function AddButton({ label, open, onToggle }: { label: string; open: boolean; onToggle: () => void }) {
+export function AddButton({ label, open, onToggle }: { label: string; open: boolean; onToggle: () => void }) {
   return (
     <button type="button" className="btn-secondary px-5" aria-expanded={open} onClick={onToggle}>
       {open ? (
@@ -1047,7 +1047,7 @@ export function LessonSettings({
  * Dodanie słówka. Z jednej pary słów powstają trzy zadania, więc dziecko ma czego się uczyć
  * od razu — klucz techniczny układa się sam, chyba że administrator poda własny.
  */
-export function AddWord({
+function AddWord({
   lessonId,
   sourceLabel,
   targetLabel,
@@ -1060,7 +1060,7 @@ export function AddWord({
 
   return (
     <section className="card flex flex-col gap-4 p-6">
-      <h2 className="card-title">Nowe słówko</h2>
+      <h3 className="card-title">Nowe słówko</h3>
       <Form action={action} state={state} className="flex flex-col gap-4">
         <input type="hidden" name="lesson_id" value={lessonId} />
         <div className="grid gap-4 sm:grid-cols-2">
@@ -1153,94 +1153,117 @@ function WordForm({
 }
 
 /**
- * Słówka lekcji jako tabela.
+ * Słówka lekcji jako tabela, razem z dodawaniem.
  *
  * Wcześniej każde słówko było kartą z przyciskiem „Edytuj słówko" na całą szerokość — przy
  * osiemnastu słówkach strona miała kilka ekranów i nie dało się przebiec wzrokiem, czego
  * w lekcji brakuje. To jest widok dla dorosłego: jeden wiersz na słówko, a formularz rozwija
  * się dopiero pod tym, które się poprawia.
  *
+ * Formularz „Nowe słówko" wychodzi spod przycisku nad tabelą, nie stoi rozłożony pod listą —
+ * tak samo jak w kursach, działach i lekcjach.
+ *
  * Otwarty jest najwyżej jeden wiersz. Nie z oszczędności miejsca, tylko dlatego, że każdy
  * formularz ma własne pola z wartościami wziętymi przy wejściu na stronę — kilka otwartych
  * naraz kusi, żeby wpisać coś w dwóch i zapisać jeden.
  */
-export function WordTable({
+export function WordSection({
   rows,
   lessonId,
   sourceLabel,
   targetLabel,
+  children,
 }: {
   rows: WordRow[];
   lessonId: string;
   sourceLabel: string;
   targetLabel: string;
+  /** Zdanie pod tabelą o tym, czego w panelu nie da się ułożyć — zostaje przy liście. */
+  children?: React.ReactNode;
 }) {
+  const [nowe, setNowe] = useState(false);
   const [otwarte, setOtwarte] = useState<string | null>(null);
 
-  if (rows.length === 0) {
-    return (
-      <p className="text-zinc-600 dark:text-zinc-400">
-        Lekcja jest pusta — dla dziecka nie ma w niej jeszcze nic do zrobienia.
-      </p>
-    );
-  }
-
   return (
-    <div className="card overflow-x-auto px-3 py-2">
-      <table className="admin-table">
-        <thead>
-          <tr>
-            {/* Kolumna z emoji nie ma nagłówka do przeczytania — obrazek jest ozdobą wiersza. */}
-            <th />
-            <th>{sourceLabel}</th>
-            <th>{targetLabel}</th>
-            <th className="hidden md:table-cell">Klucz</th>
-            <th className="text-right">Zadań</th>
-            <th />
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => {
-            const open = otwarte === row.conceptId;
-            return (
-              <Fragment key={row.conceptId}>
-                <tr>
-                  <td className="w-8 text-2xl" aria-hidden>
-                    {row.emoji}
-                  </td>
-                  <td className="font-semibold">{row.source}</td>
-                  <td className="font-semibold">{row.target}</td>
-                  <td className="hidden font-mono text-sm text-zinc-500 md:table-cell">{row.conceptKey}</td>
-                  <td className="text-right tabular-nums">{row.tasks}</td>
-                  <td className="text-right">
-                    <button
-                      type="button"
-                      className="btn-row"
-                      aria-expanded={open}
-                      onClick={() => setOtwarte(open ? null : row.conceptId)}
-                    >
-                      {open ? "Zwiń" : <><span aria-hidden>✏️</span> Edytuj</>}
-                    </button>
-                  </td>
-                </tr>
-                {open && (
-                  <tr>
-                    <td colSpan={6}>
-                      <WordForm
-                        row={row}
-                        lessonId={lessonId}
-                        sourceLabel={sourceLabel}
-                        targetLabel={targetLabel}
-                      />
-                    </td>
-                  </tr>
-                )}
-              </Fragment>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+    <section className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="card-title">Słówka ({rows.length})</h2>
+        <AddButton label="Dodaj słówko" open={nowe} onToggle={() => setNowe(!nowe)} />
+      </div>
+
+      {nowe && <AddWord lessonId={lessonId} sourceLabel={sourceLabel} targetLabel={targetLabel} />}
+
+      {rows.length === 0 ? (
+        <p className="text-zinc-600 dark:text-zinc-400">
+          Lekcja jest pusta — dla dziecka nie ma w niej jeszcze nic do zrobienia. Zacznij od
+          przycisku „Dodaj słówko”.
+        </p>
+      ) : (
+        <div className="card overflow-x-auto px-3 py-2">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                {/* Kolumna z emoji nie ma nagłówka do przeczytania — obrazek jest ozdobą wiersza. */}
+                <th />
+                <th>{sourceLabel}</th>
+                <th>{targetLabel}</th>
+                <th className="hidden md:table-cell">Klucz</th>
+                <th className="text-right">Zadań</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => {
+                const open = otwarte === row.conceptId;
+                return (
+                  <Fragment key={row.conceptId}>
+                    <tr>
+                      <td className="w-8 text-2xl" aria-hidden>
+                        {row.emoji}
+                      </td>
+                      <td className="font-semibold">{row.source}</td>
+                      <td className="font-semibold">{row.target}</td>
+                      <td className="hidden font-mono text-sm text-zinc-500 md:table-cell">{row.conceptKey}</td>
+                      <td className="text-right tabular-nums">{row.tasks}</td>
+                      <td className="text-right">
+                        <button
+                          type="button"
+                          className="btn-row"
+                          aria-expanded={open}
+                          onClick={() => setOtwarte(open ? null : row.conceptId)}
+                        >
+                          {open ? (
+                            "Zwiń"
+                          ) : (
+                            <>
+                              <span aria-hidden>✏️</span> Edytuj
+                            </>
+                          )}
+                        </button>
+                      </td>
+                    </tr>
+                    {open && (
+                      <tr>
+                        <td colSpan={6}>
+                          <WordForm
+                            row={row}
+                            lessonId={lessonId}
+                            sourceLabel={sourceLabel}
+                            targetLabel={targetLabel}
+                          />
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {children}
+    </section>
   );
 }
 

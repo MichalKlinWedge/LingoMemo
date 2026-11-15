@@ -3,6 +3,7 @@
 import { useActionState, useId, useState } from "react";
 
 import { addImageTaskAction } from "@/app/admin/kursy/actions";
+import { AddButton } from "@/app/admin/kursy/panels";
 import { Form, Status, SubmitButton, type FormState } from "@/components/forms";
 import { createClient } from "@/lib/supabase/client";
 
@@ -46,6 +47,13 @@ export function AddImageTask({
   const [slots, setSlots] = useState<Slot[]>(POCZATEK);
   const [answer, setAnswer] = useState("");
   const [uploadError, setUploadError] = useState<string | null>(null);
+  /**
+   * Czy formularz jest rozwinięty. Zadanie z obrazkiem składa się raz na kilka lekcji, a pól
+   * i wgrywania plików jest tu tyle, że rozłożony na stałe zajmował na ekranie lekcji więcej
+   * miejsca niż cała tabela słówek. Wgrane obrazki i zaznaczenie siedzą w stanie tego
+   * komponentu, więc zwinięcie i ponowne rozwinięcie ich nie gubi.
+   */
+  const [otwarte, setOtwarte] = useState(false);
   const wordId = useId();
   const promptId = useId();
   // `createBrowserClient` oddaje wciąż tę samą instancję, więc wołanie go przy renderze nic
@@ -100,127 +108,135 @@ export function AddImageTask({
   const gotowe = slots.filter((slot) => slot.path !== "").length;
 
   return (
-    <section className="card flex flex-col gap-4 p-6">
-      <h2 className="card-title">Nowe zadanie z obrazkiem</h2>
-      <p className="text-base text-zinc-600 dark:text-zinc-400">
-        Dziecko widzi słowo i dotyka obrazka, który je pokazuje. Pierwsze zadanie, które zrobi,
-        zanim nauczy się czytać po {speakLabel.toLowerCase()}.
-      </p>
+    <section className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="card-title">Zadanie z obrazkiem</h2>
+        <AddButton label="Dodaj zadanie" open={otwarte} onToggle={() => setOtwarte(!otwarte)} />
+      </div>
 
-      <Form action={action} state={state} className="flex flex-col gap-4">
-        <input type="hidden" name="lesson_id" value={lessonId} />
-        {speakLang !== null && <input type="hidden" name="lang" value={speakLang} />}
+      {otwarte && (
+        <div className="card flex flex-col gap-4 p-6">
+          <p className="text-base text-zinc-600 dark:text-zinc-400">
+            Dziecko widzi słowo i dotyka obrazka, który je pokazuje. Pierwsze zadanie, które zrobi,
+            zanim nauczy się czytać po {speakLabel.toLowerCase()}.
+          </p>
 
-        <label className="flex flex-col gap-2" htmlFor={promptId}>
-          <span className="font-semibold">Słowo nad obrazkami</span>
-          <input id={promptId} className="field" name="prompt" required placeholder="dog" />
-        </label>
+          <Form action={action} state={state} className="flex flex-col gap-4">
+            <input type="hidden" name="lesson_id" value={lessonId} />
+            {speakLang !== null && <input type="hidden" name="lang" value={speakLang} />}
 
-        {speakLang !== null && (
-          <label className="flex items-center gap-3">
-            <input type="checkbox" name="speak" className="h-6 w-6" />
-            <span className="font-semibold">Przeczytaj słowo głosem ({speakLang})</span>
-          </label>
-        )}
+            <label className="flex flex-col gap-2" htmlFor={promptId}>
+              <span className="font-semibold">Słowo nad obrazkami</span>
+              <input id={promptId} className="field" name="prompt" required placeholder="dog" />
+            </label>
 
-        <label className="flex flex-col gap-2" htmlFor={wordId}>
-          <span className="font-semibold">Słówko lekcji</span>
-          <select id={wordId} className="field" name="concept_id" defaultValue="">
-            <option value="">— bez słówka (zadanie nie wejdzie do powtórek)</option>
-            {words.map((word) => (
-              <option key={word.id} value={word.id}>
-                {word.label}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <fieldset className="flex flex-col gap-3">
-          <legend className="font-semibold">Obrazki (od dwóch do czterech)</legend>
-
-          {slots.map((slot, index) => (
-            <div key={slot.id} className="flex flex-wrap items-center gap-3 rounded-2xl border-2 p-3"
-                 style={{ borderColor: "var(--line)" }}>
-              {slot.path === "" ? (
-                <span
-                  className="flex items-center justify-center rounded-xl text-2xl"
-                  style={{ width: "4rem", height: "4rem", background: "var(--color-zinc-200)" }}
-                  aria-hidden
-                >
-                  {slot.busy ? "…" : "🖼"}
-                </span>
-              ) : (
-                // Zwykły <img>, nie next/image: pliki wgrywa administrator w trakcie działania
-                // aplikacji, więc nie ma ich czym zoptymalizować przy budowaniu.
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={storage.getPublicUrl(slot.path).data.publicUrl}
-                  alt=""
-                  style={{ width: "4rem", height: "4rem", objectFit: "contain" }}
-                />
-              )}
-
-              <div className="flex min-w-0 flex-1 flex-col gap-2">
-                <input
-                  type="file"
-                  className="field"
-                  accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
-                  disabled={slot.busy}
-                  aria-label={`Wgraj obrazek ${index + 1}`}
-                  onChange={(event) => void wgraj(slot.id, event.target.files?.[0])}
-                />
-                <input
-                  className="field font-mono text-base"
-                  name="options"
-                  value={slot.path}
-                  placeholder="albo wklej ścieżkę: 2026/pies.png"
-                  autoComplete="off"
-                  spellCheck={false}
-                  aria-label={`Ścieżka obrazka ${index + 1}`}
-                  onChange={(event) => zmien(slot.id, { path: event.target.value })}
-                />
-              </div>
-
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="answer"
-                  className="h-6 w-6"
-                  value={slot.path}
-                  checked={slot.path !== "" && answer === slot.path}
-                  disabled={slot.path === ""}
-                  onChange={() => setAnswer(slot.path)}
-                />
-                <span className="font-semibold">poprawny</span>
+            {speakLang !== null && (
+              <label className="flex items-center gap-3">
+                <input type="checkbox" name="speak" className="h-6 w-6" />
+                <span className="font-semibold">Przeczytaj słowo głosem ({speakLang})</span>
               </label>
+            )}
 
-              {slots.length > 2 && (
-                <button
-                  type="button"
-                  className="chip"
-                  style={{ minHeight: "2.75rem" }}
-                  onClick={() => usun(slot.id)}
-                  aria-label={`Usuń obrazek ${index + 1}`}
-                >
-                  Usuń
+            <label className="flex flex-col gap-2" htmlFor={wordId}>
+              <span className="font-semibold">Słówko lekcji</span>
+              <select id={wordId} className="field" name="concept_id" defaultValue="">
+                <option value="">— bez słówka (zadanie nie wejdzie do powtórek)</option>
+                {words.map((word) => (
+                  <option key={word.id} value={word.id}>
+                    {word.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <fieldset className="flex flex-col gap-3">
+              <legend className="font-semibold">Obrazki (od dwóch do czterech)</legend>
+
+              {slots.map((slot, index) => (
+                <div key={slot.id} className="flex flex-wrap items-center gap-3 rounded-2xl border-2 p-3"
+                     style={{ borderColor: "var(--line)" }}>
+                  {slot.path === "" ? (
+                    <span
+                      className="flex items-center justify-center rounded-xl text-2xl"
+                      style={{ width: "4rem", height: "4rem", background: "var(--color-zinc-200)" }}
+                      aria-hidden
+                    >
+                      {slot.busy ? "…" : "🖼"}
+                    </span>
+                  ) : (
+                    // Zwykły <img>, nie next/image: pliki wgrywa administrator w trakcie działania
+                    // aplikacji, więc nie ma ich czym zoptymalizować przy budowaniu.
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={storage.getPublicUrl(slot.path).data.publicUrl}
+                      alt=""
+                      style={{ width: "4rem", height: "4rem", objectFit: "contain" }}
+                    />
+                  )}
+
+                  <div className="flex min-w-0 flex-1 flex-col gap-2">
+                    <input
+                      type="file"
+                      className="field"
+                      accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
+                      disabled={slot.busy}
+                      aria-label={`Wgraj obrazek ${index + 1}`}
+                      onChange={(event) => void wgraj(slot.id, event.target.files?.[0])}
+                    />
+                    <input
+                      className="field font-mono text-base"
+                      name="options"
+                      value={slot.path}
+                      placeholder="albo wklej ścieżkę: 2026/pies.png"
+                      autoComplete="off"
+                      spellCheck={false}
+                      aria-label={`Ścieżka obrazka ${index + 1}`}
+                      onChange={(event) => zmien(slot.id, { path: event.target.value })}
+                    />
+                  </div>
+
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="answer"
+                      className="h-6 w-6"
+                      value={slot.path}
+                      checked={slot.path !== "" && answer === slot.path}
+                      disabled={slot.path === ""}
+                      onChange={() => setAnswer(slot.path)}
+                    />
+                    <span className="font-semibold">poprawny</span>
+                  </label>
+
+                  {slots.length > 2 && (
+                    <button
+                      type="button"
+                      className="chip"
+                      style={{ minHeight: "2.75rem" }}
+                      onClick={() => usun(slot.id)}
+                      aria-label={`Usuń obrazek ${index + 1}`}
+                    >
+                      Usuń
+                    </button>
+                  )}
+                </div>
+              ))}
+
+              {slots.length < 4 && (
+                <button type="button" className="btn-secondary self-start" onClick={dodaj}>
+                  Dodaj obrazek
                 </button>
               )}
-            </div>
-          ))}
+            </fieldset>
 
-          {slots.length < 4 && (
-            <button type="button" className="btn-secondary self-start" onClick={dodaj}>
-              Dodaj obrazek
-            </button>
-          )}
-        </fieldset>
-
-        {uploadError && <p className="msg-error">{uploadError}</p>}
-        <Status state={state} />
-        <SubmitButton pendingLabel="Dodaję…">
-          {gotowe < 2 ? "Dodaj zadanie (wgraj dwa obrazki)" : "Dodaj zadanie"}
-        </SubmitButton>
-      </Form>
+            {uploadError && <p className="msg-error">{uploadError}</p>}
+            <Status state={state} />
+            <SubmitButton pendingLabel="Dodaję…">
+              {gotowe < 2 ? "Dodaj zadanie (wgraj dwa obrazki)" : "Dodaj zadanie"}
+            </SubmitButton>
+          </Form>
+        </div>
+      )}
     </section>
   );
 }

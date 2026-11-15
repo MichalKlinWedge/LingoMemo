@@ -9,7 +9,7 @@ import { requireAdmin } from "@/lib/auth";
 import { dbLoadError } from "@/lib/db-error";
 
 import { AddImageTask } from "../../../image-task";
-import { AddWord, LessonSettings, WordTable, type WordRow } from "../../../panels";
+import { LessonSettings, WordSection, type WordRow } from "../../../panels";
 
 async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit]/[lesson]">["params"] }) {
   const { slug, unit: unitSlug, lesson: lessonSlug } = await params;
@@ -144,14 +144,12 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
         counts={{ exercises: (exercises ?? []).length, children: children ?? 0, opened: opened ?? 0 }}
       />
 
-      <section className="flex flex-col gap-3">
-        <h2 className="card-title">Słówka ({rows.length})</h2>
-        <WordTable
-          rows={rows}
-          lessonId={lesson.id}
-          sourceLabel={nameOf(course.source_lang).toLowerCase()}
-          targetLabel={nameOf(course.target_lang).toLowerCase()}
-        />
+      <WordSection
+        rows={rows}
+        lessonId={lesson.id}
+        sourceLabel={nameOf(course.source_lang).toLowerCase()}
+        targetLabel={nameOf(course.target_lang).toLowerCase()}
+      >
         <p className="text-base text-zinc-600 dark:text-zinc-400">
           Zadanie z obrazkiem dodasz niżej. Reszta złożonych ręcznie (rozsypanki, dopasowywanie par
           i ze słuchu, luki w zdaniu) wchodzi{" "}
@@ -160,13 +158,7 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
           </Link>
           .
         </p>
-      </section>
-
-      <AddWord
-        lessonId={lesson.id}
-        sourceLabel={nameOf(course.source_lang).toLowerCase()}
-        targetLabel={nameOf(course.target_lang).toLowerCase()}
-      />
+      </WordSection>
 
       <AddImageTask
         lessonId={lesson.id}
