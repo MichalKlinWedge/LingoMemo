@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { DAYS, formatDuration, plural, POINTS, spellDuration, WORDS } from "@lingomemo/core";
 
 import { CRUMB_HOME } from "@/components/breadcrumbs";
+import { Flag } from "@/components/flag";
 import { PageHeader } from "@/components/page-header";
 import { Loading, Shell } from "@/components/shell";
 import { accuracy, Tile, WeekChart } from "@/components/stats-widgets";
@@ -51,9 +52,7 @@ async function Stats() {
             {(courses ?? []).map((course) => (
               <li key={course.course_id} className="card flex flex-wrap items-center justify-between gap-3 p-4">
                 <span className="flex min-w-0 items-center gap-3">
-                  <span className="text-3xl" aria-hidden>
-                    {course.course_icon}
-                  </span>
+                  <Flag code={course.course_target_lang} fallback={course.course_icon} size={36} />
                   <span className="flex min-w-0 flex-col">
                     <span className="font-semibold">{course.course_title}</span>
                     <span className="text-base text-zinc-600 dark:text-zinc-400">

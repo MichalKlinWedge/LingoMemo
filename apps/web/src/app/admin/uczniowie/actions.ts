@@ -25,3 +25,32 @@ export async function setLearnerLevelAction(_prev: FormState, form: FormData): P
   refresh();
   return { ok: "Poziom zapisany." };
 }
+
+/**
+ * Imię i strefa czasowa dziecka. Przez `admin_update_profile`, a nie zwykłym `update`: polityka
+ * `profiles_update_own` puszcza tylko własny wiersz, a rozszerzanie jej o administratora otworzyłoby
+ * mu od razu wszystkie kolumny z `grant update` na tabeli.
+ */
+export async function updateStudentAction(_prev: FormState, form: FormData): Promise<FormState> {
+  const { supabase } = await requireAdmin("/admin/uczniowie");
+
+  const user = String(form.get("user_id") ?? "");
+  const name = String(form.get("display_name") ?? "").trim();
+  const zone = String(form.get("time_zone") ?? "").trim();
+
+  if (!user) return { error: "Brakuje ucznia." };
+  if (name === "") return { error: "Podaj imię dziecka." };
+  if (name.length > 40) return { error: "Imię może mieć najwyżej 40 znaków." };
+
+  const { error } = await supabase.rpc("admin_update_profile", {
+    p_user: user,
+    p_display_name: name,
+    // Pominięte pole, a nie `null`: w typach z bazy argument jest opcjonalny, a funkcja i tak
+    // czyta puste jako „zostaw strefę, jaka była".
+    p_time_zone: zone === "" ? undefined : zone,
+  });
+  if (error) return { error: dbErrorMessage(error, "Nie udało się zapisać danych dziecka.") };
+
+  refresh();
+  return { ok: "Zapisane." };
+}
