@@ -22,9 +22,11 @@ export function TypingExercise({
   const isInflection = exercise.type === "inflection";
   const prompt = isInflection ? str(exercise.payload.base) : str(exercise.payload.prompt);
 
+  // Kursor wraca do pola także po odblokowaniu: przy prośbie o poprawienie literówki
+  // zadanie zostaje to samo, a pole było w międzyczasie wyłączone i straciło kursor.
   useEffect(() => {
-    inputRef.current?.focus();
-  }, [exercise.id]);
+    if (!locked) inputRef.current?.focus();
+  }, [exercise.id, locked]);
 
   // Gdy w polu coś jest, przebieg lekcji chowa „Nie wiem, pomiń" — ten przycisk wysyła samo
   // pominięcie i nie zagląda do pola, więc kasował wpisaną odpowiedź. Zgłaszamy to przy zmianie

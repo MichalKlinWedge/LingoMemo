@@ -4,7 +4,7 @@
 -- czy punkty nie lecą dwa razy za to samo i czy po zaliczeniu lekcji otwiera się następna.
 
 begin;
-select plan(31);
+select plan(32);
 
 create or replace function pg_temp.make_user(p_email text) returns uuid
 language plpgsql as $$
@@ -158,7 +158,17 @@ select is((select (result ->> 'correct')::boolean from t_r where step = 'zle'), 
 select isnt((select result -> 'correctAnswer' from t_r where step = 'zle'), 'null'::jsonb,
           'przy błędzie pokazujemy poprawną odpowiedź');
 
--- Literówka.
+-- Literówka. Pierwsze podejście wraca jako prośba o poprawkę, dopiero drugie jest oceniane.
+insert into t_r
+select 'poprawka', public.submit_attempt(
+  pg_temp.sess((select id from t_ex where sort_order = 999)),
+  (select id from t_ex where sort_order = 999),
+  jsonb_build_object('text', 'krolikk'), 6000, false
+);
+
+select is((select (result ->> 'retry')::boolean from t_r where step = 'poprawka'), true,
+          'pierwsza literówka to prośba o poprawienie, a nie werdykt');
+
 insert into t_r
 select 'literowka', public.submit_attempt(
   pg_temp.sess((select id from t_ex where sort_order = 999)),

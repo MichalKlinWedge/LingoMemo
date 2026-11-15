@@ -84,8 +84,11 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
                 </>
               );
 
+              // Kolumna szersza niż kafelek (6 rem): na dole stoi rząd kwadracików — do trzech
+              // etapów i dwa poziomy, wszystkie po 1,5 rem — a `.marks` się nie zawija, więc
+              // przy 7 rem wychodziły poza kafelek i wchodziły sąsiadowi w gap.
               return (
-                <li key={lesson.id} className="flex w-28 flex-col items-center gap-2 text-center">
+                <li key={lesson.id} className="flex w-36 flex-col items-center gap-2 text-center">
                   {state === "locked" ? (
                     <div className="tile" data-state="locked" aria-label={label} title="Najpierw skończ poprzednią lekcję">
                       {tile}
