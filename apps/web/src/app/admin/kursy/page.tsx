@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 
 import { Flag } from "@/components/flag";
+import { CRUMB_HOME, CRUMB_PANEL } from "@/components/breadcrumbs";
 import { PageHeader } from "@/components/page-header";
 import { Loading, Shell } from "@/components/shell";
 import { requireAdmin } from "@/lib/auth";
@@ -56,7 +57,7 @@ export default function CoursesPage() {
   return (
     <Shell>
       <PageHeader
-        back={{ href: "/admin", label: "Panel" }}
+        crumbs={[CRUMB_HOME, CRUMB_PANEL]}
         title="Kursy"
         intro="Kurs → działy → lekcje → słówka. Ukryte treści widzi tylko administrator."
       />

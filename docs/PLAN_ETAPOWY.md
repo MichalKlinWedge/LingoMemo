@@ -139,6 +139,10 @@ Dwie rzeczy poprawione po obejrzeniu na telefonie: w dopasowywaniu par głośnik
 kolumnę, więc przy wąskim ekranie znikają; przełącznik dźwięku i krzyżyk miały 34 px, czyli
 poniżej progu, od którego dziecko trafia palcem — mają teraz 44 px.
 
+**Dopisane później (2026-11-15):** ósmy typ — `listen_match`, czyli dopasowywanie ze słuchu
+(głośniki po lewej, polskie słowa po prawej). Przy okazji łączenie w pary zaczyna dowolna
+kolumna, a po błędzie widać komplet par. Szczegóły w `docs/DECYZJE.md`.
+
 Wyszło też, że test lekcji nie znał nowych typów zadań (odpowiadał na nie jak na tekstowe),
 a test powtórek filtrował zadania po losowanym typie — czyli potrafił paść bez żadnej zmiany
 w kodzie. Oba poprawione; trzy przebiegi pod rząd zielone.

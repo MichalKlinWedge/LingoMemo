@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 
+import { CRUMB_HOME } from "@/components/breadcrumbs";
 import { PageHeader } from "@/components/page-header";
 import { Loading, Shell } from "@/components/shell";
 import { requireAdmin } from "@/lib/auth";
@@ -26,7 +27,7 @@ async function Panel() {
   return (
     <>
       <PageHeader
-        back={{ href: "/", label: "Strona główna" }}
+        crumbs={[CRUMB_HOME]}
         title="Panel"
         intro={`Lekcji: ${lessons ?? 0} · słówek: ${concepts ?? 0} · kont: ${(students ?? []).length}`}
       />

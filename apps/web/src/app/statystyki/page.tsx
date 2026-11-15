@@ -2,6 +2,7 @@ import { Suspense } from "react";
 
 import { DAYS, plural, POINTS, WORDS } from "@lingomemo/core";
 
+import { CRUMB_HOME } from "@/components/breadcrumbs";
 import { PageHeader } from "@/components/page-header";
 import { Loading, Shell } from "@/components/shell";
 import { requireUser } from "@/lib/auth";
@@ -54,7 +55,7 @@ async function Stats() {
 
   return (
     <>
-      <PageHeader back={{ href: "/", label: "Strona główna" }} title="Twoje postępy" />
+      <PageHeader crumbs={[CRUMB_HOME]} title="Twoje postępy" />
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Tile icon="⭐" value={stats?.total_points ?? 0} label="punktów" />

@@ -2,6 +2,7 @@ import { Suspense } from "react";
 
 import { plural, POINTS } from "@lingomemo/core";
 
+import { CRUMB_HOME } from "@/components/breadcrumbs";
 import { PageHeader } from "@/components/page-header";
 import { Loading, Shell } from "@/components/shell";
 import { requireUser } from "@/lib/auth";
@@ -23,7 +24,7 @@ async function Rewards() {
   return (
     <>
       <PageHeader
-        back={{ href: "/", label: "Strona główna" }}
+        crumbs={[CRUMB_HOME]}
         title="Nagrody"
         intro={`Masz ${plural(stats?.total_points ?? 0, POINTS)} i ${stats?.badges_earned ?? 0} z ${(badges ?? []).length} odznak.`}
       />

@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 
+import { CRUMB_HOME, CRUMB_PANEL } from "@/components/breadcrumbs";
 import { PageHeader } from "@/components/page-header";
 import { Loading, Shell } from "@/components/shell";
 import { requireAdmin } from "@/lib/auth";
@@ -52,7 +53,7 @@ export default function AccountsPage() {
   return (
     <Shell>
       <PageHeader
-        back={{ href: "/admin", label: "Panel" }}
+        crumbs={[CRUMB_HOME, CRUMB_PANEL]}
         title="Konta"
         intro="Kto ma konto i kiedy ostatnio się logował. Hasła nie da się podejrzeć — można je tylko ustawić na nowo."
       />

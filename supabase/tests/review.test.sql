@@ -142,6 +142,7 @@ create temporary table t_pick as
            when 'translate_ab'      then jsonb_build_object('choice', ex.payload -> 'accepted' ->> 0)
            when 'fill_blank_choice' then jsonb_build_object('choice', ex.payload ->> 'answer')
            when 'match_pairs'       then jsonb_build_object('pairs', ex.payload -> 'pairs')
+           when 'listen_match'      then jsonb_build_object('pairs', ex.payload -> 'pairs')
            when 'sentence_order'    then jsonb_build_object('tokens', ex.payload -> 'solution')
            else jsonb_build_object('text', ex.payload -> 'accepted' ->> 0)
          end as answer

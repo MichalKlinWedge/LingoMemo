@@ -1,0 +1,430 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-class4",
+  "unit": { "slug": "en-4-unit0", "title": "UNIT 0", "sortOrder": 1 },
+  "lesson": {
+    "slug": "4u0-how-do-you-spell-that",
+    "title": "How do you spell that",
+    "icon": "🔤",
+    "kind": "standard",
+    "sortOrder": 1,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": null,
+    "isPublished": true
+  },
+  "concepts": [
+    {
+      "key": "greet.hello",
+      "tags": ["👋"],
+      "terms": {
+        "pl": [{ "text": "cześć", "pos": "phrase" }],
+        "en": [
+          { "text": "hello", "pos": "phrase" },
+          { "text": "hi", "pos": "phrase", "isPrimary": false }
+        ]
+      }
+    },
+    {
+      "key": "ask.name",
+      "tags": ["❓"],
+      "terms": {
+        "pl": [{ "text": "Jak masz na imię?", "pos": "phrase" }],
+        "en": [{ "text": "What's your name?", "pos": "phrase" }]
+      }
+    },
+    {
+      "key": "say.name",
+      "tags": ["🙂"],
+      "terms": {
+        "pl": [{ "text": "Mam na imię Jen.", "pos": "phrase" }],
+        "en": [{ "text": "My name's Jen.", "pos": "phrase" }]
+      }
+    },
+    {
+      "key": "ask.surname",
+      "tags": ["📛"],
+      "terms": {
+        "pl": [{ "text": "Jak masz na nazwisko?", "pos": "phrase" }],
+        "en": [{ "text": "What's your surname?", "pos": "phrase" }]
+      }
+    },
+    {
+      "key": "ask.spelling",
+      "tags": ["🔠"],
+      "terms": {
+        "pl": [{ "text": "Jak to się literuje?", "pos": "phrase" }],
+        "en": [{ "text": "How do you spell that?", "pos": "phrase" }]
+      }
+    },
+    {
+      "key": "say.age",
+      "tags": ["🎂"],
+      "terms": {
+        "pl": [{ "text": "Mam dwanaście lat.", "pos": "phrase" }],
+        "en": [{ "text": "I'm twelve years old.", "pos": "phrase" }]
+      }
+    },
+    {
+      "key": "say.origin",
+      "tags": ["🌍"],
+      "terms": {
+        "pl": [{ "text": "Jestem z Hiszpanii.", "pos": "phrase" }],
+        "en": [{ "text": "I'm from Spain.", "pos": "phrase" }]
+      }
+    },
+    {
+      "key": "say.hobby",
+      "tags": ["🎸"],
+      "terms": {
+        "pl": [{ "text": "Moje hobby to muzyka.", "pos": "phrase" }],
+        "en": [{ "text": "My hobby is music.", "pos": "phrase" }]
+      }
+    },
+    {
+      "key": "word.name",
+      "tags": ["🏷️"],
+      "terms": {
+        "pl": [{ "text": "imię", "pos": "noun" }],
+        "en": [{ "text": "name", "pos": "noun" }]
+      }
+    },
+    {
+      "key": "word.surname",
+      "tags": ["📄"],
+      "terms": {
+        "pl": [{ "text": "nazwisko", "pos": "noun" }],
+        "en": [{ "text": "surname", "pos": "noun" }]
+      }
+    },
+    {
+      "key": "word.letter",
+      "tags": ["🔡"],
+      "terms": {
+        "pl": [{ "text": "litera", "pos": "noun" }],
+        "en": [{ "text": "letter", "pos": "noun" }]
+      }
+    },
+    {
+      "key": "word.alphabet",
+      "tags": ["🔤"],
+      "terms": {
+        "pl": [{ "text": "alfabet", "pos": "noun" }],
+        "en": [{ "text": "alphabet", "pos": "noun" }]
+      }
+    },
+    {
+      "key": "spell.girl",
+      "tags": ["👧"],
+      "terms": {
+        "pl": [{ "text": "dziewczynka", "pos": "noun" }],
+        "en": [{ "text": "girl", "pos": "noun" }]
+      }
+    },
+    {
+      "key": "spell.box",
+      "tags": ["📦"],
+      "terms": {
+        "pl": [{ "text": "pudełko", "pos": "noun" }],
+        "en": [{ "text": "box", "pos": "noun" }]
+      }
+    },
+    {
+      "key": "spell.sandwich",
+      "tags": ["🥪"],
+      "terms": {
+        "pl": [{ "text": "kanapka", "pos": "noun" }],
+        "en": [{ "text": "sandwich", "pos": "noun" }]
+      }
+    },
+    {
+      "key": "spell.table",
+      "tags": ["🪑"],
+      "terms": {
+        "pl": [{ "text": "stół", "pos": "noun" }],
+        "en": [{ "text": "table", "pos": "noun" }]
+      }
+    },
+    {
+      "key": "spell.lion",
+      "tags": ["🦁"],
+      "terms": {
+        "pl": [{ "text": "lew", "pos": "noun" }],
+        "en": [{ "text": "lion", "pos": "noun" }]
+      }
+    },
+    {
+      "key": "spell.fish",
+      "tags": ["🐟"],
+      "terms": {
+        "pl": [{ "text": "ryba", "pos": "noun" }],
+        "en": [{ "text": "fish", "pos": "noun" }]
+      }
+    }
+  ],
+  "exercises": [
+    {
+      "type": "translate_ab",
+      "conceptKey": "greet.hello",
+      "payload": {
+        "prompt": "cześć",
+        "accepted": ["hello", "hi"],
+        "options": ["hello", "goodbye", "please", "thank you"]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "ask.name",
+      "payload": {
+        "prompt": "Jak masz na imię?",
+        "accepted": ["What's your name?", "Whats your name?"],
+        "options": ["What's your name?", "What's your surname?", "How do you spell that?", "My name's Jen."]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "say.name",
+      "payload": {
+        "prompt": "Mam na imię Jen.",
+        "accepted": ["My name's Jen.", "My names Jen.", "My name is Jen."],
+        "options": ["My name's Jen.", "What's your name?", "I'm from Spain.", "My hobby is music."]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "ask.surname",
+      "payload": {
+        "prompt": "Jak masz na nazwisko?",
+        "accepted": ["What's your surname?", "Whats your surname?"],
+        "options": ["What's your surname?", "What's your name?", "How do you spell that?", "I'm twelve years old."]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "ask.spelling",
+      "payload": {
+        "prompt": "Jak to się literuje?",
+        "accepted": ["How do you spell that?", "How do you spell it?"],
+        "options": ["How do you spell that?", "What's your name?", "Say the alphabet.", "My name's Jen."]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "say.age",
+      "payload": {
+        "prompt": "Mam dwanaście lat.",
+        "accepted": ["I'm twelve years old.", "Im twelve years old.", "I'm twelve."],
+        "options": ["I'm twelve years old.", "I'm ten years old.", "I'm from Spain.", "My name's Alex."]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "say.origin",
+      "payload": {
+        "prompt": "Jestem z Hiszpanii.",
+        "accepted": ["I'm from Spain.", "Im from Spain."],
+        "options": ["I'm from Spain.", "I'm from the UK.", "I'm twelve years old.", "My hobby is music."]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "say.hobby",
+      "payload": {
+        "prompt": "Moje hobby to muzyka.",
+        "accepted": ["My hobby is music.", "My hobbies are music."],
+        "options": ["My hobby is music.", "My hobby is skateboarding.", "My name's Lucas.", "I'm from Spain."]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "ask.name",
+      "payload": {
+        "prompt": "What's your name?",
+        "accepted": ["Jak masz na imię?", "Jak się nazywasz?"],
+        "options": ["Jak masz na imię?", "Jak masz na nazwisko?", "Jak to się literuje?", "Ile masz lat?"]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "ask.spelling",
+      "payload": {
+        "prompt": "How do you spell that?",
+        "accepted": ["Jak to się literuje?", "Jak to się pisze?"],
+        "options": ["Jak to się literuje?", "Jak masz na imię?", "Skąd jesteś?", "Jakie masz hobby?"]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "word.name",
+      "payload": { "prompt": "imię", "accepted": ["name", "first name"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "word.surname",
+      "payload": { "prompt": "nazwisko", "accepted": ["surname", "last name"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "word.letter",
+      "payload": { "prompt": "litera", "accepted": ["letter"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "word.alphabet",
+      "payload": { "prompt": "alfabet", "accepted": ["alphabet"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "spell.girl",
+      "payload": { "prompt": "dziewczynka", "accepted": ["girl"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "spell.box",
+      "payload": { "prompt": "pudełko", "accepted": ["box"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "spell.sandwich",
+      "payload": { "prompt": "kanapka", "accepted": ["sandwich"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "spell.table",
+      "payload": { "prompt": "stół", "accepted": ["table"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "spell.lion",
+      "payload": { "prompt": "lew", "accepted": ["lion"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "spell.fish",
+      "payload": { "prompt": "ryba", "accepted": ["fish"] }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz słówka z ćwiczenia 5 w pary.",
+        "pairs": [
+          { "a": "dziewczynka", "b": "girl" },
+          { "a": "pudełko", "b": "box" },
+          { "a": "kanapka", "b": "sandwich" },
+          { "a": "stół", "b": "table" },
+          { "a": "lew", "b": "lion" },
+          { "a": "ryba", "b": "fish" }
+        ]
+      }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "spell.girl",
+      "points": 15,
+      "payload": { "speak": "girl", "lang": "en-GB", "accepted": ["girl"] }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "spell.sandwich",
+      "points": 15,
+      "payload": { "speak": "sandwich", "lang": "en-GB", "accepted": ["sandwich"] }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "spell.lion",
+      "points": 15,
+      "payload": { "speak": "lion", "lang": "en-GB", "accepted": ["lion"] }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "spell.fish",
+      "points": 15,
+      "payload": { "speak": "fish", "lang": "en-GB", "accepted": ["fish"] }
+    },
+    {
+      "type": "listening",
+      "points": 15,
+      "payload": { "speak": "G", "lang": "en-GB", "accepted": ["G"] }
+    },
+    {
+      "type": "sentence_order",
+      "conceptKey": "ask.name",
+      "points": 15,
+      "payload": {
+        "prompt": "Jak masz na imię?",
+        "tokens": ["What's", "your", "name?"],
+        "solution": ["What's", "your", "name?"]
+      }
+    },
+    {
+      "type": "sentence_order",
+      "conceptKey": "ask.spelling",
+      "points": 15,
+      "payload": {
+        "prompt": "Jak to się literuje?",
+        "tokens": ["How", "do", "you", "spell", "that?"],
+        "solution": ["How", "do", "you", "spell", "that?"]
+      }
+    },
+    {
+      "type": "sentence_order",
+      "conceptKey": "say.name",
+      "points": 15,
+      "payload": {
+        "prompt": "Mam na imię Jen.",
+        "tokens": ["My", "name's", "Jen."],
+        "solution": ["My", "name's", "Jen."]
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "word.name",
+      "payload": {
+        "sentence": "Hi! My {{blank}}'s Jen.",
+        "options": ["name", "surname", "letter", "hobby"],
+        "answer": "name",
+        "translation": "Cześć! Mam na imię Jen."
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "ask.spelling",
+      "payload": {
+        "sentence": "How do you {{blank}} that?",
+        "options": ["spell", "say", "write", "read"],
+        "answer": "spell",
+        "translation": "Jak to się literuje?"
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "word.letter",
+      "payload": {
+        "sentence": "LL = {{blank}} L",
+        "options": ["double", "two", "big", "long"],
+        "answer": "double",
+        "translation": "LL = podwójne L"
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": {
+        "sentence": "A - double P - L - E. {{blank}}.",
+        "options": ["Apple", "Table", "Lion", "Fish"],
+        "answer": "Apple",
+        "translation": "A - podwójne P - L - E. Jabłko."
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "word.surname",
+      "payload": {
+        "sentence": "My {{blank}} is Mazur. M-A-Z-U-R.",
+        "options": ["surname", "name", "letter", "alphabet"],
+        "answer": "surname",
+        "translation": "Moje nazwisko to Mazur. M-A-Z-U-R."
+      }
+    }
+  ]
+}

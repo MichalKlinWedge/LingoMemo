@@ -315,6 +315,45 @@ h2 {
     font-size: 1rem;
   }
 
+  /* --- okruszki: cała droga do miejsca, w którym się jest --- */
+  .crumbs {
+    display: flex;
+    align-items: center;
+    min-height: 2.75rem;
+  }
+
+  .crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.125rem 0.375rem;
+  }
+
+  .crumbs li {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Strzałka między stopniami rysowana w CSS — w treści nie ma jej po co czytać na głos. */
+  .crumbs li + li::before {
+    content: "›";
+    margin-right: 0.375rem;
+    color: var(--color-zinc-400);
+  }
+
+  .crumb {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.25rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-zinc-600);
+  }
+
+  .crumb:hover {
+    color: var(--color-brand);
+  }
+
   /* --- pozostałe klocki --- */
   .card {
     border-radius: 1.5rem;
@@ -399,6 +438,10 @@ h2 {
 
     .chip {
       background: var(--color-zinc-800);
+    }
+
+    .crumb {
+      color: var(--color-zinc-400);
     }
   }
 }

@@ -277,6 +277,20 @@
       }
     },
     {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj polskie słowo.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "lew", "b": "lion" },
+          { "a": "słoń", "b": "elephant" },
+          { "a": "małpa", "b": "monkey" },
+          { "a": "żyrafa", "b": "giraffe" }
+        ]
+      }
+    },
+    {
       "type": "fill_blank_choice",
       "conceptKey": "animal.elephant",
       "payload": {

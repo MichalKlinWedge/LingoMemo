@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { LESSONS, plural, WORDS } from "@lingomemo/core";
 
 import { Flag } from "@/components/flag";
+import { CRUMB_HOME } from "@/components/breadcrumbs";
 import { PageHeader } from "@/components/page-header";
 import { Loading, Shell } from "@/components/shell";
 import { requireUser } from "@/lib/auth";
@@ -37,7 +38,7 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
   return (
     <>
       <PageHeader
-        back={{ href: "/", label: "Kursy" }}
+        crumbs={[CRUMB_HOME]}
         title={
           <>
             <Flag code={course.target_lang} fallback={course.icon} size={36} /> {course.title}

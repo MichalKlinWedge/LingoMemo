@@ -117,6 +117,21 @@
       }
     },
     {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj polskie słowo.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "jabłko", "b": "apple" },
+          { "a": "gruszka", "b": "pear" },
+          { "a": "banan", "b": "banana" },
+          { "a": "truskawka", "b": "strawberry" },
+          { "a": "pomarańcza", "b": "orange" }
+        ]
+      }
+    },
+    {
       "type": "fill_blank_choice",
       "conceptKey": "food.banana",
       "payload": {

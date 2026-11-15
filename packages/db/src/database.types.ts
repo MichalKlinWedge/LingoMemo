@@ -683,7 +683,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "exercise_type": "translate_ab"|"translate_ba"|"fill_blank_choice"|"inflection"|"listening"|"match_pairs"|"sentence_order","lesson_kind": "standard"|"review"|"test","part_of_speech": "noun"|"verb"|"adjective"|"adverb"|"phrase"|"other","point_reason": "exercise_correct"|"lesson_completed"|"streak_day"|"badge"|"review_completed"|"manual","progress_status": "in_progress"|"completed"
+            "exercise_type": "translate_ab"|"translate_ba"|"fill_blank_choice"|"inflection"|"listening"|"match_pairs"|"sentence_order"|"listen_match","lesson_kind": "standard"|"review"|"test","part_of_speech": "noun"|"verb"|"adjective"|"adverb"|"phrase"|"other","point_reason": "exercise_correct"|"lesson_completed"|"streak_day"|"badge"|"review_completed"|"manual","progress_status": "in_progress"|"completed"
           }
           CompositeTypes: {
             "fsrs_state": {
@@ -801,7 +801,7 @@ export type CompositeTypes<
 export const Constants = {
   "public": {
           Enums: {
-            "exercise_type": ["translate_ab", "translate_ba", "fill_blank_choice", "inflection", "listening", "match_pairs", "sentence_order"],"lesson_kind": ["standard", "review", "test"],"part_of_speech": ["noun", "verb", "adjective", "adverb", "phrase", "other"],"point_reason": ["exercise_correct", "lesson_completed", "streak_day", "badge", "review_completed", "manual"],"progress_status": ["in_progress", "completed"]
+            "exercise_type": ["translate_ab", "translate_ba", "fill_blank_choice", "inflection", "listening", "match_pairs", "sentence_order", "listen_match"],"lesson_kind": ["standard", "review", "test"],"part_of_speech": ["noun", "verb", "adjective", "adverb", "phrase", "other"],"point_reason": ["exercise_correct", "lesson_completed", "streak_day", "badge", "review_completed", "manual"],"progress_status": ["in_progress", "completed"]
           }
         }
 } as const

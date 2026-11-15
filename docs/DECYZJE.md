@@ -249,3 +249,31 @@ mały PNG — i są ostre w każdym rozmiarze, także na ekranach o dużej gęst
 Dodanie języka to jeden plik `public/flagi/<kod>.svg` i wiersz w `languages`; w kodzie nie
 zmienia się nic. Gdy pliku brakuje, komponent pokazuje ikonę kursu albo kod języka — nigdy
 dziurę w układzie.
+
+## Dopasowywanie ze słuchu i pary w obie strony (2026-11-15)
+
+Doszedł ósmy typ zadania: `listen_match`. Po lewej stronie są głośniki, po prawej słowa po
+polsku — dziecko słucha słowa w języku kursu i szuka jego znaczenia. Mechanika jest ta sama,
+co w `match_pairs`, więc payload (`pairs` z `a` i `b`), tasowanie kolumn i sprawdzanie
+odpowiedzi są wspólne; osobny jest tylko komponent.
+
+| Obszar | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Kierunek łączenia | zaczyna dowolna kolumna | dziecko i tak patrzy raz w lewo, raz w prawo; wymuszanie „najpierw lewa" było utrudnieniem bez zysku, a przy słuchu odwracało naturalny ruch | dotychczasowe „lewa, potem prawa" |
+| Kafelki ze słuchem | numer i głośnik, bez napisu | napis zamieniłby zadanie ze słuchu w zwykłe pary — dałoby się je zrobić, nie włączając dźwięku ani razu | pokazanie słowa po kliknięciu (po pierwszym odsłuchu reszta rozwiązuje się przez eliminację) |
+| Ponowne dotknięcie głośnika | odtwarza jeszcze raz, nie zdejmuje zaznaczenia | dziecko dotyka głośnika właśnie po to, żeby usłyszeć drugi raz | przełącznik zaznaczenia jak w kolumnie z napisami |
+| Liczba par | najwyżej 6 (w `match_pairs` jest 8) | usłyszane słowo trzeba utrzymać w pamięci, przeczytane zostaje na ekranie | ten sam limit co w parach |
+| Odpowiedź po błędzie | komplet par w jednej linijce („pies — dog, kot — cat") | po ośmiu dotknięciach samo „nie tym razem" niczego nie uczy; dotyczy teraz także `match_pairs` | pokazywanie, które pary były źle (zdradza resztę przy poprawianiu) |
+
+Walidacja payloadu dla `listen_match` jest ostrzejsza niż dla par: sprawdzamy, że każda para ma
+`a` i `b` jako napisy. Przy parach zły kształt widać od razu na ekranie, tutaj kończyłby się
+niemym głośnikiem, czyli czymś, co wygląda jak awaria przeglądarki.
+
+- **`alter type ... add value` musi iść osobną migracją.** Nowa wartość enuma jest widoczna
+  dopiero po zatwierdzeniu transakcji, a Postgres parsuje ciała funkcji SQL przy tworzeniu —
+  `validate_exercise_payload` z literałem `'listen_match'` w tej samej migracji wywala się na
+  „unsafe use of new value of enum type". Stąd `…_listen_match_enum.sql` i `…_listen_match.sql`.
+- **Tekst do przeczytania głosem musi pojechać do przeglądarki.** To nie jest wyciek klucza
+  odpowiedzi: rozwiązaniem jest przyporządkowanie, a tego w wydanym payloadzie nie ma — obie
+  kolumny są tasowane osobno. Tak samo działa zadanie `listening`, które od początku wysyła
+  słowo do wymówienia.

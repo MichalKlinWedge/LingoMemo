@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 
+import { CRUMB_HOME, CRUMB_PANEL } from "@/components/breadcrumbs";
 import { PageHeader } from "@/components/page-header";
 import { Loading, Shell } from "@/components/shell";
 import { requireAdmin } from "@/lib/auth";
@@ -56,7 +57,7 @@ export default function InvitesPage() {
   return (
     <Shell>
       <PageHeader
-        back={{ href: "/admin", label: "Panel" }}
+        crumbs={[CRUMB_HOME, CRUMB_PANEL]}
         title="Zaproszenia"
         intro="Konto w LingoMemo zakłada się wyłącznie z linku. Każdy link działa raz."
       />

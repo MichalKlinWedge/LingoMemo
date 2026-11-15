@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import { Flag } from "@/components/flag";
+import { CRUMB_COURSES, CRUMB_HOME, CRUMB_PANEL } from "@/components/breadcrumbs";
 import { PageHeader } from "@/components/page-header";
 import { Loading, Shell } from "@/components/shell";
 import { requireAdmin } from "@/lib/auth";
@@ -60,7 +61,7 @@ async function Course({ params }: { params: PageProps<"/admin/kursy/[slug]">["pa
   return (
     <>
       <PageHeader
-        back={{ href: "/admin/kursy", label: "Kursy" }}
+        crumbs={[CRUMB_HOME, CRUMB_PANEL, CRUMB_COURSES]}
         title={
           <>
             <Flag code={course.target_lang} fallback={course.icon} size={32} /> {course.title}

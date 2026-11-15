@@ -133,6 +133,20 @@
       }
     },
     {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj polskie słowo.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "pies", "b": "dog" },
+          { "a": "kot", "b": "cat" },
+          { "a": "ptak", "b": "bird" },
+          { "a": "ryba", "b": "fish" }
+        ]
+      }
+    },
+    {
       "type": "sentence_order",
       "conceptKey": "animal.dog",
       "points": 20,

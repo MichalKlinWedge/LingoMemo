@@ -117,6 +117,104 @@ describe('schemat importu', () => {
     expect(lessonImportSchema.safeParse(data).success).toBe(false);
   });
 
+  it('przyjmuje dopasowywanie ze słuchu i pilnuje liczby par', () => {
+    const pairs = [
+      { a: 'pies', b: 'dog' },
+      { a: 'kot', b: 'cat' },
+      { a: 'ptak', b: 'bird' },
+    ];
+    const withPairs = (list: { a: string; b: string }[]) => ({
+      ...minimalLesson(),
+      exercises: [{ type: 'listen_match' as const, payload: { lang: 'en-GB', pairs: list } }],
+    });
+
+    expect(lessonImportSchema.safeParse(withPairs(pairs)).success).toBe(true);
+    // Dwie pary to już nie zadanie, siedem — za dużo jak na pamięć słuchową dziecka.
+    expect(lessonImportSchema.safeParse(withPairs(pairs.slice(0, 2))).success).toBe(false);
+    expect(
+      lessonImportSchema.safeParse(
+        withPairs([...pairs, { a: 'ryba', b: 'fish' }, { a: 'koń', b: 'horse' }, { a: 'krowa', b: 'cow' }, { a: 'owca', b: 'sheep' }]),
+      ).success,
+    ).toBe(false);
+  });
+
+  it('nie pozwala na powtórzone słowo w dopasowywaniu ze słuchu', () => {
+    const data = {
+      ...minimalLesson(),
+      exercises: [
+        {
+          type: 'listen_match' as const,
+          payload: {
+            lang: 'en-GB',
+            pairs: [
+              { a: 'pies', b: 'dog' },
+              { a: 'kot', b: 'dog' },
+              { a: 'ptak', b: 'bird' },
+            ],
+          },
+        },
+      ],
+    };
+    const result = lessonImportSchema.safeParse(data);
+    expect(result.success).toBe(false);
+    if (result.success) return;
+    expect(formatIssues(result.error).join(' ')).toContain('do odsłuchania');
+  });
+
+  it('przyjmuje wybór obrazka i pilnuje liczby obrazków', () => {
+    const withOptions = (options: string[]) => ({
+      ...minimalLesson(),
+      exercises: [
+        {
+          type: 'image_choice' as const,
+          conceptKey: 'animal.dog',
+          payload: { prompt: 'pies', options, answer: '2026/pies.png' },
+        },
+      ],
+    });
+
+    expect(lessonImportSchema.safeParse(withOptions(['2026/pies.png', '2026/kot.png'])).success).toBe(true);
+    // Jeden obrazek to nie wybór, pięć nie zmieści się na telefonie bez przewijania.
+    expect(lessonImportSchema.safeParse(withOptions(['2026/pies.png'])).success).toBe(false);
+    expect(
+      lessonImportSchema.safeParse(
+        withOptions(['2026/pies.png', '2026/kot.png', '2026/ptak.png', '2026/ryba.png', '2026/kon.png']),
+      ).success,
+    ).toBe(false);
+    // Poprawnej odpowiedzi nie ma wśród obrazków.
+    expect(lessonImportSchema.safeParse(withOptions(['2026/kot.png', '2026/ptak.png'])).success).toBe(false);
+    // Ten sam obrazek dwa razy to dwie poprawne odpowiedzi, z których jedna liczy się jako błąd.
+    expect(lessonImportSchema.safeParse(withOptions(['2026/pies.png', '2026/pies.png'])).success).toBe(false);
+  });
+
+  it('w wyborze obrazka żąda ścieżki pliku, nie adresu, i języka przy głosie', () => {
+    const imageExercise = (payload: Record<string, unknown>) => ({
+      ...minimalLesson(),
+      exercises: [{ type: 'image_choice' as const, payload }],
+    });
+
+    const url = lessonImportSchema.safeParse(
+      imageExercise({
+        prompt: 'pies',
+        options: ['https://example.com/pies.png', '2026/kot.png'],
+        answer: 'https://example.com/pies.png',
+      }),
+    );
+    expect(url.success).toBe(false);
+    if (!url.success) expect(formatIssues(url.error).join(' ')).toContain('Obrazki');
+
+    const noLang = lessonImportSchema.safeParse(
+      imageExercise({
+        prompt: 'pies',
+        options: ['2026/pies.png', '2026/kot.png'],
+        answer: '2026/pies.png',
+        speak: 'dog',
+      }),
+    );
+    expect(noLang.success).toBe(false);
+    if (!noLang.success) expect(formatIssues(noLang.error).join(' ')).toContain('język');
+  });
+
   it('wymaga dokładnie jednego słowa głównego na język', () => {
     const data = minimalLesson();
     data.concepts[0]!.terms.en = [{ text: 'dog' }, { text: 'doggy' }];

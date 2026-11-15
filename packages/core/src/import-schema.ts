@@ -19,6 +19,17 @@ const nonEmpty = z.string().trim().min(1, 'nie może być puste').max(300, 'najw
 
 const langCode = z.string().regex(/^[a-z]{2}(-[A-Z]{2})?$/, 'kod języka, np. "pl" albo "en-GB"');
 
+/**
+ * Ścieżka pliku w buckecie `lesson-media` — dokładnie to, co panel „Obrazki” daje do skopiowania
+ * po wgraniu. Nie adres: adres zmienia się razem z projektem w chmurze, a ścieżka nie.
+ */
+const mediaPath = z
+  .string()
+  .trim()
+  .min(1, 'nie może być puste')
+  .max(300, 'najwyżej 300 znaków')
+  .regex(/^[a-z0-9][a-z0-9._\-/]*$/, 'ścieżka pliku z panelu „Obrazki”, np. "2026/pies.png"');
+
 const termForm = z.object({
   label: nonEmpty.max(40),
   text: nonEmpty,
@@ -87,6 +98,33 @@ const exercise = z.discriminatedUnion('type', [
   }),
   z.object({
     ...exerciseBase,
+    type: z.literal('image_choice'),
+    payload: z
+      .object({
+        prompt: nonEmpty,
+        // Najwyżej cztery: kafelek z obrazkiem jest duży i więcej nie mieści się na telefonie
+        // bez przewijania, czyli bez zgadywania w ciemno.
+        options: z.array(mediaPath).min(2).max(4),
+        answer: mediaPath,
+        /** Gdy jest, nad obrazkami staje głośnik — zadanie robi się „posłuchaj i wskaż”. */
+        speak: nonEmpty.optional(),
+        lang: langCode.optional(),
+      })
+      .refine((value) => value.options.includes(value.answer), {
+        path: ['answer'],
+        message: 'poprawna odpowiedź musi być jednym z obrazków',
+      })
+      .refine((value) => new Set(value.options).size === value.options.length, {
+        path: ['options'],
+        message: 'obrazki nie mogą się powtarzać',
+      })
+      .refine((value) => value.speak === undefined || value.lang !== undefined, {
+        path: ['lang'],
+        message: 'przy „speak” trzeba podać język',
+      }),
+  }),
+  z.object({
+    ...exerciseBase,
     type: z.literal('inflection'),
     payload: z.object({
       base: nonEmpty,
@@ -120,6 +158,29 @@ const exercise = z.discriminatedUnion('type', [
       .refine((value) => new Set(value.pairs.map((pair) => pair.b)).size === value.pairs.length, {
         path: ['pairs'],
         message: 'słowa po prawej nie mogą się powtarzać',
+      }),
+  }),
+  z.object({
+    ...exerciseBase,
+    type: z.literal('listen_match'),
+    payload: z
+      .object({
+        instruction: z.string().optional(),
+        lang: langCode,
+        /** `a` to kafelek po polsku, `b` to słowo czytane głosem. */
+        pairs: z
+          .array(z.object({ a: nonEmpty, b: nonEmpty, audioPath: z.string().optional() }))
+          .min(3)
+          // Sześć, a nie osiem jak w parach: tyle usłyszanych słów dziecko utrzyma w głowie.
+          .max(6),
+      })
+      .refine((value) => new Set(value.pairs.map((pair) => pair.a)).size === value.pairs.length, {
+        path: ['pairs'],
+        message: 'słowa po polsku nie mogą się powtarzać',
+      })
+      .refine((value) => new Set(value.pairs.map((pair) => pair.b)).size === value.pairs.length, {
+        path: ['pairs'],
+        message: 'słowa do odsłuchania nie mogą się powtarzać',
       }),
   }),
   z.object({

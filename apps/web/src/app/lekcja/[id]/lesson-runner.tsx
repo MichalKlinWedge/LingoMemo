@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ChoiceExercise } from "@/components/exercises/choice";
+import { ImageChoiceExercise } from "@/components/exercises/image-choice";
+import { ListenMatchExercise } from "@/components/exercises/listen-match";
 import { ListeningExercise } from "@/components/exercises/listening";
 import { MatchPairsExercise } from "@/components/exercises/match-pairs";
 import { SentenceOrderExercise } from "@/components/exercises/sentence-order";
@@ -180,8 +182,23 @@ export function LessonRunner({
 
       {exercise.type === "listening" ? (
         <ListeningExercise exercise={exercise} locked={locked} onAnswer={handleAnswer} />
+      ) : exercise.type === "listen_match" ? (
+        <ListenMatchExercise exercise={exercise} locked={locked} onAnswer={handleAnswer} />
       ) : exercise.type === "match_pairs" ? (
         <MatchPairsExercise exercise={exercise} locked={locked} onAnswer={handleAnswer} targetLang={targetLang} />
+      ) : exercise.type === "image_choice" ? (
+        <ImageChoiceExercise
+          exercise={exercise}
+          locked={locked}
+          onAnswer={handleAnswer}
+          targetLang={targetLang}
+          result={phase === "feedback" && verdict ? (verdict.correct ? "correct" : "wrong") : null}
+          correctAnswer={
+            phase === "feedback" && verdict && typeof verdict.correctAnswer === "string"
+              ? verdict.correctAnswer
+              : null
+          }
+        />
       ) : exercise.type === "sentence_order" ? (
         <SentenceOrderExercise exercise={exercise} locked={locked} onAnswer={handleAnswer} />
       ) : exercise.type === "translate_ab" || exercise.type === "fill_blank_choice" ? (
@@ -199,14 +216,31 @@ export function LessonRunner({
       {error && <p className="msg-error">{error}</p>}
 
       {phase === "feedback" && verdict && (
-        <Feedback verdict={verdict} onNext={next} last={index + 1 >= total} />
+        <Feedback
+          verdict={verdict}
+          onNext={next}
+          last={index + 1 >= total}
+          // Przy wyborze obrazka poprawną odpowiedzią jest ścieżka do pliku. Dziecku mówi
+          // ona tyle co nic — właściwy obrazek podświetla się na kafelku.
+          showAnswer={exercise.type !== "image_choice"}
+        />
       )}
     </div>
   );
 }
 
-function Feedback({ verdict, onNext, last }: { verdict: Verdict; onNext: () => void; last: boolean }) {
-  const shown = typeof verdict.correctAnswer === "string" ? verdict.correctAnswer : null;
+function Feedback({
+  verdict,
+  onNext,
+  last,
+  showAnswer = true,
+}: {
+  verdict: Verdict;
+  onNext: () => void;
+  last: boolean;
+  showAnswer?: boolean;
+}) {
+  const shown = showAnswer && typeof verdict.correctAnswer === "string" ? verdict.correctAnswer : null;
 
   return (
     <div

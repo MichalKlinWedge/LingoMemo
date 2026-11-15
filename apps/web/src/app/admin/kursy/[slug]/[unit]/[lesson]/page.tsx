@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
+import { CRUMB_COURSES, CRUMB_HOME, CRUMB_PANEL } from "@/components/breadcrumbs";
 import { PageHeader } from "@/components/page-header";
 import { Loading, Shell } from "@/components/shell";
 import { requireAdmin } from "@/lib/auth";
@@ -15,14 +16,14 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
 
   const { data: course } = await supabase
     .from("courses")
-    .select("id, slug, source_lang, target_lang")
+    .select("id, slug, title, source_lang, target_lang")
     .eq("slug", slug)
     .maybeSingle();
   if (!course) notFound();
 
   const { data: unit } = await supabase
     .from("units")
-    .select("id, slug")
+    .select("id, slug, title")
     .eq("course_id", course.id)
     .eq("slug", unitSlug)
     .maybeSingle();
@@ -62,7 +63,13 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
   return (
     <>
       <PageHeader
-        back={{ href: `/admin/kursy/${course.slug}/${unit.slug}`, label: "Lekcje" }}
+        crumbs={[
+          CRUMB_HOME,
+          CRUMB_PANEL,
+          CRUMB_COURSES,
+          { href: `/admin/kursy/${course.slug}`, label: course.title },
+          { href: `/admin/kursy/${course.slug}/${unit.slug}`, label: unit.title },
+        ]}
         title={
           <>
             <span aria-hidden>{lesson.icon}</span> {lesson.title}
@@ -113,7 +120,7 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
           })}
         </ul>
         <p className="text-base text-zinc-600 dark:text-zinc-400">
-          Zadania złożone ręcznie (rozsypanki, dopasowywanie par, luki w zdaniu) wchodzą{" "}
+          Zadania złożone ręcznie (rozsypanki, dopasowywanie par i ze słuchu, luki w zdaniu) wchodzą{" "}
           <Link href="/admin/import" className="back-link">
             importem JSON
           </Link>

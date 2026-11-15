@@ -299,6 +299,20 @@
       }
     },
     {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj polskie słowo.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "jeden", "b": "one" },
+          { "a": "dwa", "b": "two" },
+          { "a": "trzy", "b": "three" },
+          { "a": "cztery", "b": "four" }
+        ]
+      }
+    },
+    {
       "type": "sentence_order",
       "conceptKey": "number.two",
       "points": 20,

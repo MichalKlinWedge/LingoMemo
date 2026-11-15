@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
+import { CRUMB_COURSES, CRUMB_HOME, CRUMB_PANEL } from "@/components/breadcrumbs";
 import { PageHeader } from "@/components/page-header";
 import { Loading, Shell } from "@/components/shell";
 import { requireAdmin } from "@/lib/auth";
@@ -43,7 +44,12 @@ async function Unit({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit]"
   return (
     <>
       <PageHeader
-        back={{ href: `/admin/kursy/${course.slug}`, label: course.title }}
+        crumbs={[
+          CRUMB_HOME,
+          CRUMB_PANEL,
+          CRUMB_COURSES,
+          { href: `/admin/kursy/${course.slug}`, label: course.title },
+        ]}
         title={
           <>
             <span aria-hidden>{unit.icon}</span> {unit.title}

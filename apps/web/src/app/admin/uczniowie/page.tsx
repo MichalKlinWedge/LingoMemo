@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 
+import { CRUMB_HOME, CRUMB_PANEL } from "@/components/breadcrumbs";
 import { PageHeader } from "@/components/page-header";
 import { Loading, Shell } from "@/components/shell";
 import { requireAdmin } from "@/lib/auth";
@@ -43,7 +44,7 @@ export default function StudentsPage() {
   return (
     <Shell>
       <PageHeader
-        back={{ href: "/admin", label: "Panel" }}
+        crumbs={[CRUMB_HOME, CRUMB_PANEL]}
         title="Uczniowie"
         intro="Punkty, ukończone lekcje, przerobione słówka i seria dni."
       />

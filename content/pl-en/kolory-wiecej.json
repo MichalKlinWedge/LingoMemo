@@ -253,6 +253,20 @@
       }
     },
     {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj polskie słowo.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "czarny", "b": "black" },
+          { "a": "biały", "b": "white" },
+          { "a": "brązowy", "b": "brown" },
+          { "a": "różowy", "b": "pink" }
+        ]
+      }
+    },
+    {
       "type": "fill_blank_choice",
       "conceptKey": "color.white",
       "payload": {

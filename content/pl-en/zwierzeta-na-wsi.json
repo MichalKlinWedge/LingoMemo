@@ -277,6 +277,20 @@
       }
     },
     {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj polskie słowo.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "koń", "b": "horse" },
+          { "a": "krowa", "b": "cow" },
+          { "a": "owca", "b": "sheep" },
+          { "a": "świnia", "b": "pig" }
+        ]
+      }
+    },
+    {
       "type": "sentence_order",
       "conceptKey": "animal.horse",
       "points": 20,

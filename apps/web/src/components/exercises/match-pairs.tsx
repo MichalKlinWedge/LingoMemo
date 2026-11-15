@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
-
 import { SpeakButton } from "./speak-button";
 import { type ExerciseProps, list, str } from "./types";
+import { useMatching } from "./use-matching";
 
 /**
- * Dopasowywanie par. Dziecko dotyka słowa po lewej, potem po prawej — para znika z kolumn
- * i ląduje na liście połączonych. Nie kodujemy par kolorami: przy ośmiu parach i tak byłyby
- * nie do odróżnienia, a dziecko z zaburzeniami widzenia barw zostałoby z niczym.
+ * Dopasowywanie par: dwie kolumny słów, po polsku i w języku kursu. Dziecko dotyka kafelka
+ * po jednej stronie i odpowiednika po drugiej — para znika z kolumn i ląduje na liście
+ * połączonych. Zaczyna dowolna kolumna, bo nie ma powodu narzucać kierunku.
+ *
+ * Nie kodujemy par kolorami: przy ośmiu parach i tak byłyby nie do odróżnienia, a dziecko
+ * z zaburzeniami widzenia barw zostałoby z niczym.
  */
 export function MatchPairsExercise({
   exercise,
@@ -19,24 +21,7 @@ export function MatchPairsExercise({
   const left = list(exercise.payload.pairsLeft);
   const right = list(exercise.payload.pairsRight);
 
-  const [picked, setPicked] = useState<string | null>(null);
-  const [pairs, setPairs] = useState<{ a: string; b: string }[]>([]);
-
-  const usedLeft = new Set(pairs.map((pair) => pair.a));
-  const usedRight = new Set(pairs.map((pair) => pair.b));
-
-  const join = (b: string) => {
-    if (locked || picked === null) return;
-    const next = [...pairs, { a: picked, b }];
-    setPicked(null);
-    setPairs(next);
-    if (next.length === left.length) onAnswer({ pairs: next });
-  };
-
-  const undo = (a: string) => {
-    if (locked) return;
-    setPairs(pairs.filter((pair) => pair.a !== a));
-  };
+  const { pairs, used, pick, undo, isPicked } = useMatching(left.length, (done) => onAnswer({ pairs: done }));
 
   return (
     <div className="flex flex-col gap-4">
@@ -52,7 +37,7 @@ export function MatchPairsExercise({
                 type="button"
                 className="btn-answer"
                 style={{ minHeight: "3.5rem", background: "var(--color-grass-light)", borderColor: "var(--color-grass)" }}
-                onClick={() => undo(pair.a)}
+                onClick={() => !locked && undo(pair)}
                 disabled={locked}
                 aria-label={`Rozłącz parę ${pair.a} — ${pair.b}`}
               >
@@ -69,16 +54,16 @@ export function MatchPairsExercise({
       <div className="grid grid-cols-2 gap-3">
         <ul className="flex flex-col gap-3">
           {left
-            .filter((item) => !usedLeft.has(item))
+            .filter((item) => !used.a.has(item))
             .map((item) => (
               <li key={item}>
                 <button
                   type="button"
                   className="btn-answer"
                   style={{ minHeight: "3.5rem", fontSize: "1.25rem" }}
-                  aria-pressed={picked === item}
+                  aria-pressed={isPicked("a", item)}
                   disabled={locked}
-                  onClick={() => setPicked(picked === item ? null : item)}
+                  onClick={() => pick("a", item)}
                 >
                   {item}
                 </button>
@@ -88,15 +73,16 @@ export function MatchPairsExercise({
 
         <ul className="flex flex-col gap-3">
           {right
-            .filter((item) => !usedRight.has(item))
+            .filter((item) => !used.b.has(item))
             .map((item) => (
               <li key={item} className="flex items-center gap-1">
                 <button
                   type="button"
                   className="btn-answer flex-1"
                   style={{ minHeight: "3.5rem", fontSize: "1.25rem" }}
-                  disabled={locked || picked === null}
-                  onClick={() => join(item)}
+                  aria-pressed={isPicked("b", item)}
+                  disabled={locked}
+                  onClick={() => pick("b", item)}
                 >
                   {item}
                 </button>

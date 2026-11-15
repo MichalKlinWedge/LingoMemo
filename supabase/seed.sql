@@ -170,7 +170,17 @@ begin
      jsonb_build_object(
        'prompt', 'Ułóż zdanie: Mam psa.',
        'tokens', jsonb_build_array('I', 'have', 'a', 'dog'),
-       'solution', jsonb_build_array('I', 'have', 'a', 'dog')), 20);
+       'solution', jsonb_build_array('I', 'have', 'a', 'dog')), 20),
+
+    (v_lesson, 'listen_match', 104, null,
+     jsonb_build_object(
+       'instruction', 'Posłuchaj i dopasuj polskie słowo.',
+       'lang', 'en-GB',
+       'pairs', jsonb_build_array(
+         jsonb_build_object('a', 'pies', 'b', 'dog'),
+         jsonb_build_object('a', 'kot',  'b', 'cat'),
+         jsonb_build_object('a', 'ptak', 'b', 'bird'),
+         jsonb_build_object('a', 'ryba', 'b', 'fish'))), 20);
 
   -- Po jednej powtórce na dział. Nie ma własnych zadań — zestaw buduje się z tego, co według
   -- FSRS czeka na powtórzenie u konkretnego dziecka.
