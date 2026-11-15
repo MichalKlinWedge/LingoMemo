@@ -26,8 +26,13 @@
   --color-coral: #e04a45;
   --color-coral-light: #fde6e5;
   --color-sun: #ffc83d;
-  /* Obrys bursztynowego kwadracika: samo `--color-sun` na jasnym tle jest nie do zobaczenia. */
-  --color-sun-dark: #b36b00;
+
+  /* Skala trudności: jeden kolor, trzy nasycenia. Trzy różne barwy (fiolet, błękit, bursztyn)
+     wyglądały jak trzy osobne rzeczy, a nie jak łatwy → średni → trudny. Im ciemniej, tym
+     trudniej — to czyta się bez legendy. */
+  --level-1: #b9a6ff;
+  --level-2: #7c5cff;
+  --level-3: #3f2a9e;
   --color-sky: #39b6e8;
 
   --font-sans: var(--font-nunito), system-ui, sans-serif;
@@ -596,11 +601,11 @@ h2 {
     height: 1.5rem;
     flex: none;
     border-radius: 0.375rem;
-    border: 2px solid var(--color-brand);
+    border: 2px solid var(--level-1);
   }
 
   .stage[data-done="true"] {
-    background: var(--color-brand);
+    background: var(--level-1);
   }
 
   /* Jedna linia kwadracików pod kafelkiem lekcji: etapy poziomu łatwego, a za nimi wejścia
@@ -619,25 +624,28 @@ h2 {
      kolorze), błękit średni, bursztyn trudny. Zielony i koralowy są zarezerwowane na „dobrze"
      i „źle", więc tutaj nie występują. */
   .level-box {
+    --level-color: var(--level-2);
     display: inline-flex;
     width: 1.5rem;
     height: 1.5rem;
     flex: none;
     border-radius: 0.375rem;
-    border: 2px solid var(--color-sky);
+    border: 2px solid var(--level-color);
     border-bottom-width: 3px;
   }
 
   .level-box[data-level="3"] {
-    border-color: var(--color-sun-dark);
+    --level-color: var(--level-3);
   }
 
-  .level-box[data-done="true"] {
-    background: var(--color-sky);
+  /* Zaczęte, ale niezaliczone: pół kwadracika. Pusty kwadracik po przejściu całego wejścia
+     wygląda jak usterka, a różnica jest prawdziwa — do zaliczenia trzeba próg lekcji. */
+  .level-box[data-state="tried"] {
+    background: linear-gradient(to top, var(--level-color) 50%, transparent 50%);
   }
 
-  .level-box[data-level="3"][data-done="true"] {
-    background: var(--color-sun);
+  .level-box[data-state="done"] {
+    background: var(--level-color);
   }
 
   /* Zamknięty blednie, ale ZOSTAJE w kolorze swojego poziomu: szary kwadracik nie mówiłby,

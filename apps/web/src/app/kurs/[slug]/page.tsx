@@ -210,7 +210,11 @@ function LevelBox({
 }) {
   const level = row.level ?? 2;
   const name = LEVEL_NAME[level] ?? "trudniejszy";
-  const done = row.status === "completed";
+  // Trzy stany, nie dwa: zaczęte bez zaliczenia to pół kwadracika. Samo „puste albo pełne"
+  // kazało myśleć, że przejście się nie zapisało, a różnica jest prawdziwa: zaliczenie wymaga
+  // progu lekcji, nie samego dojścia do końca.
+  const state = row.status === "completed" ? "done" : row.status === "in_progress" ? "tried" : "new";
+  const done = state === "done";
   const label = `${title} — poziom ${name}`;
 
   if (!row.is_unlocked) {
@@ -231,9 +235,9 @@ function LevelBox({
       href={`/lekcja/${lesson}?poziom=${level}`}
       className="level-box"
       data-level={level}
-      data-done={done}
-      aria-label={done ? `${label} — zrobiony` : label}
-      title={label}
+      data-state={state}
+      aria-label={done ? `${label} — zrobiony` : state === "tried" ? `${label} — zaczęty` : label}
+      title={state === "tried" ? `${label} — jeszcze nie zaliczony` : label}
     />
   );
 }
