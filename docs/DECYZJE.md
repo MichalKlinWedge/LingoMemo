@@ -160,3 +160,23 @@ podejść do tego samego słówka w jednej lekcji jest poprawnie uwzględnione.
 | Koncepty przy imporcie | nigdy nie kasowane | wiszą na nich stan powtórek i historia prób | wymiana razem z zadaniami |
 | Obrazki | bucket `lesson-media`, odczyt publiczny, zapis tylko dla admina | obrazek jabłka nie jest tajemnicą, a publiczny odczyt pozwala użyć zwykłego `<img>` bez podpisywanych adresów, które wygasają | bucket prywatny z podpisywaniem każdego adresu |
 | Wgrywanie plików | prosto z przeglądarki do Storage | omija limit wielkości żądania w Server Action | przesyłanie przez serwer aplikacji |
+
+## Konta i hasła w panelu (2026-11-15)
+
+| Obszar | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Zmiana cudzego hasła | funkcja `set_user_password` w bazie, `security definer`, skrót bcrypt prosto do `auth.users` | aplikacja webowa zostaje bez klucza `service_role`, a ten omija RLS całkowicie — jeden wyciek zmiennej środowiskowej odsłania całą bazę | `auth.admin.updateUserById` z Admin API (wymaga `service_role` w aplikacji) oraz link resetujący wysyłany mailem (dziecko nie ma własnej skrzynki) |
+| Format skrótu | `crypt(hasło, gen_salt('bf', 10))` z pgcrypto | GoTrue trzyma hasła jako bcrypt `$2a$10$…` i czyta je bez żadnej zmiany po stronie Auth | argon2 (GoTrue go zapisze, ale pgcrypto nie umie go wyprodukować) |
+| Po zmianie hasła | kasowanie wierszy z `auth.sessions` dla tego konta | kto znał stare hasło i ma otwartą kartę, traci dostęp — inaczej zmiana hasła niczego nie załatwia | zostawienie sesji (hasło zmienia się właśnie dlatego, że ktoś niepowołany mógł je poznać) |
+| Ślad po zmianie | `app_private.password_resets`: komu, kto, kiedy | panel pokazuje datę ostatniej zmiany, a przy dwóch administratorach widać, kto ruszał konto | kolumna w `profiles` (uczeń może czytać swój profil, a to nie jego sprawa) |
+| Hasło w formularzu | pole widoczne, nie zakryte kropkami, z przyciskiem „Wymyśl hasło" | administrator musi je przeczytać dziecku, a z bazy nie odzyska go nigdy | pole typu `password` z powtórzeniem (dorosły wpisuje hasło, którego nie widzi, i dyktuje je z pamięci) |
+
+### Pułapki znalezione przy kontach
+
+- **GoTrue nie znosi `NULL` w kolumnach tokenów `auth.users`** (`confirmation_token` i pokrewne).
+  Konto wstawione ręcznie do bazy z `NULL` wywala logowanie błędem „Database error querying
+  schema"; konta z rejestracji mają tam pusty napis. Dotyczy tylko danych testowych wstawianych
+  z palca — `set_user_password` tych kolumn nie dotyka.
+- **Test pgTAP musi wrócić do roli bazy przed odczytem `auth.users`.** Claimy do `set_config`
+  czyta się z tej tabeli, a rola `authenticated` jej nie widzi — bez `reset role` test pada
+  na „permission denied for table users", nie na sprawdzanej regule.
