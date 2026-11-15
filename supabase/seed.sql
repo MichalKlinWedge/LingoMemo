@@ -1,21 +1,9 @@
--- Dane startowe: języki, odznaki i kurs demonstracyjny PL -> EN.
+-- Kurs demonstracyjny PL -> EN.
 --
--- Uruchamiane przez `npm run db:reset`. Kurs demo istnieje po to, żeby było na czym testować
--- silnik lekcji, zanim powstanie panel administratora — docelowo treść wchodzi importem JSON.
-
-insert into public.languages (code, name_native, name_pl, tts_lang) values
-  ('pl', 'polski',  'polski',    'pl-PL'),
-  ('en', 'English', 'angielski', 'en-GB')
-on conflict (code) do nothing;
-
-insert into public.badges (code, title, description, icon, rule, sort_order) values
-  ('first_lesson',  'Pierwszy krok',   'Ukończ pierwszą lekcję.',             '🥾', '{"kind":"lessons_completed","n":1,"points":25}',  10),
-  ('five_lessons',  'Piątka z rzędu',  'Ukończ pięć lekcji.',                 '🖐️', '{"kind":"lessons_completed","n":5,"points":50}',  20),
-  ('perfect',       'Bez błędu',       'Przejdź lekcję bezbłędnie.',          '💯', '{"kind":"perfect_lessons","n":1,"points":50}',    30),
-  ('streak_3',      'Trzy dni z rzędu','Ucz się trzy dni pod rząd.',          '🔥', '{"kind":"streak_days","n":3,"points":50}',        40),
-  ('words_10',      'Dziesięć słówek', 'Zapamiętaj dziesięć słówek na dłużej.','🧠', '{"kind":"words_learned","n":10,"points":75}',     50),
-  ('points_500',    'Pięćset punktów', 'Zbierz 500 punktów.',                 '⭐', '{"kind":"points_total","n":500,"points":100}',    60)
-on conflict (code) do nothing;
+-- Uruchamiane przez `npm run db:reset`, czyli wyłącznie na lokalnej bazie. Języki i odznaki
+-- NIE są tutaj — to dane słownikowe, których aplikacja potrzebuje także w chmurze, więc leżą
+-- w migracji `…_reference_data.sql`. Tu zostaje sama treść do testowania silnika lekcji;
+-- docelowo lekcje wchodzą importem JSON z panelu administratora.
 
 do $seed$
 declare

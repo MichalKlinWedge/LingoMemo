@@ -70,10 +70,16 @@ npm run supabase -- link --project-ref xyrfcawecvpwriqepodo
 npm run db:push
 ```
 
+`db:push` wgrywa same migracje — `seed.sql` jest wyłącznie lokalny. Dane, bez których
+aplikacja nie zadziała (języki, odznaki), leżą dlatego w migracji `…_reference_data.sql`.
+
 W panelu Supabase, raz: Authentication → Hooks → **Before User Created** → Postgres
 (`public.before_user_created`) oraz dopisanie adresu produkcyjnego do Redirect URLs.
+Bez włączonego hooka konto założy sobie każdy — to nie jest krok opcjonalny.
 
-W Vercel: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_SITE_URL`.
+W Vercel (projekt [lingo-memo](https://vercel.com/michalklinwedge/lingo-memo)):
+`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_SITE_URL`.
+Build jest opisany w `vercel.json` (region `fra1`, budowanie z workspace `apps/web`).
 `SUPABASE_SERVICE_ROLE_KEY` **nie trafia do Vercela** — jest potrzebny tylko lokalnie.
 
 ## Dokumenty
