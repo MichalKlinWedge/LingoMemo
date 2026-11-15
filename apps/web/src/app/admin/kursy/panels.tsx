@@ -11,6 +11,7 @@ import {
   updateCourseAction,
   updateLessonAction,
   updateUnitAction,
+  updateWordAction,
 } from "@/app/admin/kursy/actions";
 import { Field, type FormState, Status, SubmitButton } from "@/components/forms";
 
@@ -280,6 +281,48 @@ export function AddWord({
         <SubmitButton pendingLabel="Dodaję…">Dodaj słówko</SubmitButton>
       </form>
     </section>
+  );
+}
+
+/**
+ * Poprawienie słówka. Zmiana przepisuje też treść zadań wygenerowanych z pary słów — inaczej
+ * literówka poprawiona w słówku zostawałaby w zadaniu, które dziecko widzi na ekranie.
+ */
+export function EditWord({
+  conceptId,
+  source,
+  target,
+  tag,
+  sourceLabel,
+  targetLabel,
+  conceptKey,
+}: {
+  conceptId: string;
+  source: string;
+  target: string;
+  tag: string;
+  sourceLabel: string;
+  targetLabel: string;
+  conceptKey: string;
+}) {
+  const [state, action] = useActionState<FormState, FormData>(updateWordAction, {});
+
+  return (
+    <Editor summary="Popraw">
+      <form action={action} className="flex flex-col gap-3">
+        <input type="hidden" name="concept_id" value={conceptId} />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label={`Po ${sourceLabel}`} name="source" defaultValue={source} />
+          <Field label={`Po ${targetLabel}`} name="target" defaultValue={target} />
+        </div>
+        <Field label="Emoji" name="tags" required={false} defaultValue={tag} />
+        <p className="text-base text-zinc-600 dark:text-zinc-400">
+          Klucz <code>{conceptKey}</code> zostaje — po nim import rozpoznaje to słówko.
+        </p>
+        <Status state={state} />
+        <SubmitButton pendingLabel="Zapisuję…">Zapisz słówko</SubmitButton>
+      </form>
+    </Editor>
   );
 }
 

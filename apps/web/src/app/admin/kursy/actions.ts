@@ -245,6 +245,42 @@ export async function addWordAction(_prev: FormState, form: FormData): Promise<F
   };
 }
 
+/**
+ * Poprawienie słówka już dodanego do lekcji. Klucza nie da się tu zmienić: po nim import
+ * rozpoznaje, że to ten sam wpis, więc podmiana klucza zdublowałaby słówko przy następnym pliku.
+ */
+export async function updateWordAction(_prev: FormState, form: FormData): Promise<FormState> {
+  const { supabase } = await requireAdmin();
+
+  const conceptId = text(form, "concept_id");
+  if (!conceptId) return { error: "Nie wiadomo, które słówko poprawić." };
+
+  const source = text(form, "source");
+  const target = text(form, "target");
+  if (!source || !target) return { error: "Wpisz słowo w obu językach." };
+
+  const tag = text(form, "tags");
+
+  const { data, error } = await supabase.rpc("admin_update_word", {
+    p_concept: conceptId,
+    p_source: source,
+    p_target: target,
+    p_tags: tag === "" ? [] : [tag],
+  });
+
+  if (error) return { error: dbErrorMessage(error, "Nie udało się poprawić słówka.") };
+
+  const result = data as { updated?: number; skipped?: number } | null;
+  const skipped = result?.skipped ?? 0;
+  refresh();
+  return {
+    ok:
+      skipped > 0
+        ? `Poprawione. Zadań ułożonych ręcznie nie ruszam — sprawdź je sam: ${skipped}.`
+        : "Poprawione razem z zadaniami.",
+  };
+}
+
 /** „Strawberry!" na „strawberry". Bez ogonków — klucz jest techniczny i ma być stabilny. */
 function autoKey(value: string): string {
   const base = value

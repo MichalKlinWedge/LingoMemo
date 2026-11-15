@@ -216,6 +216,9 @@ okazji druga pułapka: aliasu w zapytaniu nie wolno nazwać tak jak zmiennej rek
 | Usuwanie treści | brak w panelu | na pojęciach wiszą próby i stan powtórek (`lesson_items` ma `restrict`), a dziecko traci wtedy historię; ukrycie załatwia to samo bezpiecznie | pełny CRUD z kasowaniem |
 | Zapisy na kurs | polityka `enrollments_admin` obok `enrollments_insert_own` | administrator zapisuje i wypisuje cudze konta, dziecko dalej tylko siebie | funkcja `security definer` (jedna operacja na jednej tabeli nie potrzebuje transakcji) |
 | Wypisanie z kursu | nie rusza postępów | `lesson_progress`, `attempts` i `srs_state` wiszą na użytkowniku, nie na zapisie, więc ponowny zapis przywraca stan | kasowanie postępów razem z zapisem |
+| Poprawianie słówka | `admin_update_word` przepisuje też `payload` zadań z automatu, we wszystkich lekcjach kursu | treść zadania jest kopią słowa (sprawdzanie odpowiedzi nie schodzi przy każdej próbie do słownika), więc literówka poprawiona tylko w `terms` zostawałaby na ekranie dziecka | update samych `terms` (zadania zostają błędne) oraz kasowanie i dodawanie słówka od nowa (traci stan powtórek) |
+| Zadania ułożone ręcznie przy poprawce | zostają nietknięte, funkcja zwraca ich liczbę | w zdaniu z luką czy rozsypance słowo bywa odmienione albo wplecione w zdanie — automat popsułby je bardziej, niż naprawił | przepisywanie wszystkich zadań pojęcia |
+| Klucz słówka przy edycji | niezmienny | po kluczu import rozpoznaje, że to ten sam wpis; podmiana zdublowałaby słówko przy następnym pliku | edytowalny klucz |
 
 ### Pułapki znalezione przy panelu treści
 

@@ -7,7 +7,7 @@ import { Loading, Shell } from "@/components/shell";
 import { requireAdmin } from "@/lib/auth";
 import { dbLoadError } from "@/lib/db-error";
 
-import { AddWord, LessonSettings } from "../../../panels";
+import { AddWord, EditWord, LessonSettings } from "../../../panels";
 
 async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit]/[lesson]">["params"] }) {
   const { slug, unit: unitSlug, lesson: lessonSlug } = await params;
@@ -84,19 +84,30 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
           {(items ?? []).map((item) => {
             const concept = keyOf(item.concept_id);
             return (
-              <li key={item.concept_id} className="card flex flex-wrap items-center justify-between gap-3 p-4">
-                <span className="flex min-w-0 items-center gap-3">
-                  <span className="text-3xl" aria-hidden>
-                    {concept?.tags?.[0]}
-                  </span>
-                  <span className="flex min-w-0 flex-col">
-                    <span className="font-semibold">
-                      {termOf(item.concept_id, course.source_lang)} → {termOf(item.concept_id, course.target_lang)}
+              <li key={item.concept_id} className="card flex flex-col gap-3 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <span className="flex min-w-0 items-center gap-3">
+                    <span className="text-3xl" aria-hidden>
+                      {concept?.tags?.[0]}
                     </span>
-                    <span className="text-base text-zinc-600 dark:text-zinc-400">{concept?.key}</span>
+                    <span className="flex min-w-0 flex-col">
+                      <span className="font-semibold">
+                        {termOf(item.concept_id, course.source_lang)} → {termOf(item.concept_id, course.target_lang)}
+                      </span>
+                      <span className="text-base text-zinc-600 dark:text-zinc-400">{concept?.key}</span>
+                    </span>
                   </span>
-                </span>
-                <span className="chip">zadań: {taskCount(item.concept_id)}</span>
+                  <span className="chip">zadań: {taskCount(item.concept_id)}</span>
+                </div>
+                <EditWord
+                  conceptId={item.concept_id}
+                  source={termOf(item.concept_id, course.source_lang)}
+                  target={termOf(item.concept_id, course.target_lang)}
+                  tag={concept?.tags?.[0] ?? ""}
+                  conceptKey={concept?.key ?? ""}
+                  sourceLabel={nameOf(course.source_lang).toLowerCase()}
+                  targetLabel={nameOf(course.target_lang).toLowerCase()}
+                />
               </li>
             );
           })}

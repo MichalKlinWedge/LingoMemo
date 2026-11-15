@@ -4,7 +4,7 @@
 -- sprawdzamy to, co ma własną funkcję albo własną politykę.
 
 begin;
-select plan(14);
+select plan(21);
 
 create or replace function pg_temp.make_user(p_email text) returns uuid
 language plpgsql as $$
@@ -168,6 +168,98 @@ select is(
   (select count(*)::integer from public.exercises e where e.lesson_id = (select id from t_lesson)),
   3,
   'powtórne dodanie tego samego słówka nie dubluje zadań'
+);
+
+-- --- poprawianie słówka ---
+--
+-- Drugie słówko w lekcji daje pierwszemu dystraktor w zadaniu wyboru, a ręcznie ułożone zadanie
+-- sprawdza, czy poprawka go nie rusza.
+select set_config('role', 'authenticated', true),
+       set_config('request.jwt.claims',
+         (select json_build_object('sub', u.id, 'role', 'authenticated',
+                 'app_metadata', coalesce(u.raw_app_meta_data, '{}'::jsonb))::text
+            from auth.users u where u.id = (select id from t_ids where name = 'admin')), true);
+select public.admin_add_word((select id from t_lesson), 'food.pear', 'gruszka', 'pear');
+reset role;
+
+create temporary table t_concepts as
+select key, id from public.concepts where key in ('food.apple', 'food.pear');
+grant select on t_concepts to authenticated;
+
+insert into public.exercises (lesson_id, type, sort_order, concept_id, payload, points)
+values (
+  (select id from t_lesson), 'fill_blank_choice', 99, (select id from t_concepts where key = 'food.apple'),
+  jsonb_build_object(
+    'sentence', 'I eat an {{blank}} every day.',
+    'options', jsonb_build_array('apple', 'pear', 'plum'),
+    'answer', 'apple'),
+  10
+);
+
+select set_config('role', 'authenticated', true),
+       set_config('request.jwt.claims',
+         (select json_build_object('sub', u.id, 'role', 'authenticated',
+                 'app_metadata', coalesce(u.raw_app_meta_data, '{}'::jsonb))::text
+            from auth.users u where u.id = (select id from t_ids where name = 'uczen')), true);
+
+select throws_ok(
+  format('select public.admin_update_word(%L, ''jabłko'', ''apples'')', (select id from t_concepts where key = 'food.apple')),
+  '42501',
+  null,
+  'uczeń nie poprawi słówka'
+);
+
+reset role;
+
+select set_config('role', 'authenticated', true),
+       set_config('request.jwt.claims',
+         (select json_build_object('sub', u.id, 'role', 'authenticated',
+                 'app_metadata', coalesce(u.raw_app_meta_data, '{}'::jsonb))::text
+            from auth.users u where u.id = (select id from t_ids where name = 'admin')), true);
+
+select is(
+  (select public.admin_update_word((select id from t_concepts where key = 'food.apple'), 'jabłko', 'apples', array['🍎'])),
+  jsonb_build_object('updated', 3, 'skipped', 1),
+  'poprawka przepisuje trzy zadania z automatu i zostawia jedno ułożone ręcznie'
+);
+
+reset role;
+
+select is(
+  (select array_agg(t.text order by t.lang) from public.terms t
+    where t.concept_id = (select id from t_concepts where key = 'food.apple') and t.is_primary),
+  array['apples', 'jabłko'],
+  'słowo główne poprawione w obu językach kursu'
+);
+
+select is(
+  (select e.payload from public.exercises e
+    where e.concept_id = (select id from t_concepts where key = 'food.apple') and e.type = 'translate_ab'),
+  jsonb_build_object('prompt', 'jabłko', 'accepted', jsonb_build_array('apples')),
+  'zadanie z polskiego na angielski ma nową treść'
+);
+
+select is(
+  (select e.payload ->> 'speak' from public.exercises e
+    where e.concept_id = (select id from t_concepts where key = 'food.apple') and e.type = 'listening'),
+  'apples',
+  'zadanie ze słuchu czyta nowe słowo'
+);
+
+-- Dystraktor w cudzym zadaniu zostaje stary i tak ma być: to tylko błędna odpowiedź do wyboru,
+-- a przepisywanie cudzych list popsułoby te ułożone ręcznie przy imporcie.
+select is(
+  (select e.payload -> 'options' from public.exercises e
+    where e.concept_id = (select id from t_concepts where key = 'food.pear') and e.type = 'translate_ab'),
+  jsonb_build_array('apple', 'pear'),
+  'lista wyboru w zadaniu innego słówka zostaje nietknięta'
+);
+
+select is(
+  (select e.payload ->> 'answer' from public.exercises e
+    where e.lesson_id = (select id from t_lesson) and e.type = 'fill_blank_choice'),
+  'apple',
+  'zadanie ułożone ręcznie zostaje nietknięte'
 );
 
 select * from finish();
