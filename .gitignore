@@ -22,3 +22,9 @@ supabase/.temp
 .DS_Store
 Thumbs.db
 npm-debug.*
+
+# Powiązanie z projektem Vercel (lokalne)
+.vercel/
+
+.vercel
+.env*
