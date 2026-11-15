@@ -292,6 +292,54 @@ h2 {
     background: var(--color-brand-light);
   }
 
+  /* Liczba słówek jako plakietka przy sowie. Samo „18" zamiast „18 słówek": przy kilkunastu
+     lekcjach w dziale to samo słowo powtarzane pod każdą z nich jest szumem, a liczba i tak
+     jest tylko dla dorosłego — dziecko patrzy na kafelek. Znaczenie zostaje w `aria-label`. */
+  .word-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.25rem;
+    height: 2.25rem;
+    padding: 0 0.5rem;
+    border-radius: 9999px;
+    border: 2px solid var(--line);
+    background: var(--color-zinc-100);
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-zinc-600);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .word-count {
+      background: var(--color-zinc-800);
+      color: var(--color-zinc-300);
+    }
+  }
+
+  /* Liczba i sowa w jednym rzędzie — dwie osobne linie zjadały wysokość każdego pudełka. */
+  .lesson-meta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  /* Pudełko lekcji: kafelek, tytuł, liczba słówek, sowa i kwadraciki to jedna rzecz, więc mają
+     wspólną ramkę. Bez niej przy kilkunastu lekcjach w rzędzie nie było widać, co należy do
+     czego — kwadraciki jednej lekcji czytało się jako podpis sąsiedniej. Ramkę i tło daje
+     `.card`, tutaj zostaje sam układ. */
+  .lesson-box {
+    display: flex;
+    width: 9.5rem;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0.5rem;
+    text-align: center;
+  }
+
   /* Miejsce na sowę jest w każdej kolumnie, także tam, gdzie sowy nie ma (lekcja zamknięta,
      powtórka). Bez tego rząd kwadracików pod kafelkiem bez sowy podjeżdżał o 3,5 rem wyżej
      niż u sąsiada. */

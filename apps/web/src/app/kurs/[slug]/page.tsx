@@ -110,7 +110,7 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
               // etapów i dwa poziomy, wszystkie po 1,5 rem — a `.marks` się nie zawija, więc
               // przy 7 rem wychodziły poza kafelek i wchodziły sąsiadowi w gap.
               return (
-                <li key={lesson.id} className="flex w-36 flex-col items-center gap-2 text-center">
+                <li key={lesson.id} className="card lesson-box">
                   {state === "locked" ? (
                     <div
                       className="tile"
@@ -139,25 +139,32 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
                       (`mt-auto`): tytuły mają różną liczbę wierszy, więc osobno liczba słówek
                       i sowa stały w każdej kolumnie na innej wysokości. */}
                   <span className="mt-auto flex flex-col items-center gap-2">
-                    {/* Powtórka obejmuje wszystkie przerobione słówka działu, zaległe na
+                    {/* Liczba słówek i sowa w jednym rzędzie. Sama liczba bez słowa „słówek":
+                        pod kilkunastoma lekcjami to samo słowo jest szumem. Znaczenie zostaje
+                        w `aria-label`, bo z samej cyfry czytnik ekranu niczego nie wyczyta.
+                        Powtórka obejmuje wszystkie przerobione słówka działu, zaległe na
                         początku — więc liczba jest taka sama jak przy zwykłej lekcji. */}
-                    <span className="text-sm text-zinc-500">{plural(lesson.word_count ?? 0, WORDS)}</span>
-                    {/* Sowa prowadzi na planszę ze słówkami lekcji: dziecko najpierw ich słucha,
-                        potem wchodzi w lekcję. Przy zamkniętej lekcji sowy nie ma, bo polityki
-                        bazy i tak nie wydadzą jej słówek, a przy powtórce — bo powtórka nie ma
-                        własnych słówek, składa się z przerobionych. Miejsce po niej zostaje
-                        puste, żeby rzędy zgadzały się w całym dziale. */}
-                    <span className="owl-slot">
-                      {state !== "locked" && lesson.kind !== "review" && (lesson.word_count ?? 0) > 0 && (
-                        <Link
-                          href={`/lekcja/${lesson.id}/nauka`}
-                          className="owl"
-                          aria-label={`${lesson.title} — posłuchaj słówek`}
-                          title="Posłuchaj słówek"
-                        >
-                          <span aria-hidden>🦉</span>
-                        </Link>
-                      )}
+                    <span className="lesson-meta">
+                      <span className="word-count" aria-label={plural(lesson.word_count ?? 0, WORDS)}>
+                        {lesson.word_count ?? 0}
+                      </span>
+                      {/* Sowa prowadzi na planszę ze słówkami lekcji: dziecko najpierw ich słucha,
+                          potem wchodzi w lekcję. Przy zamkniętej lekcji sowy nie ma, bo polityki
+                          bazy i tak nie wydadzą jej słówek, a przy powtórce — bo powtórka nie ma
+                          własnych słówek, składa się z przerobionych. Miejsce po niej zostaje
+                          puste, żeby rzędy zgadzały się w całym dziale. */}
+                      <span className="owl-slot">
+                        {state !== "locked" && lesson.kind !== "review" && (lesson.word_count ?? 0) > 0 && (
+                          <Link
+                            href={`/lekcja/${lesson.id}/nauka`}
+                            className="owl"
+                            aria-label={`${lesson.title} — posłuchaj słówek`}
+                            title="Posłuchaj słówek"
+                          >
+                            <span aria-hidden>🦉</span>
+                          </Link>
+                        )}
+                      </span>
                     </span>
                     {/* Jedna linia kwadracików na samym dole kafelka: etapy poziomu łatwego oraz
                         wejścia na średni i trudny. */}
