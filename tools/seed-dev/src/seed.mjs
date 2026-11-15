@@ -3,8 +3,11 @@
  * Zakłada pierwszego administratora. To jedyne miejsce w całym projekcie, które używa klucza
  * `service_role` — aplikacja webowa go nie widzi i widzieć nie może, bo omija RLS.
  *
- *   npm run seed:dev -- --email rodzic@dom.local --password "..."
- *   npm run seed:dev -- --email ... --password ... --remote    # projekt w chmurze
+ *   npm run seed:dev -- --email rodzic@dom.local --password "prawdziwe-haslo"
+ *   npm run seed:dev -- --email rodzic@dom.local --remote      # hasło z LINGOMEMO_ADMIN_PASSWORD
+ *
+ * Hasło podane w wierszu poleceń zostaje w historii powłoki — do konta produkcyjnego lepiej
+ * użyć zmiennej `LINGOMEMO_ADMIN_PASSWORD`.
  *
  * Bez `--remote` skrypt odmawia pracy poza localhostem. Samo nadanie roli robi funkcja
  * `bootstrap_admin`, która działa wyłącznie wtedy, gdy nie ma jeszcze żadnego administratora —
@@ -26,11 +29,23 @@ function arg(name) {
 
 const remote = args.includes('--remote');
 const email = arg('email');
-const password = arg('password');
+const password = arg('password') ?? process.env.LINGOMEMO_ADMIN_PASSWORD;
+
+/** Zakończenie bez `process.exit()`: na Windowsie potrafi ono wywrócić Node, gdy klient HTTP
+ *  ma jeszcze otwarte gniazda, i prawdziwy komunikat ginie wśród śmieci z libuv. */
+function fail(message) {
+  console.error(message);
+  process.exitCode = 1;
+  return undefined;
+}
 
 if (!email || !password) {
-  console.error('Użycie: npm run seed:dev -- --email <adres> --password <hasło> [--remote]');
-  process.exit(1);
+  throw new Error('Użycie: npm run seed:dev -- --email <adres> --password <hasło> [--remote]');
+}
+
+// Supabase odrzuci krótsze; sprawdzamy od razu, żeby nie jechać po to do serwera.
+if (password.length < 8) {
+  throw new Error('Hasło musi mieć co najmniej 8 znaków (podane: ' + password.length + ').');
 }
 
 function parseEnv(text) {
@@ -50,8 +65,7 @@ if (remote) {
   url = env.NEXT_PUBLIC_SUPABASE_URL;
   serviceKey = env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !serviceKey) {
-    console.error('W .env.local brakuje NEXT_PUBLIC_SUPABASE_URL albo SUPABASE_SERVICE_ROLE_KEY.');
-    process.exit(1);
+    throw new Error('W .env.local brakuje NEXT_PUBLIC_SUPABASE_URL albo SUPABASE_SERVICE_ROLE_KEY.');
   }
 } else {
   const raw = execSync('npx --yes supabase@2.122.0 status -o json', {
@@ -66,8 +80,7 @@ if (remote) {
 
 const host = new URL(url).hostname;
 if (!remote && host !== 'localhost' && host !== '127.0.0.1' && host !== '::1') {
-  console.error(`Odmawiam: ${url} nie jest localhostem. Do projektu w chmurze użyj --remote.`);
-  process.exit(1);
+  throw new Error(`Odmawiam: ${url} nie jest localhostem. Do projektu w chmurze użyj --remote.`);
 }
 
 const admin = createClient(url, serviceKey, { auth: { autoRefreshToken: false, persistSession: false } });
@@ -83,15 +96,17 @@ const created = await admin.auth.admin.createUser({
 });
 
 if (created.error && !/already been registered|already exists/i.test(created.error.message)) {
-  console.error(`Nie udało się założyć konta: ${created.error.message}`);
-  process.exit(1);
+  fail(`Nie udało się założyć konta: ${created.error.message}`);
+} else {
+  const { error } = await admin.rpc('bootstrap_admin', { p_email: email });
+  if (error) {
+    // Konto założone przed chwilą, a roli nie udało się nadać (najczęściej: administrator już
+    // jest) — kasujemy je, żeby nie zostawiać konta, które powstało bez zaproszenia.
+    const newId = created.data?.user?.id;
+    if (newId) await admin.auth.admin.deleteUser(newId);
+    fail(`Nie udało się nadać roli administratora: ${error.message}`);
+  } else {
+    console.log(`Administrator gotowy: ${email} (${url})`);
+    console.log('Zaloguj się i wygeneruj zaproszenia w /admin/zaproszenia.');
+  }
 }
-
-const { error } = await admin.rpc('bootstrap_admin', { p_email: email });
-if (error) {
-  console.error(`Nie udało się nadać roli administratora: ${error.message}`);
-  process.exit(1);
-}
-
-console.log(`Administrator gotowy: ${email} (${url})`);
-console.log('Zaloguj się i wygeneruj zaproszenia w /admin/zaproszenia.');
