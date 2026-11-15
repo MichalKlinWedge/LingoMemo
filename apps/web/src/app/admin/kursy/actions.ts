@@ -1,5 +1,6 @@
 "use server";
 
+import { imageChoicePayloadSchema } from "@lingomemo/core";
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -380,6 +381,108 @@ export async function updateWordAction(_prev: FormState, form: FormData): Promis
         ? `Poprawione. Zadań ułożonych ręcznie nie ruszam — sprawdź je sam: ${skipped}.`
         : "Poprawione razem z zadaniami.",
   };
+}
+
+/**
+ * Zdjęcie słówka z lekcji razem z jej zadaniami dla tego słówka. Samo słówko zostaje przy
+ * kursie, bo wisi na nim stan powtórek dziecka — chyba że nikt go jeszcze nie widział i nie
+ * występuje w żadnej innej lekcji; wtedy baza kasuje je całkiem, żeby nie zostawiać w kursie
+ * niewidocznego śmiecia. Który przypadek zaszedł, mówi odpowiedź funkcji.
+ */
+export async function removeWordAction(_prev: FormState, form: FormData): Promise<FormState> {
+  const { supabase } = await requireAdmin();
+
+  const lessonId = text(form, "lesson_id");
+  const conceptId = text(form, "concept_id");
+  if (!lessonId || !conceptId) return { error: "Nie wiadomo, które słówko usunąć." };
+
+  const { data, error } = await supabase.rpc("admin_remove_word", {
+    p_lesson: lessonId,
+    p_concept: conceptId,
+  });
+
+  if (error) return { error: dbErrorMessage(error, "Nie udało się usunąć słówka.") };
+
+  const result = data as { removed?: string; exercises?: number } | null;
+  refresh();
+  return {
+    ok:
+      result?.removed === "course"
+        ? `Słówko usunięte z kursu razem z zadaniami (${result?.exercises ?? 0}) — nikt go jeszcze nie przerabiał.`
+        : `Słówko zdjęte z lekcji razem z jej zadaniami (${result?.exercises ?? 0}). Zostaje przy kursie, bo jest już w powtórkach albo w innej lekcji.`,
+  };
+}
+
+/** Nazwy pól po polsku do komunikatu z zoda — „options: najwyżej cztery" nic nie mówi. */
+const IMAGE_FIELD: Record<string, string> = {
+  prompt: "Słowo",
+  options: "Obrazki",
+  answer: "Poprawny obrazek",
+  speak: "Słowo do przeczytania",
+  lang: "Język",
+};
+
+/**
+ * Zadanie z obrazkiem. Jedyne zadanie składane w panelu z ręki — reszta wchodzi importem.
+ *
+ * Idzie zwykłym `insert` pod polityką `exercises_admin`: to jeden wiersz, więc nie ma tu czego
+ * pakować w transakcję. Kształt payloadu sprawdza ten sam schemat zoda, co import, a na końcu
+ * jeszcze raz `validate_exercise_payload` w bazie.
+ */
+export async function addImageTaskAction(_prev: FormState, form: FormData): Promise<FormState> {
+  const { supabase } = await requireAdmin();
+
+  const lessonId = text(form, "lesson_id");
+  if (!lessonId) return { error: "Nie wiadomo, do której lekcji dodać zadanie." };
+
+  const prompt = text(form, "prompt");
+  const options = form
+    .getAll("options")
+    .map((value) => String(value).trim())
+    .filter((value) => value !== "");
+
+  // Bez zaznaczonego obrazka zod powiedziałby tylko „nie może być puste" przy ścieżce pliku.
+  if (text(form, "answer") === "") return { error: "Zaznacz, który obrazek jest poprawny." };
+
+  const parsed = imageChoicePayloadSchema.safeParse({
+    prompt,
+    options,
+    answer: text(form, "answer"),
+    // Głos czyta to samo słowo, które widać — osobnego pola nie ma po co pokazywać.
+    ...(flag(form, "speak") ? { speak: prompt, lang: text(form, "lang") } : {}),
+  });
+
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0];
+    const label = IMAGE_FIELD[String(issue?.path?.[0] ?? "")];
+    const message = issue?.message ?? "Sprawdź pola zadania.";
+    return { error: label ? `${label}: ${message}` : message };
+  }
+
+  // Zadanie ląduje na końcu lekcji. Kolejność zmienia się potem importem — w panelu nie ma
+  // jeszcze przestawiania zadań.
+  const { data: last } = await supabase
+    .from("exercises")
+    .select("sort_order")
+    .eq("lesson_id", lessonId)
+    .order("sort_order", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const { error } = await supabase.from("exercises").insert({
+    lesson_id: lessonId,
+    type: "image_choice",
+    sort_order: (last?.sort_order ?? 0) + 1,
+    // Bez słówka zadanie nie liczy się do powtórek — stan FSRS wisi na słówku, nie na zadaniu.
+    concept_id: optional(form, "concept_id"),
+    payload: parsed.data,
+    points: 10,
+  });
+
+  if (error) return { error: dbErrorMessage(error, "Nie udało się dodać zadania z obrazkiem.") };
+
+  refresh();
+  return { ok: `Zadanie gotowe: „${parsed.data.prompt}" i ${parsed.data.options.length} obrazki do wyboru.` };
 }
 
 /** „Strawberry!" na „strawberry". Bez ogonków — klucz jest techniczny i ma być stabilny. */

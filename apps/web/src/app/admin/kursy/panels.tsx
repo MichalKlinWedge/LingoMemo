@@ -10,6 +10,7 @@ import {
   deleteCourseAction,
   deleteLessonAction,
   deleteUnitAction,
+  removeWordAction,
   setEnrollmentAction,
   updateCourseAction,
   updateLessonAction,
@@ -477,6 +478,7 @@ export function AddWord({
  */
 export function EditWord({
   conceptId,
+  lessonId,
   source,
   target,
   tag,
@@ -485,6 +487,7 @@ export function EditWord({
   conceptKey,
 }: {
   conceptId: string;
+  lessonId: string;
   source: string;
   target: string;
   tag: string;
@@ -493,6 +496,7 @@ export function EditWord({
   conceptKey: string;
 }) {
   const [state, action] = useActionState<FormState, FormData>(updateWordAction, {});
+  const [removeState, removeAction] = useActionState<FormState, FormData>(removeWordAction, {});
 
   return (
     <Editor summary="Popraw">
@@ -508,6 +512,22 @@ export function EditWord({
         </p>
         <Status state={state} />
         <SubmitButton pendingLabel="Zapisuję…">Zapisz słówko</SubmitButton>
+      </Form>
+
+      {/* Osobny formularz, nie przycisk w tamtym: to inna akcja, z własnym komunikatem.
+          Bez przepisywania nazwy — zdjęcie słówka z lekcji odwraca się jednym dodaniem,
+          a stan powtórek dziecka i tak zostaje. */}
+      <Form action={removeAction} state={removeState} className="mt-4 flex flex-col gap-2">
+        <input type="hidden" name="lesson_id" value={lessonId} />
+        <input type="hidden" name="concept_id" value={conceptId} />
+        <p className="text-base text-zinc-600 dark:text-zinc-400">
+          Zdjęcie z lekcji kasuje też jej zadania z tym słówkiem. Słówko nietknięte przez żadne
+          dziecko i nieużywane gdzie indziej znika z kursu.
+        </p>
+        <Status state={removeState} />
+        <SubmitButton variant="danger" pendingLabel="Usuwam…">
+          Usuń słówko z lekcji
+        </SubmitButton>
       </Form>
     </Editor>
   );

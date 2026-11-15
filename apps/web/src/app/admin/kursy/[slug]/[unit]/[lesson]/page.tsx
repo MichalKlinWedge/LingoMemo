@@ -8,6 +8,7 @@ import { Loading, Shell } from "@/components/shell";
 import { requireAdmin } from "@/lib/auth";
 import { dbLoadError } from "@/lib/db-error";
 
+import { AddImageTask } from "../../../image-task";
 import { AddWord, EditWord, LessonSettings } from "../../../panels";
 
 async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit]/[lesson]">["params"] }) {
@@ -48,7 +49,7 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
     supabase.from("lesson_items").select("concept_id, sort_order").eq("lesson_id", lesson.id).order("sort_order"),
     supabase.from("lessons").select("id, title").eq("unit_id", unit.id).order("sort_order"),
     supabase.from("exercises").select("id, concept_id, type").eq("lesson_id", lesson.id),
-    supabase.from("languages").select("code, name_pl"),
+    supabase.from("languages").select("code, name_pl, tts_lang"),
     // Co przepadnie przy kasowaniu: postępy dzieci z tej lekcji i warunki wstępne innych lekcji.
     supabase.from("lesson_progress").select("user_id", { count: "exact", head: true }).eq("lesson_id", lesson.id),
     supabase.from("lessons").select("id", { count: "exact", head: true }).eq("prerequisite_lesson_id", lesson.id),
@@ -69,6 +70,14 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
   const taskCount = (conceptId: string) => (exercises ?? []).filter((item) => item.concept_id === conceptId).length;
 
   const others = (siblings ?? []).filter((item) => item.id !== lesson.id);
+
+  // Zadanie z obrazkiem wskazuje słówko lekcji — bez niego nie wchodzi do powtórek.
+  const words = (items ?? []).map((item) => ({
+    id: item.concept_id,
+    label: `${termOf(item.concept_id, course.source_lang)} → ${termOf(item.concept_id, course.target_lang)}`,
+  }));
+  // Bez `tts_lang` nie ma czym przeczytać słowa, więc głośnik w ogóle się nie pokazuje.
+  const ttsLang = (languages ?? []).find((lang) => lang.code === course.target_lang)?.tts_lang ?? null;
 
   return (
     <>
@@ -125,6 +134,7 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
                 </div>
                 <EditWord
                   conceptId={item.concept_id}
+                  lessonId={lesson.id}
                   source={termOf(item.concept_id, course.source_lang)}
                   target={termOf(item.concept_id, course.target_lang)}
                   tag={concept?.tags?.[0] ?? ""}
@@ -137,7 +147,8 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
           })}
         </ul>
         <p className="text-base text-zinc-600 dark:text-zinc-400">
-          Zadania złożone ręcznie (rozsypanki, dopasowywanie par i ze słuchu, luki w zdaniu) wchodzą{" "}
+          Zadanie z obrazkiem dodasz niżej. Reszta złożonych ręcznie (rozsypanki, dopasowywanie par
+          i ze słuchu, luki w zdaniu) wchodzi{" "}
           <Link href="/admin/import" className="back-link">
             importem JSON
           </Link>
@@ -149,6 +160,13 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
         lessonId={lesson.id}
         sourceLabel={nameOf(course.source_lang).toLowerCase()}
         targetLabel={nameOf(course.target_lang).toLowerCase()}
+      />
+
+      <AddImageTask
+        lessonId={lesson.id}
+        words={words}
+        speakLang={ttsLang}
+        speakLabel={nameOf(course.target_lang)}
       />
 
       <Link href={`/lekcja/${lesson.id}`} className="btn-secondary self-start">

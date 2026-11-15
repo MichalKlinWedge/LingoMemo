@@ -544,6 +544,9 @@ isOneToOne: false
 "admin_import_lesson":
 { Args: { "p_payload": Json }; Returns: Json
                            },
+"admin_remove_word":
+{ Args: { "p_concept": string,"p_lesson": string }; Returns: Json
+                           },
 "admin_update_word":
 { Args: { "p_concept": string,"p_source": string,"p_tags"?: (string)[],"p_target": string }; Returns: Json
                            },

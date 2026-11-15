@@ -74,6 +74,37 @@ const translatePayload = z.object({
   options: z.array(nonEmpty).min(2).max(6).optional(),
 });
 
+/**
+ * Payload wyboru obrazka. Osobno od reszty, bo sprawdza go też formularz w panelu — zadanie
+ * z obrazkiem jest jedynym, które administrator składa z ręki, nie plikiem importu, a jedno
+ * źródło prawdy znaczy, że panel i import przyjmują dokładnie to samo.
+ */
+export const imageChoicePayloadSchema = z
+  .object({
+    prompt: nonEmpty,
+    // Najwyżej cztery: kafelek z obrazkiem jest duży i więcej nie mieści się na telefonie
+    // bez przewijania, czyli bez zgadywania w ciemno.
+    options: z.array(mediaPath).min(2, 'podaj co najmniej dwa obrazki').max(4, 'najwyżej cztery obrazki'),
+    answer: mediaPath,
+    /** Gdy jest, nad obrazkami staje głośnik — zadanie robi się „posłuchaj i wskaż”. */
+    speak: nonEmpty.optional(),
+    lang: langCode.optional(),
+  })
+  .refine((value) => value.options.includes(value.answer), {
+    path: ['answer'],
+    message: 'poprawna odpowiedź musi być jednym z obrazków',
+  })
+  .refine((value) => new Set(value.options).size === value.options.length, {
+    path: ['options'],
+    message: 'obrazki nie mogą się powtarzać',
+  })
+  .refine((value) => value.speak === undefined || value.lang !== undefined, {
+    path: ['lang'],
+    message: 'przy „speak” trzeba podać język',
+  });
+
+export type ImageChoicePayload = z.infer<typeof imageChoicePayloadSchema>;
+
 const exercise = z.discriminatedUnion('type', [
   z.object({ ...exerciseBase, type: z.literal('translate_ab'), payload: translatePayload }),
   z.object({ ...exerciseBase, type: z.literal('translate_ba'), payload: translatePayload }),
@@ -99,29 +130,7 @@ const exercise = z.discriminatedUnion('type', [
   z.object({
     ...exerciseBase,
     type: z.literal('image_choice'),
-    payload: z
-      .object({
-        prompt: nonEmpty,
-        // Najwyżej cztery: kafelek z obrazkiem jest duży i więcej nie mieści się na telefonie
-        // bez przewijania, czyli bez zgadywania w ciemno.
-        options: z.array(mediaPath).min(2).max(4),
-        answer: mediaPath,
-        /** Gdy jest, nad obrazkami staje głośnik — zadanie robi się „posłuchaj i wskaż”. */
-        speak: nonEmpty.optional(),
-        lang: langCode.optional(),
-      })
-      .refine((value) => value.options.includes(value.answer), {
-        path: ['answer'],
-        message: 'poprawna odpowiedź musi być jednym z obrazków',
-      })
-      .refine((value) => new Set(value.options).size === value.options.length, {
-        path: ['options'],
-        message: 'obrazki nie mogą się powtarzać',
-      })
-      .refine((value) => value.speak === undefined || value.lang !== undefined, {
-        path: ['lang'],
-        message: 'przy „speak” trzeba podać język',
-      }),
+    payload: imageChoicePayloadSchema,
   }),
   z.object({
     ...exerciseBase,
