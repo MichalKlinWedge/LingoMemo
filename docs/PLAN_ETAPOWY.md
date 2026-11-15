@@ -59,6 +59,22 @@ zajmuje inny projekt na tej maszynie.
 drugie użycie linku i link po terminie odrzucone tym samym komunikatem; rejestracja bez tokenu
 odrzucona przez hook.
 
+**Stan (2026-11-15):** zrobione i sprawdzone od końca do końca w przeglądarce oraz bezpośrednio
+na API rejestracji. Bez tokenu: `403 — Konto zakłada się z linku z zaproszeniem.` Z ważnym
+tokenem: konto powstaje, uczeń jest zapisany na kurs. Ten sam link drugi raz:
+`403 — Zaproszenie jest nieprawidłowe lub wygasło.` 58 testów pgTAP (doszło 17 dla zaproszeń).
+
+Trzy rzeczy wyszły dopiero przy uruchomieniu:
+- `invite_preview` czytało `FOUND` po instrukcji `INSERT`, która je nadpisuje — każdy token
+  wyglądał na ważny. Teraz wynik zapytania jest zapamiętywany w zmiennej.
+- Hooka Auth nie wystarczy dopisać do `config.toml` i zrobić `db reset` — kontener Auth czyta
+  konfigurację przy starcie, więc trzeba `npm run db:stop && npm run db:start`. Zanim to zrobiłem,
+  rejestracja przechodziła bez żadnego tokenu.
+- Token zaproszenia zostawał w metadanych konta: trigger go usuwał, ale Auth zapisuje wiersz
+  użytkownika jeszcze raz po triggerze i nadpisuje zmianę. Czyści go teraz akcja `acceptInvite`.
+  Test pgTAP sprawdzał wcześniej usuwanie w triggerze i przechodził — czyli sprawdzał zachowanie,
+  którego w działającym systemie nie było. Zastąpiony asercją o tym, co trigger naprawdę robi.
+
 ---
 
 ## Etap 3 — silnik lekcji (MVP)

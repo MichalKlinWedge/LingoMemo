@@ -72,3 +72,19 @@ po cichu psułby terminy powtórek. Stałe skopiowane do `packages/core` pilnuje
 
 **Powtórki tego samego dnia** obsługuje FSRS-6 natywnie (`t = 0`, wzór short-term), więc kilka
 podejść do tego samego słówka w jednej lekcji jest poprawnie uwzględnione.
+
+## Pułapki znalezione przy Etapie 2 (2026-11-15)
+
+- **`FOUND` w plpgsql obowiązuje tylko do następnej instrukcji.** `select ... into` ustawia je,
+  ale każdy kolejny `insert` nadpisuje. Wynik zapytania trzeba zapamiętać w zmiennej, zanim
+  zrobi się cokolwiek innego.
+- **Kontener Auth czyta `config.toml` przy starcie.** Po dopisaniu hooka `db reset` nie wystarcza
+  — potrzebny jest `npm run db:stop && npm run db:start`. Do czasu restartu rejestracja działa
+  tak, jakby hooka nie było, czyli bez żadnej kontroli zaproszeń.
+- **Auth nadpisuje metadane użytkownika po triggerach na `auth.users`.** Czego trigger nie zdąży
+  zmienić w `raw_user_meta_data`, to i tak przepadnie — zmiany po rejestracji robi się
+  z aplikacji przez `auth.updateUser`.
+- **Argumenty opcjonalne RPC w typach generowanych z bazy są `| undefined`, nie `| null`.**
+  Przekazanie `null` nie przechodzi kontroli typów.
+- **Przekazanie argumentów przez zagnieżdżone skrypty npm wymaga `--` na końcu** skryptu
+  nadrzędnego (`npm run seed --workspace tools/seed-dev --`), inaczej flagi po prostu znikają.

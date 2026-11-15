@@ -34,8 +34,15 @@ npm install
 cp .env.example .env.local      # uzupełnij, jeśli łączysz się z bazą w chmurze
 npm run db:start                # lokalna baza Supabase
 npm run db:reset                # schemat z migracji + dane demo
+npm run seed:dev -- --email rodzic@dom.local --password "..."   # pierwszy administrator
 npm run web:local               # http://localhost:3000
 ```
+
+Konta zakłada się wyłącznie z zaproszenia, więc pierwszy administrator powstaje skryptem.
+Kolejne osoby zaprasza się linkiem z `/admin/zaproszenia`.
+
+Po zmianie sekcji `[auth]` w `supabase/config.toml` (np. hooka rejestracji) trzeba
+`npm run db:stop && npm run db:start` — `db:reset` nie przeładowuje kontenera Auth.
 
 Lokalny Supabase chodzi na portach **54421–54429** (API `54421`, baza `54422`, Studio `54423`),
 a nie na domyślnych 54321–54329 — domyślne zajmuje inny projekt na tej samej maszynie.
