@@ -1,0 +1,29 @@
+{
+  "name": "lingomemo",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "tools/*"
+  ],
+  "scripts": {
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "check": "npm run typecheck && npm run lint && npm run test",
+    "web": "node scripts/sync-env.mjs && npm run dev --workspace apps/web",
+    "web:local": "node scripts/sync-env.mjs --local && npm run dev --workspace apps/web",
+    "env:sync": "node scripts/sync-env.mjs",
+    "supabase": "npx --yes supabase@2.122.0",
+    "db:start": "npx --yes supabase@2.122.0 start",
+    "db:stop": "npx --yes supabase@2.122.0 stop",
+    "db:reset": "npx --yes supabase@2.122.0 db reset",
+    "db:push": "npx --yes supabase@2.122.0 db push",
+    "test:db": "npx --yes supabase@2.122.0 test db",
+    "gen": "npm run gen --workspace packages/db",
+    "seed:dev": "npm run seed --workspace tools/seed-dev"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

@@ -1,0 +1,306 @@
+@import "tailwindcss";
+
+/*
+ * Motyw „LingoMemo”: ciepłe, jasne tło, fiolet jako kolor akcji, zieleń i koral wyłącznie jako
+ * odpowiedź „dobrze / źle”, słoneczny żółty na punkty i gwiazdki. Skala `zinc` jest przemalowana
+ * na cieplejszą, więc istniejące klasy `zinc-*` od razu pasują do motywu.
+ */
+@theme {
+  --color-zinc-50: #fdfaf5;
+  --color-zinc-100: #f6f0e7;
+  --color-zinc-200: #e9e1d4;
+  --color-zinc-300: #d6cbb9;
+  --color-zinc-400: #a79d8e;
+  --color-zinc-500: #7b7366;
+  --color-zinc-600: #5d564b;
+  --color-zinc-700: #46403a;
+  --color-zinc-800: #332e2a;
+  --color-zinc-900: #231f1c;
+  --color-zinc-950: #161311;
+
+  --color-brand: #7c5cff;
+  --color-brand-dark: #6243e6;
+  --color-brand-light: #ece7ff;
+  --color-grass: #1fa463;
+  --color-grass-light: #dcf5e8;
+  --color-coral: #e04a45;
+  --color-coral-light: #fde6e5;
+  --color-sun: #ffc83d;
+  --color-sky: #39b6e8;
+
+  --font-sans: var(--font-nunito), system-ui, sans-serif;
+  --font-display: var(--font-baloo), var(--font-nunito), system-ui, sans-serif;
+}
+
+:root {
+  --background: #fffaf2;
+  --foreground: var(--color-zinc-900);
+  --surface: #ffffff;
+  --line: var(--color-zinc-200);
+  --shadow: 0 2px 0 0 var(--color-zinc-200);
+  /* Dzieci klikają palcem — najmniejszy przycisk ma 56 px, kafel odpowiedzi 72 px. */
+  --tap: 3.5rem;
+  --tap-answer: 4.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1a1714;
+    --foreground: var(--color-zinc-100);
+    --surface: var(--color-zinc-900);
+    --line: var(--color-zinc-800);
+    --shadow: 0 2px 0 0 var(--color-zinc-800);
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  /* Duże litery bez ruszania skali `rem` — odstępy Tailwinda zostają normalne. */
+  font-size: 1.25rem;
+  line-height: 1.6;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 2.25rem;
+}
+
+h2 {
+  font-size: 1.75rem;
+}
+
+@layer components {
+  /* --- przyciski --- */
+  .btn-primary,
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: var(--tap);
+    padding: 0.75rem 1.5rem;
+    border-radius: 1.25rem;
+    border: 2px solid transparent;
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.06s ease, background-color 0.15s ease;
+  }
+
+  .btn-primary {
+    background: var(--color-brand);
+    border-color: var(--color-brand-dark);
+    border-bottom-width: 4px;
+    color: #ffffff;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: var(--color-brand-dark);
+  }
+
+  .btn-secondary {
+    background: var(--surface);
+    border-color: var(--line);
+    border-bottom-width: 4px;
+    color: var(--foreground);
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    background: var(--color-zinc-100);
+  }
+
+  /* Wciśnięcie „dociska” przycisk — widoczna reakcja bez animacji. */
+  .btn-primary:active:not(:disabled),
+  .btn-secondary:active:not(:disabled) {
+    transform: translateY(2px);
+    border-bottom-width: 2px;
+  }
+
+  .btn-primary:disabled,
+  .btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-primary:focus-visible,
+  .btn-secondary:focus-visible,
+  .btn-answer:focus-visible,
+  .field:focus-visible {
+    outline: 3px solid var(--color-sky);
+    outline-offset: 2px;
+  }
+
+  /* --- kafel odpowiedzi: główny element lekcji --- */
+  .btn-answer {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    min-height: var(--tap-answer);
+    padding: 1rem 1.25rem;
+    border-radius: 1.5rem;
+    border: 2px solid var(--line);
+    border-bottom-width: 5px;
+    background: var(--surface);
+    color: var(--foreground);
+    font-size: 1.375rem;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .btn-answer:hover:not(:disabled) {
+    border-color: var(--color-brand);
+    background: var(--color-brand-light);
+  }
+
+  .btn-answer:active:not(:disabled) {
+    transform: translateY(2px);
+    border-bottom-width: 3px;
+  }
+
+  .btn-answer[aria-pressed="true"] {
+    border-color: var(--color-brand);
+    background: var(--color-brand-light);
+  }
+
+  .btn-answer[data-state="correct"] {
+    border-color: var(--color-grass);
+    background: var(--color-grass-light);
+  }
+
+  .btn-answer[data-state="wrong"] {
+    border-color: var(--color-coral);
+    background: var(--color-coral-light);
+  }
+
+  /* --- kafel lekcji na mapie --- */
+  .tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    width: 6rem;
+    height: 6rem;
+    border-radius: 2rem;
+    border: 2px solid var(--line);
+    border-bottom-width: 6px;
+    background: var(--surface);
+    font-family: var(--font-display);
+    font-size: 2rem;
+  }
+
+  .tile[data-state="done"] {
+    border-color: var(--color-grass);
+    background: var(--color-grass-light);
+  }
+
+  .tile[data-state="available"] {
+    border-color: var(--color-brand);
+    background: var(--color-brand-light);
+  }
+
+  .tile[data-state="locked"] {
+    opacity: 0.55;
+    filter: grayscale(1);
+    cursor: not-allowed;
+  }
+
+  /* --- pozostałe klocki --- */
+  .card {
+    border-radius: 1.5rem;
+    border: 2px solid var(--line);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+
+  .card-title {
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    font-weight: 700;
+  }
+
+  .field {
+    width: 100%;
+    min-height: var(--tap);
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    border: 2px solid var(--line);
+    background: var(--surface);
+    color: var(--foreground);
+    font-size: 1.25rem;
+  }
+
+  .field::placeholder {
+    color: var(--color-zinc-400);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    background: var(--color-zinc-100);
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-height: 2.75rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-zinc-600);
+  }
+
+  .back-link:hover {
+    color: var(--color-brand);
+  }
+
+  .msg-error,
+  .msg-ok {
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    font-weight: 600;
+  }
+
+  .msg-error {
+    background: var(--color-coral-light);
+    color: #8f2420;
+  }
+
+  .msg-ok {
+    background: var(--color-grass-light);
+    color: #0f5c37;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .msg-error {
+      background: color-mix(in srgb, var(--color-coral) 28%, var(--surface));
+      color: #ffd9d7;
+    }
+
+    .msg-ok {
+      background: color-mix(in srgb, var(--color-grass) 28%, var(--surface));
+      color: #d6f6e6;
+    }
+
+    .chip {
+      background: var(--color-zinc-800);
+    }
+  }
+}
