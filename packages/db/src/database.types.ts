@@ -538,6 +538,9 @@ isOneToOne: false
             "admin_add_word":
 { Args: { "p_key": string,"p_lesson": string,"p_source": string,"p_tags"?: (string)[],"p_target": string }; Returns: Json
                            },
+"admin_delete_course":
+{ Args: { "p_course": string }; Returns: Json
+                           },
 "admin_import_lesson":
 { Args: { "p_payload": Json }; Returns: Json
                            },

@@ -1,7 +1,9 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { type ReactNode, useEffect, useId, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
+
+import { slugify } from "@lingomemo/core";
 
 /**
  * Wspólny kontrakt akcji serwera. Każda zwraca albo błąd do pokazania, albo potwierdzenie —
@@ -27,11 +29,107 @@ export function Status({ state }: { state: FormState }) {
   return null;
 }
 
+/** Co trzeba zapamiętać o jednym polu, żeby je odtworzyć: wartość albo zaznaczenie. */
+type Wpisane = { name: string; value: string; checked: boolean; kind: "value" | "checked" };
+
+function zapamietaj(form: HTMLFormElement): Wpisane[] {
+  return Array.from(form.elements).flatMap((element) => {
+    const pole = element as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+    // Pole bez nazwy nic nie wysyła, a pliku i tak nie da się wpisać z powrotem.
+    if (!pole.name || (pole as HTMLInputElement).type === "file") return [];
+    const zaznaczane = (pole as HTMLInputElement).type === "checkbox" || (pole as HTMLInputElement).type === "radio";
+    return [
+      {
+        name: pole.name,
+        value: pole.value,
+        checked: (pole as HTMLInputElement).checked,
+        kind: zaznaczane ? ("checked" as const) : ("value" as const),
+      },
+    ];
+  });
+}
+
+function odtworz(form: HTMLFormElement, zapamietane: Wpisane[]) {
+  for (const stan of zapamietane) {
+    for (const element of Array.from(form.elements)) {
+      const pole = element as HTMLInputElement;
+      if (pole.name !== stan.name) continue;
+      if (stan.kind === "checked") {
+        if (pole.value === stan.value) pole.checked = stan.checked;
+      } else if (pole.value !== stan.value) {
+        pole.value = stan.value;
+      }
+    }
+  }
+}
+
+/**
+ * Formularz panelu, który po błędzie nie gubi tego, co administrator wpisał.
+ *
+ * React czyści formularz po każdym wywołaniu akcji — przy udanym zapisie o to właśnie chodzi
+ * („dodaj kolejny dział"), ale przy błędzie walidacji dorosły traci wszystkie pola i musi
+ * wpisywać je od nowa, choć pomylił się w jednym. Zapamiętujemy więc pola w chwili wysłania
+ * i wpisujemy je z powrotem, gdy akcja wróci z błędem. Pola trzymane w stanie Reacta
+ * (`TitleAndSlug`) bronią się same — to jest dla zwykłych pól i list wyboru.
+ *
+ * Każdy formularz w panelu administratora używa tego komponentu zamiast gołego `<form>`.
+ */
+export function Form({
+  action,
+  state,
+  className,
+  children,
+}: {
+  action: (formData: FormData) => void;
+  state: FormState;
+  className?: string;
+  children: ReactNode;
+}) {
+  const ref = useRef<HTMLFormElement>(null);
+  const zapamietane = useRef<Wpisane[] | null>(null);
+
+  useEffect(() => {
+    const form = ref.current;
+    const stan = zapamietane.current;
+    if (!form || !stan) return;
+    zapamietane.current = null;
+    if (!state.error) return;
+
+    odtworz(form, stan);
+    // React potrafi wyczyścić formularz dopiero po tym efekcie — wtedy pierwsze odtworzenie
+    // przepada, więc powtarzamy je po przemalowaniu. Druga próba nic nie psuje.
+    const klatka = requestAnimationFrame(() => odtworz(form, stan));
+    return () => cancelAnimationFrame(klatka);
+  }, [state]);
+
+  return (
+    <form
+      ref={ref}
+      action={action}
+      className={className}
+      onSubmit={(event) => {
+        zapamietane.current = zapamietaj(event.currentTarget);
+      }}
+    >
+      {children}
+    </form>
+  );
+}
+
 /** Przycisk, który sam pilnuje, żeby nie dało się kliknąć dwa razy. */
-export function SubmitButton({ children, pendingLabel = "Chwileczkę…" }: { children: ReactNode; pendingLabel?: string }) {
+export function SubmitButton({
+  children,
+  pendingLabel = "Chwileczkę…",
+  variant = "primary",
+}: {
+  children: ReactNode;
+  pendingLabel?: string;
+  /** „danger" to czerwony przycisk kasujący. Występuje wyłącznie w panelu administratora. */
+  variant?: "primary" | "danger";
+}) {
   const { pending } = useFormStatus();
   return (
-    <button type="submit" className="btn-primary" disabled={pending}>
+    <button type="submit" className={variant === "danger" ? "btn-danger" : "btn-primary"} disabled={pending}>
       {pending ? pendingLabel : children}
     </button>
   );
@@ -67,5 +165,73 @@ export function Field({
         placeholder={placeholder}
       />
     </label>
+  );
+}
+
+/**
+ * Para pól „Nazwa" i „Nazwa w adresie". Adres podpowiada się z nazwy, dopóki administrator sam
+ * go nie poprawi — wtedy podpowiadanie milknie, żeby nie kasować jego pracy przy każdej kolejnej
+ * literze wpisanej w tytule. Wyczyszczenie adresu wraca do podpowiadania.
+ */
+export function TitleAndSlug({
+  titlePlaceholder,
+  slugPlaceholder,
+  defaultTitle = "",
+  defaultSlug = "",
+  titleLabel = "Nazwa",
+  slugLabel = "Nazwa w adresie",
+}: {
+  titlePlaceholder?: string;
+  slugPlaceholder?: string;
+  defaultTitle?: string;
+  defaultSlug?: string;
+  titleLabel?: string;
+  slugLabel?: string;
+}) {
+  const [title, setTitle] = useState(defaultTitle);
+  const [slug, setSlug] = useState(defaultSlug);
+  /** Adres wpisany ręcznie. Przy edycji istniejącego wpisu od razu — jest już ustalony. */
+  const [wlasny, setWlasny] = useState(defaultSlug !== "");
+  const titleId = useId();
+  const slugId = useId();
+
+  return (
+    <div className="grid gap-4 sm:grid-cols-2">
+      <label className="flex flex-col gap-2" htmlFor={titleId}>
+        <span className="font-semibold">{titleLabel}</span>
+        <input
+          id={titleId}
+          className="field"
+          name="title"
+          required
+          value={title}
+          placeholder={titlePlaceholder}
+          onChange={(event) => {
+            setTitle(event.target.value);
+            if (!wlasny) setSlug(slugify(event.target.value));
+          }}
+        />
+      </label>
+
+      <label className="flex flex-col gap-2" htmlFor={slugId}>
+        <span className="font-semibold">{slugLabel}</span>
+        <input
+          id={slugId}
+          className="field font-mono"
+          name="slug"
+          required
+          value={slug}
+          placeholder={slugPlaceholder}
+          autoComplete="off"
+          spellCheck={false}
+          onChange={(event) => {
+            const wpisane = event.target.value;
+            setSlug(wpisane);
+            // Puste pole znaczy „podpowiadaj dalej" — inaczej raz skasowany adres zostałby pusty.
+            setWlasny(wpisane !== "");
+          }}
+        />
+      </label>
+    </div>
   );
 }
