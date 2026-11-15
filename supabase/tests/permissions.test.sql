@@ -8,7 +8,7 @@
 -- cofnięta przy wyjściu z niej.
 
 begin;
-select plan(14);
+select plan(16);
 
 create or replace function pg_temp.make_user(p_email text) returns uuid
 language plpgsql as $$
@@ -118,10 +118,26 @@ select is(
   'pierwsza lekcja w kursie jest otwarta'
 );
 
+-- Zamknięta lekcja jest widoczna na mapie (kafelek z kłódką), ale nie da się jej zacząć
+-- ani podejrzeć jej zadań.
 select is(
-  (select count(*)::integer from public.lessons where id = (select id from t_lessons where nr = 2)),
-  0,
-  'kolejna lekcja jest niewidoczna, dopóki poprzednia nie jest zaliczona'
+  (select is_unlocked from public.v_my_lessons where id = (select id from t_lessons where nr = 2)),
+  false,
+  'kolejna lekcja jest widoczna, ale zamknięta'
+);
+
+select throws_ok(
+  'select public.get_lesson_exercises((select id from t_lessons where nr = 2))',
+  '42501',
+  null,
+  'zadań z zamkniętej lekcji nie da się pobrać'
+);
+
+select throws_ok(
+  'select public.start_lesson_session((select id from t_lessons where nr = 2), ''proba'')',
+  '42501',
+  null,
+  'zamkniętej lekcji nie da się zacząć'
 );
 
 -- Zmiana cudzego profilu przechodzi bez błędu, ale nie zmienia ani jednego wiersza.

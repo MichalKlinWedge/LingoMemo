@@ -90,3 +90,22 @@ podejść do tego samego słówka w jednej lekcji jest poprawnie uwzględnione.
   Przekazanie `null` nie przechodzi kontroli typów.
 - **Przekazanie argumentów przez zagnieżdżone skrypty npm wymaga `--` na końcu** skryptu
   nadrzędnego (`npm run seed --workspace tools/seed-dev --`), inaczej flagi po prostu znikają.
+
+## Pułapki znalezione przy Etapie 3 (2026-11-15)
+
+- **Vercel buduje z `NODE_ENV=production`, a wtedy npm pomija `devDependencies`.** W nich
+  siedziały `tailwindcss`, `@tailwindcss/turbopack` i `typescript`, więc `next build` padał —
+  mimo że lokalnie, i nawet w czystym klonie z `npm ci`, przechodził bez zarzutu. Stąd
+  `installCommand: "npm install --include=dev"` w `vercel.json`. Odtworzenie błędu lokalnie:
+  `NODE_ENV=production npm install` w świeżym klonie.
+- **Zamknięte lekcje muszą być widoczne.** Pierwotna polityka RLS ukrywała je całkowicie, przez
+  co mapa kursu pokazywałaby jedną lekcję i pustkę. Tytuł lekcji nie jest tajemnicą — tajemnicą
+  są zadania, a tych pilnują osobne mechanizmy. Patrz migracja `…_lesson_map.sql`.
+- **W React nie wolno wołać `Date.now()` ani dotykać refów w trakcie renderu** (linter Next to
+  wyłapuje). Klucz idempotencji sesji nadajemy więc przy pierwszej odpowiedzi, czyli w obsłudze
+  zdarzenia, a nie przy renderowaniu komponentu.
+- **PostgREST nie zgadnie relacji, gdy są dwie.** `lessons` wskazuje na `units` kluczem
+  `unit_id` i `review_scope_unit_id`, więc zagnieżdżony select wymaga podpowiedzi:
+  `units!unit_id(...)`.
+- **Przycisk w przycisku to nieprawidłowy HTML.** Głośnik przy odpowiedzi stoi obok kafelka,
+  nie w środku.

@@ -36,15 +36,19 @@ async function Home() {
       {error && <p className="msg-error">{dbLoadError(error)}</p>}
       <ul className="flex flex-col gap-4">
         {(courses ?? []).map((course) => (
-          <li key={course.id} className="card flex items-center gap-4 p-5">
-            <span className="text-5xl" aria-hidden>
-              {course.icon ?? "📘"}
-            </span>
-            <div className="flex min-w-0 flex-col">
-              <span className="card-title">{course.title}</span>
-              <span className="text-base text-zinc-600 dark:text-zinc-400">{course.description}</span>
-            </div>
-            <span className="chip ml-auto">wkrótce</span>
+          <li key={course.id}>
+            <Link href={`/kurs/${course.slug}`} className="card flex items-center gap-4 p-5 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800">
+              <span className="text-5xl" aria-hidden>
+                {course.icon ?? "📘"}
+              </span>
+              <div className="flex min-w-0 flex-col">
+                <span className="card-title">{course.title}</span>
+                <span className="text-base text-zinc-600 dark:text-zinc-400">{course.description}</span>
+              </div>
+              <span className="ml-auto text-3xl" aria-hidden>
+                →
+              </span>
+            </Link>
           </li>
         ))}
       </ul>

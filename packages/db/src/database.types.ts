@@ -141,6 +141,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "lessons"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "exercises_lesson_id_fkey"
+      columns: ["lesson_id"]
+isOneToOne: false
+      referencedRelation: "v_my_lessons"
+      referencedColumns: ["id"]
     }
                   ]
                 },"languages": {
@@ -181,6 +187,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "lessons"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "lesson_items_lesson_id_fkey"
+      columns: ["lesson_id"]
+isOneToOne: false
+      referencedRelation: "v_my_lessons"
+      referencedColumns: ["id"]
     }
                   ]
                 },"lesson_progress": {
@@ -200,6 +212,12 @@ isOneToOne: false
       columns: ["lesson_id"]
 isOneToOne: false
       referencedRelation: "lessons"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "lesson_progress_lesson_id_fkey"
+      columns: ["lesson_id"]
+isOneToOne: false
+      referencedRelation: "v_my_lessons"
       referencedColumns: ["id"]
     }
                   ]
@@ -221,6 +239,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "lessons"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "lesson_sessions_lesson_id_fkey"
+      columns: ["lesson_id"]
+isOneToOne: false
+      referencedRelation: "v_my_lessons"
+      referencedColumns: ["id"]
     }
                   ]
                 },"lessons": {
@@ -240,6 +264,12 @@ isOneToOne: false
       columns: ["prerequisite_lesson_id"]
 isOneToOne: false
       referencedRelation: "lessons"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "lessons_prerequisite_lesson_id_fkey"
+      columns: ["prerequisite_lesson_id"]
+isOneToOne: false
+      referencedRelation: "v_my_lessons"
       referencedColumns: ["id"]
     },{
       foreignKeyName: "lessons_review_scope_unit_id_fkey"
@@ -432,7 +462,33 @@ isOneToOne: false
                 }
           }
           Views: {
-            "v_user_points": {
+            "v_my_lessons": {
+                  Row: {
+                    "best_score": number | null,"icon": string | null,"id": string,"is_unlocked": boolean | null,"kind": Database["public"]['Enums']["lesson_kind"],"prerequisite_lesson_id": string | null,"slug": string,"sort_order": number,"stars": number | null,"status": string | null,"title": string,"unit_id": string,"word_count": number | null,"xp_reward": number
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "lessons_prerequisite_lesson_id_fkey"
+      columns: ["prerequisite_lesson_id"]
+isOneToOne: false
+      referencedRelation: "lessons"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "lessons_prerequisite_lesson_id_fkey"
+      columns: ["prerequisite_lesson_id"]
+isOneToOne: false
+      referencedRelation: "v_my_lessons"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "lessons_unit_id_fkey"
+      columns: ["unit_id"]
+isOneToOne: false
+      referencedRelation: "units"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"v_user_points": {
                   Row: {
                     "total_points": number | null,"user_id": string
                   }
