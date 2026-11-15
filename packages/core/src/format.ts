@@ -23,3 +23,22 @@ export const STARS: PluralForms = ['gwiazdka', 'gwiazdki', 'gwiazdek'];
 export const DAYS: PluralForms = ['dzień', 'dni', 'dni'];
 export const EXERCISES: PluralForms = ['zadanie', 'zadania', 'zadań'];
 export const ENTRIES: PluralForms = ['zapis', 'zapisy', 'zapisów'];
+
+/**
+ * Nazwa w adresie z tytułu: „Dzikie zwierzęta" → „dzikie-zwierzeta".
+ *
+ * Wynik musi przejść przez ten sam wzorzec, co `slug` w schemacie importu, bo to ta sama
+ * wartość w bazie. Polskie znaki rozkładają się przez NFD na literę i znak diakrytyczny —
+ * poza „ł", które jest osobną literą i trzeba je podmienić z nazwy.
+ */
+export function slugify(text: string): string {
+  return text
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/ł/g, 'l')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+/, '')
+    .slice(0, 60)
+    .replace(/-+$/, '');
+}
