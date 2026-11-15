@@ -73,6 +73,15 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
               const state = lesson.status === "completed" ? "done" : lesson.is_unlocked ? "available" : "locked";
               const label = `${lesson.title}${state === "locked" ? " — zamknięta" : ""}`;
 
+              // Etapy zostają na widoku także po zaliczeniu lekcji, wypełnione na kolor.
+              // Znikające kwadraciki wyglądały jak usterka: rząd pod jedną lekcją był krótszy
+              // od sąsiednich i kolumny przestawały się zgadzać. Zrobioną lekcję poznaje się
+              // po zielonym kafelku i gwiazdkach, nie po braku kwadracików.
+              const etapy = lesson.stage_count ?? 1;
+              // Zaliczona lekcja ma z definicji wszystkie etapy za sobą — nie opieramy się tu
+              // na liczniku, bo ten liczy postępy bieżącego podejścia.
+              const etapyZrobione = state === "done" ? etapy : (lesson.stages_done ?? 0);
+
               const tile = (
                 <>
                   <span aria-hidden>{state === "locked" ? "🔒" : (lesson.icon ?? "📘")}</span>
@@ -102,13 +111,25 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
                   {/* Powtórka obejmuje wszystkie przerobione słówka działu, zaległe na
                       początku — więc liczba jest taka sama jak przy zwykłej lekcji. */}
                   <span className="text-sm text-zinc-500">{plural(lesson.word_count ?? 0, WORDS)}</span>
+                  {/* Sowa prowadzi na planszę ze słówkami lekcji: dziecko najpierw ich słucha,
+                      potem wchodzi w lekcję. Przy zamkniętej lekcji sowy nie ma, bo polityki
+                      bazy i tak nie wydadzą jej słówek, a przy powtórce — bo powtórka nie ma
+                      własnych słówek, składa się z przerobionych. */}
+                  {state !== "locked" && lesson.kind !== "review" && (lesson.word_count ?? 0) > 0 && (
+                    <Link
+                      href={`/lekcja/${lesson.id}/nauka`}
+                      className="owl"
+                      aria-label={`${lesson.title} — posłuchaj słówek`}
+                      title="Posłuchaj słówek"
+                    >
+                      <span aria-hidden>🦉</span>
+                    </Link>
+                  )}
                   {/* Jedna linia kwadracików na samym dole kafelka: etapy poziomu łatwego oraz
                       wejścia na średni i trudny. `mt-auto` trzyma ją równo w całym rzędzie, choć
                       tytuły lekcji mają różną liczbę wierszy. */}
                   <span className="marks">
-                    {(lesson.stage_count ?? 1) > 1 && state !== "done" && (
-                      <Stages done={lesson.stages_done ?? 0} total={lesson.stage_count ?? 1} />
-                    )}
+                    {etapy > 1 && <Stages done={etapyZrobione} total={etapy} />}
                     {harderOf(lesson.id).map((row) => (
                       <LevelBox key={row.level} lesson={lesson.id} title={lesson.title} row={row} />
                     ))}

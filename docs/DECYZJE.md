@@ -551,3 +551,20 @@ i cofnąć słówko w powtórkach). Podpowiedź jest trzecim: to samo słówko w
 Przy okazji wyszło z tego `child_exercise(id)`: wycinanie kluczy odpowiedzi i tasowanie kolejności
 było dotąd wyrażeniem wewnątrz `get_lesson_exercises`, a potrzebuje tego też `use_hint`. Dwie
 kopie rozjechałyby się przy pierwszym nowym typie zadania.
+
+### Tryb nauki: plansza ze słówkami (2026-11-15)
+
+Dziecko wchodziło w lekcję, nie znając ani jednego słówka — pierwsze zadanie było jednocześnie
+pierwszym spotkaniem ze słowem. Sowa 🦉 pod kafelkiem lekcji prowadzi teraz na planszę, na której
+widać wszystkie słówka lekcji i można ich posłuchać, zanim zacznie się zadania.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Skąd plansza bierze słówka | zwykłe zapytania o `lesson_items`, `concepts` i `terms` | polityki `*_read` już wydają je dziecku dla lekcji otwartej i opublikowanej, a klucze odpowiedzi siedzą w `exercises`, których plansza nie rusza | nowa funkcja `security definer` `get_lesson_words()` (drugie wejście do tych samych danych, do rozjechania się przy pierwszej poprawce) |
+| Dla których lekcji jest sowa | dla otwartych, nie-powtórkowych, mających słówka | polityka `lessons_read` i tak nie wydaje słówek lekcji zamkniętej, a powtórka nie ma własnych — składa się z przerobionych | sowa przy każdej lekcji (przy zamkniętej otwierałaby pustą planszę) |
+| Czy plansza coś zapisuje | nie: ani próby, ani punktów, ani stanu powtórek | to oglądanie, nie odpowiadanie; wpisanie tego do FSRS zafałszowałoby harmonogram, bo dziecko nic tu nie przypomina sobie z pamięci | zaliczanie „obejrzanych" słówek jako powtórki |
+| Co jest przyciskiem | cała karta słówka | dziecko dotyka tego, co widzi; przy sześciu kartach na tablecie celowanie w głośnik 3 rem w narożniku kończy się dotknięciem karty obok | głośnik obok słowa (jak w zadaniach) |
+| Ile haków `useSpeak` | jeden na całą planszę | każdy zakłada nasłuch `voiceschanged`, więc dwadzieścia kart to dwadzieścia przerenderowań przy każdym doczytaniu głosów | `SpeakButton` na kartę (ma własny hak) |
+| Wymowa pisana | `terms.ipa` pod słowem, jeśli jest | przy angielskim samo nagranie nie wystarcza dziecku, które już czyta — a kolumna jest w bazie od pierwszej migracji i dotąd nic jej nie pokazywało | brak zapisu fonetycznego |
+| Słowo główne czy synonimy | samo główne (`is_primary`) | plansza ma pokazać jedną parę słów do zapamiętania; „ziemniak, kartofel" na kafelku dla sześciolatka to dwa słowa do nauczenia naraz | wszystkie poprawne odpowiedzi po przecinku (jak w panelu) |
+| Nazwa dla czytnika ekranu | treść karty plus `sr-only` „Posłuchaj:" | gotowe `aria-label` z samym obcym słowem zasłoniłoby tłumaczenie, czyli połowę tej planszy | `aria-label="Posłuchaj: apple"` |

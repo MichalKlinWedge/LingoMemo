@@ -269,6 +269,96 @@ h2 {
     cursor: not-allowed;
   }
 
+  /* --- tryb nauki: sowa na mapie i plansza ze słówkami ---
+     Sowa prowadzi na planszę, na której dziecko słucha słówek lekcji, zanim ją zacznie.
+     Okrągła i wielkości palca (56 px, jak każdy przycisk dla dziecka), żeby nie dało się
+     jej pomylić z kwadracikami postępu stojącymi niżej. */
+  .owl {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 9999px;
+    border: 2px solid var(--line);
+    border-bottom-width: 4px;
+    background: var(--surface);
+    font-size: 1.75rem;
+    line-height: 1;
+  }
+
+  .owl:hover {
+    border-color: var(--color-brand);
+    background: var(--color-brand-light);
+  }
+
+  /* Plansza: tyle kolumn, ile się zmieści. Karta ma najmniej 10 rem, bo poniżej tego dłuższe
+     słowo łamie się w trzy wiersze i przestaje się dać przeczytać jednym spojrzeniem. */
+  .word-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    gap: 1rem;
+  }
+
+  /* Cała karta jest przyciskiem — dziecko dotyka słowa, nie celuje w głośnik obok niego. */
+  .word-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    width: 100%;
+    min-height: 9rem;
+    padding: 0.75rem;
+    border-radius: 1.5rem;
+    border: 2px solid var(--line);
+    border-bottom-width: 6px;
+    background: var(--surface);
+    font-family: var(--font-display);
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .word-card:hover {
+    border-color: var(--color-brand);
+    background: var(--color-brand-light);
+  }
+
+  /* Karta, która właśnie mówi. Dziecko słyszy jedno słowo i widzi, które to było. */
+  .word-card[data-speaking="true"] {
+    border-color: var(--color-brand);
+    background: var(--color-brand-light);
+  }
+
+  .word-card .word-picture {
+    width: 3.5rem;
+    height: 3.5rem;
+    object-fit: contain;
+  }
+
+  .word-card .word-emoji {
+    font-size: 2.25rem;
+    line-height: 1;
+  }
+
+  .word-card .word-target {
+    font-size: 1.5rem;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+
+  .word-card .word-ipa {
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    color: var(--color-zinc-500);
+  }
+
+  .word-card .word-source {
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    color: var(--color-zinc-600);
+  }
+
   /* --- pasek u góry: ten sam na każdej stronie --- */
   /* Przyklejony: punkty i wyjście są pod ręką także w połowie długiej lekcji.
      `z-index` nad przyklejonym panelem odpowiedzi z lekcji, który stoi na dole. */
@@ -582,6 +672,12 @@ h2 {
     }
 
     .crumb {
+      color: var(--color-zinc-400);
+    }
+
+    /* Na ciemnym tle zinc-600 z planszy jest już nieczytelny. */
+    .word-card .word-source,
+    .word-card .word-ipa {
       color: var(--color-zinc-400);
     }
   }
