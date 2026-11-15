@@ -26,7 +26,7 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
   const [
     { data: units, error: unitsError },
     { data: lessons, error: lessonsError },
-    { data: levels },
+    { data: levels, error: levelsError },
   ] = await Promise.all([
     supabase.from("units").select("id, title, icon, sort_order").eq("course_id", course.id).order("sort_order"),
     // Widok dokłada do lekcji stan otwarcia i postęp tego ucznia — jedno zapytanie zamiast trzech.
@@ -35,7 +35,10 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
     supabase.from("v_my_lesson_levels").select("*").order("level"),
   ]);
 
-  const error = unitsError ?? lessonsError;
+  // Błąd z zapytania o poziomy też musi być widoczny: po cichu znikają wtedy kwadraciki
+  // średniego i trudnego, a strona wygląda na poprawną — tak właśnie wygląda brak migracji
+  // w bazie, do której akurat celuje aplikacja.
+  const error = unitsError ?? lessonsError ?? levelsError;
   if (error) return <p className="msg-error">{dbLoadError(error)}</p>;
 
   const byUnit = (unitId: string) => (lessons ?? []).filter((lesson) => lesson.unit_id === unitId);
