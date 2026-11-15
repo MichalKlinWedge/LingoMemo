@@ -1,11 +1,13 @@
+import { Suspense } from "react";
+
 import { PageHeader } from "@/components/page-header";
-import { Shell } from "@/components/shell";
+import { Loading, Shell } from "@/components/shell";
 import { requireAdmin } from "@/lib/auth";
 import { dbLoadError } from "@/lib/db-error";
 
 import { NewInvite, RevokeButton } from "./invite-panel";
 
-export default async function InvitesPage() {
+async function Invites() {
   const { supabase } = await requireAdmin("/admin/zaproszenia");
 
   const [{ data: invites, error }, { data: courses }] = await Promise.all([
@@ -16,13 +18,7 @@ export default async function InvitesPage() {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
 
   return (
-    <Shell>
-      <PageHeader
-        back={{ href: "/", label: "Strona główna" }}
-        title="Zaproszenia"
-        intro="Konto w LingoMemo zakłada się wyłącznie z linku. Każdy link działa raz."
-      />
-
+    <>
       <NewInvite courses={courses ?? []} siteUrl={siteUrl} />
 
       <section className="flex flex-col gap-3">
@@ -52,6 +48,21 @@ export default async function InvitesPage() {
           ))}
         </ul>
       </section>
+    </>
+  );
+}
+
+export default function InvitesPage() {
+  return (
+    <Shell>
+      <PageHeader
+        back={{ href: "/", label: "Strona główna" }}
+        title="Zaproszenia"
+        intro="Konto w LingoMemo zakłada się wyłącznie z linku. Każdy link działa raz."
+      />
+      <Suspense fallback={<Loading />}>
+        <Invites />
+      </Suspense>
     </Shell>
   );
 }
