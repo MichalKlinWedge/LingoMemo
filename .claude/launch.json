@@ -12,14 +12,6 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "web:local"],
       "port": 3000
-    },
-    {
-      "name": "web-start-3010",
-      "runtimeExecutable": "node",
-      "runtimeArgs": [
-        "C:/Users/mklin/AppData/Local/Temp/claude/158fb01957a0ba92/6d24be69-7476-48de-ae96-508820055746/scratchpad/start-local-3010.mjs"
-      ],
-      "port": 3010
     }
   ]
 }
