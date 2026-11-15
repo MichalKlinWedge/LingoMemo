@@ -373,3 +373,15 @@ Powtórka ma najwyżej `review_limit()` zadań, więc zawsze jest jednoetapowa.
 - **Przejście do następnego etapu to ten sam adres z innym parametrem**, więc React trzymał
   stan poprzedniego (numer zadania, ekran podsumowania). Komponent biegu lekcji dostaje
   `key={stage}` i startuje od nowa.
+
+## Odpowiedzi: bez ogonków i więcej niż jedna (2026-11-15)
+
+| Obszar | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Pisanie bez polskich liter | przyjmowane od początku, przez `normalize_answer` (`unaccent` + bez wielkości liter, interpunkcji i nadmiarowych spacji) | dziecko uczy się słówka, a nie szukania „ż" na klawiaturze; `unaccent` radzi sobie też z „ł", którego NFD nie rozkłada | porównanie znak w znak oraz osobna lista wariantów bez ogonków w `accepted` |
+| Pilnowanie tej reguły | osobny plik testów `answers.test.sql` z drogą przez `submit_attempt`, nie tylko z samą funkcją | blok porównania jest przepisany w czterech migracjach (lekcja, powtórka, dopasowanie ze słuchu, obrazek, etapy) i w piątej kopii łatwo go zgubić; test na samej `normalize_answer` by tego nie złapał | brak testu (reguła działała, ale nic jej nie chroniło) |
+| Kilka poprawnych odpowiedzi | pole formularza przyjmuje listę po przecinku, rozbija ją `split_answers` w bazie | `accepted` jest tablicą od pierwszej migracji, a import umiał synonimy od początku — brakowało tylko drogi z panelu; rozbijanie w bazie nie zmienia sygnatur funkcji, więc stare wywołania z jednym słowem działają bez zmian | nowy parametr `text[]` (wymusza `drop function` i przepisanie wywołań w trzech plikach testów) oraz osobne pole „synonimy" w formularzu |
+| Która forma jest główna | pierwsza z listy | to ona stoi w `terms` jako `is_primary`, ją widzi dziecko w poleceniu, czyta syntezator mowy i ona trafia na listę wyboru u innych słówek; bez jawnej reguły kolejność zależałaby od przypadku | wybór głównej formy osobnym polem |
+| Dystraktory na liście wyboru | tylko słowa główne | synonim obok swojego słowa na jednej liście daje dwie poprawne odpowiedzi, z których jedna liczy się jako błąd | losowanie ze wszystkich form |
+| Synonimy przy poprawce | wymieniane w całości, jak przy imporcie | inaczej poprawiona literówka zostawałaby w bazie jako „synonim" i dalej liczyła się jako dobra odpowiedź; dlatego formularz pokazuje wszystkie formy naraz, a nie samo słowo główne | dopisywanie nowych form bez kasowania starych |
+| Separator form | przecinek, średnik albo ukośnik | każdy z nich pisze się odruchowo, a w słówkach dla dzieci żaden nie występuje w treści odpowiedzi | sam przecinek oraz osobne pola na każdą formę |

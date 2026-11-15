@@ -6,7 +6,7 @@
 -- Ten plik pilnuje, żeby każda droga odpowiedzi przechodziła przez tę samą normalizację.
 
 begin;
-select plan(9);
+select plan(15);
 
 create or replace function pg_temp.make_user(p_email text) returns uuid
 language plpgsql as $$
@@ -35,6 +35,8 @@ select is(public.normalize_answer('  idę   do   szkoły '), 'ide do szkoly', 'n
 -- --- cała droga odpowiedzi ---
 create temporary table t_ids (name text primary key, id uuid);
 insert into t_ids values ('uczen', pg_temp.make_user('uczen-ogonki@test.local'));
+insert into t_ids values ('admin', pg_temp.make_user('admin-ogonki@test.local'));
+insert into app_private.admin_users (user_id) values ((select id from t_ids where name = 'admin'));
 
 with c as (
   insert into public.courses (slug, source_lang, target_lang, title, is_published)
@@ -131,6 +133,86 @@ select is(
 );
 
 reset role;
+
+-- --- kilka poprawnych odpowiedzi ---
+--
+-- Jedno obce słowo ma po polsku zwykle więcej niż jeden odpowiednik. Panel przyjmuje je
+-- w jednym polu, po przecinku; pierwsze jest główne, reszta to synonimy.
+select is(
+  public.split_answers('ziemniak, kartofel / pyra ; ziemniak'),
+  array['ziemniak', 'kartofel', 'pyra'],
+  'pole formularza rozbija się na listę, bez pustych i bez powtórzeń'
+);
+
+select set_config('request.jwt.claims', (select claims from t_claims where name = 'admin'), true),
+       set_config('role', 'authenticated', true);
+
+select public.admin_add_word((select id from t_lesson), 'food.potato', 'ziemniak, kartofel', 'potato');
+
+reset role;
+
+-- Identyfikator zadania wyciągamy jako rola bazy: `exercises` nie ma polityki SELECT dla
+-- ucznia (w payloadzie są klucze odpowiedzi), więc jego zapytanie zwróciłoby pustkę.
+create temporary table t_potato as
+select e.id from public.exercises e
+  join public.concepts c on c.id = e.concept_id
+ where c.key = 'food.potato' and e.type = 'translate_ba';
+grant select on t_potato to authenticated;
+
+select is(
+  (select e.payload -> 'accepted' from public.exercises e
+     join public.concepts c on c.id = e.concept_id
+    where c.key = 'food.potato' and e.type = 'translate_ba'),
+  jsonb_build_array('ziemniak', 'kartofel'),
+  'tłumaczenie na polski przyjmuje obie formy'
+);
+
+select is(
+  (select t.text from public.terms t
+     join public.concepts c on c.id = t.concept_id
+    where c.key = 'food.potato' and t.lang = 'pl' and t.is_primary),
+  'ziemniak',
+  'pierwsza forma zostaje słowem głównym'
+);
+
+select is(
+  (select count(*)::integer from public.terms t
+     join public.concepts c on c.id = t.concept_id
+    where c.key = 'food.potato' and t.lang = 'pl' and not t.is_primary),
+  1,
+  'druga forma ląduje w słowniku jako synonim'
+);
+
+select set_config('request.jwt.claims', (select claims from t_claims where name = 'uczen'), true),
+       set_config('role', 'authenticated', true);
+
+select is(
+  (select public.submit_attempt(
+     (select id from t_session),
+     (select id from t_potato),
+     jsonb_build_object('text', 'kartofel')) ->> 'correct'),
+  'true',
+  'drugi odpowiednik też jest zaliczany'
+);
+
+reset role;
+
+-- Poprawka z jedną formą zabiera synonim: w polu stoi dokładnie to, co ma być przyjmowane.
+select set_config('request.jwt.claims', (select claims from t_claims where name = 'admin'), true),
+       set_config('role', 'authenticated', true);
+
+select public.admin_update_word(
+  (select id from public.concepts where key = 'food.potato'), 'ziemniak', 'potato');
+
+reset role;
+
+select is(
+  (select e.payload -> 'accepted' from public.exercises e
+     join public.concepts c on c.id = e.concept_id
+    where c.key = 'food.potato' and e.type = 'translate_ba'),
+  jsonb_build_array('ziemniak'),
+  'skasowany synonim znika też z zadania'
+);
 
 select * from finish();
 rollback;

@@ -63,6 +63,12 @@ export function TypingExercise({
         aria-label="Twoja odpowiedź"
       />
 
+      {/* Dziecko, które szuka „ż" na klawiaturze, przestaje myśleć o słówku. Baza i tak
+          porównuje bez ogonków i bez wielkich liter — warto, żeby o tym wiedziało. */}
+      <p className="text-base text-zinc-600 dark:text-zinc-400">
+        Możesz pisać bez ogonków — „zazolc” liczy się tak samo jak „zażółć”.
+      </p>
+
       <button type="submit" className="btn-primary" disabled={locked || value.trim() === ""}>
         Sprawdź
       </button>

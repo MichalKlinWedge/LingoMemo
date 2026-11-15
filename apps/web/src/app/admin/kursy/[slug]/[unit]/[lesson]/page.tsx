@@ -66,6 +66,17 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
   const nameOf = (code: string) => (languages ?? []).find((lang) => lang.code === code)?.name_pl ?? code;
   const termOf = (conceptId: string, lang: string) =>
     (terms ?? []).find((term) => term.concept_id === conceptId && term.lang === lang && term.is_primary)?.text ?? "—";
+  /**
+   * Wszystkie poprawne odpowiedzi w jednym polu, słowo główne na początku — dokładnie tak, jak
+   * formularz je przyjmuje. Gdyby pokazywał samo słowo główne, pierwszy zapis skasowałby
+   * synonimy, bo zapisuje się dokładnie to, co w polu stoi.
+   */
+  const termsOf = (conceptId: string, lang: string) => {
+    const list = (terms ?? []).filter((term) => term.concept_id === conceptId && term.lang === lang);
+    const primary = list.filter((term) => term.is_primary).map((term) => term.text);
+    const rest = list.filter((term) => !term.is_primary).map((term) => term.text);
+    return [...primary, ...rest].join(", ");
+  };
   const keyOf = (conceptId: string) => (concepts ?? []).find((concept) => concept.id === conceptId);
   const taskCount = (conceptId: string) => (exercises ?? []).filter((item) => item.concept_id === conceptId).length;
 
@@ -135,8 +146,8 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
                 <EditWord
                   conceptId={item.concept_id}
                   lessonId={lesson.id}
-                  source={termOf(item.concept_id, course.source_lang)}
-                  target={termOf(item.concept_id, course.target_lang)}
+                  source={termsOf(item.concept_id, course.source_lang)}
+                  target={termsOf(item.concept_id, course.target_lang)}
                   tag={concept?.tags?.[0] ?? ""}
                   conceptKey={concept?.key ?? ""}
                   sourceLabel={nameOf(course.source_lang).toLowerCase()}

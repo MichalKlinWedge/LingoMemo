@@ -465,15 +465,17 @@ export function AddWord({
       <Form action={action} state={state} className="flex flex-col gap-4">
         <input type="hidden" name="lesson_id" value={lessonId} />
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label={`Po ${sourceLabel}`} name="source" placeholder="jabłko" />
-          <Field label={`Po ${targetLabel}`} name="target" placeholder="apple" />
+          <Field label={`Po ${sourceLabel}`} name="source" placeholder="ziemniak, kartofel" />
+          <Field label={`Po ${targetLabel}`} name="target" placeholder="potato" />
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Klucz (opcjonalnie)" name="key" required={false} placeholder="food.apple" />
           <Field label="Emoji (opcjonalnie)" name="tags" required={false} placeholder="🍎" />
         </div>
         <p className="text-base text-zinc-600 dark:text-zinc-400">
-          Powstaną trzy zadania: tłumaczenie w obie strony i ze słuchu.
+          Powstaną trzy zadania: tłumaczenie w obie strony i ze słuchu. Kilka dobrych odpowiedzi
+          wpisz po przecinku — pierwsza jest główna i to ją dziecko zobaczy w poleceniu, reszta
+          liczy się przy sprawdzaniu. Ogonków dziecko pisać nie musi.
         </p>
         <Status state={state} />
         <SubmitButton pendingLabel="Dodaję…">Dodaj słówko</SubmitButton>
@@ -518,7 +520,8 @@ export function EditWord({
         </div>
         <Field label="Emoji" name="tags" required={false} defaultValue={tag} />
         <p className="text-base text-zinc-600 dark:text-zinc-400">
-          Klucz <code>{conceptKey}</code> zostaje — po nim import rozpoznaje to słówko.
+          Klucz <code>{conceptKey}</code> zostaje — po nim import rozpoznaje to słówko. Kilka
+          dobrych odpowiedzi wpisz po przecinku; pierwsza jest główna.
         </p>
         <Status state={state} />
         <SubmitButton pendingLabel="Zapisuję…">Zapisz słówko</SubmitButton>

@@ -745,6 +745,9 @@ isOneToOne: false
 "set_user_password":
 { Args: { "p_password": string,"p_user": string }; Returns: undefined
                            },
+"split_answers":
+{ Args: { "p": string }; Returns: (string)[]
+                           },
 "srs_apply":
 { Args: { "p_concept": string,"p_course": string,"p_grade": number,"p_time_zone"?: string,"p_user": string }; Returns: undefined
                            },
