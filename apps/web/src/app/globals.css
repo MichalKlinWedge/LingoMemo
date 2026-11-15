@@ -115,7 +115,8 @@ h2 {
 @layer components {
   /* --- przyciski --- */
   .btn-primary,
-  .btn-secondary {
+  .btn-secondary,
+  .btn-danger {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -153,21 +154,36 @@ h2 {
     background: var(--color-zinc-100);
   }
 
+  /* Kasowanie. Jedyny czerwony przycisk w aplikacji — dziecko go nigdzie nie zobaczy. */
+  .btn-danger {
+    background: var(--color-coral);
+    border-color: #8f2420;
+    border-bottom-width: 4px;
+    color: #ffffff;
+  }
+
+  .btn-danger:hover:not(:disabled) {
+    background: #8f2420;
+  }
+
   /* Wciśnięcie „dociska” przycisk — widoczna reakcja bez animacji. */
   .btn-primary:active:not(:disabled),
-  .btn-secondary:active:not(:disabled) {
+  .btn-secondary:active:not(:disabled),
+  .btn-danger:active:not(:disabled) {
     transform: translateY(2px);
     border-bottom-width: 2px;
   }
 
   .btn-primary:disabled,
-  .btn-secondary:disabled {
+  .btn-secondary:disabled,
+  .btn-danger:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }
 
   .btn-primary:focus-visible,
   .btn-secondary:focus-visible,
+  .btn-danger:focus-visible,
   .btn-answer:focus-visible,
   .field:focus-visible {
     outline: 3px solid var(--color-sky);

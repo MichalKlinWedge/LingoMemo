@@ -1,6 +1,7 @@
 "use server";
 
 import { refresh } from "next/cache";
+import { redirect } from "next/navigation";
 
 import type { FormState } from "@/components/forms";
 import { requireAdmin } from "@/lib/auth";
@@ -42,6 +43,22 @@ function badSlug(value: string): string | null {
   return null;
 }
 
+/**
+ * Zajęty slug to jedyny błąd zapisu, który administrator poprawi sam, więc dostaje własne
+ * zdanie. Postgres zwraca tu `23505` z nazwą indeksu — dla człowieka to nic nie znaczy.
+ */
+function saveError(error: { code?: string; message: string }, taken: string, fallback: string): string {
+  return error.code === "23505" ? taken : dbErrorMessage(error, fallback);
+}
+
+/**
+ * Kasowanie potwierdza się przepisaniem sluga. Okienko „na pewno?" klika się odruchowo,
+ * a tu znikają też postępy dziecka — przepisanie nazwy wymaga spojrzenia na to, co się kasuje.
+ */
+function badConfirm(form: FormData, slug: string): string | null {
+  return text(form, "confirm") === slug ? null : `Żeby usunąć, przepisz w polu potwierdzenia: ${slug}`;
+}
+
 export async function createCourseAction(_prev: FormState, form: FormData): Promise<FormState> {
   const { supabase } = await requireAdmin();
 
@@ -67,7 +84,7 @@ export async function createCourseAction(_prev: FormState, form: FormData): Prom
     is_published: flag(form, "is_published"),
   });
 
-  if (error) return { error: dbErrorMessage(error, "Nie udało się dodać kursu.") };
+  if (error) return { error: saveError(error, "Kurs o takim adresie (slug) już jest.", "Nie udało się dodać kursu.") };
 
   refresh();
   return { ok: "Kurs gotowy. Teraz dodaj do niego dział." };
@@ -78,24 +95,55 @@ export async function updateCourseAction(_prev: FormState, form: FormData): Prom
 
   const id = text(form, "id");
   const title = text(form, "title");
+  const slug = text(form, "slug");
+  const slugError = badSlug(slug);
   if (!id) return { error: "Nie wiadomo, który kurs zmienić." };
+  if (slugError) return { error: slugError };
   if (!title) return { error: "Podaj nazwę kursu." };
+
+  const source = text(form, "source_lang");
+  const target = text(form, "target_lang");
+  if (source === target) return { error: "Język dziecka i język uczony muszą się różnić." };
 
   const { error } = await supabase
     .from("courses")
     .update({
+      slug,
       title,
       description: optional(form, "description"),
       icon: optional(form, "icon"),
+      // Zmianę języków w kursie, który ma już słówka, odrzuca wyzwalacz w bazie. Tu wysyłamy
+      // je zawsze — zapis idzie jednym zapytaniem, więc nie ma gdzie indziej tego sprawdzić.
+      source_lang: source,
+      target_lang: target,
       sort_order: Math.trunc(number(form, "sort_order", 0)),
       is_published: flag(form, "is_published"),
     })
     .eq("id", id);
 
-  if (error) return { error: dbErrorMessage(error, "Nie udało się zapisać kursu.") };
+  if (error) return { error: saveError(error, "Kurs o takim adresie (slug) już jest.", "Nie udało się zapisać kursu.") };
+
+  // Slug siedzi w adresie strony, więc po jego zmianie dotychczasowy adres prowadzi donikąd.
+  if (slug !== text(form, "current_slug")) redirect(`/admin/kursy/${slug}`);
 
   refresh();
   return { ok: "Zapisane." };
+}
+
+/** Usunięcie kursu razem z zawartością i postępami dzieci. Kolejności pilnuje funkcja w bazie. */
+export async function deleteCourseAction(_prev: FormState, form: FormData): Promise<FormState> {
+  const { supabase } = await requireAdmin();
+
+  const id = text(form, "id");
+  if (!id) return { error: "Nie wiadomo, który kurs usunąć." };
+
+  const confirmError = badConfirm(form, text(form, "current_slug"));
+  if (confirmError) return { error: confirmError };
+
+  const { error } = await supabase.rpc("admin_delete_course", { p_course: id });
+  if (error) return { error: dbErrorMessage(error, "Nie udało się usunąć kursu.") };
+
+  redirect("/admin/kursy");
 }
 
 export async function createUnitAction(_prev: FormState, form: FormData): Promise<FormState> {
@@ -120,7 +168,9 @@ export async function createUnitAction(_prev: FormState, form: FormData): Promis
     is_published: flag(form, "is_published"),
   });
 
-  if (error) return { error: dbErrorMessage(error, "Nie udało się dodać działu.") };
+  if (error) {
+    return { error: saveError(error, "Dział o takim adresie (slug) już jest w tym kursie.", "Nie udało się dodać działu.") };
+  }
 
   refresh();
   return { ok: "Dział gotowy." };
@@ -131,12 +181,16 @@ export async function updateUnitAction(_prev: FormState, form: FormData): Promis
 
   const id = text(form, "id");
   const title = text(form, "title");
+  const slug = text(form, "slug");
+  const slugError = badSlug(slug);
   if (!id) return { error: "Nie wiadomo, który dział zmienić." };
+  if (slugError) return { error: slugError };
   if (!title) return { error: "Podaj nazwę działu." };
 
   const { error } = await supabase
     .from("units")
     .update({
+      slug,
       title,
       icon: optional(form, "icon"),
       color: optional(form, "color"),
@@ -145,10 +199,33 @@ export async function updateUnitAction(_prev: FormState, form: FormData): Promis
     })
     .eq("id", id);
 
-  if (error) return { error: dbErrorMessage(error, "Nie udało się zapisać działu.") };
+  if (error) {
+    return { error: saveError(error, "Dział o takim adresie (slug) już jest w tym kursie.", "Nie udało się zapisać działu.") };
+  }
+
+  if (slug !== text(form, "current_slug")) redirect(`/admin/kursy/${text(form, "course_slug")}/${slug}`);
 
   refresh();
   return { ok: "Zapisane." };
+}
+
+/**
+ * Usunięcie działu razem z lekcjami. Słówka zostają przy kursie — wisi na nich stan powtórek
+ * i historia prób dziecka, i właśnie po to `lesson_items` ma na nich `restrict`.
+ */
+export async function deleteUnitAction(_prev: FormState, form: FormData): Promise<FormState> {
+  const { supabase } = await requireAdmin();
+
+  const id = text(form, "id");
+  if (!id) return { error: "Nie wiadomo, który dział usunąć." };
+
+  const confirmError = badConfirm(form, text(form, "current_slug"));
+  if (confirmError) return { error: confirmError };
+
+  const { error } = await supabase.from("units").delete().eq("id", id);
+  if (error) return { error: dbErrorMessage(error, "Nie udało się usunąć działu.") };
+
+  redirect(`/admin/kursy/${text(form, "course_slug")}`);
 }
 
 /**

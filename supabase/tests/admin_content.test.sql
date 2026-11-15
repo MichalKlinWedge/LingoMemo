@@ -4,7 +4,7 @@
 -- sprawdzamy to, co ma własną funkcję albo własną politykę.
 
 begin;
-select plan(21);
+select plan(29);
 
 create or replace function pg_temp.make_user(p_email text) returns uuid
 language plpgsql as $$
@@ -261,6 +261,93 @@ select is(
   'apple',
   'zadanie ułożone ręcznie zostaje nietknięte'
 );
+
+-- --- języki kursu ---
+--
+-- Terminy wiszą na kodzie języka, a treść zadania jest kopią słowa, więc podmiana języka
+-- w kursie z materiałem zostawiłaby słówka w starym języku. Pilnuje tego wyzwalacz.
+select set_config('role', 'authenticated', true),
+       set_config('request.jwt.claims',
+         (select json_build_object('sub', u.id, 'role', 'authenticated',
+                 'app_metadata', coalesce(u.raw_app_meta_data, '{}'::jsonb))::text
+            from auth.users u where u.id = (select id from t_ids where name = 'admin')), true);
+
+select throws_ok(
+  $$update public.courses set target_lang = 'de' where slug = 'pl-en-starter'$$,
+  '22023',
+  'Nie zmienisz języków kursu, w którym są już słówka. Najpierw usuń słówka albo załóż osobny kurs.',
+  'w kursie ze słówkami języków nie da się podmienić'
+);
+
+select lives_ok(
+  $$update public.courses set title = 'Angielski od zera (test)' where slug = 'pl-en-starter'$$,
+  'zmiana samej nazwy kursu przechodzi'
+);
+
+insert into public.courses (slug, source_lang, target_lang, title)
+values ('test-pusty', 'pl', 'en', 'Kurs pusty (test)');
+update public.courses set target_lang = 'de' where slug = 'test-pusty';
+
+select is(
+  (select c.target_lang from public.courses c where c.slug = 'test-pusty'),
+  'de',
+  'w kursie bez słówek język uczony da się jeszcze zmienić'
+);
+
+reset role;
+
+-- --- kasowanie ---
+select set_config('role', 'authenticated', true),
+       set_config('request.jwt.claims',
+         (select json_build_object('sub', u.id, 'role', 'authenticated',
+                 'app_metadata', coalesce(u.raw_app_meta_data, '{}'::jsonb))::text
+            from auth.users u where u.id = (select id from t_ids where name = 'uczen')), true);
+
+select throws_ok(
+  format('select public.admin_delete_course(%L)', (select course_id from t_ctx)),
+  '42501',
+  null,
+  'uczeń nie usunie kursu'
+);
+
+reset role;
+
+-- Dział idzie zwykłym `delete` pod polityką `units_admin`. Lekcje znikają z nim kaskadą,
+-- ale słówka zostają przy kursie — wisi na nich stan powtórek dziecka.
+select set_config('role', 'authenticated', true),
+       set_config('request.jwt.claims',
+         (select json_build_object('sub', u.id, 'role', 'authenticated',
+                 'app_metadata', coalesce(u.raw_app_meta_data, '{}'::jsonb))::text
+            from auth.users u where u.id = (select id from t_ids where name = 'admin')), true);
+
+delete from public.units where slug = 'test-owoce';
+
+select is(
+  (select count(*)::integer from public.lessons l where l.id = (select id from t_lesson)),
+  0,
+  'usunięcie działu kasuje jego lekcje'
+);
+
+select is(
+  (select count(*)::integer from public.concepts c where c.id in (select id from t_concepts)),
+  2,
+  'słówka zostają przy kursie, bo wisi na nich stan powtórek'
+);
+
+-- Kurs ma słówka wpięte w lekcje, a `lesson_items.concept_id` ma `on delete restrict`:
+-- samo `delete from courses` wywaliłoby się tu na kaskadzie. Funkcja kasuje działy pierwsze.
+select lives_ok(
+  format('select public.admin_delete_course(%L)', (select course_id from t_ctx)),
+  'kurs ze słówkami kasuje się mimo „restrict" na pozycjach lekcji'
+);
+
+select is(
+  (select count(*)::integer from public.concepts c where c.course_id = (select course_id from t_ctx)),
+  0,
+  'razem z kursem znikają jego słówka'
+);
+
+reset role;
 
 select * from finish();
 rollback;

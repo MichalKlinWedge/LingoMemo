@@ -7,13 +7,15 @@ import {
   createCourseAction,
   createLessonAction,
   createUnitAction,
+  deleteCourseAction,
+  deleteUnitAction,
   setEnrollmentAction,
   updateCourseAction,
   updateLessonAction,
   updateUnitAction,
   updateWordAction,
 } from "@/app/admin/kursy/actions";
-import { Field, type FormState, Status, SubmitButton } from "@/components/forms";
+import { Field, Form, Status, SubmitButton, TitleAndSlug, type FormState } from "@/components/forms";
 
 /** Pole wyboru „opublikowane". Treść nieopublikowana jest widoczna tylko dla administratora. */
 function Published({ defaultChecked }: { defaultChecked?: boolean }) {
@@ -25,13 +27,113 @@ function Published({ defaultChecked }: { defaultChecked?: boolean }) {
   );
 }
 
-/** Formularz edycji chowamy pod rozwijaniem — lista ma zostać czytelna. */
+/**
+ * Formularz edycji jako zwykła sekcja, nie rozwijanka. Schowany pod strzałką ginął — wyglądał
+ * na podpis listy, a nie na miejsce, w którym zmienia się dane.
+ */
 function Editor({ summary, children }: { summary: string; children: React.ReactNode }) {
   return (
-    <details className="w-full">
-      <summary className="back-link cursor-pointer list-none font-semibold">{summary}</summary>
-      <div className="mt-3">{children}</div>
+    <section className="card flex flex-col gap-4 p-6">
+      <h2 className="card-title">{summary}</h2>
+      {children}
+    </section>
+  );
+}
+
+/**
+ * Kasowanie. Zostaje pod rozwijaniem i z osobnym potwierdzeniem: tego jednego w całym panelu
+ * nie da się cofnąć, a przepisanie nazwy z adresu wymaga spojrzenia na to, co znika.
+ */
+function Danger({
+  action,
+  heading,
+  warning,
+  slug,
+  hidden,
+  label,
+}: {
+  action: (prev: FormState, form: FormData) => Promise<FormState>;
+  heading: string;
+  warning: string;
+  slug: string;
+  hidden: Record<string, string>;
+  label: string;
+}) {
+  const [state, formAction] = useActionState<FormState, FormData>(action, {});
+
+  return (
+    <details className="card p-6">
+      <summary className="card-title cursor-pointer list-none">{heading}</summary>
+      <Form action={formAction} state={state} className="mt-4 flex flex-col gap-4">
+        {Object.entries(hidden).map(([name, value]) => (
+          <input key={name} type="hidden" name={name} value={value} />
+        ))}
+        <p className="msg-error">{warning}</p>
+        <Field label={`Przepisz „${slug}", żeby potwierdzić`} name="confirm" autoComplete="off" placeholder={slug} />
+        <Status state={state} />
+        <SubmitButton variant="danger" pendingLabel="Usuwam…">
+          {label}
+        </SubmitButton>
+      </Form>
     </details>
+  );
+}
+
+/**
+ * Języki kursu. Zmienić je można tylko w kursie bez słówek: `terms` wiszą na kodzie języka,
+ * a treść zadań jest kopią słowa, więc w kursie z materiałem podmiana zostawiłaby słówka
+ * w starym języku. W takim kursie pokazujemy je więc jako tekst i wysyłamy bez zmian.
+ */
+function Languages({
+  languages,
+  source,
+  target,
+  editable,
+}: {
+  languages: { code: string; name_pl: string }[];
+  source: string;
+  target: string;
+  editable: boolean;
+}) {
+  const nameOf = (code: string) => languages.find((lang) => lang.code === code)?.name_pl ?? code;
+
+  if (!editable) {
+    return (
+      <div className="flex flex-col gap-2">
+        <input type="hidden" name="source_lang" value={source} />
+        <input type="hidden" name="target_lang" value={target} />
+        <span className="font-semibold">Języki</span>
+        <p className="text-base text-zinc-600 dark:text-zinc-400">
+          {nameOf(source)} → {nameOf(target)}. Kurs ma już słówka, więc języków nie da się zmienić — zmiana
+          zostawiłaby je w starym języku. Na inną parę języków zakłada się osobny kurs.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-4 sm:grid-cols-2">
+      <label className="flex flex-col gap-2">
+        <span className="font-semibold">Język dziecka</span>
+        <select name="source_lang" className="field" defaultValue={source}>
+          {languages.map((lang) => (
+            <option key={lang.code} value={lang.code}>
+              {lang.name_pl}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="flex flex-col gap-2">
+        <span className="font-semibold">Język uczony</span>
+        <select name="target_lang" className="field" defaultValue={target}>
+          {languages.map((lang) => (
+            <option key={lang.code} value={lang.code}>
+              {lang.name_pl}
+            </option>
+          ))}
+        </select>
+      </label>
+    </div>
   );
 }
 
@@ -41,11 +143,8 @@ export function NewCourse({ languages }: { languages: { code: string; name_pl: s
   return (
     <section className="card flex flex-col gap-4 p-6">
       <h2 className="card-title">Nowy kurs</h2>
-      <form action={action} className="flex flex-col gap-4">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Nazwa" name="title" placeholder="Angielski od zera" />
-          <Field label="Nazwa w adresie" name="slug" placeholder="pl-en-starter" />
-        </div>
+      <Form action={action} state={state} className="flex flex-col gap-4">
+        <TitleAndSlug titlePlaceholder="Angielski od zera" slugPlaceholder="pl-en-starter" />
         <Field label="Opis" name="description" required={false} placeholder="Pierwsze słówka i zwroty." />
         <div className="grid gap-4 sm:grid-cols-3">
           <Field label="Ikona" name="icon" required={false} placeholder="🇬🇧" />
@@ -73,33 +172,70 @@ export function NewCourse({ languages }: { languages: { code: string; name_pl: s
         <Published defaultChecked />
         <Status state={state} />
         <SubmitButton pendingLabel="Dodaję…">Dodaj kurs</SubmitButton>
-      </form>
+      </Form>
     </section>
   );
 }
 
 export function CourseSettings({
   course,
+  languages,
+  counts,
 }: {
-  course: { id: string; title: string; description: string | null; icon: string | null; sort_order: number; is_published: boolean };
+  course: {
+    id: string;
+    slug: string;
+    title: string;
+    description: string | null;
+    icon: string | null;
+    source_lang: string;
+    target_lang: string;
+    sort_order: number;
+    is_published: boolean;
+  };
+  languages: { code: string; name_pl: string }[];
+  counts: { units: number; lessons: number; words: number; students: number };
 }) {
   const [state, action] = useActionState<FormState, FormData>(updateCourseAction, {});
 
   return (
-    <Editor summary="Ustawienia kursu">
-      <form action={action} className="flex flex-col gap-4">
-        <input type="hidden" name="id" value={course.id} />
-        <Field label="Nazwa" name="title" defaultValue={course.title} />
-        <Field label="Opis" name="description" required={false} defaultValue={course.description ?? ""} />
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Ikona" name="icon" required={false} defaultValue={course.icon ?? ""} />
-          <Field label="Kolejność" name="sort_order" type="number" defaultValue={String(course.sort_order)} />
-        </div>
-        <Published defaultChecked={course.is_published} />
-        <Status state={state} />
-        <SubmitButton pendingLabel="Zapisuję…">Zapisz kurs</SubmitButton>
-      </form>
-    </Editor>
+    <>
+      <Editor summary="Dane kursu">
+        <Form action={action} state={state} className="flex flex-col gap-4">
+          <input type="hidden" name="id" value={course.id} />
+          {/* Po czym poznać, że slug się zmienił — akcja przerzuca wtedy na nowy adres. */}
+          <input type="hidden" name="current_slug" value={course.slug} />
+          <TitleAndSlug defaultTitle={course.title} defaultSlug={course.slug} />
+          <Field label="Opis" name="description" required={false} defaultValue={course.description ?? ""} />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Ikona" name="icon" required={false} defaultValue={course.icon ?? ""} />
+            <Field label="Kolejność" name="sort_order" type="number" defaultValue={String(course.sort_order)} />
+          </div>
+          <Languages
+            languages={languages}
+            source={course.source_lang}
+            target={course.target_lang}
+            editable={counts.words === 0}
+          />
+          <Published defaultChecked={course.is_published} />
+          <Status state={state} />
+          <SubmitButton pendingLabel="Zapisuję…">Zapisz kurs</SubmitButton>
+        </Form>
+      </Editor>
+
+      <Danger
+        action={deleteCourseAction}
+        heading="Usuń kurs"
+        slug={course.slug}
+        hidden={{ id: course.id, current_slug: course.slug }}
+        warning={
+          `Znikną: działy (${counts.units}), lekcje (${counts.lessons}), słówka (${counts.words}) ` +
+          `oraz postępy i powtórki dzieci zapisanych na kurs (${counts.students}). Tego się nie cofnie. ` +
+          `Jeśli chodzi tylko o to, żeby dzieci tego nie widziały, odznacz „Widoczne dla dzieci".`
+        }
+        label="Usuń kurs z całą zawartością"
+      />
+    </>
   );
 }
 
@@ -109,12 +245,9 @@ export function NewUnit({ courseId, nextOrder }: { courseId: string; nextOrder: 
   return (
     <section className="card flex flex-col gap-4 p-6">
       <h2 className="card-title">Nowy dział</h2>
-      <form action={action} className="flex flex-col gap-4">
+      <Form action={action} state={state} className="flex flex-col gap-4">
         <input type="hidden" name="course_id" value={courseId} />
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Nazwa" name="title" placeholder="Jedzenie" />
-          <Field label="Nazwa w adresie" name="slug" placeholder="jedzenie" />
-        </div>
+        <TitleAndSlug titlePlaceholder="Jedzenie" slugPlaceholder="jedzenie" />
         <div className="grid gap-4 sm:grid-cols-3">
           <Field label="Ikona" name="icon" required={false} placeholder="🍎" />
           <Field label="Kolor" name="color" required={false} placeholder="#f97316" />
@@ -123,33 +256,62 @@ export function NewUnit({ courseId, nextOrder }: { courseId: string; nextOrder: 
         <Published defaultChecked />
         <Status state={state} />
         <SubmitButton pendingLabel="Dodaję…">Dodaj dział</SubmitButton>
-      </form>
+      </Form>
     </section>
   );
 }
 
 export function UnitSettings({
   unit,
+  courseSlug,
+  lessons,
 }: {
-  unit: { id: string; title: string; icon: string | null; color: string | null; sort_order: number; is_published: boolean };
+  unit: {
+    id: string;
+    slug: string;
+    title: string;
+    icon: string | null;
+    color: string | null;
+    sort_order: number;
+    is_published: boolean;
+  };
+  courseSlug: string;
+  lessons: number;
 }) {
   const [state, action] = useActionState<FormState, FormData>(updateUnitAction, {});
 
   return (
-    <Editor summary="Ustawienia działu">
-      <form action={action} className="flex flex-col gap-4">
-        <input type="hidden" name="id" value={unit.id} />
-        <Field label="Nazwa" name="title" defaultValue={unit.title} />
-        <div className="grid gap-4 sm:grid-cols-3">
-          <Field label="Ikona" name="icon" required={false} defaultValue={unit.icon ?? ""} />
-          <Field label="Kolor" name="color" required={false} defaultValue={unit.color ?? ""} />
-          <Field label="Kolejność" name="sort_order" type="number" defaultValue={String(unit.sort_order)} />
-        </div>
-        <Published defaultChecked={unit.is_published} />
-        <Status state={state} />
-        <SubmitButton pendingLabel="Zapisuję…">Zapisz dział</SubmitButton>
-      </form>
-    </Editor>
+    <>
+      <Editor summary="Dane działu">
+        <Form action={action} state={state} className="flex flex-col gap-4">
+          <input type="hidden" name="id" value={unit.id} />
+          <input type="hidden" name="current_slug" value={unit.slug} />
+          <input type="hidden" name="course_slug" value={courseSlug} />
+          <TitleAndSlug defaultTitle={unit.title} defaultSlug={unit.slug} />
+          <div className="grid gap-4 sm:grid-cols-3">
+            <Field label="Ikona" name="icon" required={false} defaultValue={unit.icon ?? ""} />
+            <Field label="Kolor" name="color" required={false} defaultValue={unit.color ?? ""} />
+            <Field label="Kolejność" name="sort_order" type="number" defaultValue={String(unit.sort_order)} />
+          </div>
+          <Published defaultChecked={unit.is_published} />
+          <Status state={state} />
+          <SubmitButton pendingLabel="Zapisuję…">Zapisz dział</SubmitButton>
+        </Form>
+      </Editor>
+
+      <Danger
+        action={deleteUnitAction}
+        heading="Usuń dział"
+        slug={unit.slug}
+        hidden={{ id: unit.id, current_slug: unit.slug, course_slug: courseSlug }}
+        warning={
+          `Znikną lekcje działu (${lessons}) razem z ich zadaniami i postępami dzieci. ` +
+          `Słówka zostają przy kursie — wisi na nich stan powtórek, więc dziecko ich nie traci. ` +
+          `Tego się nie cofnie; żeby tylko schować dział, odznacz „Widoczne dla dzieci".`
+        }
+        label="Usuń dział z lekcjami"
+      />
+    </>
   );
 }
 
@@ -207,16 +369,13 @@ export function NewLesson({ unitId, nextOrder, others }: { unitId: string; nextO
   return (
     <section className="card flex flex-col gap-4 p-6">
       <h2 className="card-title">Nowa lekcja</h2>
-      <form action={action} className="flex flex-col gap-4">
+      <Form action={action} state={state} className="flex flex-col gap-4">
         <input type="hidden" name="unit_id" value={unitId} />
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Nazwa" name="title" placeholder="Owoce" />
-          <Field label="Nazwa w adresie" name="slug" placeholder="owoce" />
-        </div>
+        <TitleAndSlug titlePlaceholder="Owoce" slugPlaceholder="owoce" />
         <LessonFields others={others} lesson={{ title: "", icon: null, kind: "standard", sort_order: nextOrder, xp_reward: 50, pass_threshold: 0.8, prerequisite_lesson_id: null, is_published: true }} />
         <Status state={state} />
         <SubmitButton pendingLabel="Dodaję…">Dodaj lekcję</SubmitButton>
-      </form>
+      </Form>
     </section>
   );
 }
@@ -234,14 +393,14 @@ export function LessonSettings({
 
   return (
     <Editor summary="Ustawienia lekcji">
-      <form action={action} className="flex flex-col gap-4">
+      <Form action={action} state={state} className="flex flex-col gap-4">
         <input type="hidden" name="id" value={lesson.id} />
         <input type="hidden" name="unit_id" value={unitId} />
         <Field label="Nazwa" name="title" defaultValue={lesson.title} />
         <LessonFields lesson={lesson} others={others} />
         <Status state={state} />
         <SubmitButton pendingLabel="Zapisuję…">Zapisz lekcję</SubmitButton>
-      </form>
+      </Form>
     </Editor>
   );
 }
@@ -264,7 +423,7 @@ export function AddWord({
   return (
     <section className="card flex flex-col gap-4 p-6">
       <h2 className="card-title">Nowe słówko</h2>
-      <form action={action} className="flex flex-col gap-4">
+      <Form action={action} state={state} className="flex flex-col gap-4">
         <input type="hidden" name="lesson_id" value={lessonId} />
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label={`Po ${sourceLabel}`} name="source" placeholder="jabłko" />
@@ -279,7 +438,7 @@ export function AddWord({
         </p>
         <Status state={state} />
         <SubmitButton pendingLabel="Dodaję…">Dodaj słówko</SubmitButton>
-      </form>
+      </Form>
     </section>
   );
 }
@@ -309,7 +468,7 @@ export function EditWord({
 
   return (
     <Editor summary="Popraw">
-      <form action={action} className="flex flex-col gap-3">
+      <Form action={action} state={state} className="flex flex-col gap-3">
         <input type="hidden" name="concept_id" value={conceptId} />
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label={`Po ${sourceLabel}`} name="source" defaultValue={source} />
@@ -321,7 +480,7 @@ export function EditWord({
         </p>
         <Status state={state} />
         <SubmitButton pendingLabel="Zapisuję…">Zapisz słówko</SubmitButton>
-      </form>
+      </Form>
     </Editor>
   );
 }
@@ -339,7 +498,7 @@ export function EnrollmentButton({
   const [state, action] = useActionState<FormState, FormData>(setEnrollmentAction, {});
 
   return (
-    <form action={action} className="flex items-center gap-2">
+    <Form action={action} state={state} className="flex items-center gap-2">
       <input type="hidden" name="user_id" value={userId} />
       <input type="hidden" name="course_id" value={courseId} />
       <input type="hidden" name="enrolled" value={enrolled ? "true" : "false"} />
@@ -347,6 +506,6 @@ export function EnrollmentButton({
         {enrolled ? "Wypisz" : "Zapisz"}
       </button>
       {state.error && <span className="text-base text-red-700">{state.error}</span>}
-    </form>
+    </Form>
   );
 }

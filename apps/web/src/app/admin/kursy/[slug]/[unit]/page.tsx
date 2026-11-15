@@ -52,7 +52,7 @@ async function Unit({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit]"
         intro="Lekcje w dziale. Kolejność decyduje o tym, co dziecko widzi na mapie kursu."
       />
 
-      <UnitSettings unit={unit} />
+      <UnitSettings unit={unit} courseSlug={course.slug} lessons={(lessons ?? []).length} />
 
       <section className="flex flex-col gap-3">
         <h2 className="card-title">Lekcje</h2>

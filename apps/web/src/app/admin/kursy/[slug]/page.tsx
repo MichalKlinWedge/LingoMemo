@@ -15,23 +15,32 @@ async function Course({ params }: { params: PageProps<"/admin/kursy/[slug]">["pa
 
   const { data: course } = await supabase
     .from("courses")
-    .select("id, slug, title, description, icon, sort_order, is_published")
+    .select("id, slug, title, description, icon, source_lang, target_lang, sort_order, is_published")
     .eq("slug", slug)
     .maybeSingle();
 
   if (!course) notFound();
 
-  const [{ data: units, error: unitsError }, { data: lessons }, { data: students, error: studentsError }, { data: enrolled }] =
-    await Promise.all([
-      supabase
-        .from("units")
-        .select("id, slug, title, icon, sort_order, is_published")
-        .eq("course_id", course.id)
-        .order("sort_order"),
-      supabase.from("lessons").select("id, unit_id"),
-      supabase.rpc("list_students"),
-      supabase.from("enrollments").select("user_id").eq("course_id", course.id),
-    ]);
+  const [
+    { data: units, error: unitsError },
+    { data: lessons },
+    { data: students, error: studentsError },
+    { data: enrolled },
+    { data: languages },
+    { count: words },
+  ] = await Promise.all([
+    supabase
+      .from("units")
+      .select("id, slug, title, icon, sort_order, is_published")
+      .eq("course_id", course.id)
+      .order("sort_order"),
+    supabase.from("lessons").select("id, unit_id"),
+    supabase.rpc("list_students"),
+    supabase.from("enrollments").select("user_id").eq("course_id", course.id),
+    supabase.from("languages").select("code, name_pl").eq("is_active", true).order("code"),
+    // Liczba słówek rozstrzyga dwie rzeczy: czy wolno zmienić języki kursu i co zniknie z nim razem.
+    supabase.from("concepts").select("id", { count: "exact", head: true }).eq("course_id", course.id),
+  ]);
 
   const error = unitsError ?? studentsError;
   if (error) return <p className="msg-error">{dbLoadError(error)}</p>;
@@ -39,6 +48,13 @@ async function Course({ params }: { params: PageProps<"/admin/kursy/[slug]">["pa
   const lessonCount = (unitId: string) => (lessons ?? []).filter((lesson) => lesson.unit_id === unitId).length;
   const enrolledIds = new Set((enrolled ?? []).map((row) => row.user_id));
   const nextOrder = Math.max(0, ...(units ?? []).map((unit) => unit.sort_order)) + 1;
+  const unitIds = new Set((units ?? []).map((unit) => unit.id));
+  const counts = {
+    units: (units ?? []).length,
+    lessons: (lessons ?? []).filter((lesson) => unitIds.has(lesson.unit_id)).length,
+    words: words ?? 0,
+    students: enrolledIds.size,
+  };
 
   return (
     <>
@@ -52,7 +68,7 @@ async function Course({ params }: { params: PageProps<"/admin/kursy/[slug]">["pa
         intro="Działy kursu i zapisani uczniowie."
       />
 
-      <CourseSettings course={course} />
+      <CourseSettings course={course} languages={languages ?? []} counts={counts} />
 
       <section className="flex flex-col gap-3">
         <h2 className="card-title">Działy</h2>
