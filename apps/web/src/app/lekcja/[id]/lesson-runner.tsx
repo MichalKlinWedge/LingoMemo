@@ -5,8 +5,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ChoiceExercise } from "@/components/exercises/choice";
 import { ListeningExercise } from "@/components/exercises/listening";
+import { MatchPairsExercise } from "@/components/exercises/match-pairs";
+import { SentenceOrderExercise } from "@/components/exercises/sentence-order";
 import type { Answer, Exercise } from "@/components/exercises/types";
 import { TypingExercise } from "@/components/exercises/typing";
+import { useFeedbackSound } from "@/lib/use-feedback-sound";
 
 import { finishLesson, startLesson, submitAnswer, type Summary, type Verdict } from "./lesson-actions";
 
@@ -32,6 +35,8 @@ export function LessonRunner({
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const { play, enabled: soundOn, toggle: toggleSound } = useFeedbackSound();
 
   const sessionRef = useRef<string | null>(null);
   // Klucz idempotencji: po zerwanym połączeniu ponowne wysłanie wraca do tej samej sesji.
@@ -82,9 +87,10 @@ export function LessonRunner({
       }
 
       setVerdict(result.verdict);
+      play(result.verdict.correct ? "correct" : "wrong");
       setPhase("feedback");
     },
-    [exercise, lessonId, phase],
+    [exercise, lessonId, phase, play],
   );
 
   const next = useCallback(async () => {
@@ -129,7 +135,12 @@ export function LessonRunner({
   return (
     <div className="flex flex-1 flex-col gap-6">
       <div className="flex items-center gap-3">
-        <Link href={`/kurs/${courseSlug}`} className="back-link" aria-label="Przerwij lekcję">
+        <Link
+          href={`/kurs/${courseSlug}`}
+          className="back-link justify-center"
+          style={{ minWidth: "2.75rem", minHeight: "2.75rem" }}
+          aria-label="Przerwij lekcję"
+        >
           ✕
         </Link>
         <div
@@ -146,6 +157,19 @@ export function LessonRunner({
             style={{ width: `${Math.round((index / total) * 100)}%`, background: "var(--color-grass)" }}
           />
         </div>
+        <button
+          type="button"
+          onClick={toggleSound}
+          className="chip justify-center"
+          // Przełącznik jest drugorzędny, ale wciąż dotyka go dziecko — 44 px to minimum,
+          // poniżej którego trafienie palcem staje się loterią.
+          style={{ minWidth: "2.75rem", minHeight: "2.75rem" }}
+          aria-pressed={soundOn}
+          aria-label={soundOn ? "Wyłącz dźwięki" : "Włącz dźwięki"}
+          title={soundOn ? "Wyłącz dźwięki" : "Włącz dźwięki"}
+        >
+          <span aria-hidden>{soundOn ? "🔔" : "🔕"}</span>
+        </button>
         <span className="chip">
           {index + 1}/{total}
         </span>
@@ -153,6 +177,10 @@ export function LessonRunner({
 
       {exercise.type === "listening" ? (
         <ListeningExercise exercise={exercise} locked={locked} onAnswer={handleAnswer} />
+      ) : exercise.type === "match_pairs" ? (
+        <MatchPairsExercise exercise={exercise} locked={locked} onAnswer={handleAnswer} targetLang={targetLang} />
+      ) : exercise.type === "sentence_order" ? (
+        <SentenceOrderExercise exercise={exercise} locked={locked} onAnswer={handleAnswer} />
       ) : exercise.type === "translate_ab" || exercise.type === "fill_blank_choice" ? (
         <ChoiceExercise
           exercise={exercise}
@@ -179,7 +207,7 @@ function Feedback({ verdict, onNext, last }: { verdict: Verdict; onNext: () => v
 
   return (
     <div
-      className="sticky bottom-0 -mx-4 flex flex-col gap-3 border-t-2 p-4"
+      className="anim-slide-up sticky bottom-0 -mx-4 flex flex-col gap-3 border-t-2 p-4"
       style={{
         background: verdict.correct ? "var(--color-grass-light)" : "var(--color-coral-light)",
         borderColor: verdict.correct ? "var(--color-grass)" : "var(--color-coral)",
@@ -187,7 +215,9 @@ function Feedback({ verdict, onNext, last }: { verdict: Verdict; onNext: () => v
       role="status"
     >
       <p style={{ fontSize: "1.5rem", fontWeight: 700, color: verdict.correct ? "#0f5c37" : "#8f2420" }}>
-        <span aria-hidden>{verdict.correct ? "🎉 " : "💪 "}</span>
+        <span className={verdict.correct ? "anim-pop inline-block" : "inline-block"} aria-hidden>
+          {verdict.correct ? "🎉 " : "💪 "}
+        </span>
         {verdict.correct ? (verdict.nearMiss ? "Prawie! Zaliczone" : "Brawo!") : "Nie tym razem"}
       </p>
       {!verdict.correct && shown && (
@@ -208,7 +238,7 @@ function SummaryScreen({ summary, courseSlug }: { summary: Summary; courseSlug: 
 
   return (
     <div className="flex flex-col items-center gap-5 pt-6 text-center">
-      <span className="text-7xl" aria-hidden>
+      <span className="anim-pop text-7xl" aria-hidden>
         {summary.passed ? "🏆" : "🌱"}
       </span>
       <h1>{summary.passed ? "Lekcja zaliczona!" : "Jeszcze trochę"}</h1>

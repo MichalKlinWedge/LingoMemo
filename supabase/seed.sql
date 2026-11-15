@@ -123,6 +123,44 @@ begin
     end loop;
   end loop;
 
+  -- Pierwsza lekcja dostaje komplet typów zadań — jest wzorcem i materiałem do testów.
+  select l.id into v_lesson from public.lessons l
+   where l.unit_id = (select un.id from public.units un where un.course_id = v_course and un.sort_order = 1)
+     and l.slug = 'domowe';
+
+  insert into public.exercises (lesson_id, type, sort_order, concept_id, payload, points) values
+    (v_lesson, 'fill_blank_choice', 100,
+     (select id from public.concepts where course_id = v_course and key = 'animal.dog'),
+     jsonb_build_object(
+       'sentence', 'My {{blank}} likes to play in the garden.',
+       'options', jsonb_build_array('dog', 'door', 'doll', 'desk'),
+       'answer', 'dog',
+       'translation', 'Mój pies lubi bawić się w ogrodzie.'), 10),
+
+    (v_lesson, 'inflection', 101,
+     (select id from public.concepts where course_id = v_course and key = 'animal.cat'),
+     jsonb_build_object(
+       'base', 'cat',
+       'formLabel', 'liczba mnoga',
+       'instruction', 'Jak powiesz, że jest ich więcej?',
+       'accepted', jsonb_build_array('cats')), 15),
+
+    (v_lesson, 'match_pairs', 102, null,
+     jsonb_build_object(
+       'instruction', 'Połącz słówka w pary',
+       'pairs', jsonb_build_array(
+         jsonb_build_object('a', 'pies', 'b', 'dog'),
+         jsonb_build_object('a', 'kot',  'b', 'cat'),
+         jsonb_build_object('a', 'ptak', 'b', 'bird'),
+         jsonb_build_object('a', 'ryba', 'b', 'fish'))), 20),
+
+    (v_lesson, 'sentence_order', 103,
+     (select id from public.concepts where course_id = v_course and key = 'animal.dog'),
+     jsonb_build_object(
+       'prompt', 'Ułóż zdanie: Mam psa.',
+       'tokens', jsonb_build_array('I', 'have', 'a', 'dog'),
+       'solution', jsonb_build_array('I', 'have', 'a', 'dog')), 20);
+
   -- Po jednej powtórce na dział. Nie ma własnych zadań — zestaw buduje się z tego, co według
   -- FSRS czeka na powtórzenie u konkretnego dziecka.
   for u in select un.id, un.title from public.units un where un.course_id = v_course loop

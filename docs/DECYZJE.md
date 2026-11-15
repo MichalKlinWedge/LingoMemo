@@ -127,3 +127,24 @@ podejść do tego samego słówka w jednej lekcji jest poprawnie uwzględnione.
 - **Funkcja `security definer` z parametrem użytkownika jest testowalna, ta z `auth.uid()` — nie.**
   `pick_review_exercises(lesson, user)` przyjmuje użytkownika jawnie, dzięki czemu test pgTAP
   może przygotować dane jako `postgres`, zanim przełączy się na rolę ucznia.
+
+## Nowe typy zadań (2026-11-15)
+
+| Obszar | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Dopasowywanie par | dotknięcie po lewej, potem po prawej; para znika z kolumn i ląduje na liście połączonych | widać postęp, da się cofnąć pomyłkę, działa palcem i klawiaturą | kodowanie par kolorami (przy ośmiu parach nie do odróżnienia, a dziecko z zaburzeniami widzenia barw zostaje z niczym) oraz rysowanie linii między kolumnami |
+| Rozsypanka słowna | dotknięcie klocka przenosi go do zdania i z powrotem | na tablecie przeciąganie jest dla dziecka trudniejsze niż dotknięcie | przeciąganie (drag & drop) — gorzej działa palcem i nie działa klawiaturą |
+| Klocki w rozsypance | rozróżniane po pozycji, nie po treści | te same słowa mogą wystąpić dwa razy („the cat and the dog”) | klucz z treści słowa — przy powtórzeniu klocki znikałyby parami |
+| Dźwięk reakcji | generowany przez Web Audio | zero plików do pobrania i utrzymania, działa offline | nagrania mp3 — kolejne zasoby do wersjonowania |
+
+### Pułapki znalezione przy Etapie 5
+
+- **`setState` w efekcie wywołuje kaskadę renderów** i linter Next to zgłasza. Ustawienie
+  czytane z `localStorage` bierzemy przez `useSyncExternalStore`, który ma też osobny wynik dla
+  serwera, więc nic nie mignie przy hydratacji.
+- **Test filtrujący po losowanym typie zadania jest testem losowym.** Test powtórek wybierał
+  zadanie `translate_ba`, a typ jest losowany — padał mniej więcej raz na kilka uruchomień.
+  Po dołożeniu nowych typów częściej. Teraz bierze pierwsze z brzegu i układa odpowiedź pasującą
+  do jego typu.
+- **Dodanie nowego typu zadania wymaga ruszenia testu lekcji**, bo ten przechodzi całą lekcję
+  i musi umieć odpowiedzieć na każdy typ. To dobra wiadomość: test od razu pokazał brak.

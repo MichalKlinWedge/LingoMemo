@@ -132,11 +132,21 @@ select set_config('role', 'postgres', true);
 
 -- Zadanie i oczekiwaną odpowiedź wybieramy jako postgres: uczeń nie ma wglądu w `exercises`,
 -- i właśnie o to chodzi.
+--
+-- Typ zadania w powtórce jest losowany, więc NIE wolno filtrować po typie — test padałby raz na
+-- kilka uruchomień bez żadnej zmiany w kodzie. Bierzemy pierwsze z brzegu i układamy odpowiedź
+-- pasującą do jego typu.
 create temporary table t_pick as
-  select ex.id, ex.payload
+  select ex.id,
+         case ex.type
+           when 'translate_ab'      then jsonb_build_object('choice', ex.payload -> 'accepted' ->> 0)
+           when 'fill_blank_choice' then jsonb_build_object('choice', ex.payload ->> 'answer')
+           when 'match_pairs'       then jsonb_build_object('pairs', ex.payload -> 'pairs')
+           when 'sentence_order'    then jsonb_build_object('tokens', ex.payload -> 'solution')
+           else jsonb_build_object('text', ex.payload -> 'accepted' ->> 0)
+         end as answer
   from public.pick_review_exercises((select id from t_review), (select id from t_user)) r
   join public.exercises ex on ex.id = r.exercise_id
-  where ex.type = 'translate_ba'
   limit 1;
 grant select on t_pick to authenticated;
 
@@ -149,7 +159,7 @@ select is(
   (select (public.submit_attempt(
       (select id from t_sess),
       (select id from t_pick),
-      jsonb_build_object('text', (select payload -> 'accepted' ->> 0 from t_pick)),
+      (select answer from t_pick),
       3000, false) ->> 'correct')::boolean),
   true,
   'odpowiedź w powtórce jest przyjmowana, mimo że zadanie należy do innej lekcji'

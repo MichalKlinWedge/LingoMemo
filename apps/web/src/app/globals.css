@@ -78,6 +78,40 @@ h2 {
   font-size: 1.75rem;
 }
 
+/* Reakcja na odpowiedź: panel wjeżdża od dołu, a przy trafionej jeszcze podskakuje.
+   Dziecko ma zobaczyć, że coś się wydarzyło, zanim zdąży przeczytać. */
+@keyframes slide-up {
+  from {
+    transform: translateY(1.5rem);
+    opacity: 0;
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.85);
+  }
+  60% {
+    transform: scale(1.06);
+  }
+}
+
+.anim-slide-up {
+  animation: slide-up 0.18s ease-out;
+}
+
+.anim-pop {
+  animation: pop 0.32s ease-out;
+}
+
+/* Kto prosi o mniej ruchu, dostaje mniej ruchu — także dziecko z nadwrażliwością. */
+@media (prefers-reduced-motion: reduce) {
+  .anim-slide-up,
+  .anim-pop {
+    animation: none;
+  }
+}
+
 @layer components {
   /* --- przyciski --- */
   .btn-primary,

@@ -130,6 +130,19 @@ pozostaje ten sam.
 **Kryterium odbioru:** lekcja złożona z wszystkich siedmiu typów przechodzi bez błędów
 na tablecie i na telefonie.
 
+**Stan (2026-11-15):** zrobione. Lekcja „Zwierzęta domowe" ma teraz komplet siedmiu typów
+(16 zadań) i przeszła w przeglądarce przy 375 px, 768 px i na szerokim ekranie — bez przewijania
+w poziomie. Doszły: dopasowywanie par, rozsypanka słowna, dźwięk po odpowiedzi (z przełącznikiem
+zapamiętywanym w przeglądarce) i animacje reakcji, wyciszone przy `prefers-reduced-motion`.
+
+Dwie rzeczy poprawione po obejrzeniu na telefonie: w dopasowywaniu par głośniki zwężały prawą
+kolumnę, więc przy wąskim ekranie znikają; przełącznik dźwięku i krzyżyk miały 34 px, czyli
+poniżej progu, od którego dziecko trafia palcem — mają teraz 44 px.
+
+Wyszło też, że test lekcji nie znał nowych typów zadań (odpowiadał na nie jak na tekstowe),
+a test powtórek filtrował zadania po losowanym typie — czyli potrafił paść bez żadnej zmiany
+w kodzie. Oba poprawione; trzy przebiegi pod rząd zielone.
+
 ---
 
 ## Etap 6 — panel administratora

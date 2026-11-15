@@ -166,6 +166,8 @@ begin
     v := case r.type
       when 'translate_ab' then jsonb_build_object('choice', r.payload -> 'accepted' ->> 0)
       when 'fill_blank_choice' then jsonb_build_object('choice', r.payload ->> 'answer')
+      when 'match_pairs' then jsonb_build_object('pairs', r.payload -> 'pairs')
+      when 'sentence_order' then jsonb_build_object('tokens', r.payload -> 'solution')
       else jsonb_build_object('text', r.payload -> 'accepted' ->> 0)
     end;
     perform public.submit_attempt((select id from t_session), r.id, v, 9000, false);
