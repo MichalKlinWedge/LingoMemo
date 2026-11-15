@@ -11,25 +11,19 @@ import { dbErrorMessage } from "@/lib/db-error";
  * klucza `service_role`, którego wymaga Admin API Supabase. Długość sprawdzamy tu i jeszcze raz
  * w bazie: formularz da się ominąć, funkcji `set_user_password` nie.
  *
- * Administrator potwierdza operację własnym hasłem. Sama otwarta sesja nie wystarcza: aplikacja
- * chodzi na wspólnym tablecie, więc „ktoś podniósł urządzenie” to realny scenariusz, a nie
- * teoretyczny.
+ * Operacja nie wymaga potwierdzenia własnym hasłem — świadoma decyzja właściciela aplikacji:
+ * dodatkowe pole kosztuje przy każdym użyciu, a chroni tylko przed cudzą ręką przy odblokowanym
+ * urządzeniu administratora.
  */
 export async function setPasswordAction(_prev: FormState, form: FormData): Promise<FormState> {
   const { supabase } = await requireAdmin();
 
   const userId = String(form.get("user_id") ?? "");
   const password = String(form.get("password") ?? "");
-  const adminPassword = String(form.get("admin_password") ?? "");
   if (!userId) return { error: "Nie wiadomo, któremu kontu zmienić hasło." };
   if (password.length < 8) return { error: "Hasło musi mieć co najmniej 8 znaków." };
-  if (adminPassword === "") return { error: "Podaj swoje hasło, żeby potwierdzić zmianę." };
 
-  const { error } = await supabase.rpc("set_user_password", {
-    p_user: userId,
-    p_password: password,
-    p_admin_password: adminPassword,
-  });
+  const { error } = await supabase.rpc("set_user_password", { p_user: userId, p_password: password });
   if (error) return { error: dbErrorMessage(error, "Nie udało się zmienić hasła.") };
 
   refresh();

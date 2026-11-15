@@ -187,9 +187,20 @@ podejść do tego samego słówka w jednej lekcji jest poprawnie uwzględnione.
 |---|---|---|---|
 | Kto zapisuje hasło | funkcja w bazie, `security definer` | Admin API Supabase wymagałoby klucza `service_role` w aplikacji webowej, a ten omija RLS całkowicie | `auth.admin.updateUserById` z aplikacji |
 | Format skrótu | `crypt(..., gen_salt('bf', 10))` z pgcrypto | daje `$2a$10$…`, czyli dokładnie to, co czyta GoTrue — sprawdzone logowaniem, nie samym formatem | — |
-| Potwierdzenie | własne hasło administratora przy każdej zmianie | aplikacja chodzi na wspólnym tablecie; sama otwarta sesja znaczyłaby, że każdy, kto go podniesie, przejmuje wszystkie konta, łącznie z kontami pozostałych administratorów | wyłącznie sprawdzenie roli |
+| Potwierdzenie | **brak** — wystarczy rola administratora | decyzja właściciela aplikacji: dodatkowe pole kosztuje przy każdym użyciu, a chroni tylko przed cudzą ręką przy odblokowanym urządzeniu administratora; przy domowej aplikacji dla dwójki dorosłych to się nie zwraca | potwierdzanie własnym hasłem (było przez jedną migrację, zdjęte w `…_password_no_reauth.sql`) |
 | Unieważnianie dostępu | kasowanie tokenów odświeżania **i** sesji, osobno | `refresh_tokens.session_id` jest kolumną opcjonalną, więc kaskada z `auth.sessions` nie jest gwarancją — to założenie o cudzym schemacie | poleganie na kaskadzie |
 | Generator haseł | dwa słowa z listy 64 plus liczba dwucyfrowa | 64 × 64 × 90 = 368 640 kombinacji, krótkie do podyktowania i wpisania; lista ma 64 pozycje, bo 2^32 dzieli się przez 64 bez reszty i reszta z dzielenia nie faworyzuje żadnego słowa | trzy słowa (dłuższe do wpisania przez dziecko przy tej samej sile) |
 
 Pierwsza wersja miała w komentarzu „ponad milion kombinacji" przy 16 słowach — faktycznie było ich
 23 040, czyli ~43 razy mniej. Liczba w komentarzu, której nikt nie przelicza, jest gorsza niż jej brak.
+
+## Pułapka: seed a migracja z tym samym kursem (2026-11-15)
+
+Migracja `…_starter_course.sql` zakłada wiersz kursu `pl-en-starter`, żeby w chmurze było dokąd
+importować lekcje. `seed.sql` zaczynał się od „jeśli kurs istnieje — wyjdź", więc od tej migracji
+**nigdy nie wchodził**: lokalna baza miała kurs i zero działów, lekcji i słówek, a trzy pliki
+testów pgTAP przestały przechodzić.
+
+Warunek w seedzie sprawdza teraz TREŚĆ (czy istnieje dział tego kursu), a nie sam kurs. Przy
+okazji druga pułapka: aliasu w zapytaniu nie wolno nazwać tak jak zmiennej rekordowej z `declare`
+— plpgsql rozwiąże go jako zmienną i przerwie z „record is not assigned yet".

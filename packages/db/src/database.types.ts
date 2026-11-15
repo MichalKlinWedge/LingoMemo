@@ -658,7 +658,7 @@ isOneToOne: false
 { Args: { "p_id": string }; Returns: undefined
                            },
 "set_user_password":
-{ Args: { "p_admin_password": string,"p_password": string,"p_user": string }; Returns: undefined
+{ Args: { "p_password": string,"p_user": string }; Returns: undefined
                            },
 "srs_apply":
 { Args: { "p_concept": string,"p_course": string,"p_grade": number,"p_time_zone"?: string,"p_user": string }; Returns: undefined

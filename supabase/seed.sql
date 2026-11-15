@@ -17,14 +17,25 @@ declare
   w        record;
   v_options jsonb;
 begin
-  if exists (select 1 from public.courses where slug = 'pl-en-starter') then
+  -- Warunek sprawdza TREŚĆ, nie sam kurs: wiersz kursu zakłada migracja `…_starter_course.sql`,
+  -- więc pytanie „czy jest kurs?" zawsze dawałoby prawdę i seed nigdy by nie wszedł.
+  -- Alias NIE może nazywać się `u` ani `c`: plpgsql rozwiązałby go jako zmienną rekordową
+  -- o tej samej nazwie, zadeklarowaną wyżej, i przerwał z „record is not assigned yet".
+  if exists (
+    select 1 from public.units un
+    join public.courses co on co.id = un.course_id
+    where co.slug = 'pl-en-starter'
+  ) then
     return;
   end if;
 
-  insert into public.courses (slug, source_lang, target_lang, title, description, icon, is_published)
-  values ('pl-en-starter', 'pl', 'en', 'Angielski od zera',
-          'Pierwsze słówka i zwroty po angielsku.', '🇬🇧', true)
-  returning id into v_course;
+  select id into v_course from public.courses where slug = 'pl-en-starter';
+  if v_course is null then
+    insert into public.courses (slug, source_lang, target_lang, title, description, icon, is_published)
+    values ('pl-en-starter', 'pl', 'en', 'Angielski od zera',
+            'Pierwsze słówka i zwroty po angielsku.', '🇬🇧', true)
+    returning id into v_course;
+  end if;
 
   create temporary table tmp_words (
     unit_slug   text,

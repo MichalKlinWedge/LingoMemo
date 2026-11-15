@@ -63,18 +63,6 @@ export function PasswordForm({ userId, displayName, self }: { userId: string; di
             placeholder="co najmniej 8 znaków"
           />
         </label>
-        <label className="flex flex-col gap-2">
-          <span className="font-semibold">Potwierdź swoim hasłem</span>
-          <input
-            className="field"
-            name="admin_password"
-            type="password"
-            required
-            autoComplete="current-password"
-            placeholder="Twoje hasło"
-          />
-        </label>
-
         <div className="flex flex-wrap items-center gap-2">
           <SubmitButton pendingLabel="Zmieniam…">Ustaw hasło</SubmitButton>
           <button type="button" className="btn-secondary" onClick={() => setHaslo(losoweHaslo())}>

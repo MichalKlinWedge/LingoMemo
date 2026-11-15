@@ -5,7 +5,7 @@
 -- (bcrypt `$2a$`), oraz że stare sesje konta znikają.
 
 begin;
-select plan(16);
+select plan(14);
 
 create or replace function pg_temp.make_user(p_email text) returns uuid
 language plpgsql as $$
@@ -57,7 +57,7 @@ select throws_ok(
 );
 
 select throws_ok(
-  format('select public.set_user_password(%L, ''nowe-haslo-123'', ''stare-haslo'')',
+  format('select public.set_user_password(%L, ''nowe-haslo-123'')',
          (select id from t_ids where name = 'zosia')),
   '42501',
   null,
@@ -65,7 +65,7 @@ select throws_ok(
 );
 
 select throws_ok(
-  format('select public.set_user_password(%L, ''nowe-haslo-123'', ''stare-haslo'')',
+  format('select public.set_user_password(%L, ''nowe-haslo-123'')',
          (select id from t_ids where name = 'janek')),
   '42501',
   null,
@@ -96,7 +96,7 @@ select is(
 );
 
 select throws_ok(
-  format('select public.set_user_password(%L, ''krotkie'', ''stare-haslo'')',
+  format('select public.set_user_password(%L, ''krotkie'')',
          (select id from t_ids where name = 'zosia')),
   '22023',
   null,
@@ -104,32 +104,14 @@ select throws_ok(
 );
 
 select throws_ok(
-  'select public.set_user_password(''00000000-0000-0000-0000-000000000001''::uuid, ''nowe-haslo-123'', ''stare-haslo'')',
+  'select public.set_user_password(''00000000-0000-0000-0000-000000000001''::uuid, ''nowe-haslo-123'')',
   '22023',
   null,
   'nie da się ustawić hasła nieistniejącemu kontu'
 );
 
--- Sama otwarta sesja administratora nie wystarczy: na wspólnym tablecie to byłoby zaproszenie
--- do przejęcia wszystkich kont.
-select throws_ok(
-  format('select public.set_user_password(%L, ''nowe-haslo-123'', ''zle-haslo-admina'')',
-         (select id from t_ids where name = 'zosia')),
-  '42501',
-  null,
-  'bez własnego hasła administrator niczego nie zmieni'
-);
-
-select throws_ok(
-  format('select public.set_user_password(%L, ''nowe-haslo-123'', null)',
-         (select id from t_ids where name = 'zosia')),
-  '42501',
-  null,
-  'puste hasło administratora też nie przechodzi'
-);
-
 select lives_ok(
-  format('select public.set_user_password(%L, ''nowe-haslo-123'', ''stare-haslo'')',
+  format('select public.set_user_password(%L, ''nowe-haslo-123'')',
          (select id from t_ids where name = 'zosia')),
   'administrator ustawia hasło uczniowi'
 );
