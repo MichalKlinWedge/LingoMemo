@@ -53,6 +53,26 @@ values (
   ), 10
 );
 
+-- Ten plik sprawdza silnik lekcji, nie dobór trudności: uczennica dostaje sufit 3, a jej
+-- słówka mają wysoką stabilność, żeby rampa z `20261115094000_learner_level.sql` niczego nie
+-- odsiewała i lekcja wydawała komplet zadań. Sam dobór po poziomie ma własny plik testu.
+update public.profiles set level = 3 where id = (select id from t_user);
+
+insert into public.srs_state (user_id, concept_id, course_id, stability, difficulty, due_on, reps)
+select (select id from t_user), li.concept_id, c.id, 60, 5, current_date + 365, 3
+  from public.lesson_items li
+  join public.lessons l on l.id = li.lesson_id
+  join public.units u on u.id = l.unit_id
+  join public.courses c on c.id = u.course_id
+ where l.id = (select id from t_lesson where nr = 1)
+on conflict (user_id, concept_id) do update set stability = 60;
+
+-- `exercise_stage` numeruje zadania widoczne dla zalogowanego dziecka, więc tabela `t_ex` musi
+-- powstać już z jego tożsamością. Rolę zmieniamy dalej — tu chodzi tylko o `auth.uid()`.
+select set_config('request.jwt.claims',
+         (select json_build_object('sub', u.id, 'role', 'authenticated', 'app_metadata', '{}'::jsonb)::text
+            from auth.users u where u.id = (select id from t_user)), true);
+
 create temporary table t_ex as
   select id, type, sort_order, payload,
          public.exercise_stage(id, (select id from t_lesson where nr = 1)) as stage

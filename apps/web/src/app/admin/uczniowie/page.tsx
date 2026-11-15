@@ -45,6 +45,7 @@ async function Students() {
                 <span className="chip">📘 {student.lessons_done}</span>
                 <span className="chip">🧠 {student.words_seen}</span>
                 <span className="chip">🔥 {student.streak_days}</span>
+                <span className="chip">🎚️ poziom {student.level}</span>
                 <span className="chip">⏱️ {formatDuration(extra?.seconds_total ?? 0)}</span>
                 <span className="text-sm text-zinc-500">
                   {student.last_active_on

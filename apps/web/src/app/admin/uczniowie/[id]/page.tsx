@@ -7,6 +7,7 @@ import { CRUMB_HOME, CRUMB_PANEL } from "@/components/breadcrumbs";
 import { PageHeader } from "@/components/page-header";
 import { Loading, Shell } from "@/components/shell";
 import { accuracy, Tile, WeekChart } from "@/components/stats-widgets";
+import { LevelPanel } from "../level-panel";
 import { requireAdmin } from "@/lib/auth";
 import { dbLoadError } from "@/lib/db-error";
 
@@ -47,7 +48,11 @@ async function Student({ params }: { params: PageProps<"/admin/uczniowie/[id]">[
   const { id } = await params;
   const { supabase } = await requireAdmin(`/admin/uczniowie/${id}`);
 
-  const { data: profile } = await supabase.from("profiles").select("id, display_name").eq("id", id).maybeSingle();
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("id, display_name, level")
+    .eq("id", id)
+    .maybeSingle();
   if (!profile) notFound();
 
   const [{ data: stats, error }, { data: daily }, { data: courses }, { data: weak }] = await Promise.all([
@@ -125,6 +130,8 @@ async function Student({ params }: { params: PageProps<"/admin/uczniowie/[id]">[
             : "Nie zaczął jeszcze żadnej lekcji."
         }
       />
+
+      <LevelPanel userId={profile.id} level={profile.level} />
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Tile icon="📘" value={stats?.lessons_done ?? 0} label="zaliczonych lekcji" />

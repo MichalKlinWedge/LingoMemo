@@ -402,3 +402,33 @@ wyboru została pominięta.
   `get_lesson_exercises` w jednym `select` z `generate_series` zwraca dwadzieścia identycznych
   list, bo Postgres ma prawo policzyć taką funkcję raz i podstawić wynik. Test musi wołać ją
   w pętli, osobnym zapytaniem na iterację — inaczej „udowodni" brak tasowania.
+
+### Poziom trudności zadań (2026-11-15)
+
+Lekcje były za trudne: każde słówko dostaje komplet zadań, a wśród nich wpisywanie — dziecko,
+które dopiero poznało słowo, nie ma szans go napisać. Trudność rozbiliśmy na dwa niezależne
+ograniczenia, a zadanie wchodzi do lekcji, gdy mieści się w obu.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Sufit konta | `profiles.level` 1–3, ustawia rodzic w panelu ucznia | jedno pole na dziecko, widoczne tam, gdzie i tak ogląda się jego postępy | poziom osobno dla każdego kursu (`enrollments`) — przy jednym kursie na dziecko nie widać różnicy, a każde zapytanie rośnie o złączenie |
+| Rampa słówka | poziom z `srs_state.stability`: 7 dni → rozpoznaję, 21 dni → umiem | trudność rośnie słówko po słówku, więc nowe słowo zaczyna od klikania nawet na poziomie 3; sam przełącznik na koncie podnosiłby trudność skokiem, także dla świeżo poznanych słów | tylko ręczny poziom; tylko automat z wyników całych lekcji (skok w trudności w złym momencie) |
+| Gdzie siedzi poziom zadania | kolumna `exercises.level`, nie mapa „typ → trudność" | `translate_ab` z `options` w payloadzie to klikanie w kafelki, a bez nich wpisywanie z klawiatury — ten sam typ bywa i łatwy, i trudny | tabela przeliczająca typ na poziom |
+| Skąd bierze się poziom zadania | wyzwalacz `exercises_level` z funkcji `default_exercise_level(type, payload)`; podany wprost zostaje | `default` kolumny nie widzi reszty wiersza, a import i panel nie muszą nic podawać | wyliczanie poziomu w aplikacji przy każdym wstawieniu |
+| `level` bez `not null` | pusty być nie może, ale pilnuje tego więz `exercises_level_valid` razem z wyzwalaczem | `not null` bez `default` sprawia, że `npm run gen` robi z kolumny pole wymagane w każdym `insert()` w aplikacji, a `default` ubiegłby wyzwalacz i wszystko miałoby poziom 1 | `not null` z wartością domyślną |
+| Gdzie filtrujemy | `visible_exercises` w bazie, używane przez `get_lesson_exercises`, `lesson_exercise_count`, `exercise_stage` i `pick_review_exercises` | dobór zadań i klucze odpowiedzi nie opuszczają bazy, a etapy lekcji muszą liczyć dokładnie to, co dziecko dostanie | filtr w przeglądarce; filtr tylko w `get_lesson_exercises` (etapy rozjechałyby się z `submit_attempt`) |
+| Słówko bez zadania w poziomie | wchodzi jego najłatwiejsze zadanie | inaczej słówko wypadłoby z lekcji, FSRS nigdy by go nie zobaczył i nigdy nie dojrzałoby do trudniejszych zadań | pominięcie słówka |
+
+Skutki uboczne, o których trzeba wiedzieć:
+
+- **Na poziomie 1 lekcja jest krótsza.** `admin_add_word` robi do słówka jedno zadanie na
+  klikanie (tłumaczenie z kafelkami, i tylko gdy w lekcji jest z czego je ułożyć) i dwa na
+  wpisywanie, więc filtr zdejmuje większość. Docelowo generator powinien robić więcej wariantów
+  łatwych — dopóki tego nie ma, poziom 1 skraca lekcję, zamiast ją zamieniać na łatwiejszą.
+- **Zadanie spoza poziomu nie da się rozwiązać.** `submit_attempt` sprawdza etap przez
+  `exercise_stage`, a ten liczy tylko widoczne zadania — odpowiedź na schowane zadanie wraca
+  z komunikatem o złym etapie lekcji. W aplikacji nie ma jak do tego dojść, bo dziecko dostaje
+  wyłącznie zadania widoczne.
+- **Testy silnika lekcji ustawiają sufit 3 i wysoką stabilność.** `lessons`, `answers`
+  i `skip_exercise` sprawdzają ocenianie i etapy, nie dobór trudności — bez tego ustawienia
+  wybierałyby zadanie zależne od tego, które uuid wypadnie niżej.

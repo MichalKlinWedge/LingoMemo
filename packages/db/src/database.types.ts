@@ -131,14 +131,14 @@ isOneToOne: false
                   ]
                 },"exercises": {
                   Row: {
-                    "concept_id": string | null,"id": string,"is_active": boolean,"lesson_id": string,"payload": NonNullable<Json>,"points": number,"sort_order": number,"type": Database["public"]['Enums']["exercise_type"]
+                    "concept_id": string | null,"id": string,"is_active": boolean,"lesson_id": string,"level": number | null,"payload": NonNullable<Json>,"points": number,"sort_order": number,"type": Database["public"]['Enums']["exercise_type"]
                   }
                   ComputedFields: never
                   Insert: {
-                    "concept_id"?: string | null,"id"?: string,"is_active"?: boolean,"lesson_id": string,"payload": NonNullable<Json>,"points"?: number,"sort_order": number,"type": Database["public"]['Enums']["exercise_type"]
+                    "concept_id"?: string | null,"id"?: string,"is_active"?: boolean,"lesson_id": string,"level"?: number | null,"payload": NonNullable<Json>,"points"?: number,"sort_order": number,"type": Database["public"]['Enums']["exercise_type"]
                   }
                   Update: {
-                    "concept_id"?: string | null,"id"?: string,"is_active"?: boolean,"lesson_id"?: string,"payload"?: NonNullable<Json>,"points"?: number,"sort_order"?: number,"type"?: Database["public"]['Enums']["exercise_type"]
+                    "concept_id"?: string | null,"id"?: string,"is_active"?: boolean,"lesson_id"?: string,"level"?: number | null,"payload"?: NonNullable<Json>,"points"?: number,"sort_order"?: number,"type"?: Database["public"]['Enums']["exercise_type"]
                   }
                   Relationships: [
                     {
@@ -339,14 +339,14 @@ isOneToOne: false
                   ]
                 },"profiles": {
                   Row: {
-                    "avatar_key": string | null,"created_at": string,"display_name": string,"id": string,"time_zone": string,"ui_lang": string,"updated_at": string
+                    "avatar_key": string | null,"created_at": string,"display_name": string,"id": string,"level": number,"time_zone": string,"ui_lang": string,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "avatar_key"?: string | null,"created_at"?: string,"display_name": string,"id": string,"time_zone"?: string,"ui_lang"?: string,"updated_at"?: string
+                    "avatar_key"?: string | null,"created_at"?: string,"display_name": string,"id": string,"level"?: number,"time_zone"?: string,"ui_lang"?: string,"updated_at"?: string
                   }
                   Update: {
-                    "avatar_key"?: string | null,"created_at"?: string,"display_name"?: string,"id"?: string,"time_zone"?: string,"ui_lang"?: string,"updated_at"?: string
+                    "avatar_key"?: string | null,"created_at"?: string,"display_name"?: string,"id"?: string,"level"?: number,"time_zone"?: string,"ui_lang"?: string,"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -614,6 +614,9 @@ isOneToOne: false
 "admin_update_word":
 { Args: { "p_concept": string,"p_source": string,"p_tags"?: (string)[],"p_target": string }; Returns: Json
                            },
+"allowed_exercise_level":
+{ Args: { "p_concept": string,"p_user": string }; Returns: number
+                           },
 "award_badges":
 { Args: { "p_user": string }; Returns: (string)[]
                            },
@@ -623,8 +626,14 @@ isOneToOne: false
 "bootstrap_admin":
 { Args: { "p_email": string }; Returns: boolean
                            },
+"concept_ramp_level":
+{ Args: { "p_stability": number }; Returns: number
+                           },
 "create_invite":
 { Args: { "p_course"?: string,"p_days"?: number,"p_display_name"?: string,"p_email"?: string,"p_max_uses"?: number,"p_role"?: string }; Returns: string
+                           },
+"default_exercise_level":
+{ Args: { "p": Json,"t": Database["public"]['Enums']["exercise_type"] }; Returns: number
                            },
 "exercise_allowed_in_lesson":
 { Args: { "p_exercise": string,"p_lesson": string }; Returns: boolean
@@ -722,7 +731,7 @@ isOneToOne: false
                            },
 "list_students":
 { Args: Record<PropertyKey, never>; Returns: {
-              "created_at": string,"display_name": string,"email": string,"is_admin": boolean,"last_active_on": string,"lessons_done": number,"streak_days": number,"total_points": number,"user_id": string,"words_seen": number
+              "created_at": string,"display_name": string,"email": string,"is_admin": boolean,"last_active_on": string,"lessons_done": number,"level": number,"streak_days": number,"total_points": number,"user_id": string,"words_seen": number
             }[]
                            },
 "normalize_answer":
@@ -733,6 +742,12 @@ isOneToOne: false
               "concept_id": string,"exercise_id": string,"priority": number
             }[]
                            },
+"ramp_known":
+{ Args: Record<PropertyKey, never>; Returns: number
+                           },
+"ramp_recognized":
+{ Args: Record<PropertyKey, never>; Returns: number
+                           },
 "review_limit":
 { Args: Record<PropertyKey, never>; Returns: number
                            },
@@ -741,6 +756,9 @@ isOneToOne: false
                            },
 "session_seconds":
 { Args: { "p_finished": string,"p_started": string }; Returns: number
+                           },
+"set_learner_level":
+{ Args: { "p_level": number,"p_user": string }; Returns: undefined
                            },
 "set_user_password":
 { Args: { "p_password": string,"p_user": string }; Returns: undefined
@@ -762,6 +780,11 @@ isOneToOne: false
                            },
 "validate_exercise_payload":
 { Args: { "p": Json,"t": Database["public"]['Enums']["exercise_type"] }; Returns: boolean
+                           },
+"visible_exercises":
+{ Args: { "p_lesson": string,"p_user": string }; Returns: {
+              "exercise_id": string
+            }[]
                            }
           }
           Enums: {
