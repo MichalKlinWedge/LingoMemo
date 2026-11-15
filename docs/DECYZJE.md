@@ -630,3 +630,30 @@ powtórek — a tego nie odtworzy żaden backup treści, bo to nie jest treść.
 | Skąd panel wie z góry | `list_courses_started()`, jedno zapytanie na całą listę | „Usuń" musi mówić prawdę PRZED kliknięciem, inaczej kłamie w jedną albo w drugą stronę | sprawdzanie po fakcie, z komunikatu zwrotnego |
 | Przepisanie sluga | tylko przy prawdziwym kasowaniu | ukrycie cofa się jednym odznaczeniem „Widoczne dla dzieci", więc kazanie przepisywać adres uczy klikać na ślepo | przepisywanie zawsze; brak przepisywania w obu przypadkach |
 | Miękkie kasowanie | nie ma, wystarcza `is_published` | kolumnę `deleted_at` musiałoby omijać każde zapytanie o kursy, a `is_published` robi dokładnie to, o co chodzi | `deleted_at` i filtr w widokach |
+
+## Rola rodzica (2026-11-15)
+
+Rodzic nie robi lekcji — ma wgląd w postępy swoich dzieci i nic poza tym. Dzieci przypisuje
+administrator.
+
+| Pytanie | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Gdzie mieszka rola | `app_private.parent_users` + claim `app_metadata.is_parent` | dokładnie jak przy administratorze: zero zapytań na „czy to rodzic", a użytkownik nie nada jej sobie sam | kolumna w `profiles` (uczeń ją zapisuje), osobna tabela w `public` (widoczna przez PostgREST) |
+| Gdzie mieszka lista dzieci | tabela `app_private.parent_children`, **nie** claim | przypisanie dziecka ma działać od razu; claim odświeża się przy nowym tokenie, więc rodzic czekałby do godziny na dostęp | tablica dzieci w `app_metadata` razem z rolą |
+| Jak czytają to polityki | `user_id in (select public.my_child_ids())` | podzapytanie nie zależy od wiersza, więc Postgres liczy je raz na zapytanie (InitPlan) | `is_parent_of(user_id)` — funkcja wołana dla każdego wiersza z osobna |
+| Które tabele | dopisanie warunku do istniejących polityk `*_read` | jedna polityka na tabelę i cała reguła widoczna w jednym miejscu | drugi komplet polityk „dla rodzica" obok tych dla ucznia i administratora |
+| `exercises` | **bez zmian, zamknięte** | leżą tam klucze odpowiedzi do całego kursu; jedno konto rodzica wystarczyłoby, żeby je wyciągnąć | otwarcie na równi z administratorem, żeby karta dziecka pokazywała poprawne odpowiedzi |
+| Skąd rodzic bierze konto | zaproszenie z rolą `parent` albo nadanie roli istniejącemu kontu w panelu | obie drogi prowadzą do tego samego wiersza w `parent_users` | wyłącznie zaproszenie (nie da się awansować konta, które już istnieje) |
+| Gdzie przypisuje się dzieci | w karcie rodzica, przełącznikami | rodziców jest dwoje, a dzieci kilkoro — krótsza lista do klikania i od razu widać, komu brakuje przypisania | wybór rodzica w karcie dziecka (dziecko może mieć dwoje rodziców, więc i tak nie jest to wybór jednego z listy) |
+| Odebranie roli | kasuje też powiązania | rola odebrana z zostawionymi dziećmi to cicha furtka, gdyby nadać ją temu samemu kontu ponownie | zostawianie powiązań „na wszelki wypadek" |
+| Zapis na kurs w zaproszeniu | pomijany dla roli `parent` | rodzic dostałby pusty wiersz w `enrollments` i kafelek kursu na stronie, której nie ma po co otwierać | zapisywanie wszystkich tak samo |
+
+Strona główna rozgałęzia się po claimie: rodzic widzi listę dzieci zamiast kafelków kursów,
+a karta dziecka (`/dziecko/[id]`) nie sprawdza uprawnień sama — pokazuje to, co przepuści RLS.
+Wejście pod adres cudzego dziecka kończy się komunikatem „Nie widzisz tego konta", bo zapytanie
+o profil wraca puste. Druga bramka w kodzie mogłaby się z regułą w bazie rozjechać.
+
+**Pułapka odkryta przy pisaniu:** `user_id = any ((select public.my_child_ids()))` nie działa,
+gdy funkcja zwraca `uuid[]` — Postgres czyta `any (podzapytanie)` jako porównanie z wierszami,
+nie z tablicą, i wywala się na `operator does not exist: uuid = uuid[]`. Funkcja zwraca więc
+`setof uuid`, a polityki używają `in (select ...)`.

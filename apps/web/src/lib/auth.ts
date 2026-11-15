@@ -11,12 +11,15 @@ export async function getUser() {
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   if (!data?.claims) return null;
-  const app = data.claims.app_metadata as { is_admin?: boolean } | undefined;
+  const app = data.claims.app_metadata as { is_admin?: boolean; is_parent?: boolean } | undefined;
   return {
     supabase,
     userId: data.claims.sub,
     email: data.claims.email as string | undefined,
     isAdmin: app?.is_admin === true,
+    // Rodzic nie uczy się — widzi listę swoich dzieci zamiast kafelków kursów. Którego
+    // dziecka dotyczy strona, rozstrzyga i tak baza (`my_child_ids`), nie ten claim.
+    isParent: app?.is_parent === true,
   };
 }
 

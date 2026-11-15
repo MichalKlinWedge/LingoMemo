@@ -10,6 +10,7 @@ import { requireAdmin } from "@/lib/auth";
 import { dbLoadError } from "@/lib/db-error";
 
 import { PasswordForm } from "../konta/password-form";
+import { FamilyPanel, type Osoba } from "./family-panel";
 
 /** Data po polsku albo „nigdy" — `last_sign_in_at` jest puste do pierwszego logowania. */
 const data = (value: string | null): string => (value ? new Date(value).toLocaleDateString("pl-PL") : "nigdy");
@@ -28,11 +29,13 @@ async function People() {
   // Trzy źródła, bo każde wie co innego: `list_students` postępy, `list_accounts` konto,
   // `v_my_stats` czas nauki. Widok ma `security_invoker`, a polityki `*_read` dopuszczają
   // administratora, więc to samo zapytanie, które dziecku zwraca jeden wiersz, tu zwraca wszystkie.
-  const [{ data: students, error }, { data: accounts, error: accountsError }, { data: stats }] = await Promise.all([
-    supabase.rpc("list_students"),
-    supabase.rpc("list_accounts"),
-    supabase.from("v_my_stats").select("user_id, seconds_total, seconds_week, words_mastered"),
-  ]);
+  const [{ data: students, error }, { data: accounts, error: accountsError }, { data: stats }, { data: parents }] =
+    await Promise.all([
+      supabase.rpc("list_students"),
+      supabase.rpc("list_accounts"),
+      supabase.from("v_my_stats").select("user_id, seconds_total, seconds_week, words_mastered"),
+      supabase.rpc("admin_parents"),
+    ]);
 
   const problem = error ?? accountsError;
   if (problem) return <p className="msg-error">{dbLoadError(problem)}</p>;
@@ -40,6 +43,13 @@ async function People() {
 
   const accountOf = new Map((accounts ?? []).map((row) => [row.user_id, row]));
   const timeOf = new Map((stats ?? []).map((row) => [row.user_id, row]));
+  // Rodzic bez dzieci też jest w tej mapie — inaczej nie dałoby się mu żadnego przypisać.
+  const childrenOf = new Map((parents ?? []).map((row) => [row.user_id, row.children ?? []]));
+  const osoby: Osoba[] = (students ?? []).map((row) => ({
+    userId: row.user_id,
+    displayName: row.display_name,
+    isAdmin: row.is_admin,
+  }));
 
   return (
     <ul className="flex flex-col gap-3">
@@ -61,7 +71,10 @@ async function People() {
               </span>
 
               <span className="flex flex-wrap items-center gap-2 text-base">
-                <span className="chip">{student.is_admin ? "administrator" : "uczeń"}</span>
+                {/* Jedna rola na chip: rodzic nie uczy się, więc „uczeń" przy nim byłby mylący. */}
+                <span className="chip">
+                  {student.is_admin ? "administrator" : childrenOf.has(student.user_id) ? "rodzic" : "uczeń"}
+                </span>
                 <span className="chip">⭐ {student.total_points}</span>
                 <span className="chip">📘 {student.lessons_done}</span>
                 <span className="chip">🧠 {student.words_seen}</span>
@@ -80,7 +93,15 @@ async function People() {
               {account?.password_changed_at && ` · hasło zmieniane ${data(account.password_changed_at)}`}
             </p>
 
-            <PasswordForm userId={student.user_id} displayName={student.display_name} self={self} />
+            <div className="flex flex-col gap-3">
+              <FamilyPanel
+                userId={student.user_id}
+                isParent={childrenOf.has(student.user_id)}
+                childIds={childrenOf.get(student.user_id) ?? []}
+                people={osoby}
+              />
+              <PasswordForm userId={student.user_id} displayName={student.display_name} self={self} />
+            </div>
           </li>
         );
       })}

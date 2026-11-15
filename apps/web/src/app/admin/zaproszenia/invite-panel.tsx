@@ -32,6 +32,7 @@ export function NewInvite({ courses, siteUrl }: { courses: { id: string; title: 
             <span className="font-semibold">Rola</span>
             <select name="role" className="field" defaultValue="student">
               <option value="student">uczeń</option>
+              <option value="parent">rodzic</option>
               <option value="admin">administrator</option>
             </select>
           </label>

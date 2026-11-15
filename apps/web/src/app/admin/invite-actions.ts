@@ -14,7 +14,10 @@ import { dbErrorMessage } from "@/lib/db-error";
 export async function createInviteAction(_prev: FormState, form: FormData): Promise<FormState> {
   const { supabase } = await requireAdmin();
 
-  const role = form.get("role") === "admin" ? "admin" : "student";
+  const wybrana = String(form.get("role") ?? "");
+  // Lista zamknięta po stronie aplikacji i jeszcze raz w bazie: `create_invite` odrzuca rolę
+  // spoza trójki, więc podmiana pola w formularzu nic nie daje.
+  const role = wybrana === "admin" || wybrana === "parent" ? wybrana : "student";
   const displayName = String(form.get("display_name") ?? "").trim() || undefined;
   const course = String(form.get("course") ?? "").trim() || undefined;
   const days = Number.parseInt(String(form.get("days") ?? "14"), 10);
