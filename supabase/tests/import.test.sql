@@ -1,7 +1,7 @@
 -- Import lekcji z JSON-a: kto może, co powstaje i co się dzieje przy ponownym wklejeniu.
 
 begin;
-select plan(14);
+select plan(15);
 
 create or replace function pg_temp.make_user(p_email text) returns uuid
 language plpgsql as $$
@@ -160,6 +160,19 @@ select is(
    where c.key = 'food.apple'),
   2,
   'po ponownym imporcie słówko ma dokładnie dwa zapisy, po jednym na język'
+);
+
+-- Klucz serwisowy importuje bez konta administratora: tak działa narzędzie z wiersza poleceń.
+-- To nie jest furtka — service_role i tak omija RLS i może pisać wprost do tych tabel, więc
+-- przepuszczenie go tędy nie daje mu nic, czego by nie miał.
+select set_config('role', 'service_role', true),
+       set_config('request.jwt.claims', json_build_object('role', 'service_role')::text, true);
+
+select lives_ok(
+  $$select public.admin_import_lesson(pg_temp.lekcja('serwisowa', 'Z wiersza polecen', jsonb_build_array(
+      jsonb_build_object('type', 'translate_ab', 'conceptKey', 'food.apple',
+        'payload', jsonb_build_object('prompt', 'jablko', 'accepted', jsonb_build_array('apple'))))))$$,
+  'klucz serwisowy importuje lekcję bez konta administratora'
 );
 
 select set_config('role', 'postgres', true), set_config('request.jwt.claims', '', true);

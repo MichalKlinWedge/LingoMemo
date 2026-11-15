@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-starter",
+  "unit": { "slug": "zwierzeta", "title": "Zwierzęta", "icon": "🐾", "sortOrder": 1 },
+  "lesson": {
+    "slug": "domowe",
+    "title": "Zwierzęta domowe",
+    "icon": "🐶",
+    "sortOrder": 1,
+    "prerequisiteLessonSlug": null,
+    "xpReward": 50,
+    "passThreshold": 0.8
+  },
+  "concepts": [
+    {
+      "key": "animal.dog",
+      "tags": ["🐶"],
+      "terms": {
+        "pl": [{ "text": "pies", "pos": "noun" }],
+        "en": [{ "text": "dog", "pos": "noun", "forms": [{ "label": "plural", "text": "dogs" }] }]
+      }
+    },
+    {
+      "key": "animal.cat",
+      "tags": ["🐱"],
+      "terms": {
+        "pl": [{ "text": "kot", "pos": "noun" }],
+        "en": [{ "text": "cat", "pos": "noun", "forms": [{ "label": "plural", "text": "cats" }] }]
+      }
+    },
+    {
+      "key": "animal.bird",
+      "tags": ["🐦"],
+      "terms": {
+        "pl": [{ "text": "ptak", "pos": "noun" }],
+        "en": [{ "text": "bird", "pos": "noun", "forms": [{ "label": "plural", "text": "birds" }] }]
+      }
+    },
+    {
+      "key": "animal.fish",
+      "tags": ["🐟"],
+      "terms": {
+        "pl": [{ "text": "ryba", "pos": "noun" }],
+        "en": [{ "text": "fish", "pos": "noun" }]
+      }
+    }
+  ],
+  "exercises": [
+    {
+      "type": "translate_ab",
+      "conceptKey": "animal.dog",
+      "payload": { "prompt": "pies", "accepted": ["dog"], "options": ["dog", "cat", "bird", "fish"] }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "animal.dog",
+      "payload": { "prompt": "dog", "accepted": ["pies"] }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "animal.dog",
+      "points": 15,
+      "payload": { "speak": "dog", "lang": "en-GB", "accepted": ["dog"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "animal.cat",
+      "payload": { "prompt": "kot", "accepted": ["cat"], "options": ["cat", "dog", "fish", "bird"] }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "animal.cat",
+      "payload": { "prompt": "cat", "accepted": ["kot"] }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "animal.cat",
+      "points": 15,
+      "payload": { "speak": "cat", "lang": "en-GB", "accepted": ["cat"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "animal.bird",
+      "payload": { "prompt": "ptak", "accepted": ["bird"], "options": ["bird", "fish", "dog", "cat"] }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "animal.bird",
+      "payload": { "prompt": "bird", "accepted": ["ptak"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "animal.fish",
+      "payload": { "prompt": "ryba", "accepted": ["fish"], "options": ["fish", "bird", "cat", "dog"] }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "animal.fish",
+      "payload": { "prompt": "fish", "accepted": ["ryba"] }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "animal.dog",
+      "payload": {
+        "sentence": "My {{blank}} likes to play in the garden.",
+        "options": ["dog", "door", "doll", "desk"],
+        "answer": "dog",
+        "translation": "Mój pies lubi bawić się w ogrodzie."
+      }
+    },
+    {
+      "type": "inflection",
+      "conceptKey": "animal.cat",
+      "points": 15,
+      "payload": {
+        "base": "cat",
+        "formLabel": "liczba mnoga",
+        "instruction": "Jak powiesz, że jest ich więcej?",
+        "accepted": ["cats"]
+      }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz słówka w pary",
+        "pairs": [
+          { "a": "pies", "b": "dog" },
+          { "a": "kot", "b": "cat" },
+          { "a": "ptak", "b": "bird" },
+          { "a": "ryba", "b": "fish" }
+        ]
+      }
+    },
+    {
+      "type": "sentence_order",
+      "conceptKey": "animal.dog",
+      "points": 20,
+      "payload": {
+        "prompt": "Ułóż zdanie: Mam psa.",
+        "tokens": ["I", "have", "a", "dog"],
+        "solution": ["I", "have", "a", "dog"]
+      }
+    }
+  ]
+}

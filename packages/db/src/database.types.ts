@@ -535,7 +535,10 @@ isOneToOne: false
                 }
           }
           Functions: {
-            "admin_import_lesson":
+            "admin_add_word":
+{ Args: { "p_key": string,"p_lesson": string,"p_source": string,"p_tags"?: (string)[],"p_target": string }; Returns: Json
+                           },
+"admin_import_lesson":
 { Args: { "p_payload": Json }; Returns: Json
                            },
 "award_badges":
