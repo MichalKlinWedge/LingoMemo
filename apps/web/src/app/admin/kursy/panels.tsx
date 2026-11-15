@@ -632,7 +632,7 @@ export function WordTable({
                       aria-expanded={open}
                       onClick={() => setOtwarte(open ? null : row.conceptId)}
                     >
-                      <span aria-hidden>✏️</span> {open ? "Zwiń" : "Edytuj"}
+                      {open ? "Zwiń" : <><span aria-hidden>✏️</span> Edytuj</>}
                     </button>
                   </td>
                 </tr>
