@@ -72,7 +72,8 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
         return (
         <section key={unit.id} className="flex flex-col gap-4">
           <h2>
-            <span aria-hidden>{unitLocked ? "🔒 " : `${unit.icon} `}</span>
+            {/* Dział bez ikony nie dostaje nic — szablon z `${unit.icon}` wypisywał „null”. */}
+            <span aria-hidden>{unitLocked ? "🔒 " : unit.icon ? `${unit.icon} ` : ""}</span>
             {unit.title}
           </h2>
           {unitLocked && (
