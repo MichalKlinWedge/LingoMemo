@@ -62,12 +62,24 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
         intro={`Ukończone: ${plural(done, LESSONS)}`}
       />
 
-      {(units ?? []).map((unit) => (
+      {(units ?? []).map((unit) => {
+        // Dział zamknięty w całości, czyli czekający na test poprzedniego działu. Poznajemy
+        // go po tym, że ani jedna jego lekcja nie jest otwarta — reguła siedzi w bazie
+        // (`is_unit_unlocked`), a strona tylko nazywa to, co z niej wyszło.
+        const unitLocked =
+          byUnit(unit.id).length > 0 && byUnit(unit.id).every((lesson) => !lesson.is_unlocked);
+
+        return (
         <section key={unit.id} className="flex flex-col gap-4">
           <h2>
-            <span aria-hidden>{unit.icon} </span>
+            <span aria-hidden>{unitLocked ? "🔒 " : `${unit.icon} `}</span>
             {unit.title}
           </h2>
+          {unitLocked && (
+            <p className="text-base text-zinc-600 dark:text-zinc-400">
+              Ten dział otworzy się po zdanym teście poprzedniego działu.
+            </p>
+          )}
           <ul className="flex flex-wrap gap-4">
             {byUnit(unit.id).map((lesson) => {
               const state = lesson.status === "completed" ? "done" : lesson.is_unlocked ? "available" : "locked";
@@ -99,7 +111,21 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
               return (
                 <li key={lesson.id} className="flex w-36 flex-col items-center gap-2 text-center">
                   {state === "locked" ? (
-                    <div className="tile" data-state="locked" aria-label={label} title="Najpierw skończ poprzednią lekcję">
+                    <div
+                      className="tile"
+                      data-state="locked"
+                      aria-label={label}
+                      // Zamek bez powodu to dla dziecka ślepa ściana. Powody są trzy i każdy
+                      // prowadzi gdzie indziej: do poprzedniego działu, do reszty lekcji
+                      // w tym dziale albo do lekcji obok.
+                      title={
+                        unitLocked
+                          ? "Najpierw zdaj test poprzedniego działu"
+                          : lesson.kind === "test"
+                            ? "Najpierw skończ wszystkie lekcje działu"
+                            : "Najpierw skończ poprzednią lekcję"
+                      }
+                    >
                       {tile}
                     </div>
                   ) : (
@@ -146,7 +172,8 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
             })}
           </ul>
         </section>
-      ))}
+        );
+      })}
     </>
   );
 }

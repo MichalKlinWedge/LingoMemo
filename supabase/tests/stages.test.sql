@@ -38,8 +38,11 @@ declare
 begin
   select c.id into v_course from public.courses c where c.slug = 'pl-en-starter';
 
+  -- Dział na samym początku kursu (`sort_order` 0), bo dalsze działy czekają na zdany test
+  -- działu wcześniejszego, a ten plik sprawdza etapy, nie zamki. Własnych słówek dział nie
+  -- ma — same zadania bez `concept_id` — więc sam testu nie dostaje i niczego nie blokuje.
   insert into public.units (course_id, slug, title, sort_order, is_published)
-  values (v_course, 'etapy-test', 'Etapy', 99, true)
+  values (v_course, 'etapy-test', 'Etapy', 0, true)
   returning id into v_unit;
 
   insert into public.lessons (unit_id, slug, title, kind, sort_order, is_published, xp_reward, pass_threshold)

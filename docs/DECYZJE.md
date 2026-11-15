@@ -574,3 +574,28 @@ widać wszystkie słówka lekcji i można ich posłuchać, zanim zacznie się za
 Dół kafelka na mapie (liczba słówek, sowa, kwadraciki postępu) jedzie w jednym bloku z `mt-auto`,
 a miejsce po sowie zostaje puste tam, gdzie jej nie ma. Tytuły lekcji mają różną liczbę wierszy,
 więc każdy z tych elementów osobno stał w sąsiednich kolumnach na innej wysokości.
+
+### Test na koniec działu (2026-11-15)
+
+Dział kończył się powtórką, czyli ćwiczeniem bez progu — dziecko przechodziło do następnego
+działu niezależnie od tego, czy cokolwiek z poprzedniego mu zostało. Wartość `'test'` w enumie
+`lesson_kind` stała nieużywana od pierwszej migracji. Teraz każdy dział ze słówkami ma na końcu
+„Test działu", a zdany test otwiera dalsze działy.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Skąd zadania testu | po jednym na każde słówko działu, losowy typ, limit `test_limit()` = 15 | test sprawdza dział, a nie stan powtórek — bierze też słówka, których dziecko nigdy nie powtarzało (tym różni się od powtórki) | dobór jak w powtórce (po `srs_state`); zadania pisane ręcznie dla każdego działu |
+| Skąd bierze się lekcja testu | wyzwalacz na `lesson_items`: pierwsze słówko w dziale zakłada test | gdyby test trzeba było dodać ręcznie, dział bez testu byłby stanem domyślnym i reguła „zdany test otwiera dział" nie znaczyłaby nic | tworzenie przy imporcie (omija działy z panelu); przycisk w panelu |
+| Kiedy otwiera się test | gdy wszystkie opublikowane lekcje `standard` działu są zaliczone | test po połowie działu sprawdzałby materiał, którego dziecko jeszcze nie widziało | od razu; po zaliczeniu dowolnej lekcji (jak powtórka) |
+| Co blokuje niezdany test | wszystkie dalsze działy kursu, nie tylko następny | inaczej dałoby się przeskoczyć dział, wchodząc od razu w trzeci | tylko następny dział |
+| Dział bez słówek | nie dostaje testu i niczego nie blokuje | brak testu nie może być warunkiem nie do spełnienia | pusty test (zero zadań, więc nie do zdania) |
+| Gdzie stoi zamek | `is_unit_unlocked` wołane z `is_lesson_unlocked` przed resztą reguł | zamknięty dział zamyka też swoją powtórkę i swój test — inaczej dałoby się wejść w dział bokiem, testem | sprawdzanie działu tylko przy zwykłych lekcjach |
+| Próg zdania | próg lekcji, domyślnie 80% | ta sama reguła co w lekcji, nie ma czego tłumaczyć osobno | osobny, wyższy próg dla testu |
+
+Zapis postępu nie wymagał zmian: `finish_lesson_session` pisze `lesson_progress` dla każdej
+lekcji, niezależnie od rodzaju, więc zdany test jest zwykłym „completed" i to on jest
+warunkiem w `is_unit_unlocked`.
+
+Skutek dla kursów, które już istnieją: migracja dokłada test do każdego działu ze słówkami,
+więc dziecko w połowie kursu zobaczy dalsze działy zamknięte, dopóki nie zda testów działów
+wcześniejszych. To jest zamierzone — bez tego reguła nie dotyczyłaby żadnej istniejącej treści.
