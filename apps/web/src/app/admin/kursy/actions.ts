@@ -526,11 +526,26 @@ export async function setEnrollmentAction(_prev: FormState, form: FormData): Pro
 export async function reorderLessonsAction(_prev: FormState, form: FormData): Promise<FormState> {
   const { supabase } = await requireAdmin();
 
-  const unitId = text(form, "unit_id");
+  const unitId = text(form, "parent_id") || text(form, "unit_id");
   const ids = text(form, "ids").split(",").filter(Boolean);
   if (!unitId || ids.length === 0) return { error: "Nie wiadomo, które lekcje przestawić." };
 
   const { error } = await supabase.rpc("admin_reorder_lessons", { p_unit: unitId, p_ids: ids });
+  if (error) return { error: dbErrorMessage(error, "Nie udało się zapisać kolejności.") };
+
+  refresh();
+  return { ok: "Kolejność zapisana." };
+}
+
+/** To samo piętro wyżej: nowa kolejność działów w kursie. */
+export async function reorderUnitsAction(_prev: FormState, form: FormData): Promise<FormState> {
+  const { supabase } = await requireAdmin();
+
+  const courseId = text(form, "parent_id");
+  const ids = text(form, "ids").split(",").filter(Boolean);
+  if (!courseId || ids.length === 0) return { error: "Nie wiadomo, które działy przestawić." };
+
+  const { error } = await supabase.rpc("admin_reorder_units", { p_course: courseId, p_ids: ids });
   if (error) return { error: dbErrorMessage(error, "Nie udało się zapisać kolejności.") };
 
   refresh();

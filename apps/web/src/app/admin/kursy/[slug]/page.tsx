@@ -9,7 +9,9 @@ import { Loading, Shell } from "@/components/shell";
 import { requireAdmin } from "@/lib/auth";
 import { dbLoadError } from "@/lib/db-error";
 
+import { reorderUnitsAction } from "../actions";
 import { CourseSettings, EnrollmentButton, NewUnit } from "../panels";
+import { SortableRows } from "../sortable-rows";
 
 async function Course({ params }: { params: PageProps<"/admin/kursy/[slug]">["params"] }) {
   const { slug } = await params;
@@ -74,30 +76,43 @@ async function Course({ params }: { params: PageProps<"/admin/kursy/[slug]">["pa
 
       <section className="flex flex-col gap-3">
         <h2 className="card-title">Działy</h2>
-        {(units ?? []).length === 0 && <p className="text-zinc-600 dark:text-zinc-400">Kurs nie ma jeszcze działów.</p>}
-        <ul className="flex flex-col gap-3">
-          {(units ?? []).map((unit) => (
-            <li key={unit.id}>
-              <Link
-                href={`/admin/kursy/${course.slug}/${unit.slug}`}
-                className="card flex flex-wrap items-center justify-between gap-3 p-4"
-              >
-                <span className="flex min-w-0 items-center gap-3">
-                  <span className="text-3xl" aria-hidden>
-                    {unit.icon}
-                  </span>
-                  <span className="flex min-w-0 flex-col">
-                    <span className="font-semibold">{unit.title}</span>
-                    <span className="text-base text-zinc-600 dark:text-zinc-400">
-                      {unit.slug} · lekcji: {lessonCount(unit.id)}
-                    </span>
-                  </span>
-                </span>
-                <span className="chip">{unit.is_published ? "widoczny" : "ukryty"}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        {(units ?? []).length === 0 ? (
+          <p className="text-zinc-600 dark:text-zinc-400">Kurs nie ma jeszcze działów.</p>
+        ) : (
+          <>
+            <p className="text-base text-zinc-600 dark:text-zinc-400">
+              Kolejność zmienia się przeciągnięciem za uchwyt ⠿ albo strzałkami góra i dół.
+            </p>
+            <SortableRows
+              parentId={course.id}
+              action={reorderUnitsAction}
+              noun="dział"
+              items={(units ?? []).map((unit) => ({
+                id: unit.id,
+                label: unit.title,
+                content: (
+                  <>
+                    <Link
+                      href={`/admin/kursy/${course.slug}/${unit.slug}`}
+                      className="flex min-w-0 flex-1 items-center gap-3"
+                    >
+                      <span className="text-3xl" aria-hidden>
+                        {unit.icon}
+                      </span>
+                      <span className="flex min-w-0 flex-col">
+                        <span className="font-semibold">{unit.title}</span>
+                        <span className="text-base text-zinc-600 dark:text-zinc-400">
+                          {unit.slug} · lekcji: {lessonCount(unit.id)}
+                        </span>
+                      </span>
+                    </Link>
+                    <span className="chip">{unit.is_published ? "widoczny" : "ukryty"}</span>
+                  </>
+                ),
+              }))}
+            />
+          </>
+        )}
       </section>
 
       <NewUnit courseId={course.id} nextOrder={nextOrder} />
