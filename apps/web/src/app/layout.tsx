@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import { Baloo_2, Nunito } from "next/font/google";
+import { Suspense } from "react";
+
+import { TopBar } from "@/components/top-bar";
+
 import "./globals.css";
 
 // `latin-ext` — polskie znaki (ą, ę, ł…) z tej samej czcionki, a nie z zastępczej.
@@ -25,6 +29,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="pl" className={`${nunito.variable} ${baloo.variable} h-full antialiased`}>
       {/* Rozszerzenia przeglądarki dopisują atrybuty do <body> przed hydratacją. */}
       <body className="flex min-h-full flex-col" suppressHydrationWarning>
+        {/* Pasek czyta sesję i bazę, więc ma własne `<Suspense>` — inaczej blokowałby
+            prerender każdej strony. */}
+        <Suspense>
+          <TopBar />
+        </Suspense>
         {children}
       </body>
     </html>

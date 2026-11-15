@@ -1,56 +1,23 @@
 import Link from "next/link";
 import { Suspense } from "react";
 
-import { DAYS, plural, POINTS } from "@lingomemo/core";
-
-import { signOut } from "@/app/auth-actions";
+import { PageHeader } from "@/components/page-header";
 import { Loading, Shell } from "@/components/shell";
 import { requireUser } from "@/lib/auth";
 import { dbLoadError } from "@/lib/db-error";
 
 async function Home() {
-  const { supabase, userId, isAdmin } = await requireUser("/");
+  // Imię, punkty i seria są w pasku u góry (`TopBar`) — tu zostaje sama lista kursów.
+  const { supabase } = await requireUser("/");
 
-  const [{ data: profile }, { data: courses, error }, { data: stats }] = await Promise.all([
-    supabase.from("profiles").select("display_name").eq("id", userId).maybeSingle(),
-    supabase.from("courses").select("id, slug, title, description, icon").order("sort_order"),
-    supabase.from("v_my_stats").select("total_points, streak_days, words_due").eq("user_id", userId).maybeSingle(),
-  ]);
+  const { data: courses, error } = await supabase
+    .from("courses")
+    .select("id, slug, title, description, icon")
+    .order("sort_order");
 
   return (
     <>
-      <header className="flex flex-wrap items-center justify-between gap-3">
-        <h1>Cześć, {profile?.display_name ?? "uczniu"}!</h1>
-        <div className="flex items-center gap-2">
-          {isAdmin && (
-            <Link href="/admin" className="btn-secondary px-4 py-2 text-base">
-              Panel
-            </Link>
-          )}
-          <form action={signOut}>
-            <button type="submit" className="btn-secondary px-4 py-2 text-base">
-              Wyloguj
-            </button>
-          </form>
-        </div>
-      </header>
-
-      {/* Punkty i seria od razu na wierzchu — to jest powód, dla którego dziecko tu wraca. */}
-      <nav className="flex flex-wrap items-center gap-3">
-        <Link href="/nagrody" className="chip" style={{ fontSize: "1.125rem", padding: "0.5rem 1rem" }}>
-          ⭐ {plural(stats?.total_points ?? 0, POINTS)}
-        </Link>
-        <Link href="/statystyki" className="chip" style={{ fontSize: "1.125rem", padding: "0.5rem 1rem" }}>
-          🔥 {plural(stats?.streak_days ?? 0, DAYS)}
-        </Link>
-        {(stats?.words_due ?? 0) > 0 && (
-          <Link href="/statystyki" className="chip" style={{ fontSize: "1.125rem", padding: "0.5rem 1rem" }}>
-            🔁 {stats?.words_due} do powtórki
-          </Link>
-        )}
-      </nav>
-
-      <h2>Twoje kursy</h2>
+      <PageHeader title="Twoje kursy" />
       {error && <p className="msg-error">{dbLoadError(error)}</p>}
       <ul className="flex flex-col gap-4">
         {(courses ?? []).map((course) => (

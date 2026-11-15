@@ -3,14 +3,14 @@ import { redirect } from "next/navigation";
 import { createClient } from "./supabase/server";
 
 /**
- * Zalogowany użytkownik albo przekierowanie na logowanie (z powrotem pod `next`). `getClaims`
- * weryfikuje token, a nie tylko czyta cookie — `getSession` na serwerze nie jest wiarygodne.
- * Sprawdzenie jest w każdej stronie i akcji, nie tylko w proxy (akcje omijają matcher).
+ * Sesja, jeśli ktoś jest zalogowany — bez przekierowania. `getClaims` weryfikuje token, a nie
+ * tylko czyta cookie — `getSession` na serwerze nie jest wiarygodne. Dla elementów wspólnych
+ * (pasek u góry), które mają się pokazać zalogowanemu, a na logowaniu zniknąć bez przekierowań.
  */
-export async function requireUser(next = "/") {
+export async function getUser() {
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
-  if (!data?.claims) redirect(`/login?next=${encodeURIComponent(next)}`);
+  if (!data?.claims) return null;
   const app = data.claims.app_metadata as { is_admin?: boolean } | undefined;
   return {
     supabase,
@@ -18,6 +18,16 @@ export async function requireUser(next = "/") {
     email: data.claims.email as string | undefined,
     isAdmin: app?.is_admin === true,
   };
+}
+
+/**
+ * Zalogowany użytkownik albo przekierowanie na logowanie (z powrotem pod `next`).
+ * Sprawdzenie jest w każdej stronie i akcji, nie tylko w proxy (akcje omijają matcher).
+ */
+export async function requireUser(next = "/") {
+  const session = await getUser();
+  if (!session) redirect(`/login?next=${encodeURIComponent(next)}`);
+  return session;
 }
 
 /** Strona panelu administratora. Claim w JWT bywa do godziny nieaktualny — operacje zapisu

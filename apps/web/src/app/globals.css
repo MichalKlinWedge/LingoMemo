@@ -267,6 +267,49 @@ h2 {
     cursor: not-allowed;
   }
 
+  /* --- pasek u góry: ten sam na każdej stronie --- */
+  .app-bar {
+    border-bottom: 2px solid var(--line);
+    background: var(--surface);
+  }
+
+  /* Ta sama szerokość co treść w `<Shell>` (max-w-3xl), żeby nic się nie rozjeżdżało. */
+  .app-bar-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    width: 100%;
+    max-width: 48rem;
+    margin: 0 auto;
+    padding: 0.75rem 1rem;
+  }
+
+  .app-bar-name {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .app-bar-name:hover {
+    color: var(--color-brand);
+  }
+
+  .app-bar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+
+  /* Węższe przyciski niż w treści, ale wysokość (palec) zostaje — `min-height` z `.btn-*`. */
+  .app-bar .btn-secondary {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+  }
+
   /* --- pozostałe klocki --- */
   .card {
     border-radius: 1.5rem;
