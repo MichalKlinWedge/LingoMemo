@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 
+import { Logo } from "@/components/logo";
 import { Loading, Shell } from "@/components/shell";
 
 import { LoginForm } from "./login-form";
@@ -19,9 +20,7 @@ export default function LoginPage({ searchParams }: PageProps<"/login">) {
   return (
     <Shell>
       <div className="flex flex-col items-center gap-2 pt-6 text-center">
-        <span className="text-6xl" aria-hidden>
-          🦉
-        </span>
+        <Logo size={96} />
         <h1>LingoMemo</h1>
         <p className="text-zinc-600 dark:text-zinc-400">Zaloguj się i ucz się słówek.</p>
       </div>

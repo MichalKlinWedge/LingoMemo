@@ -16,6 +16,7 @@ npm run web:local        # aplikacja na lokalnej bazie, http://localhost:3000
 npm run web              # aplikacja na bazie z chmury (wartości z .env.local)
 npm run check            # typecheck + lint + test — brama jakości, musi przechodzić
 npm run gen              # typy TypeScript z lokalnej bazy -> packages/db
+npm run gen:icons        # warianty ikony z apps/web/public/ikony/ikona.svg (PNG, favicon.ico)
 npm run test:db          # testy uprawnień pgTAP na lokalnej bazie
 npm run db:reset         # odtworzenie lokalnej bazy z migracji + seed
 npm run db:push          # wypchnięcie migracji do projektu w chmurze

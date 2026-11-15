@@ -3,6 +3,7 @@ import Link from "next/link";
 import { DAYS, plural, POINTS } from "@lingomemo/core";
 
 import { signOut } from "@/app/auth-actions";
+import { Logo } from "@/components/logo";
 import { getUser } from "@/lib/auth";
 
 /**
@@ -25,7 +26,8 @@ export async function TopBar() {
     <header className="app-bar">
       <div className="app-bar-inner">
         {/* Imię prowadzi na stronę główną — to jest „wyjście” z każdego miejsca aplikacji. */}
-        <Link href="/" className="app-bar-name">
+        <Link href="/" className="app-bar-name flex items-center gap-2">
+          <Logo size={36} />
           Cześć, {profile?.display_name ?? "uczniu"}!
         </Link>
 

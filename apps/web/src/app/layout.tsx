@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Baloo_2, Nunito } from "next/font/google";
 import { Suspense } from "react";
 
@@ -22,6 +22,26 @@ const baloo = Baloo_2({
 export const metadata: Metadata = {
   title: "LingoMemo",
   description: "Nauka słówek i zwrotów dla dzieci",
+  applicationName: "LingoMemo",
+  // Ikony wskazane wprost, a nie przez pliki `icon.*` w katalogu `app`: wszystkie warianty
+  // leżą razem w `public/ikony` i powstają z jednego wzorca (`node scripts/icons.mjs`).
+  icons: {
+    // SVG dla przeglądarek, `favicon.ico` dla tych narzędzi, które pytają wprost o ten adres.
+    icon: [
+      { url: "/ikony/ikona.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "48x48" },
+    ],
+    apple: { url: "/ikony/ikona-apple-180.png", sizes: "180x180" },
+  },
+  appleWebApp: { capable: true, title: "LingoMemo", statusBarStyle: "default" },
+};
+
+/** Kolor paska przeglądarki na telefonie: fiolet marki, a w ciemnym motywie tło aplikacji. */
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#7c5cff" },
+    { media: "(prefers-color-scheme: dark)", color: "#1a1714" },
+  ],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="LingoMemo">
+  <title>LingoMemo</title>
+  <!--
+    Sowa — ta sama maskotka, co emoji na ekranie logowania, tylko narysowana.
+    Sylwetka jest celowo prosta: dwa duże oczy i dziób muszą być czytelne na karcie
+    zakładki w 16 px, więc nie ma tu cienkich linii ani gradientów.
+    Plik jest wzorcem; warianty PNG (192, 512, maskowalny, Apple, .ico) robi
+    `node scripts/icons.mjs`.
+  -->
+  <rect width="512" height="512" rx="112" fill="#7c5cff" />
+
+  <g fill="#fffaf2">
+    <!-- Kępki uszu rysowane przed głową, żeby się z nią zlały. -->
+    <path d="M152 156 118 74 200 116Z" />
+    <path d="M360 156 394 74 312 116Z" />
+    <path d="M256 104c-86 0-148 62-148 150 0 102 66 172 148 172s148-70 148-172c0-88-62-150-148-150Z" />
+  </g>
+
+  <!-- Jaśniejszy brzuszek: bez niego sowa jest jedną płaską plamą. -->
+  <path d="M256 296c-46 0-76 36-76 76 0 32 30 54 76 54s76-22 76-54c0-40-30-76-76-76Z" fill="#ece7ff" />
+
+  <!-- Łapy wystają spod brzucha. -->
+  <g fill="#ffc83d">
+    <rect x="194" y="410" width="46" height="30" rx="15" />
+    <rect x="272" y="410" width="46" height="30" rx="15" />
+  </g>
+
+  <!-- Oczy stykają się ze sobą — tak wyglądają „gogle” sowy. -->
+  <g>
+    <circle cx="200" cy="226" r="54" fill="#ffffff" />
+    <circle cx="312" cy="226" r="54" fill="#ffffff" />
+    <circle cx="200" cy="226" r="26" fill="#2b2440" />
+    <circle cx="312" cy="226" r="26" fill="#2b2440" />
+    <circle cx="189" cy="215" r="10" fill="#ffffff" />
+    <circle cx="301" cy="215" r="10" fill="#ffffff" />
+  </g>
+
+  <!-- Dziób nachodzi na oczy w miejscu, w którym się stykają. -->
+  <path d="M256 250 284 288 256 312 228 288Z" fill="#ffc83d" />
+</svg>
