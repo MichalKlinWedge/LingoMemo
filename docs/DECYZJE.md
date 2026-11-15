@@ -451,3 +451,40 @@ odpowiednik: tę samą treść dziecko układa z klocków, wśród których są 
 Do poprawionej treści (zmiana zdania w istniejącym zadaniu) wariantu nie dorabia nic — wyzwalacz
 działa przy wstawianiu, nie przy edycji. Od tego jest `admin_add_sentence_order(lesson)`; na razie
 bez przycisku w panelu.
+
+### Rodzic poprawia dane dziecka (2026-11-15)
+
+Imię dziecka wpisuje się raz, przy zakładaniu konta, i do tej pory nie było go gdzie poprawić:
+polityka `profiles_update_own` puszcza do zapisu tylko własny wiersz, a dziecko nie ma w aplikacji
+ekranu swojego profilu. Literówka zostawała na zawsze.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Jak zapisujemy | funkcja `admin_update_profile(uuid, text, text)` z `assert_admin()` | funkcja wylicza kolumny po nazwie, więc dołożenie kolumny do `profiles` niczego po cichu nie otwiera | polityka `profiles_admin` na UPDATE — otwiera administratorowi wszystkie kolumny z `grant update (...)`, dzisiejsze i przyszłe |
+| Co wolno zmienić | imię i strefa czasowa | strefa rozstrzyga, o której dziecku zmienia się dzień, czyli kiedy wypada powtórka i czy wieczorna lekcja przedłuża serię | avatar i język interfejsu — nie ma ich dziś w żadnym ekranie, więc nie ma czego ustawiać |
+| Sprawdzanie strefy | względem `pg_timezone_names`, przy zapisie | `now() at time zone 'Warszawa'` rzuca błędem dopiero w użyciu, czyli wywaliłoby dziecku start lekcji, a nie formularz rodzica | `check` na kolumnie (nie wolno w nim podzapytania); brak sprawdzania |
+| Pusta strefa | znaczy „zostaw jak było" | kolumna jest `not null`, a pole w formularzu to lista wyboru — pusto wychodzi tylko przy błędzie | czyszczenie do wartości domyślnej |
+| Lista stref | kilkanaście pozycji w komponencie plus obecna strefa dziecka | pełne `Intl.supportedValuesOf("timeZone")` to czterysta pozycji, a biblioteka stref w Node i w przeglądarce bywa innej wersji — lista rozjechałaby się przy uwodnieniu | pełna lista z `Intl`; wolne pole tekstowe |
+| E-mail i hasło | zostają na ekranie `/admin/konta` | siedzą w `auth.users`, a tam sięga tylko `service_role`, którego w aplikacji webowej nie ma | wspólny formularz „konto i profil" |
+| Poziom trudności | zostaje w swoim panelu, z `set_learner_level` | ma własny opis, co każdy poziom zmienia dla dziecka | wrzucenie poziomu do tego samego formularza |
+
+### Trzy kwadraciki poziomów przy lekcji (2026-11-15)
+
+Zastępuje politykę z wpisu „Poziom trudności zadań" tego samego dnia. Tamto rozwiązanie dobierało
+trudność za dziecko (sufit z profilu + rampa z FSRS), więc dziecko nie miało jak sięgnąć po
+trudniejsze zadanie, nawet gdy chciało, a dorosły musiał to przestawiać w panelu.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Kto wybiera trudność | dziecko, klikając jeden z trzech kwadracików pod lekcją | wybór jest na mapie, tam gdzie i tak patrzy; nic nie trzeba ustawiać w panelu | sufit w profilu i rampa z FSRS (dobierały za dziecko) |
+| Co otwiera następną lekcję | wyłącznie poziom łatwy | dziecko ma iść dalej po materiale, a nie utknąć na trudnym; trudniejsze wejścia są dobrowolne | zaliczenie wszystkich trzech poziomów |
+| Kiedy otwierają się średni i trudny | po zaliczeniu łatwego, oba naraz | najpierw poznanie słówek klikaniem; kaskada (trudny po średnim) robi trudny nieosiągalnym po jednej nieudanej próbie | od razu wszystkie trzy; kaskadowo |
+| Ile materiału w trudniejszym wejściu | osiem losowych słówek lekcji, po jednym zadaniu na słówko | krótkie podejście, inne za każdym razem; cała lekcja na trudnym to pół godziny pisania | wszystkie słówka lekcji |
+| Gdzie zapisuje się wynik | `lesson_level_progress` (tylko poziom 2 i 3); poziom łatwy zostaje w `lesson_progress` | postęp lekcji i odblokowania zostają takie jak były, a kwadraciki mają swój stan | kolumna `level` w `lesson_progress` (zmienia klucz główny i wszystkie widoki postępu) |
+| Migawka zadań w sesji | tylko poziom łatwy; trudniejsze wejście jej nie zapisuje | zestaw jest losowany przy każdym wywołaniu, więc zapisana lista i tak nie byłaby tą, którą zobaczyła przeglądarka — dokładnie jak przy powtórce | losowanie raz i zapamiętanie w sesji (strona renderuje zadania przed założeniem sesji) |
+| Kolory kwadracików | fiolet łatwy (jak etapy), błękit średni, bursztyn trudny | zieleń i koral są zarezerwowane na „dobrze" i „źle", a bursztyn ma własny ciemniejszy obrys, bo samo `--color-sun` na jasnym tle jest niewidoczne | zieleń/żółty/czerwony jako skala trudności |
+| Układ na mapie | wszystkie kwadraciki w jednej linii, przyklejonej do dołu kafelka (`margin-top: auto`) | tytuły lekcji mają różną liczbę wierszy, więc bez tego kwadraciki stały w rzędzie na różnych wysokościach | kwadraciki tuż pod tytułem |
+
+`profiles.level` i `set_learner_level` zostają w bazie i w panelu, ale nie filtrują już niczego —
+usunięcie pola to osobna decyzja. Funkcje dobierające po sufucie (`visible_exercises`,
+`allowed_exercise_level`, rampa) zostały usunięte, bo nikt ich już nie wołał.

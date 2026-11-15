@@ -16,7 +16,7 @@ async function Lesson({
   searchParams: PageProps<"/lekcja/[id]">["searchParams"];
 }) {
   const { id } = await params;
-  const { etap } = await searchParams;
+  const { etap, poziom } = await searchParams;
   const { supabase } = await requireUser(`/lekcja/${id}`);
 
   const { data: lesson } = await supabase
@@ -46,7 +46,12 @@ async function Lesson({
     supabase.from("lesson_stage_progress").select("stage_nr, status").eq("lesson_id", id),
   ]);
 
-  const stages = mapRow?.stage_count ?? 1;
+  // Poziom z adresu: łatwy (bez parametru) to lekcja z etapami, średni i trudny to jedno
+  // krótkie wejście na ośmiu losowych słówkach — więc etapów tam nie ma.
+  const wantedLevel = Number(Array.isArray(poziom) ? poziom[0] : poziom);
+  const level = wantedLevel === 2 || wantedLevel === 3 ? wantedLevel : 1;
+
+  const stages = level > 1 ? 1 : (mapRow?.stage_count ?? 1);
   const done = new Set(
     (stageProgress ?? []).filter((row) => row.status === "completed").map((row) => row.stage_nr),
   );
@@ -58,6 +63,7 @@ async function Lesson({
   const { data: exercises, error } = await supabase.rpc("get_lesson_exercises", {
     p_lesson: id,
     p_stage: stage,
+    p_level: level,
   });
 
   // Nazwy odznak, żeby na ekranie podsumowania nie wyświetlił się kod w rodzaju `first_lesson`.
@@ -82,7 +88,7 @@ async function Lesson({
     <LessonRunner
       // Przejście do następnego etapu to ten sam adres z innym parametrem, więc React trzymałby
       // stan poprzedniego etapu (numer zadania, ekran podsumowania). Klucz wymusza świeży start.
-      key={stage}
+      key={`${level}-${stage}`}
       lessonId={id}
       courseSlug={course.slug}
       exercises={(exercises ?? []) as unknown as Exercise[]}
@@ -91,6 +97,7 @@ async function Lesson({
       badgeNames={badgeNames}
       stage={stage}
       stages={stages}
+      level={level}
     />
   );
 }

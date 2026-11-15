@@ -53,22 +53,13 @@ values (
   ), 10
 );
 
--- Ten plik sprawdza silnik lekcji, nie dobór trudności: uczennica dostaje sufit 3, a jej
--- słówka mają wysoką stabilność, żeby rampa z `20261115094000_learner_level.sql` niczego nie
--- odsiewała i lekcja wydawała komplet zadań. Sam dobór po poziomie ma własny plik testu.
-update public.profiles set level = 3 where id = (select id from t_user);
+-- Ten plik sprawdza silnik lekcji, nie dobór trudności: cała lekcja idzie na poziomie łatwym,
+-- żeby etapy wydawały komplet zadań. Dobór po poziomie ma własny plik testu.
+update public.exercises set level = 1
+ where lesson_id = (select id from t_lesson where nr = 1);
 
-insert into public.srs_state (user_id, concept_id, course_id, stability, difficulty, due_on, reps)
-select (select id from t_user), li.concept_id, c.id, 60, 5, current_date + 365, 3
-  from public.lesson_items li
-  join public.lessons l on l.id = li.lesson_id
-  join public.units u on u.id = l.unit_id
-  join public.courses c on c.id = u.course_id
- where l.id = (select id from t_lesson where nr = 1)
-on conflict (user_id, concept_id) do update set stability = 60;
-
--- `exercise_stage` numeruje zadania widoczne dla zalogowanego dziecka, więc tabela `t_ex` musi
--- powstać już z jego tożsamością. Rolę zmieniamy dalej — tu chodzi tylko o `auth.uid()`.
+-- `exercise_stage` numeruje zadania poziomu łatwego; tożsamość dziecka ustawiamy już tu, bo
+-- dalsze asercje liczą etapy jego oczami. Rolę zmieniamy niżej.
 select set_config('request.jwt.claims',
          (select json_build_object('sub', u.id, 'role', 'authenticated', 'app_metadata', '{}'::jsonb)::text
             from auth.users u where u.id = (select id from t_user)), true);

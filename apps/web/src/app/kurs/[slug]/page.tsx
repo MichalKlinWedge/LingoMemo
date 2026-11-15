@@ -23,16 +23,28 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
 
   if (!course) notFound();
 
-  const [{ data: units, error: unitsError }, { data: lessons, error: lessonsError }] = await Promise.all([
+  const [
+    { data: units, error: unitsError },
+    { data: lessons, error: lessonsError },
+    { data: levels },
+  ] = await Promise.all([
     supabase.from("units").select("id, title, icon, sort_order").eq("course_id", course.id).order("sort_order"),
     // Widok dokłada do lekcji stan otwarcia i postęp tego ucznia — jedno zapytanie zamiast trzech.
     supabase.from("v_my_lessons").select("*").order("sort_order"),
+    // Stan każdego poziomu każdej lekcji: kwadraciki średniego i trudnego pod kafelkiem.
+    supabase.from("v_my_lesson_levels").select("*").order("level"),
   ]);
 
   const error = unitsError ?? lessonsError;
   if (error) return <p className="msg-error">{dbLoadError(error)}</p>;
 
   const byUnit = (unitId: string) => (lessons ?? []).filter((lesson) => lesson.unit_id === unitId);
+  // Średni i trudny. Łatwy ma swój kafelek, a poziom bez ani jednego zadania nie ma po co
+  // stawiać kwadracika, który po kliknięciu pokaże pustą lekcję.
+  const harderOf = (lessonId: string) =>
+    (levels ?? []).filter(
+      (row) => row.lesson_id === lessonId && (row.level ?? 1) > 1 && (row.exercise_count ?? 0) > 0,
+    );
   const done = (lessons ?? []).filter((lesson) => lesson.status === "completed").length;
 
   return (
@@ -70,7 +82,7 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
               );
 
               return (
-                <li key={lesson.id} className="flex w-24 flex-col items-center gap-2 text-center">
+                <li key={lesson.id} className="flex w-28 flex-col items-center gap-2 text-center">
                   {state === "locked" ? (
                     <div className="tile" data-state="locked" aria-label={label} title="Najpierw skończ poprzednią lekcję">
                       {tile}
@@ -84,11 +96,17 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
                   {/* Powtórka obejmuje wszystkie przerobione słówka działu, zaległe na
                       początku — więc liczba jest taka sama jak przy zwykłej lekcji. */}
                   <span className="text-sm text-zinc-500">{plural(lesson.word_count ?? 0, WORDS)}</span>
-                  {/* Długa lekcja idzie etapami po najwyżej 15 zadań — dziecko ma z góry
-                      wiedzieć, że to kilka krótkich podejść, a nie jedno bardzo długie. */}
-                  {(lesson.stage_count ?? 1) > 1 && state !== "done" && (
-                    <Stages done={lesson.stages_done ?? 0} total={lesson.stage_count ?? 1} />
-                  )}
+                  {/* Jedna linia kwadracików na samym dole kafelka: etapy poziomu łatwego oraz
+                      wejścia na średni i trudny. `mt-auto` trzyma ją równo w całym rzędzie, choć
+                      tytuły lekcji mają różną liczbę wierszy. */}
+                  <span className="marks">
+                    {(lesson.stage_count ?? 1) > 1 && state !== "done" && (
+                      <Stages done={lesson.stages_done ?? 0} total={lesson.stage_count ?? 1} />
+                    )}
+                    {harderOf(lesson.id).map((row) => (
+                      <LevelBox key={row.level} lesson={lesson.id} title={lesson.title} row={row} />
+                    ))}
+                  </span>
                 </li>
               );
             })}
@@ -105,6 +123,52 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
  * Dla czytnika ekranu to jeden obrazek z podpisem, a nie seria pustych elementów —
  * dziesięć „kwadrat, kwadrat, kwadrat" nie niesie żadnej informacji.
  */
+/** Nazwa poziomu dla czytnika ekranu i dymka. Łatwy ma kafelek, więc tu go nie ma. */
+const LEVEL_NAME: Record<number, string> = { 2: "średni", 3: "trudny" };
+
+/**
+ * Kwadracik trudniejszego wejścia w lekcję. Kolor mówi, który to poziom, wypełnienie — że jest
+ * przeszednięty, kłódka w dymku — że najpierw trzeba zrobić lekcję na łatwym.
+ */
+function LevelBox({
+  lesson,
+  title,
+  row,
+}: {
+  lesson: string;
+  title: string;
+  row: { level: number | null; status: string | null; is_unlocked: boolean | null };
+}) {
+  const level = row.level ?? 2;
+  const name = LEVEL_NAME[level] ?? "trudniejszy";
+  const done = row.status === "completed";
+  const label = `${title} — poziom ${name}`;
+
+  if (!row.is_unlocked) {
+    return (
+      <span
+        className="level-box"
+        data-level={level}
+        data-locked="true"
+        role="img"
+        aria-label={`${label} — zamknięty`}
+        title="Najpierw przejdź tę lekcję na poziomie łatwym"
+      />
+    );
+  }
+
+  return (
+    <Link
+      href={`/lekcja/${lesson}?poziom=${level}`}
+      className="level-box"
+      data-level={level}
+      data-done={done}
+      aria-label={done ? `${label} — zrobiony` : label}
+      title={label}
+    />
+  );
+}
+
 function Stages({ done, total }: { done: number; total: number }) {
   // Zabezpieczenie przed danymi z przyszłości: gdyby lekcja skróciła się po tym, jak dziecko
   // zrobiło etapy, `done` byłoby większe niż `total` i pętla rysowałaby za mało kwadracików.

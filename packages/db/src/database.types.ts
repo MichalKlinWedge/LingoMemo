@@ -163,6 +163,12 @@ isOneToOne: false
       foreignKeyName: "exercises_lesson_id_fkey"
       columns: ["lesson_id"]
 isOneToOne: false
+      referencedRelation: "v_my_lesson_levels"
+      referencedColumns: ["lesson_id"]
+    },{
+      foreignKeyName: "exercises_lesson_id_fkey"
+      columns: ["lesson_id"]
+isOneToOne: false
       referencedRelation: "v_my_lessons"
       referencedColumns: ["id"]
     }
@@ -209,6 +215,44 @@ isOneToOne: false
       foreignKeyName: "lesson_items_lesson_id_fkey"
       columns: ["lesson_id"]
 isOneToOne: false
+      referencedRelation: "v_my_lesson_levels"
+      referencedColumns: ["lesson_id"]
+    },{
+      foreignKeyName: "lesson_items_lesson_id_fkey"
+      columns: ["lesson_id"]
+isOneToOne: false
+      referencedRelation: "v_my_lessons"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"lesson_level_progress": {
+                  Row: {
+                    "attempts_count": number,"best_score": number,"completed_at": string | null,"last_score": number | null,"lesson_id": string,"level": number,"stars": number,"status": Database["public"]['Enums']["progress_status"],"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "attempts_count"?: number,"best_score"?: number,"completed_at"?: string | null,"last_score"?: number | null,"lesson_id": string,"level": number,"stars"?: number,"status"?: Database["public"]['Enums']["progress_status"],"updated_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "attempts_count"?: number,"best_score"?: number,"completed_at"?: string | null,"last_score"?: number | null,"lesson_id"?: string,"level"?: number,"stars"?: number,"status"?: Database["public"]['Enums']["progress_status"],"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "lesson_level_progress_lesson_id_fkey"
+      columns: ["lesson_id"]
+isOneToOne: false
+      referencedRelation: "lessons"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "lesson_level_progress_lesson_id_fkey"
+      columns: ["lesson_id"]
+isOneToOne: false
+      referencedRelation: "v_my_lesson_levels"
+      referencedColumns: ["lesson_id"]
+    },{
+      foreignKeyName: "lesson_level_progress_lesson_id_fkey"
+      columns: ["lesson_id"]
+isOneToOne: false
       referencedRelation: "v_my_lessons"
       referencedColumns: ["id"]
     }
@@ -235,20 +279,26 @@ isOneToOne: false
       foreignKeyName: "lesson_progress_lesson_id_fkey"
       columns: ["lesson_id"]
 isOneToOne: false
+      referencedRelation: "v_my_lesson_levels"
+      referencedColumns: ["lesson_id"]
+    },{
+      foreignKeyName: "lesson_progress_lesson_id_fkey"
+      columns: ["lesson_id"]
+isOneToOne: false
       referencedRelation: "v_my_lessons"
       referencedColumns: ["id"]
     }
                   ]
                 },"lesson_sessions": {
                   Row: {
-                    "correct_count": number,"exercise_ids": (string)[],"finished_at": string | null,"id": string,"idempotency_key": string,"lesson_id": string,"score": number | null,"stage_nr": number,"started_at": string,"total_exercises": number,"user_id": string,"xp_awarded": number
+                    "correct_count": number,"exercise_ids": (string)[],"finished_at": string | null,"id": string,"idempotency_key": string,"lesson_id": string,"level": number,"score": number | null,"stage_nr": number,"started_at": string,"total_exercises": number,"user_id": string,"xp_awarded": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "correct_count"?: number,"exercise_ids"?: (string)[],"finished_at"?: string | null,"id"?: string,"idempotency_key": string,"lesson_id": string,"score"?: number | null,"stage_nr"?: number,"started_at"?: string,"total_exercises"?: number,"user_id": string,"xp_awarded"?: number
+                    "correct_count"?: number,"exercise_ids"?: (string)[],"finished_at"?: string | null,"id"?: string,"idempotency_key": string,"lesson_id": string,"level"?: number,"score"?: number | null,"stage_nr"?: number,"started_at"?: string,"total_exercises"?: number,"user_id": string,"xp_awarded"?: number
                   }
                   Update: {
-                    "correct_count"?: number,"exercise_ids"?: (string)[],"finished_at"?: string | null,"id"?: string,"idempotency_key"?: string,"lesson_id"?: string,"score"?: number | null,"stage_nr"?: number,"started_at"?: string,"total_exercises"?: number,"user_id"?: string,"xp_awarded"?: number
+                    "correct_count"?: number,"exercise_ids"?: (string)[],"finished_at"?: string | null,"id"?: string,"idempotency_key"?: string,"lesson_id"?: string,"level"?: number,"score"?: number | null,"stage_nr"?: number,"started_at"?: string,"total_exercises"?: number,"user_id"?: string,"xp_awarded"?: number
                   }
                   Relationships: [
                     {
@@ -257,6 +307,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "lessons"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "lesson_sessions_lesson_id_fkey"
+      columns: ["lesson_id"]
+isOneToOne: false
+      referencedRelation: "v_my_lesson_levels"
+      referencedColumns: ["lesson_id"]
     },{
       foreignKeyName: "lesson_sessions_lesson_id_fkey"
       columns: ["lesson_id"]
@@ -287,6 +343,12 @@ isOneToOne: false
       foreignKeyName: "lesson_stage_progress_lesson_id_fkey"
       columns: ["lesson_id"]
 isOneToOne: false
+      referencedRelation: "v_my_lesson_levels"
+      referencedColumns: ["lesson_id"]
+    },{
+      foreignKeyName: "lesson_stage_progress_lesson_id_fkey"
+      columns: ["lesson_id"]
+isOneToOne: false
       referencedRelation: "v_my_lessons"
       referencedColumns: ["id"]
     }
@@ -309,6 +371,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "lessons"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "lessons_prerequisite_lesson_id_fkey"
+      columns: ["prerequisite_lesson_id"]
+isOneToOne: false
+      referencedRelation: "v_my_lesson_levels"
+      referencedColumns: ["lesson_id"]
     },{
       foreignKeyName: "lessons_prerequisite_lesson_id_fkey"
       columns: ["prerequisite_lesson_id"]
@@ -520,15 +588,29 @@ isOneToOne: false
           Views: {
             "v_my_courses": {
                   Row: {
-                    "course_icon": string | null,"course_id": string,"course_slug": string,"course_title": string,"enrolled_at": string,"lessons_done": number | null,"lessons_total": number | null,"seconds_total": number | null,"user_id": string,"words_due": number | null,"words_mastered": number | null,"words_seen": number | null
+                    "course_icon": string | null,"course_id": string,"course_slug": string,"course_target_lang": string,"course_title": string,"enrolled_at": string,"lessons_done": number | null,"lessons_total": number | null,"seconds_total": number | null,"user_id": string,"words_due": number | null,"words_mastered": number | null,"words_seen": number | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "courses_target_lang_fkey"
+      columns: ["course_target_lang"]
+isOneToOne: false
+      referencedRelation: "languages"
+      referencedColumns: ["code"]
+    }
+                  ]
+                },"v_my_daily": {
+                  Row: {
+                    "answers": number | null,"correct": number | null,"day": string | null,"user_id": string
                   }
                   ComputedFields: never
                   Relationships: [
                     
                   ]
-                },"v_my_daily": {
+                },"v_my_lesson_levels": {
                   Row: {
-                    "answers": number | null,"correct": number | null,"day": string | null,"user_id": string
+                    "exercise_count": number | null,"is_unlocked": boolean | null,"lesson_id": string,"level": number | null,"stars": number | null,"status": string | null
                   }
                   ComputedFields: never
                   Relationships: [
@@ -546,6 +628,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "lessons"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "lessons_prerequisite_lesson_id_fkey"
+      columns: ["prerequisite_lesson_id"]
+isOneToOne: false
+      referencedRelation: "v_my_lesson_levels"
+      referencedColumns: ["lesson_id"]
     },{
       foreignKeyName: "lessons_prerequisite_lesson_id_fkey"
       columns: ["prerequisite_lesson_id"]
@@ -620,11 +708,11 @@ isOneToOne: false
 "admin_reorder_units":
 { Args: { "p_course": string,"p_ids": (string)[] }; Returns: Json
                            },
+"admin_update_profile":
+{ Args: { "p_display_name": string,"p_time_zone"?: string,"p_user": string }; Returns: undefined
+                           },
 "admin_update_word":
 { Args: { "p_concept": string,"p_source": string,"p_tags"?: (string)[],"p_target": string }; Returns: Json
-                           },
-"allowed_exercise_level":
-{ Args: { "p_concept": string,"p_user": string }; Returns: number
                            },
 "award_badges":
 { Args: { "p_user": string }; Returns: (string)[]
@@ -638,8 +726,8 @@ isOneToOne: false
 "build_sentence_order":
 { Args: { "p_lesson": string }; Returns: number
                            },
-"concept_ramp_level":
-{ Args: { "p_stability": number }; Returns: number
+"bump_streak":
+{ Args: { "p_lesson_done": boolean,"p_today": string,"p_user": string }; Returns: number
                            },
 "create_invite":
 { Args: { "p_course"?: string,"p_days"?: number,"p_display_name"?: string,"p_email"?: string,"p_max_uses"?: number,"p_role"?: string }; Returns: string
@@ -707,7 +795,7 @@ isOneToOne: false
 { Args: Record<PropertyKey, never>; Returns: number
                            },
 "get_lesson_exercises":
-{ Args: { "p_lesson": string,"p_stage"?: number }; Returns: {
+{ Args: { "p_lesson": string,"p_level"?: number,"p_stage"?: number }; Returns: {
               "concept_id": string,"id": string,"payload": Json,"points": number,"sort_order": number,"type": Database["public"]['Enums']["exercise_type"]
             }[]
                            },
@@ -725,11 +813,22 @@ isOneToOne: false
 "is_lesson_unlocked":
 { Args: { "p_lesson": string,"p_user": string }; Returns: boolean
                            },
+"is_level_unlocked":
+{ Args: { "p_lesson": string,"p_level": number,"p_user": string }; Returns: boolean
+                           },
 "lesson_exercise_count":
 { Args: { "p_lesson": string,"p_user": string }; Returns: number
                            },
+"lesson_exercises_at_level":
+{ Args: { "p_lesson": string,"p_level": number }; Returns: {
+              "exercise_id": string
+            }[]
+                           },
 "lesson_stage_count":
 { Args: { "p_lesson": string,"p_user": string }; Returns: number
+                           },
+"level_run_size":
+{ Args: Record<PropertyKey, never>; Returns: number
                            },
 "list_accounts":
 { Args: Record<PropertyKey, never>; Returns: {
@@ -749,16 +848,15 @@ isOneToOne: false
 "normalize_answer":
 { Args: { "p": string }; Returns: string
                            },
+"pick_level_exercises":
+{ Args: { "p_lesson": string,"p_level": number }; Returns: {
+              "exercise_id": string,"priority": number
+            }[]
+                           },
 "pick_review_exercises":
 { Args: { "p_lesson": string,"p_user": string }; Returns: {
               "concept_id": string,"exercise_id": string,"priority": number
             }[]
-                           },
-"ramp_known":
-{ Args: Record<PropertyKey, never>; Returns: number
-                           },
-"ramp_recognized":
-{ Args: Record<PropertyKey, never>; Returns: number
                            },
 "review_limit":
 { Args: Record<PropertyKey, never>; Returns: number
@@ -785,18 +883,13 @@ isOneToOne: false
 { Args: Record<PropertyKey, never>; Returns: number
                            },
 "start_lesson_session":
-{ Args: { "p_idempotency_key": string,"p_lesson": string,"p_stage"?: number }; Returns: string
+{ Args: { "p_idempotency_key": string,"p_lesson": string,"p_level"?: number,"p_stage"?: number }; Returns: string
                            },
 "submit_attempt":
 { Args: { "p_answer": Json,"p_exercise": string,"p_hint_used"?: boolean,"p_response_ms"?: number,"p_session": string }; Returns: Json
                            },
 "validate_exercise_payload":
 { Args: { "p": Json,"t": Database["public"]['Enums']["exercise_type"] }; Returns: boolean
-                           },
-"visible_exercises":
-{ Args: { "p_lesson": string,"p_user": string }; Returns: {
-              "exercise_id": string
-            }[]
                            }
           }
           Enums: {

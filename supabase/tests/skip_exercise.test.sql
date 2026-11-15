@@ -59,18 +59,9 @@ select public.admin_add_word((select lesson_id from t_ctx), 'food.apple', 'jabł
 
 reset role;
 
--- Ten plik sprawdza pomijanie zadań, nie dobór trudności: uczeń dostaje sufit 3, a słówko
--- wysoką stabilność, żeby rampa z `20261115094000_learner_level.sql` nie schowała zadania
--- z wpisywaniem. Sam dobór po poziomie ma własny plik testu.
-update public.profiles set level = 3 where id = (select id from t_ids where name = 'uczen');
-
-insert into public.srs_state (user_id, concept_id, course_id, stability, difficulty, due_on, reps)
-select (select id from t_ids where name = 'uczen'), e.concept_id, (select course_id from t_ctx),
-       60, 5, current_date + 365, 3
-  from public.exercises e
- where e.lesson_id = (select lesson_id from t_ctx) and e.concept_id is not null
- group by e.concept_id
-on conflict (user_id, concept_id) do update set stability = 60;
+-- Ten plik sprawdza pomijanie zadań, nie dobór trudności: lekcja idzie na poziomie łatwym,
+-- żeby zadanie z wpisywaniem w ogóle zostało wydane.
+update public.exercises set level = 1 where lesson_id = (select lesson_id from t_ctx);
 
 create temporary table t_ex as
   select e.id, e.type, e.concept_id, e.points

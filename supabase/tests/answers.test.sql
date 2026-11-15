@@ -159,18 +159,9 @@ select e.id from public.exercises e
  where c.key = 'food.potato' and e.type = 'translate_ba';
 grant select on t_potato to authenticated;
 
--- Poziom: `submit_attempt` przyjmuje tylko zadania widoczne dla dziecka, a te zależą od sufitu
--- konta i stabilności słówka (`20261115094000_learner_level.sql`). Ten plik sprawdza samo
--- ocenianie odpowiedzi, więc uczeń dostaje sufit 3, a słówko wysoką stabilność.
-update public.profiles set level = 3 where id = (select id from t_ids where name = 'uczen');
-
-insert into public.srs_state (user_id, concept_id, course_id, stability, difficulty, due_on, reps)
-select (select id from t_ids where name = 'uczen'), c.id,
-       (select co.id from public.courses co where co.slug = 'test-ogonki'),
-       60, 5, current_date + 365, 3
-  from public.concepts c
- where c.key = 'food.potato'
-on conflict (user_id, concept_id) do update set stability = 60;
+-- Poziom: sesja wydaje zadania poziomu łatwego, a ten plik sprawdza samo ocenianie odpowiedzi,
+-- więc cała lekcja idzie na łatwym.
+update public.exercises set level = 1 where lesson_id = (select id from t_lesson);
 
 select is(
   (select e.payload -> 'accepted' from public.exercises e

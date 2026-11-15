@@ -133,54 +133,44 @@ select is(
   3::smallint,
   'poziom podany wprost zostaje — administrator wie lepiej niż reguła');
 
--- --- 3. Dobór zadań ---
+-- --- 3. Dobór zadań na poziomie ---
 
 select is(
-  (select count(*)::integer from public.visible_exercises(
-     (select lesson_id from t_ctx), (select id from t_ids where name = 'uczen'))),
+  (select count(*)::integer from public.lesson_exercises_at_level(
+     (select lesson_id from t_ctx), 1::smallint)),
   1,
-  'na poziomie pierwszym zostaje samo klikanie');
-
--- Sufit w górę, ale słówko jest wciąż nowe — rampa trzyma zadania przy ziemi.
-select public.set_learner_level((select id from t_ids where name = 'uczen'), 3::smallint);
+  'łatwy kwadracik wydaje samo klikanie');
 
 select is(
-  (select count(*)::integer from public.visible_exercises(
-     (select lesson_id from t_ctx), (select id from t_ids where name = 'uczen'))),
-  1,
-  'sam sufit nie otwiera trudniejszych zadań przy świeżym słówku');
-
--- Słówko rozpoznawane: stabilność między progiem „rozpoznaję" a „umiem".
-insert into public.srs_state (user_id, concept_id, course_id, stability, difficulty, due_on, reps)
-values ((select id from t_ids where name = 'uczen'), (select id from t_concept),
-        (select course_id from t_ctx), 10, 5, current_date + 365, 3);
+  (select count(*)::integer from public.lesson_exercises_at_level(
+     (select lesson_id from t_ctx), 2::smallint)),
+  2,
+  'średni kwadracik wydaje wpisywanie pojedynczych słów');
 
 select is(
-  (select count(*)::integer from public.visible_exercises(
-     (select lesson_id from t_ctx), (select id from t_ids where name = 'uczen'))),
-  3,
-  'rozpoznawane słówko dokłada wpisywanie pojedynczych słów');
+  (select count(*)::integer from public.lesson_exercises_at_level(
+     (select lesson_id from t_ctx), 3::smallint)),
+  2,
+  'trudny kwadracik wydaje pisanie ze słuchu i zadanie z ręcznie ustawionym poziomem');
 
-update public.srs_state set stability = 60
- where user_id = (select id from t_ids where name = 'uczen');
-
-select is(
-  (select count(*)::integer from public.visible_exercises(
-     (select lesson_id from t_ctx), (select id from t_ids where name = 'uczen'))),
-  5,
-  'umiane słówko dostaje komplet zadań razem z pisaniem ze słuchu');
-
--- Zasada ratunkowa: słówko, dla którego nic się nie mieści, i tak wchodzi do lekcji.
-delete from public.exercises
- where lesson_id = (select lesson_id from t_ctx) and level = 1;
-delete from public.srs_state where user_id = (select id from t_ids where name = 'uczen');
+-- Sufit z panelu niczego już nie dobiera — o trudności decyduje kwadracik.
 select public.set_learner_level((select id from t_ids where name = 'uczen'), 1::smallint);
 
 select is(
-  (select count(*)::integer from public.visible_exercises(
-     (select lesson_id from t_ctx), (select id from t_ids where name = 'uczen'))),
+  (select count(*)::integer from public.lesson_exercises_at_level(
+     (select lesson_id from t_ctx), 3::smallint)),
+  2,
+  'poziom ustawiony w panelu nie zmienia tego, co wydaje kwadracik');
+
+-- Zasada ratunkowa: słówko bez zadania na klikanie i tak wchodzi do łatwej lekcji.
+delete from public.exercises
+ where lesson_id = (select lesson_id from t_ctx) and level = 1;
+
+select is(
+  (select count(*)::integer from public.lesson_exercises_at_level(
+     (select lesson_id from t_ctx), 1::smallint)),
   1,
-  'słówko bez zadania w poziomie dostaje swoje najłatwiejsze, a nie znika z lekcji');
+  'słówko bez zadania na klikanie dostaje swoje najłatwiejsze, a nie znika z lekcji');
 
 -- --- 4. Kto może zmieniać poziom ---
 

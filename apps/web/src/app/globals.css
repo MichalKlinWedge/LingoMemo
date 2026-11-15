@@ -26,6 +26,8 @@
   --color-coral: #e04a45;
   --color-coral-light: #fde6e5;
   --color-sun: #ffc83d;
+  /* Obrys bursztynowego kwadracika: samo `--color-sun` na jasnym tle jest nie do zobaczenia. */
+  --color-sun-dark: #b36b00;
   --color-sky: #39b6e8;
 
   --font-sans: var(--font-nunito), system-ui, sans-serif;
@@ -437,6 +439,48 @@ h2 {
 
   .stage[data-done="true"] {
     background: var(--color-brand);
+  }
+
+  /* Jedna linia kwadracików pod kafelkiem lekcji: etapy poziomu łatwego, a za nimi wejścia
+     na średni i trudny. `nowrap`, bo zawinięty drugi wiersz rozjeżdżał rząd lekcji. */
+  .marks {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    min-height: 1.75rem;
+    margin-top: auto;
+  }
+
+  /* Kwadracik poziomu. Kolor mówi, który to poziom — fiolet to łatwy (stąd etapy w tym samym
+     kolorze), błękit średni, bursztyn trudny. Zielony i koralowy są zarezerwowane na „dobrze"
+     i „źle", więc tutaj nie występują. */
+  .level-box {
+    display: inline-flex;
+    width: 1.75rem;
+    height: 1.75rem;
+    flex: none;
+    border-radius: 0.5rem;
+    border: 2px solid var(--color-sky);
+    border-bottom-width: 3px;
+  }
+
+  .level-box[data-level="3"] {
+    border-color: var(--color-sun-dark);
+  }
+
+  .level-box[data-done="true"] {
+    background: var(--color-sky);
+  }
+
+  .level-box[data-level="3"][data-done="true"] {
+    background: var(--color-sun);
+  }
+
+  .level-box[data-locked="true"] {
+    border-color: var(--line);
+    background: var(--color-zinc-100);
   }
 
   /* --- tabela w panelu administratora ---

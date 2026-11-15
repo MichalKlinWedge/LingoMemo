@@ -30,6 +30,7 @@ export function LessonRunner({
   badgeNames,
   stage,
   stages,
+  level,
 }: {
   lessonId: string;
   courseSlug: string;
@@ -42,6 +43,8 @@ export function LessonRunner({
   /** Który etap lekcji jest rozgrywany i ile ich jest w całej lekcji. */
   stage: number;
   stages: number;
+  /** 1 łatwy (lekcja z etapami), 2 średni, 3 trudny — krótkie wejście na ośmiu słówkach. */
+  level: number;
 }) {
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>("answering");
@@ -81,7 +84,7 @@ export function LessonRunner({
       }
 
       if (sessionRef.current === null) {
-        const started = await startLesson(lessonId, keyRef.current, stage);
+        const started = await startLesson(lessonId, keyRef.current, stage, level);
         if ("error" in started) {
           setError(started.error);
           setPhase("answering");
@@ -107,7 +110,7 @@ export function LessonRunner({
       play(result.verdict.correct ? "correct" : "wrong");
       setPhase("feedback");
     },
-    [exercise, lessonId, phase, play, stage],
+    [exercise, lessonId, level, phase, play, stage],
   );
 
   const next = useCallback(async () => {
@@ -227,6 +230,8 @@ export function LessonRunner({
             Etap {stage}/{stages}
           </span>
         )}
+        {/* Trudniejsze wejście wygląda jak lekcja, więc musi powiedzieć, że to inny kwadracik. */}
+        {level > 1 && <span className="chip">{level === 2 ? "Poziom średni" : "Poziom trudny"}</span>}
         <span className="chip">
           {index + 1}/{total}
         </span>

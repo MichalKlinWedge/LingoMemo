@@ -121,9 +121,8 @@ select set_config('role', 'authenticated', true),
 
 select ok(
   (select id from t_uklad) in (
-    select exercise_id from public.visible_exercises(
-      (select lesson_id from t_ctx), (select id from t_ids where name = 'uczen'))),
-  'na poziomie pierwszym dziecko dostaje rozsypankę zamiast wpisywania zdania');
+    select exercise_id from public.lesson_exercises_at_level((select lesson_id from t_ctx), 1::smallint)),
+  'na łatwym kwadraciku dziecko dostaje rozsypankę zamiast wpisywania zdania');
 
 create temporary table t_sesja as
   select public.start_lesson_session((select lesson_id from t_ctx)::uuid, 'test-zdania-1') as id;
@@ -136,9 +135,8 @@ select is(
   'true',
   'ułożone zdanie jest zaliczone, choć część klocków została nieużyta');
 
--- --- ten sam materiał, ale dziecko z sufitem 3 ---
+-- --- ten sam materiał na trudnym kwadraciku ---
 reset role;
-update public.profiles set level = 3 where id = (select id from t_ids where name = 'uczen');
 
 create temporary table t_pisanie as
   select id from public.exercises
@@ -146,15 +144,13 @@ create temporary table t_pisanie as
 
 select ok(
   (select id from t_pisanie) in (
-    select exercise_id from public.visible_exercises(
-      (select lesson_id from t_ctx), (select id from t_ids where name = 'uczen'))),
-  'na poziomie trzecim dziecko dostaje zdanie do wpisania');
+    select exercise_id from public.lesson_exercises_at_level((select lesson_id from t_ctx), 3::smallint)),
+  'trudny kwadracik wydaje zdanie do wpisania');
 
 select ok(
   (select id from t_uklad) not in (
-    select exercise_id from public.visible_exercises(
-      (select lesson_id from t_ctx), (select id from t_ids where name = 'uczen'))),
-  'łatwa wersja ustępuje oryginałowi, więc zdania nie robi się dwa razy');
+    select exercise_id from public.lesson_exercises_at_level((select lesson_id from t_ctx), 3::smallint)),
+  'łatwa wersja nie wchodzi na trudny kwadracik, więc zdania nie robi się dwa razy');
 
 select * from finish();
 rollback;
