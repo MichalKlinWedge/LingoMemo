@@ -66,6 +66,9 @@ async function Lesson({
     p_level: level,
   });
 
+  // Dzienna pula podpowiedzi. Liczy ją baza z użyć, więc o północy w strefie dziecka wraca sama.
+  const { data: hintsLeft } = await supabase.rpc("hints_left");
+
   // Nazwy odznak, żeby na ekranie podsumowania nie wyświetlił się kod w rodzaju `first_lesson`.
   const { data: badges } = await supabase.from("badges").select("code, title, icon");
   const badgeNames = Object.fromEntries(
@@ -98,6 +101,7 @@ async function Lesson({
       stage={stage}
       stages={stages}
       level={level}
+      hintsLeft={hintsLeft ?? 0}
     />
   );
 }

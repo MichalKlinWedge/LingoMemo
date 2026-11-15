@@ -511,3 +511,43 @@ spojrzenie na całość, nie kafelek pod palec.
 Slug po zmianie: formularz z listy nie podaje `current_slug`, więc akcja nie przerzuca nigdzie —
 adres strony z listą się nie zmienia. Podaje go formularz na podstronie wpisu, gdzie slug siedzi
 w adresie i po zmianie trzeba przejść na nowy.
+
+### Jedna szansa na poprawienie literówki (2026-11-15)
+
+Pomyłka o jedną literę w zadaniu z pisaniem była po cichu zaliczana („Prawie! Zaliczone"),
+a pomyłka o dwie — zwykłym błędem. Jedno i drugie uczy nie tego, co trzeba: przy zaliczeniu
+dziecko nie dowiaduje się, że napisało słowo źle, a przy błędzie nie ma jak poprawić czegoś,
+co prawie umie. Od teraz pierwsza bliska pomyłka wraca jako prośba o poprawkę, bez oceny.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Kiedy prośba | zadania z wpisywaniem, odpowiedź przyszła jako `text` | kafelka nie da się poprawić o literę — albo jest dobry, albo nie | druga szansa przy klikaniu i przy parach |
+| Co to znaczy „bardzo nieduża pomyłka" | jedna litera przy słowie od czterech liter, dwie dopiero od siedmiu | przy krótkim słowie dwie litery różnicy to inne słowo, a nie potknięcie palca | stały próg dwóch liter (zgadywanie dostawałoby drugie podejście) |
+| Ile razy | raz na zadanie w sesji | dalsze poprawki to już zgadywanka, nie nauka | bez ograniczenia; limit na całą lekcję |
+| Kto liczy „ten jeden raz" | baza, w `lesson_sessions.retried_exercise_ids` | gdyby liczyła przeglądarka, odświeżenie strony dawałoby kolejne podejścia | stan w przeglądarce; pole w `attempts` |
+| Ślad po prośbie | żaden: ani próba, ani punkty, ani ruch w powtórkach | prośba nie jest odpowiedzią, a zapisana psułaby trafność i liczbę odpowiedzi w statystykach | próba z flagą „do poprawki" |
+| Co widzi dziecko | „Prawie! Zajrzyj w litery i popraw" nad polem, z wpisaną odpowiedzią | poprawia się literówkę, a nie pisze od nowa | wyczyszczone pole; pokazanie, która litera jest zła (to już przepisywanie) |
+
+Po poprawce ocena jest normalna: jedna litera nadal przechodzi jako „prawie" (ocena 2 dla
+harmonogramu powtórek), dwie to błąd. Werdykt z prośbą ma `retry: true` i nie niesie poprawnej
+odpowiedzi — gdyby niósł, nie byłoby czego poprawiać.
+
+### Podpowiedzi (2026-11-15)
+
+Dziecko, które utknęło na zadaniu, miało dwa wyjścia: zgadywać albo pominąć (czyli dostać błąd
+i cofnąć słówko w powtórkach). Podpowiedź jest trzecim: to samo słówko w łatwiejszej postaci.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Pula | pięć na dobę, liczone Z UŻYĆ w tabeli `hint_uses` | „ile dziś zużyto" wychodzi z zapytania, więc o północy w strefie dziecka pula odnawia się sama | licznik w `profiles` zerowany cronem (jedno nieudane uruchomienie i pula nie wraca; do tego strefa serwera zamiast strefy dziecka) |
+| Doba | data z `profiles.time_zone`, tak samo jak seria dni | o północy u dziecka, nie w UTC — inaczej pula wracałaby w środku nocy albo w porze obiadu | `current_date` w UTC |
+| Co robi podpowiedź | najpierw szuka łatwiejszego zadania do tego samego słówka w tej lekcji, a gdy go nie ma — upraszcza to, które jest (rozsypanka bez zbędnych klocków, cztery kafelki do dwóch) | na poziomie łatwym wszystko jest już na klikanie, więc bez uproszczenia podpowiedź byłaby tam martwa | pokazanie poprawnej odpowiedzi (dziecko przepisuje i nic nie zostaje w głowie) |
+| Uproszczenie bez nowego wiersza | ten sam identyfikator zadania, inny payload | `solution` i `accepted` się nie ruszają, więc ocenianie i migawka sesji działają bez zmian | tworzenie nowego zadania w locie |
+| Zamiana na inne zadanie | identyfikator zamiennika wchodzi do migawki sesji (`array_replace`, a gdy migawki nie ma — dopisanie) | bez tego `submit_attempt` odrzuciłby odpowiedź na zadanie, którego sesja nie wydała | luźniejsze sprawdzanie w `submit_attempt` (otwiera drogę do odpowiadania na cudze zadania) |
+| Druga podpowiedź do tego samego zadania | nic nie kosztuje, oddaje ten sam zamiennik (`unique (user_id, session_id, exercise_id)`) | odświeżenie strony nie ma zjadać puli | liczenie każdego kliknięcia |
+| Wpływ na powtórki | odpowiedź po podpowiedzi idzie z `hint_used = true`, czyli ocena najwyżej 2 | słówko wraca szybciej, bo dziecko go jeszcze nie umie | traktowanie jak zwykłej odpowiedzi |
+| Zapis | tylko przez `use_hint`; tabela bez polityki INSERT | jak każda tabela postępu — dziecko nie dopisze sobie puli | polityka INSERT dla ucznia |
+
+Przy okazji wyszło z tego `child_exercise(id)`: wycinanie kluczy odpowiedzi i tasowanie kolejności
+było dotąd wyrażeniem wewnątrz `get_lesson_exercises`, a potrzebuje tego też `use_hint`. Dwie
+kopie rozjechałyby się przy pierwszym nowym typie zadania.

@@ -2,6 +2,7 @@
 
 import type { Json } from "@lingomemo/db";
 
+import type { Exercise } from "@/components/exercises/types";
 import { requireUser } from "@/lib/auth";
 import { dbErrorMessage } from "@/lib/db-error";
 
@@ -13,6 +14,12 @@ import { dbErrorMessage } from "@/lib/db-error";
 export type Verdict = {
   correct: boolean;
   nearMiss: boolean;
+  /**
+   * Baza nie oceniła odpowiedzi, tylko prosi o poprawienie literówki — bliska pomyłka
+   * w zadaniu z pisaniem, raz na zadanie. Próba nie jest zapisana, więc nic się jeszcze
+   * nie policzyło: dziecko poprawia i wysyła jeszcze raz.
+   */
+  retry?: boolean;
   /** Dziecko kliknęło „Nie wiem" zamiast odpowiadać. Dla bazy to błąd, dla ekranu inny napis. */
   skipped?: boolean;
   grade: number;
@@ -52,6 +59,42 @@ export async function startLesson(
   });
   if (error) return { error: dbErrorMessage(error, "Nie udało się zacząć lekcji.") };
   return { sessionId: data as string };
+}
+
+/**
+ * Podpowiedź: zamiana zadania na łatwiejszą wersję tego samego słówka. Pulę na dziś i wybór
+ * zamiennika liczy baza — przeglądarka dostaje gotowe zadanie i to, ile podpowiedzi zostało.
+ */
+export async function askHint(
+  sessionId: string,
+  exerciseId: string,
+): Promise<{ exercise: Exercise; hintsLeft: number } | { error: string }> {
+  const { supabase } = await requireUser("/");
+  const { data, error } = await supabase.rpc("use_hint", { p_session: sessionId, p_exercise: exerciseId });
+  if (error) return { error: dbErrorMessage(error, "Nie udało się wziąć podpowiedzi.") };
+
+  const row = data as unknown as {
+    id: string;
+    type: string;
+    conceptId: string | null;
+    points: number;
+    payload: Exercise["payload"];
+    hintsLeft: number;
+  };
+
+  return {
+    exercise: {
+      id: row.id,
+      type: row.type,
+      // Numer w kolejności zostaje ten sam co zadania, które zastępuje — pasek postępu lekcji
+      // liczy pozycje, a nie identyfikatory.
+      sort_order: 0,
+      concept_id: row.conceptId,
+      points: row.points,
+      payload: row.payload,
+    },
+    hintsLeft: row.hintsLeft,
+  };
 }
 
 export async function submitAnswer(

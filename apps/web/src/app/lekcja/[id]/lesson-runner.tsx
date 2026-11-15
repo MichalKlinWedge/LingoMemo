@@ -13,7 +13,7 @@ import type { Answer, Exercise } from "@/components/exercises/types";
 import { TypingExercise } from "@/components/exercises/typing";
 import { useFeedbackSound } from "@/lib/use-feedback-sound";
 
-import { finishLesson, startLesson, submitAnswer, type Summary, type Verdict } from "./lesson-actions";
+import { askHint, finishLesson, startLesson, submitAnswer, type Summary, type Verdict } from "./lesson-actions";
 
 type Phase = "answering" | "checking" | "feedback" | "done";
 
@@ -31,6 +31,7 @@ export function LessonRunner({
   stage,
   stages,
   level,
+  hintsLeft,
 }: {
   lessonId: string;
   courseSlug: string;
@@ -45,6 +46,8 @@ export function LessonRunner({
   stages: number;
   /** 1 łatwy (lekcja z etapami), 2 średni, 3 trudny — krótkie wejście na ośmiu słówkach. */
   level: number;
+  /** Ile podpowiedzi zostało dziecku na dziś. Pula odnawia się o północy w jego strefie. */
+  hintsLeft: number;
 }) {
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>("answering");
@@ -55,6 +58,13 @@ export function LessonRunner({
   // przy przejściu dalej wystarczy, że przestaje pasować do bieżącego zadania, więc nie trzeba
   // go zerować w efekcie (czego linter i tak nie puszcza).
   const [draftOf, setDraftOf] = useState<string | null>(null);
+  // Podpowiedzi: ile zostało i które zadania zostały już zamienione na łatwiejsze. Zamiennik
+  // trzymamy po numerze w kolejności, bo to on wyznacza, co jest na ekranie.
+  const [hints, setHints] = useState(hintsLeft);
+  const [swapped, setSwapped] = useState<Record<number, Exercise>>({});
+  // Prośba o poprawienie literówki. Trzymamy identyfikator zadania, nie flagę — przy przejściu
+  // dalej przestaje pasować do bieżącego zadania i znika sam, bez zerowania w efekcie.
+  const [fixAsked, setFixAsked] = useState<string | null>(null);
 
   const { play, enabled: soundOn, toggle: toggleSound } = useFeedbackSound();
 
@@ -69,8 +79,9 @@ export function LessonRunner({
     startedAt.current = Date.now();
   }, [index]);
 
-  const exercise = exercises[index];
+  const exercise = swapped[index] ?? exercises[index];
   const total = exercises.length;
+  const hinted = swapped[index] !== undefined;
 
   const handleAnswer = useCallback(
     async (answer: Answer) => {
@@ -98,7 +109,9 @@ export function LessonRunner({
         exercise.id,
         answer,
         startedAt.current > 0 ? Date.now() - startedAt.current : null,
-        false,
+        // Zadanie wzięte z podpowiedzi liczy się dla harmonogramu powtórek jako trudniejsze:
+        // słówko wróci szybciej niż po samodzielnej odpowiedzi.
+        hinted,
       );
       if ("error" in result) {
         setError(result.error);
@@ -106,12 +119,57 @@ export function LessonRunner({
         return;
       }
 
+      // Prośba o poprawkę, a nie werdykt: baza nic nie zapisała i czeka na drugie podejście.
+      // Wracamy do pisania z tym, co dziecko wpisało — nie czyścimy pola, bo poprawia się
+      // literówkę, a nie pisze od nowa. Dźwięku nie ma: nic jeszcze nie jest ani dobre, ani złe.
+      if (result.verdict.retry) {
+        setFixAsked(exercise.id);
+        setPhase("answering");
+        return;
+      }
+
+      setFixAsked(null);
       setVerdict(result.verdict);
       play(result.verdict.correct ? "correct" : "wrong");
       setPhase("feedback");
     },
-    [exercise, lessonId, level, phase, play, stage],
+    [exercise, hinted, lessonId, level, phase, play, stage],
   );
+
+  /**
+   * Podpowiedź. Zamienia zadanie na łatwiejszą wersję tego samego słówka — wybór zamiennika
+   * i pilnowanie dziennej puli należą do bazy. Sesję trzeba założyć wcześniej niż przy
+   * pierwszej odpowiedzi, bo to w niej zapisuje się zamiana.
+   */
+  const takeHint = useCallback(async () => {
+    if (phase !== "answering") return;
+    setError(null);
+
+    if (keyRef.current === null) {
+      keyRef.current =
+        typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `k${Date.now()}`;
+    }
+
+    if (sessionRef.current === null) {
+      const started = await startLesson(lessonId, keyRef.current, stage, level);
+      if ("error" in started) {
+        setError(started.error);
+        return;
+      }
+      sessionRef.current = started.sessionId;
+    }
+
+    const result = await askHint(sessionRef.current, exercise.id);
+    if ("error" in result) {
+      setError(result.error);
+      return;
+    }
+
+    setSwapped((prev) => ({ ...prev, [index]: result.exercise }));
+    setHints(result.hintsLeft);
+    setDraftOf(null);
+    startedAt.current = Date.now();
+  }, [exercise, index, lessonId, level, phase, stage]);
 
   const next = useCallback(async () => {
     setVerdict(null);
@@ -232,6 +290,9 @@ export function LessonRunner({
         )}
         {/* Trudniejsze wejście wygląda jak lekcja, więc musi powiedzieć, że to inny kwadracik. */}
         {level > 1 && <span className="chip">{level === 2 ? "Poziom średni" : "Poziom trudny"}</span>}
+        <span className="chip" aria-label={`Podpowiedzi na dziś: ${hints}`} title="Podpowiedzi na dziś">
+          💡 {hints}
+        </span>
         <span className="chip">
           {index + 1}/{total}
         </span>
@@ -311,6 +372,24 @@ export function LessonRunner({
           // głośnik czytający „czarny" po angielsku brzmi jak awaria.
           promptLang={exercise.type === "translate_ab" ? sourceLang : targetLang}
         />
+      )}
+
+      {/* Bliska pomyłka w pisaniu: baza prosi o poprawkę zamiast oceniać. Komunikat stoi pod
+          polem, żeby dziecko czytało go razem z tym, co samo napisało. Nie mówi, co jest źle —
+          wtedy poprawianie byłoby przepisywaniem. */}
+      {fixAsked === exercise.id && phase === "answering" && (
+        <p className="msg-warn" role="status">
+          Prawie! Zajrzyj w litery i popraw — sprawdzimy jeszcze raz.
+        </p>
+      )}
+
+      {/* Podpowiedź: to samo słówko w łatwiejszej postaci — zamiast wpisywać, dziecko wskazuje
+          albo układa z klocków. Pięć na dobę, pula wraca o północy. Znika po użyciu na tym
+          zadaniu i wtedy, gdy na dziś nic nie zostało. */}
+      {phase === "answering" && hints > 0 && !hinted && (
+        <button type="button" className="btn-secondary self-center" onClick={takeHint}>
+          <span aria-hidden>💡</span> Podpowiedź ({hints})
+        </button>
       )}
 
       {/* Wyjście dla dziecka, które utknęło. Idzie do bazy jako odpowiedź `{"skipped": true}`,

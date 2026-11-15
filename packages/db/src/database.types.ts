@@ -173,6 +173,38 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"hint_uses": {
+                  Row: {
+                    "created_at": string,"easier_id": string | null,"exercise_id": string | null,"id": string,"session_id": string | null,"used_on": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"easier_id"?: string | null,"exercise_id"?: string | null,"id"?: string,"session_id"?: string | null,"used_on": string,"user_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"easier_id"?: string | null,"exercise_id"?: string | null,"id"?: string,"session_id"?: string | null,"used_on"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "hint_uses_easier_id_fkey"
+      columns: ["easier_id"]
+isOneToOne: false
+      referencedRelation: "exercises"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "hint_uses_exercise_id_fkey"
+      columns: ["exercise_id"]
+isOneToOne: false
+      referencedRelation: "exercises"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "hint_uses_session_id_fkey"
+      columns: ["session_id"]
+isOneToOne: false
+      referencedRelation: "lesson_sessions"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"languages": {
                   Row: {
                     "code": string,"is_active": boolean,"name_native": string,"name_pl": string,"tts_lang": string | null
@@ -291,14 +323,14 @@ isOneToOne: false
                   ]
                 },"lesson_sessions": {
                   Row: {
-                    "correct_count": number,"exercise_ids": (string)[],"finished_at": string | null,"id": string,"idempotency_key": string,"lesson_id": string,"level": number,"score": number | null,"stage_nr": number,"started_at": string,"total_exercises": number,"user_id": string,"xp_awarded": number
+                    "correct_count": number,"exercise_ids": (string)[],"finished_at": string | null,"id": string,"idempotency_key": string,"lesson_id": string,"level": number,"retried_exercise_ids": (string)[],"score": number | null,"stage_nr": number,"started_at": string,"total_exercises": number,"user_id": string,"xp_awarded": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "correct_count"?: number,"exercise_ids"?: (string)[],"finished_at"?: string | null,"id"?: string,"idempotency_key": string,"lesson_id": string,"level"?: number,"score"?: number | null,"stage_nr"?: number,"started_at"?: string,"total_exercises"?: number,"user_id": string,"xp_awarded"?: number
+                    "correct_count"?: number,"exercise_ids"?: (string)[],"finished_at"?: string | null,"id"?: string,"idempotency_key": string,"lesson_id": string,"level"?: number,"retried_exercise_ids"?: (string)[],"score"?: number | null,"stage_nr"?: number,"started_at"?: string,"total_exercises"?: number,"user_id": string,"xp_awarded"?: number
                   }
                   Update: {
-                    "correct_count"?: number,"exercise_ids"?: (string)[],"finished_at"?: string | null,"id"?: string,"idempotency_key"?: string,"lesson_id"?: string,"level"?: number,"score"?: number | null,"stage_nr"?: number,"started_at"?: string,"total_exercises"?: number,"user_id"?: string,"xp_awarded"?: number
+                    "correct_count"?: number,"exercise_ids"?: (string)[],"finished_at"?: string | null,"id"?: string,"idempotency_key"?: string,"lesson_id"?: string,"level"?: number,"retried_exercise_ids"?: (string)[],"score"?: number | null,"stage_nr"?: number,"started_at"?: string,"total_exercises"?: number,"user_id"?: string,"xp_awarded"?: number
                   }
                   Relationships: [
                     {
@@ -729,11 +761,17 @@ isOneToOne: false
 "bump_streak":
 { Args: { "p_lesson_done": boolean,"p_today": string,"p_user": string }; Returns: number
                            },
+"child_exercise":
+{ Args: { "p_exercise": string }; Returns: Json
+                           },
 "create_invite":
 { Args: { "p_course"?: string,"p_days"?: number,"p_display_name"?: string,"p_email"?: string,"p_max_uses"?: number,"p_role"?: string }; Returns: string
                            },
 "default_exercise_level":
 { Args: { "p": Json,"t": Database["public"]['Enums']["exercise_type"] }; Returns: number
+                           },
+"easier_exercise":
+{ Args: { "p_exercise": string }; Returns: string
                            },
 "exercise_allowed_in_lesson":
 { Args: { "p_exercise": string,"p_lesson": string }; Returns: boolean
@@ -804,6 +842,12 @@ isOneToOne: false
               "concept_id": string,"due_on": string,"lapses": number,"stability": number
             }[]
                            },
+"hint_limit":
+{ Args: Record<PropertyKey, never>; Returns: number
+                           },
+"hints_left":
+{ Args: Record<PropertyKey, never>; Returns: number
+                           },
 "invite_preview":
 { Args: { "p_ip"?: string,"p_token": string }; Returns: Json
                            },
@@ -816,6 +860,9 @@ isOneToOne: false
 "is_level_unlocked":
 { Args: { "p_lesson": string,"p_level": number,"p_user": string }; Returns: boolean
                            },
+"learner_today":
+{ Args: { "p_user": string }; Returns: string
+                           },
 "lesson_exercise_count":
 { Args: { "p_lesson": string,"p_user": string }; Returns: number
                            },
@@ -826,6 +873,9 @@ isOneToOne: false
                            },
 "lesson_stage_count":
 { Args: { "p_lesson": string,"p_user": string }; Returns: number
+                           },
+"level_exercise_count":
+{ Args: { "p_lesson": string,"p_level": number }; Returns: number
                            },
 "level_run_size":
 { Args: Record<PropertyKey, never>; Returns: number
@@ -887,6 +937,9 @@ isOneToOne: false
                            },
 "submit_attempt":
 { Args: { "p_answer": Json,"p_exercise": string,"p_hint_used"?: boolean,"p_response_ms"?: number,"p_session": string }; Returns: Json
+                           },
+"use_hint":
+{ Args: { "p_exercise": string,"p_session": string }; Returns: Json
                            },
 "validate_exercise_payload":
 { Args: { "p": Json,"t": Database["public"]['Enums']["exercise_type"] }; Returns: boolean
