@@ -1,0 +1,206 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-class4",
+  "unit": { "slug": "en-4-unit0", "title": "UNIT 0", "sortOrder": 1 },
+  "lesson": {
+    "slug": "4u0-colours",
+    "title": "Colours",
+    "icon": "🎨",
+    "kind": "standard",
+    "sortOrder": 4,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "4u0-numbers-10-100",
+    "isPublished": true
+  },
+  "concepts": [
+    { "key": "colour.black", "tags": ["⚫"], "terms": { "pl": [{ "text": "czarny", "pos": "adjective" }], "en": [{ "text": "black", "pos": "adjective" }] } },
+    { "key": "colour.blue", "tags": ["🔵"], "terms": { "pl": [{ "text": "niebieski", "pos": "adjective" }], "en": [{ "text": "blue", "pos": "adjective" }] } },
+    { "key": "colour.brown", "tags": ["🟤"], "terms": { "pl": [{ "text": "brązowy", "pos": "adjective" }], "en": [{ "text": "brown", "pos": "adjective" }] } },
+    { "key": "colour.green", "tags": ["🟢"], "terms": { "pl": [{ "text": "zielony", "pos": "adjective" }], "en": [{ "text": "green", "pos": "adjective" }] } },
+    { "key": "colour.grey", "tags": ["🪨"], "terms": { "pl": [{ "text": "szary", "pos": "adjective" }], "en": [{ "text": "grey", "pos": "adjective" }, { "text": "gray", "pos": "adjective", "isPrimary": false }] } },
+    { "key": "colour.orange", "tags": ["🟠"], "terms": { "pl": [{ "text": "pomarańczowy", "pos": "adjective" }], "en": [{ "text": "orange", "pos": "adjective" }] } },
+    { "key": "colour.pink", "tags": ["🌸"], "terms": { "pl": [{ "text": "różowy", "pos": "adjective" }], "en": [{ "text": "pink", "pos": "adjective" }] } },
+    { "key": "colour.purple", "tags": ["🟣"], "terms": { "pl": [{ "text": "fioletowy", "pos": "adjective" }], "en": [{ "text": "purple", "pos": "adjective" }] } },
+    { "key": "colour.red", "tags": ["🔴"], "terms": { "pl": [{ "text": "czerwony", "pos": "adjective" }], "en": [{ "text": "red", "pos": "adjective" }] } },
+    { "key": "colour.white", "tags": ["⚪"], "terms": { "pl": [{ "text": "biały", "pos": "adjective" }], "en": [{ "text": "white", "pos": "adjective" }] } },
+    { "key": "colour.yellow", "tags": ["🟡"], "terms": { "pl": [{ "text": "żółty", "pos": "adjective" }], "en": [{ "text": "yellow", "pos": "adjective" }] } },
+    { "key": "ask.favourite-colour", "tags": ["❓"], "terms": { "pl": [{ "text": "Jaki jest twój ulubiony kolor?", "pos": "phrase" }], "en": [{ "text": "What's your favourite colour?", "pos": "phrase" }] } },
+    { "key": "say.favourite-colour", "tags": ["💜"], "terms": { "pl": [{ "text": "Fioletowy.", "pos": "phrase" }], "en": [{ "text": "It's purple.", "pos": "phrase" }] } }
+  ],
+  "exercises": [
+    { "type": "translate_ab", "conceptKey": "colour.black", "payload": { "prompt": "czarny", "accepted": ["black"] } },
+    { "type": "translate_ab", "conceptKey": "colour.blue", "payload": { "prompt": "niebieski", "accepted": ["blue"] } },
+    { "type": "translate_ab", "conceptKey": "colour.brown", "payload": { "prompt": "brązowy", "accepted": ["brown"] } },
+    { "type": "translate_ab", "conceptKey": "colour.green", "payload": { "prompt": "zielony", "accepted": ["green"] } },
+    { "type": "translate_ab", "conceptKey": "colour.grey", "payload": { "prompt": "szary", "accepted": ["grey", "gray"] } },
+    { "type": "translate_ab", "conceptKey": "colour.orange", "payload": { "prompt": "pomarańczowy", "accepted": ["orange"] } },
+    { "type": "translate_ab", "conceptKey": "colour.pink", "payload": { "prompt": "różowy", "accepted": ["pink"] } },
+    { "type": "translate_ab", "conceptKey": "colour.purple", "payload": { "prompt": "fioletowy", "accepted": ["purple"] } },
+    { "type": "translate_ab", "conceptKey": "colour.red", "payload": { "prompt": "czerwony", "accepted": ["red"] } },
+    { "type": "translate_ab", "conceptKey": "colour.white", "payload": { "prompt": "biały", "accepted": ["white"] } },
+    { "type": "translate_ab", "conceptKey": "colour.yellow", "payload": { "prompt": "żółty", "accepted": ["yellow"] } },
+    { "type": "translate_ba", "conceptKey": "colour.brown", "payload": { "prompt": "brown", "accepted": ["brązowy"] } },
+    { "type": "translate_ba", "conceptKey": "colour.grey", "payload": { "prompt": "grey", "accepted": ["szary"] } },
+    { "type": "translate_ba", "conceptKey": "colour.purple", "payload": { "prompt": "purple", "accepted": ["fioletowy"] } },
+    { "type": "translate_ba", "conceptKey": "colour.pink", "payload": { "prompt": "pink", "accepted": ["różowy"] } },
+    { "type": "translate_ba", "conceptKey": "colour.white", "payload": { "prompt": "white", "accepted": ["biały"] } },
+    {
+      "type": "translate_ab",
+      "conceptKey": "ask.favourite-colour",
+      "payload": {
+        "prompt": "Jaki jest twój ulubiony kolor?",
+        "accepted": ["What's your favourite colour?", "Whats your favourite colour?", "What's your favorite color?"],
+        "options": ["What's your favourite colour?", "What's your name?", "How do you spell that?", "It's purple."]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "say.favourite-colour",
+      "payload": {
+        "prompt": "Fioletowy.",
+        "accepted": ["It's purple.", "Its purple.", "It is purple."],
+        "options": ["It's purple.", "It's pink.", "It's brown.", "It's grey."]
+      }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz kolory w pary.",
+        "pairs": [
+          { "a": "czarny", "b": "black" },
+          { "a": "niebieski", "b": "blue" },
+          { "a": "brązowy", "b": "brown" },
+          { "a": "zielony", "b": "green" },
+          { "a": "szary", "b": "grey" },
+          { "a": "pomarańczowy", "b": "orange" }
+        ]
+      }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz kolory w pary.",
+        "pairs": [
+          { "a": "różowy", "b": "pink" },
+          { "a": "fioletowy", "b": "purple" },
+          { "a": "czerwony", "b": "red" },
+          { "a": "biały", "b": "white" },
+          { "a": "żółty", "b": "yellow" }
+        ]
+      }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj kolor.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "czarny", "b": "black" },
+          { "a": "brązowy", "b": "brown" },
+          { "a": "szary", "b": "grey" },
+          { "a": "fioletowy", "b": "purple" },
+          { "a": "żółty", "b": "yellow" },
+          { "a": "pomarańczowy", "b": "orange" }
+        ]
+      }
+    },
+    { "type": "listening", "conceptKey": "colour.green", "points": 15, "payload": { "speak": "green", "lang": "en-GB", "accepted": ["green"] } },
+    { "type": "listening", "conceptKey": "colour.pink", "points": 15, "payload": { "speak": "pink", "lang": "en-GB", "accepted": ["pink"] } },
+    { "type": "listening", "conceptKey": "colour.purple", "points": 15, "payload": { "speak": "purple", "lang": "en-GB", "accepted": ["purple"] } },
+    { "type": "listening", "conceptKey": "colour.white", "points": 15, "payload": { "speak": "white", "lang": "en-GB", "accepted": ["white"] } },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "colour.grey",
+      "payload": {
+        "sentence": "The elephants are {{blank}}.",
+        "options": ["grey", "pink", "green", "yellow"],
+        "answer": "grey",
+        "translation": "Słonie są szare."
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "colour.red",
+      "payload": {
+        "sentence": "The flowers are {{blank}}.",
+        "options": ["red", "blue", "brown", "grey"],
+        "answer": "red",
+        "translation": "Kwiaty są czerwone."
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "colour.black",
+      "payload": {
+        "sentence": "The zebras are {{blank}} and white.",
+        "options": ["black", "orange", "purple", "pink"],
+        "answer": "black",
+        "translation": "Zebry są czarno-białe."
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "colour.blue",
+      "payload": {
+        "sentence": "The sky is {{blank}}.",
+        "options": ["blue", "green", "brown", "black"],
+        "answer": "blue",
+        "translation": "Niebo jest niebieskie."
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "colour.orange",
+      "payload": {
+        "sentence": "The oranges are {{blank}}.",
+        "options": ["orange", "purple", "grey", "white"],
+        "answer": "orange",
+        "translation": "Pomarańcze są pomarańczowe."
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "colour.yellow",
+      "payload": {
+        "sentence": "The lemons are {{blank}}.",
+        "options": ["yellow", "red", "pink", "blue"],
+        "answer": "yellow",
+        "translation": "Cytryny są żółte."
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "colour.green",
+      "payload": {
+        "sentence": "The trees are {{blank}}.",
+        "options": ["green", "grey", "yellow", "purple"],
+        "answer": "green",
+        "translation": "Drzewa są zielone."
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "colour.pink",
+      "payload": {
+        "sentence": "The flamingoes are {{blank}}.",
+        "options": ["pink", "white", "brown", "green"],
+        "answer": "pink",
+        "translation": "Flamingi są różowe."
+      }
+    },
+    {
+      "type": "sentence_order",
+      "conceptKey": "ask.favourite-colour",
+      "points": 15,
+      "payload": {
+        "prompt": "Jaki jest twój ulubiony kolor?",
+        "tokens": ["What's", "your", "favourite", "colour?"],
+        "solution": ["What's", "your", "favourite", "colour?"]
+      }
+    }
+  ]
+}

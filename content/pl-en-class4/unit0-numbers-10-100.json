@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-class4",
+  "unit": { "slug": "en-4-unit0", "title": "UNIT 0", "sortOrder": 1 },
+  "lesson": {
+    "slug": "4u0-numbers-10-100",
+    "title": "Numbers 10-100",
+    "icon": "💯",
+    "kind": "standard",
+    "sortOrder": 3,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "4u0-numbers-1-20",
+    "isPublished": true
+  },
+  "concepts": [
+    { "key": "num.10", "tags": ["🔟"], "terms": { "pl": [{ "text": "dziesięć", "pos": "other" }], "en": [{ "text": "ten", "pos": "other", "ipa": "/ten/" }] } },
+    { "key": "num.20", "tags": ["🔢"], "terms": { "pl": [{ "text": "dwadzieścia", "pos": "other" }], "en": [{ "text": "twenty", "pos": "other", "ipa": "/ˈtwenti/" }] } },
+    { "key": "num.21", "tags": ["🔢"], "terms": { "pl": [{ "text": "dwadzieścia jeden", "pos": "other" }], "en": [{ "text": "twenty-one", "pos": "other" }] } },
+    { "key": "num.30", "tags": ["🔢"], "terms": { "pl": [{ "text": "trzydzieści", "pos": "other" }], "en": [{ "text": "thirty", "pos": "other", "ipa": "/ˈθɜːti/" }] } },
+    { "key": "num.40", "tags": ["🔢"], "terms": { "pl": [{ "text": "czterdzieści", "pos": "other" }], "en": [{ "text": "forty", "pos": "other", "ipa": "/ˈfɔːti/" }] } },
+    { "key": "num.50", "tags": ["🔢"], "terms": { "pl": [{ "text": "pięćdziesiąt", "pos": "other" }], "en": [{ "text": "fifty", "pos": "other", "ipa": "/ˈfɪfti/" }] } },
+    { "key": "num.60", "tags": ["🔢"], "terms": { "pl": [{ "text": "sześćdziesiąt", "pos": "other" }], "en": [{ "text": "sixty", "pos": "other", "ipa": "/ˈsɪksti/" }] } },
+    { "key": "num.70", "tags": ["🔢"], "terms": { "pl": [{ "text": "siedemdziesiąt", "pos": "other" }], "en": [{ "text": "seventy", "pos": "other", "ipa": "/ˈsevənti/" }] } },
+    { "key": "num.80", "tags": ["🔢"], "terms": { "pl": [{ "text": "osiemdziesiąt", "pos": "other" }], "en": [{ "text": "eighty", "pos": "other", "ipa": "/ˈeɪti/" }] } },
+    { "key": "num.90", "tags": ["🔢"], "terms": { "pl": [{ "text": "dziewięćdziesiąt", "pos": "other" }], "en": [{ "text": "ninety", "pos": "other", "ipa": "/ˈnaɪnti/" }] } },
+    { "key": "num.100", "tags": ["💯"], "terms": { "pl": [{ "text": "sto", "pos": "other" }], "en": [{ "text": "a hundred", "pos": "other" }] } }
+  ],
+  "exercises": [
+    { "type": "translate_ab", "conceptKey": "num.10", "payload": { "prompt": "dziesięć", "accepted": ["ten"] } },
+    { "type": "translate_ab", "conceptKey": "num.20", "payload": { "prompt": "dwadzieścia", "accepted": ["twenty"] } },
+    { "type": "translate_ab", "conceptKey": "num.21", "payload": { "prompt": "dwadzieścia jeden", "accepted": ["twenty-one", "twenty one"] } },
+    { "type": "translate_ab", "conceptKey": "num.30", "payload": { "prompt": "trzydzieści", "accepted": ["thirty"] } },
+    { "type": "translate_ab", "conceptKey": "num.40", "payload": { "prompt": "czterdzieści", "accepted": ["forty"] } },
+    { "type": "translate_ab", "conceptKey": "num.50", "payload": { "prompt": "pięćdziesiąt", "accepted": ["fifty"] } },
+    { "type": "translate_ab", "conceptKey": "num.60", "payload": { "prompt": "sześćdziesiąt", "accepted": ["sixty"] } },
+    { "type": "translate_ab", "conceptKey": "num.70", "payload": { "prompt": "siedemdziesiąt", "accepted": ["seventy"] } },
+    { "type": "translate_ab", "conceptKey": "num.80", "payload": { "prompt": "osiemdziesiąt", "accepted": ["eighty"] } },
+    { "type": "translate_ab", "conceptKey": "num.90", "payload": { "prompt": "dziewięćdziesiąt", "accepted": ["ninety"] } },
+    { "type": "translate_ab", "conceptKey": "num.100", "payload": { "prompt": "sto", "accepted": ["a hundred", "hundred", "one hundred"] } },
+    { "type": "translate_ba", "conceptKey": "num.30", "payload": { "prompt": "thirty", "accepted": ["trzydzieści"] } },
+    { "type": "translate_ba", "conceptKey": "num.50", "payload": { "prompt": "fifty", "accepted": ["pięćdziesiąt"] } },
+    { "type": "translate_ba", "conceptKey": "num.70", "payload": { "prompt": "seventy", "accepted": ["siedemdziesiąt"] } },
+    { "type": "translate_ba", "conceptKey": "num.90", "payload": { "prompt": "ninety", "accepted": ["dziewięćdziesiąt"] } },
+    { "type": "translate_ba", "conceptKey": "num.100", "payload": { "prompt": "a hundred", "accepted": ["sto"] } },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz dziesiątki w pary.",
+        "pairs": [
+          { "a": "dziesięć", "b": "ten" },
+          { "a": "dwadzieścia", "b": "twenty" },
+          { "a": "trzydzieści", "b": "thirty" },
+          { "a": "czterdzieści", "b": "forty" },
+          { "a": "pięćdziesiąt", "b": "fifty" }
+        ]
+      }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz dziesiątki w pary.",
+        "pairs": [
+          { "a": "sześćdziesiąt", "b": "sixty" },
+          { "a": "siedemdziesiąt", "b": "seventy" },
+          { "a": "osiemdziesiąt", "b": "eighty" },
+          { "a": "dziewięćdziesiąt", "b": "ninety" },
+          { "a": "sto", "b": "a hundred" },
+          { "a": "dwadzieścia jeden", "b": "twenty-one" }
+        ]
+      }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj liczbę.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "trzydzieści", "b": "thirty" },
+          { "a": "czterdzieści", "b": "forty" },
+          { "a": "sześćdziesiąt", "b": "sixty" },
+          { "a": "osiemdziesiąt", "b": "eighty" },
+          { "a": "dziewięćdziesiąt", "b": "ninety" },
+          { "a": "sto", "b": "a hundred" }
+        ]
+      }
+    },
+    { "type": "listening", "conceptKey": "num.21", "points": 15, "payload": { "speak": "twenty-one", "lang": "en-GB", "accepted": ["twenty-one", "twenty one"] } },
+    { "type": "listening", "conceptKey": "num.50", "points": 15, "payload": { "speak": "fifty", "lang": "en-GB", "accepted": ["fifty"] } },
+    { "type": "listening", "conceptKey": "num.70", "points": 15, "payload": { "speak": "seventy", "lang": "en-GB", "accepted": ["seventy"] } },
+    { "type": "listening", "conceptKey": "num.100", "points": 15, "payload": { "speak": "a hundred", "lang": "en-GB", "accepted": ["a hundred", "hundred"] } },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "num.40",
+      "payload": {
+        "sentence": "40 = {{blank}}",
+        "options": ["forty", "fourteen"],
+        "answer": "forty",
+        "translation": "czterdzieści"
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": {
+        "sentence": "15 = {{blank}}",
+        "options": ["fifteen", "fifty"],
+        "answer": "fifteen",
+        "translation": "piętnaście"
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": {
+        "sentence": "13 = {{blank}}",
+        "options": ["thirteen", "thirty"],
+        "answer": "thirteen",
+        "translation": "trzynaście"
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "num.80",
+      "payload": {
+        "sentence": "80 = {{blank}}",
+        "options": ["eighty", "eighteen"],
+        "answer": "eighty",
+        "translation": "osiemdziesiąt"
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "num.20",
+      "payload": {
+        "sentence": "20 = {{blank}}",
+        "options": ["twenty", "twelve"],
+        "answer": "twenty",
+        "translation": "dwadzieścia"
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": {
+        "sentence": "16 = {{blank}}",
+        "options": ["sixteen", "sixty"],
+        "answer": "sixteen",
+        "translation": "szesnaście"
+      }
+    }
+  ]
+}

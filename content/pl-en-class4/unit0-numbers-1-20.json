@@ -1,0 +1,222 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-class4",
+  "unit": { "slug": "en-4-unit0", "title": "UNIT 0", "sortOrder": 1 },
+  "lesson": {
+    "slug": "4u0-numbers-1-20",
+    "title": "Numbers 1-20",
+    "icon": "🔢",
+    "kind": "standard",
+    "sortOrder": 2,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "4u0-how-do-you-spell-that",
+    "isPublished": true
+  },
+  "concepts": [
+    { "key": "num.1", "tags": ["1️⃣"], "terms": { "pl": [{ "text": "jeden", "pos": "other" }], "en": [{ "text": "one", "pos": "other", "ipa": "/wʌn/" }] } },
+    { "key": "num.2", "tags": ["2️⃣"], "terms": { "pl": [{ "text": "dwa", "pos": "other" }], "en": [{ "text": "two", "pos": "other", "ipa": "/tuː/" }] } },
+    { "key": "num.3", "tags": ["3️⃣"], "terms": { "pl": [{ "text": "trzy", "pos": "other" }], "en": [{ "text": "three", "pos": "other", "ipa": "/θriː/" }] } },
+    { "key": "num.4", "tags": ["4️⃣"], "terms": { "pl": [{ "text": "cztery", "pos": "other" }], "en": [{ "text": "four", "pos": "other", "ipa": "/fɔː/" }] } },
+    { "key": "num.5", "tags": ["5️⃣"], "terms": { "pl": [{ "text": "pięć", "pos": "other" }], "en": [{ "text": "five", "pos": "other", "ipa": "/faɪv/" }] } },
+    { "key": "num.6", "tags": ["6️⃣"], "terms": { "pl": [{ "text": "sześć", "pos": "other" }], "en": [{ "text": "six", "pos": "other", "ipa": "/sɪks/" }] } },
+    { "key": "num.7", "tags": ["7️⃣"], "terms": { "pl": [{ "text": "siedem", "pos": "other" }], "en": [{ "text": "seven", "pos": "other", "ipa": "/ˈsevən/" }] } },
+    { "key": "num.8", "tags": ["8️⃣"], "terms": { "pl": [{ "text": "osiem", "pos": "other" }], "en": [{ "text": "eight", "pos": "other", "ipa": "/eɪt/" }] } },
+    { "key": "num.9", "tags": ["9️⃣"], "terms": { "pl": [{ "text": "dziewięć", "pos": "other" }], "en": [{ "text": "nine", "pos": "other", "ipa": "/naɪn/" }] } },
+    { "key": "num.10", "tags": ["🔟"], "terms": { "pl": [{ "text": "dziesięć", "pos": "other" }], "en": [{ "text": "ten", "pos": "other", "ipa": "/ten/" }] } },
+    { "key": "num.11", "tags": ["🔢"], "terms": { "pl": [{ "text": "jedenaście", "pos": "other" }], "en": [{ "text": "eleven", "pos": "other", "ipa": "/ɪˈlevən/" }] } },
+    { "key": "num.12", "tags": ["🔢"], "terms": { "pl": [{ "text": "dwanaście", "pos": "other" }], "en": [{ "text": "twelve", "pos": "other", "ipa": "/twelv/" }] } },
+    { "key": "num.13", "tags": ["🔢"], "terms": { "pl": [{ "text": "trzynaście", "pos": "other" }], "en": [{ "text": "thirteen", "pos": "other", "ipa": "/ˌθɜːˈtiːn/" }] } },
+    { "key": "num.14", "tags": ["🔢"], "terms": { "pl": [{ "text": "czternaście", "pos": "other" }], "en": [{ "text": "fourteen", "pos": "other", "ipa": "/ˌfɔːˈtiːn/" }] } },
+    { "key": "num.15", "tags": ["🔢"], "terms": { "pl": [{ "text": "piętnaście", "pos": "other" }], "en": [{ "text": "fifteen", "pos": "other", "ipa": "/ˌfɪfˈtiːn/" }] } },
+    { "key": "num.16", "tags": ["🔢"], "terms": { "pl": [{ "text": "szesnaście", "pos": "other" }], "en": [{ "text": "sixteen", "pos": "other", "ipa": "/ˌsɪkˈstiːn/" }] } },
+    { "key": "num.17", "tags": ["🔢"], "terms": { "pl": [{ "text": "siedemnaście", "pos": "other" }], "en": [{ "text": "seventeen", "pos": "other", "ipa": "/ˌsevənˈtiːn/" }] } },
+    { "key": "num.18", "tags": ["🔢"], "terms": { "pl": [{ "text": "osiemnaście", "pos": "other" }], "en": [{ "text": "eighteen", "pos": "other", "ipa": "/ˌeɪˈtiːn/" }] } },
+    { "key": "num.19", "tags": ["🔢"], "terms": { "pl": [{ "text": "dziewiętnaście", "pos": "other" }], "en": [{ "text": "nineteen", "pos": "other", "ipa": "/ˌnaɪnˈtiːn/" }] } },
+    { "key": "num.20", "tags": ["🔢"], "terms": { "pl": [{ "text": "dwadzieścia", "pos": "other" }], "en": [{ "text": "twenty", "pos": "other", "ipa": "/ˈtwenti/" }] } }
+  ],
+  "exercises": [
+    { "type": "translate_ab", "conceptKey": "num.1", "payload": { "prompt": "jeden", "accepted": ["one"] } },
+    { "type": "translate_ab", "conceptKey": "num.2", "payload": { "prompt": "dwa", "accepted": ["two"] } },
+    { "type": "translate_ab", "conceptKey": "num.3", "payload": { "prompt": "trzy", "accepted": ["three"] } },
+    { "type": "translate_ab", "conceptKey": "num.4", "payload": { "prompt": "cztery", "accepted": ["four"] } },
+    { "type": "translate_ab", "conceptKey": "num.5", "payload": { "prompt": "pięć", "accepted": ["five"] } },
+    { "type": "translate_ab", "conceptKey": "num.6", "payload": { "prompt": "sześć", "accepted": ["six"] } },
+    { "type": "translate_ab", "conceptKey": "num.7", "payload": { "prompt": "siedem", "accepted": ["seven"] } },
+    { "type": "translate_ab", "conceptKey": "num.8", "payload": { "prompt": "osiem", "accepted": ["eight"] } },
+    { "type": "translate_ab", "conceptKey": "num.9", "payload": { "prompt": "dziewięć", "accepted": ["nine"] } },
+    { "type": "translate_ab", "conceptKey": "num.10", "payload": { "prompt": "dziesięć", "accepted": ["ten"] } },
+    { "type": "translate_ab", "conceptKey": "num.11", "payload": { "prompt": "jedenaście", "accepted": ["eleven"] } },
+    { "type": "translate_ab", "conceptKey": "num.12", "payload": { "prompt": "dwanaście", "accepted": ["twelve"] } },
+    { "type": "translate_ab", "conceptKey": "num.13", "payload": { "prompt": "trzynaście", "accepted": ["thirteen"] } },
+    { "type": "translate_ab", "conceptKey": "num.14", "payload": { "prompt": "czternaście", "accepted": ["fourteen"] } },
+    { "type": "translate_ab", "conceptKey": "num.15", "payload": { "prompt": "piętnaście", "accepted": ["fifteen"] } },
+    { "type": "translate_ab", "conceptKey": "num.16", "payload": { "prompt": "szesnaście", "accepted": ["sixteen"] } },
+    { "type": "translate_ab", "conceptKey": "num.17", "payload": { "prompt": "siedemnaście", "accepted": ["seventeen"] } },
+    { "type": "translate_ab", "conceptKey": "num.18", "payload": { "prompt": "osiemnaście", "accepted": ["eighteen"] } },
+    { "type": "translate_ab", "conceptKey": "num.19", "payload": { "prompt": "dziewiętnaście", "accepted": ["nineteen"] } },
+    { "type": "translate_ab", "conceptKey": "num.20", "payload": { "prompt": "dwadzieścia", "accepted": ["twenty"] } },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz liczby 1–7 w pary.",
+        "pairs": [
+          { "a": "jeden", "b": "one" },
+          { "a": "dwa", "b": "two" },
+          { "a": "trzy", "b": "three" },
+          { "a": "cztery", "b": "four" },
+          { "a": "pięć", "b": "five" },
+          { "a": "sześć", "b": "six" },
+          { "a": "siedem", "b": "seven" }
+        ]
+      }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz liczby 8–14 w pary.",
+        "pairs": [
+          { "a": "osiem", "b": "eight" },
+          { "a": "dziewięć", "b": "nine" },
+          { "a": "dziesięć", "b": "ten" },
+          { "a": "jedenaście", "b": "eleven" },
+          { "a": "dwanaście", "b": "twelve" },
+          { "a": "trzynaście", "b": "thirteen" },
+          { "a": "czternaście", "b": "fourteen" }
+        ]
+      }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz liczby 15–20 w pary.",
+        "pairs": [
+          { "a": "piętnaście", "b": "fifteen" },
+          { "a": "szesnaście", "b": "sixteen" },
+          { "a": "siedemnaście", "b": "seventeen" },
+          { "a": "osiemnaście", "b": "eighteen" },
+          { "a": "dziewiętnaście", "b": "nineteen" },
+          { "a": "dwadzieścia", "b": "twenty" }
+        ]
+      }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj liczbę.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "jeden", "b": "one" },
+          { "a": "trzy", "b": "three" },
+          { "a": "pięć", "b": "five" },
+          { "a": "siedem", "b": "seven" },
+          { "a": "dziewięć", "b": "nine" },
+          { "a": "dziesięć", "b": "ten" }
+        ]
+      }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj liczbę.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "dwanaście", "b": "twelve" },
+          { "a": "czternaście", "b": "fourteen" },
+          { "a": "szesnaście", "b": "sixteen" },
+          { "a": "osiemnaście", "b": "eighteen" },
+          { "a": "dwadzieścia", "b": "twenty" }
+        ]
+      }
+    },
+    { "type": "listening", "conceptKey": "num.3", "points": 15, "payload": { "speak": "three", "lang": "en-GB", "accepted": ["three"] } },
+    { "type": "listening", "conceptKey": "num.8", "points": 15, "payload": { "speak": "eight", "lang": "en-GB", "accepted": ["eight"] } },
+    { "type": "listening", "conceptKey": "num.13", "points": 15, "payload": { "speak": "thirteen", "lang": "en-GB", "accepted": ["thirteen"] } },
+    { "type": "listening", "conceptKey": "num.19", "points": 15, "payload": { "speak": "nineteen", "lang": "en-GB", "accepted": ["nineteen"] } },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "num.12",
+      "payload": {
+        "sentence": "six + six = {{blank}}",
+        "options": ["twelve", "eleven", "ten", "thirteen"],
+        "answer": "twelve",
+        "translation": "sześć + sześć = dwanaście"
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "num.15",
+      "payload": {
+        "sentence": "eighteen - three = {{blank}}",
+        "options": ["fifteen", "sixteen", "fourteen", "thirteen"],
+        "answer": "fifteen",
+        "translation": "osiemnaście − trzy = piętnaście"
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "num.13",
+      "payload": {
+        "sentence": "two + eleven = {{blank}}",
+        "options": ["thirteen", "twelve", "fourteen", "eleven"],
+        "answer": "thirteen",
+        "translation": "dwa + jedenaście = trzynaście"
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "num.11",
+      "payload": {
+        "sentence": "twenty - nine = {{blank}}",
+        "options": ["eleven", "twelve", "nine", "ten"],
+        "answer": "eleven",
+        "translation": "dwadzieścia − dziewięć = jedenaście"
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "num.14",
+      "payload": {
+        "sentence": "seventeen - three = {{blank}}",
+        "options": ["fourteen", "thirteen", "fifteen", "twelve"],
+        "answer": "fourteen",
+        "translation": "siedemnaście − trzy = czternaście"
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "num.9",
+      "payload": {
+        "sentence": "two + seven = {{blank}}",
+        "options": ["nine", "seven", "eight", "ten"],
+        "answer": "nine",
+        "translation": "dwa + siedem = dziewięć"
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "num.7",
+      "payload": {
+        "sentence": "five + two = {{blank}}",
+        "options": ["seven", "five", "six", "eight"],
+        "answer": "seven",
+        "translation": "pięć + dwa = siedem"
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "num.4",
+      "payload": {
+        "sentence": "sixteen - twelve = {{blank}}",
+        "options": ["four", "five", "three", "six"],
+        "answer": "four",
+        "translation": "szesnaście − dwanaście = cztery"
+      }
+    }
+  ]
+}
