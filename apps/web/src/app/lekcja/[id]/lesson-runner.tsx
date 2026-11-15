@@ -25,6 +25,7 @@ export function LessonRunner({
   lessonId,
   courseSlug,
   exercises,
+  sourceLang,
   targetLang,
   badgeNames,
   stage,
@@ -33,6 +34,8 @@ export function LessonRunner({
   lessonId: string;
   courseSlug: string;
   exercises: Exercise[];
+  /** Język dziecka. Po nim czytamy polecenie w `translate_ab` — tam słowo jest po polsku. */
+  sourceLang: string;
   targetLang: string;
   /** Kod odznaki -> nazwa z ikoną. Dziecko ma zobaczyć „Pierwszy krok”, nie `first_lesson`. */
   badgeNames: Record<string, string>;
@@ -149,6 +152,13 @@ export function LessonRunner({
 
   const locked = phase !== "answering";
 
+  // O tym, czy tłumaczenie jest wyborem z listy, decyduje payload, nie typ zadania: ten sam
+  // `translate_ab` raz ma `options` (dodane przez panel, gdy w lekcji jest z czego wybierać),
+  // a raz nie. Bez tego sprawdzenia zadanie bez opcji pokazywało samo słowo i pustkę pod nim —
+  // dziecko nie miało czym odpowiedzieć. Baza przyjmuje oba warianty (`text` albo `choice`).
+  const options = exercise.payload.options;
+  const hasOptions = Array.isArray(options) && options.length >= 2;
+
   return (
     <div className="flex flex-1 flex-col gap-6">
       <div className="flex items-center gap-3">
@@ -220,7 +230,7 @@ export function LessonRunner({
         />
       ) : exercise.type === "sentence_order" ? (
         <SentenceOrderExercise exercise={exercise} locked={locked} onAnswer={handleAnswer} />
-      ) : exercise.type === "translate_ab" || exercise.type === "fill_blank_choice" ? (
+      ) : exercise.type === "fill_blank_choice" || (exercise.type === "translate_ab" && hasOptions) ? (
         <ChoiceExercise
           exercise={exercise}
           locked={locked}
@@ -229,7 +239,14 @@ export function LessonRunner({
           result={phase === "feedback" && verdict ? (verdict.correct ? "correct" : "wrong") : null}
         />
       ) : (
-        <TypingExercise exercise={exercise} locked={locked} onAnswer={handleAnswer} promptLang={targetLang} />
+        <TypingExercise
+          exercise={exercise}
+          locked={locked}
+          onAnswer={handleAnswer}
+          // W `translate_ab` słowo nad polem jest w języku dziecka, w pozostałych w uczonym —
+          // głośnik czytający „czarny" po angielsku brzmi jak awaria.
+          promptLang={exercise.type === "translate_ab" ? sourceLang : targetLang}
+        />
       )}
 
       {error && <p className="msg-error">{error}</p>}

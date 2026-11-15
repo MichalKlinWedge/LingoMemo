@@ -86,6 +86,7 @@ async function Lesson({
       lessonId={id}
       courseSlug={course.slug}
       exercises={(exercises ?? []) as unknown as Exercise[]}
+      sourceLang={tts(course.source_lang)}
       targetLang={tts(course.target_lang)}
       badgeNames={badgeNames}
       stage={stage}
