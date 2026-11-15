@@ -432,3 +432,22 @@ Skutki uboczne, o których trzeba wiedzieć:
 - **Testy silnika lekcji ustawiają sufit 3 i wysoką stabilność.** `lessons`, `answers`
   i `skip_exercise` sprawdzają ocenianie i etapy, nie dobór trudności — bez tego ustawienia
   wybierałyby zadanie zależne od tego, które uuid wypadnie niżej.
+
+### Łatwy wariant zdania (2026-11-15)
+
+Zadanie „wpisz całe zdanie" jest zadaniem poziomu 3, więc na poziomie 1 po prostu znikało
+z lekcji — dziecko nie ćwiczyło zdań w ogóle. Zamiast chować takie zadanie, dorabiamy mu łatwy
+odpowiednik: tę samą treść dziecko układa z klocków, wśród których są słowa niepasujące.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Typ łatwego wariantu | istniejąca rozsypanka `sentence_order` z dystraktorami | nie trzeba nowego typu zadania, komponentu ani gałęzi w ocenianiu — ocena i tak porównuje złożone zdanie z `solution` | nowy typ `sentence_choice` |
+| Liczba klocków | więcej niż słów w zdaniu (walidacja wymagała dotąd równości) | bez niepasujących słów wybór polega na zużyciu wszystkiego, a nie na przeczytaniu zdania | tyle klocków, ile słów |
+| Skąd dystraktory | słówka tego samego działu, w języku odpowiedzi, losowane RAZ przy zakładaniu zadania | słowa z tej samej bajki wymagają przeczytania zdania; losowanie przy każdym wydaniu dałoby co wejście inne zadanie, czyli ćwiczenie zgadywania | losowanie przy wydawaniu zadania; słowa z całego kursu |
+| Poziom rozsypanki | 1 (klikanie) | dziecko nie pisze ani jednej litery, a o to chodzi w poziomie 1 | zostawienie poziomu 2 — wtedy łatwy wariant też znikałby na poziomie 1 |
+| Kto je tworzy | `build_sentence_order(lesson)` wołana wyzwalaczem po wstawieniu zadań + jednorazowo dla treści już w bazie | import wstawia zadania jednym poleceniem i nie musi nic o tym wiedzieć; nowa lekcja dostaje łatwe warianty sama | dopisywanie wariantów ręcznie w plikach treści (dziś 86 zdań); generowanie w locie przy wydawaniu lekcji (zadanie bez wiersza nie ma id, więc nie ma czego zapisać w próbach) |
+| Gotowe zdanie | przycisk „Sprawdź" aktywny po dwóch klockach, nie po zużyciu wszystkich | przy dystraktorach „wszystkie klocki" znaczyłoby „zawsze źle" | wymaganie zużycia wszystkich klocków |
+
+Do poprawionej treści (zmiana zdania w istniejącym zadaniu) wariantu nie dorabia nic — wyzwalacz
+działa przy wstawianiu, nie przy edycji. Od tego jest `admin_add_sentence_order(lesson)`; na razie
+bez przycisku w panelu.

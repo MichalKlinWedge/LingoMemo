@@ -42,7 +42,8 @@ function Token({
  * a myszą i klawiaturą działa tak samo.
  *
  * Te same słowa mogą wystąpić dwa razy („the cat and the dog”), więc klocki rozróżniamy po
- * pozycji w puli, a nie po treści.
+ * pozycji w puli, a nie po treści. Część klocków bywa zbędna — w łatwym wariancie zdania do puli
+ * dochodzą słowa niepasujące, żeby wybór wymagał przeczytania zdania, a nie zużycia wszystkiego.
  */
 export function SentenceOrderExercise({ exercise, locked, onAnswer }: ExerciseProps) {
   const tokens = list(exercise.payload.tokens);
@@ -58,7 +59,9 @@ export function SentenceOrderExercise({ exercise, locked, onAnswer }: ExercisePr
     setOrder(order.filter((_, at) => at !== position));
   };
 
-  const complete = order.length === tokens.length;
+  // W łatwym wariancie zdania wśród klocków są słowa niepasujące, więc zdanie jest gotowe
+  // wtedy, gdy dziecko tak uzna — nie wtedy, gdy zużyje wszystkie klocki.
+  const complete = order.length >= 2;
 
   return (
     <div className="flex flex-col gap-5">

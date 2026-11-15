@@ -201,11 +201,19 @@ const exercise = z.discriminatedUnion('type', [
         tokens: z.array(nonEmpty).min(2).max(12),
         solution: z.array(nonEmpty).min(2).max(12),
       })
-      // Rozsypanka musi dać się ułożyć dokładnie z tych klocków, które dostaje dziecko.
+      // Zdanie musi dać się ułożyć z klocków, które dostaje dziecko. Klocków wolno dać więcej
+      // niż słów w zdaniu — nadmiarowe to dystraktory, czyli cały sens łatwego wariantu.
       .refine(
-        (value) =>
-          [...value.tokens].sort().join('\u0000') === [...value.solution].sort().join('\u0000'),
-        { path: ['solution'], message: 'rozwiązanie musi składać się dokładnie z podanych słów' },
+        (value) => {
+          const left = [...value.tokens];
+          return value.solution.every((word) => {
+            const at = left.indexOf(word);
+            if (at === -1) return false;
+            left.splice(at, 1);
+            return true;
+          });
+        },
+        { path: ['solution'], message: 'zdanie musi dać się ułożyć z podanych słów' },
       ),
   }),
 ]);

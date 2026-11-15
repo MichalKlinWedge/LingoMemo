@@ -131,14 +131,14 @@ isOneToOne: false
                   ]
                 },"exercises": {
                   Row: {
-                    "concept_id": string | null,"id": string,"is_active": boolean,"lesson_id": string,"level": number | null,"payload": NonNullable<Json>,"points": number,"sort_order": number,"type": Database["public"]['Enums']["exercise_type"]
+                    "concept_id": string | null,"easy_for": string | null,"id": string,"is_active": boolean,"lesson_id": string,"level": number | null,"payload": NonNullable<Json>,"points": number,"sort_order": number,"type": Database["public"]['Enums']["exercise_type"]
                   }
                   ComputedFields: never
                   Insert: {
-                    "concept_id"?: string | null,"id"?: string,"is_active"?: boolean,"lesson_id": string,"level"?: number | null,"payload": NonNullable<Json>,"points"?: number,"sort_order": number,"type": Database["public"]['Enums']["exercise_type"]
+                    "concept_id"?: string | null,"easy_for"?: string | null,"id"?: string,"is_active"?: boolean,"lesson_id": string,"level"?: number | null,"payload": NonNullable<Json>,"points"?: number,"sort_order": number,"type": Database["public"]['Enums']["exercise_type"]
                   }
                   Update: {
-                    "concept_id"?: string | null,"id"?: string,"is_active"?: boolean,"lesson_id"?: string,"level"?: number | null,"payload"?: NonNullable<Json>,"points"?: number,"sort_order"?: number,"type"?: Database["public"]['Enums']["exercise_type"]
+                    "concept_id"?: string | null,"easy_for"?: string | null,"id"?: string,"is_active"?: boolean,"lesson_id"?: string,"level"?: number | null,"payload"?: NonNullable<Json>,"points"?: number,"sort_order"?: number,"type"?: Database["public"]['Enums']["exercise_type"]
                   }
                   Relationships: [
                     {
@@ -146,6 +146,12 @@ isOneToOne: false
       columns: ["concept_id"]
 isOneToOne: false
       referencedRelation: "concepts"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "exercises_easy_for_fkey"
+      columns: ["easy_for"]
+isOneToOne: false
+      referencedRelation: "exercises"
       referencedColumns: ["id"]
     },{
       foreignKeyName: "exercises_lesson_id_fkey"
@@ -235,14 +241,14 @@ isOneToOne: false
                   ]
                 },"lesson_sessions": {
                   Row: {
-                    "correct_count": number,"finished_at": string | null,"id": string,"idempotency_key": string,"lesson_id": string,"score": number | null,"stage_nr": number,"started_at": string,"total_exercises": number,"user_id": string,"xp_awarded": number
+                    "correct_count": number,"exercise_ids": (string)[],"finished_at": string | null,"id": string,"idempotency_key": string,"lesson_id": string,"score": number | null,"stage_nr": number,"started_at": string,"total_exercises": number,"user_id": string,"xp_awarded": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "correct_count"?: number,"finished_at"?: string | null,"id"?: string,"idempotency_key": string,"lesson_id": string,"score"?: number | null,"stage_nr"?: number,"started_at"?: string,"total_exercises"?: number,"user_id": string,"xp_awarded"?: number
+                    "correct_count"?: number,"exercise_ids"?: (string)[],"finished_at"?: string | null,"id"?: string,"idempotency_key": string,"lesson_id": string,"score"?: number | null,"stage_nr"?: number,"started_at"?: string,"total_exercises"?: number,"user_id": string,"xp_awarded"?: number
                   }
                   Update: {
-                    "correct_count"?: number,"finished_at"?: string | null,"id"?: string,"idempotency_key"?: string,"lesson_id"?: string,"score"?: number | null,"stage_nr"?: number,"started_at"?: string,"total_exercises"?: number,"user_id"?: string,"xp_awarded"?: number
+                    "correct_count"?: number,"exercise_ids"?: (string)[],"finished_at"?: string | null,"id"?: string,"idempotency_key"?: string,"lesson_id"?: string,"score"?: number | null,"stage_nr"?: number,"started_at"?: string,"total_exercises"?: number,"user_id"?: string,"xp_awarded"?: number
                   }
                   Relationships: [
                     {
@@ -593,7 +599,10 @@ isOneToOne: false
                 }
           }
           Functions: {
-            "admin_add_word":
+            "admin_add_sentence_order":
+{ Args: { "p_lesson": string }; Returns: number
+                           },
+"admin_add_word":
 { Args: { "p_key": string,"p_lesson": string,"p_source": string,"p_tags"?: (string)[],"p_target": string }; Returns: Json
                            },
 "admin_delete_course":
@@ -625,6 +634,9 @@ isOneToOne: false
                            },
 "bootstrap_admin":
 { Args: { "p_email": string }; Returns: boolean
+                           },
+"build_sentence_order":
+{ Args: { "p_lesson": string }; Returns: number
                            },
 "concept_ramp_level":
 { Args: { "p_stability": number }; Returns: number

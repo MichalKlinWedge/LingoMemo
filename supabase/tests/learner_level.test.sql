@@ -39,8 +39,8 @@ select is(
 
 select is(public.default_exercise_level('sentence_order',
             jsonb_build_object('tokens', jsonb_build_array('a', 'b'))),
-          2::smallint,
-          'układanie zdania z kafelków jest trudniejsze niż wskazanie');
+          1::smallint,
+          'układanie zdania z klocków to klikanie, nie pisanie');
 
 select is(
   public.default_exercise_level('translate_ba',

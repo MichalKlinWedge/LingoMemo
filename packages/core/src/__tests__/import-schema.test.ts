@@ -95,7 +95,23 @@ describe('schemat importu', () => {
     const result = lessonImportSchema.safeParse(data);
     expect(result.success).toBe(false);
     if (result.success) return;
-    expect(formatIssues(result.error).join(' ')).toContain('dokładnie z podanych słów');
+    expect(formatIssues(result.error).join(' ')).toContain('ułożyć z podanych słów');
+  });
+
+  it('przyjmuje rozsypankę z dodatkowymi słowami, bo to dystraktory', () => {
+    const data = {
+      ...minimalLesson(),
+      exercises: [
+        {
+          type: 'sentence_order' as const,
+          payload: {
+            tokens: ['I', 'have', 'a', 'cat', 'dog', 'blue'],
+            solution: ['I', 'have', 'a', 'cat'],
+          },
+        },
+      ],
+    };
+    expect(lessonImportSchema.safeParse(data).success).toBe(true);
   });
 
   it('nie pozwala na powtórzone słowa po jednej stronie par', () => {
