@@ -268,7 +268,12 @@ h2 {
   }
 
   /* --- pasek u góry: ten sam na każdej stronie --- */
+  /* Przyklejony: punkty i wyjście są pod ręką także w połowie długiej lekcji.
+     `z-index` nad przyklejonym panelem odpowiedzi z lekcji, który stoi na dole. */
   .app-bar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
     border-bottom: 2px solid var(--line);
     background: var(--surface);
   }
