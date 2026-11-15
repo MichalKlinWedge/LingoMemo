@@ -23,6 +23,18 @@ export const metadata: Metadata = {
   title: "LingoMemo",
   description: "Nauka słówek i zwrotów dla dzieci",
   applicationName: "LingoMemo",
+  // Adres bazowy dla `opengraph-image.png`: komunikator potrzebuje pełnego adresu obrazka,
+  // a nie ścieżki. Bez tego Next wstawia localhost i miniatura nie pokazuje się nigdzie.
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  // Miniatura linku w komunikatorze — zaproszenia rodzic dostaje właśnie tą drogą.
+  // Sam obrazek bierze się z pliku `opengraph-image.png`, nie trzeba go tu wymieniać.
+  openGraph: {
+    type: "website",
+    locale: "pl_PL",
+    siteName: "LingoMemo",
+    title: "LingoMemo — nauka słówek",
+    description: "Nauka słówek i zwrotów dla dzieci",
+  },
   // Ikony wskazane wprost, a nie przez pliki `icon.*` w katalogu `app`: wszystkie warianty
   // leżą razem w `public/ikony` i powstają z jednego wzorca (`node scripts/icons.mjs`).
   icons: {

@@ -23,6 +23,7 @@
     "gen": "npm run gen --workspace packages/db",
     "gen:fsrs": "node scripts/fsrs-fixtures.mjs",
     "gen:icons": "node scripts/icons.mjs",
+    "gen:og": "node scripts/og-image.mjs",
     "seed:dev": "npm run seed --workspace tools/seed-dev --",
     "import:lesson": "npm run import --workspace tools/import-lesson --"
   },
