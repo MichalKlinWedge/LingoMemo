@@ -147,6 +147,11 @@ Wyszło też, że test lekcji nie znał nowych typów zadań (odpowiadał na nie
 a test powtórek filtrował zadania po losowanym typie — czyli potrafił paść bez żadnej zmiany
 w kodzie. Oba poprawione; trzy przebiegi pod rząd zielone.
 
+**Dopisane później (2026-11-15):** dziewiąty typ — `image_choice`, czyli wybór obrazka (słowo
+u góry, od dwóch do czterech obrazków pod spodem). Pierwsze zadanie, które dziecko zrobi, nie
+czytając po angielsku. Obrazki idą z bucketu `lesson-media` jako ścieżki, a nie adresy.
+Szczegóły w `docs/DECYZJE.md`.
+
 ---
 
 ## Etap 6 — panel administratora

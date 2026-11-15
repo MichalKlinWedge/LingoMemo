@@ -132,6 +132,17 @@
       }
     },
     {
+      "type": "image_choice",
+      "conceptKey": "food.apple",
+      "payload": {
+        "prompt": "apple",
+        "speak": "apple",
+        "lang": "en-GB",
+        "options": ["2026/jablko.png", "2026/gruszka.png", "2026/banan.png"],
+        "answer": "2026/jablko.png"
+      }
+    },
+    {
       "type": "fill_blank_choice",
       "conceptKey": "food.banana",
       "payload": {

@@ -277,3 +277,26 @@ niemym głośnikiem, czyli czymś, co wygląda jak awaria przeglądarki.
   odpowiedzi: rozwiązaniem jest przyporządkowanie, a tego w wydanym payloadzie nie ma — obie
   kolumny są tasowane osobno. Tak samo działa zadanie `listening`, które od początku wysyła
   słowo do wymówienia.
+
+## Wybór obrazka (2026-11-15)
+
+Dziewiąty typ zadania: `image_choice`. Na górze słowo, pod nim od dwóch do czterech obrazków —
+dziecko dotyka tego, który pokazuje słowo. To jedyne zadanie, które da się zrobić, nie czytając
+po angielsku: odpowiedzią jest obrazek, nie napis.
+
+| Obszar | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Co stoi w payloadzie | ścieżka w buckecie (`2026/pies.png`) | adres zmienia się razem z projektem w chmurze, ścieżka nie; panel „Obrazki" daje dokładnie ją do skopiowania | pełny adres publiczny w pliku lekcji |
+| Porównanie odpowiedzi | znak w znak, bez `normalize_answer` | normalizacja zjada kropki i ukośniki, więc `pies.png` i `pies-png` zrobiłyby się jednym plikiem; to nie jest tekst pisany przez dziecko | wspólna gałąź z `fill_blank_choice` |
+| Liczba obrazków | najwyżej 4 | kafelek z obrazkiem jest duży; na telefonie w pionie więcej niż dwa rzędy znaczy przewijanie, czyli wybór w ciemno | sześć, jak w wyborze z listy |
+| Opis dla czytnika ekranu | „Obrazek 1", „Obrazek 2" | nazwa pliku zwykle zdradza odpowiedź, a czytnik przeczytałby ją na głos razem z resztą kafelków | `alt` z nazwą pliku albo ze słowem |
+| Odpowiedź po błędzie | podświetlony właściwy kafelek, bez paska z tekstem | ścieżka pliku nie mówi dziecku nic; pasek „Poprawnie: 2026/pies.png" byłby szumem | pokazanie nazwy pliku jak przy pozostałych typach |
+| Kolejność obrazków | taka jak w pliku lekcji | tak samo działa `fill_blank_choice`; rozwiązaniem jest `answer`, nie pozycja, więc tasowanie nic nie chroni | tasowanie w `get_lesson_exercises` jak przy parach |
+
+`speak` i `lang` są opcjonalne. Gdy są, nad obrazkami staje głośnik i zadanie robi się
+„posłuchaj i wskaż" — ten sam komponent, inne wejście dla dziecka, które jeszcze nie czyta.
+
+- **Walidacja pilnuje powtórzonych obrazków.** Dwa razy ten sam plik to dwie poprawne
+  odpowiedzi, z których jedna liczy się jako błąd, a na ekranie nie widać tego wcale.
+- **`get_lesson_exercises` zostaje bez zmian.** Gałąź `else` i tak wycina `answer`, a `prompt`
+  z `options` mają dojechać do przeglądarki — nie ma tu czego dopisywać.
