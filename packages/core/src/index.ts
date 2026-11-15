@@ -6,5 +6,6 @@
 export * from './exercises.ts';
 export * from './import-schema.ts';
 export * from './format.ts';
+export * from './order.ts';
 export * from './scoring.ts';
 export * from './srs.ts';

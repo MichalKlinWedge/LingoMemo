@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { startTransition, useActionState, useState } from "react";
 
+import { moveItem, wouldMove } from "@lingomemo/core";
+
 import { reorderLessonsAction } from "@/app/admin/kursy/actions";
 import { type FormState, Status } from "@/components/forms";
 
@@ -16,13 +18,6 @@ export type LessonRow = {
   words: number;
 };
 
-function przestaw(lekcje: LessonRow[], skad: number, dokad: number): LessonRow[] {
-  if (skad === dokad || dokad < 0 || dokad >= lekcje.length) return lekcje;
-  const kopia = [...lekcje];
-  const [wyjeta] = kopia.splice(skad, 1);
-  kopia.splice(dokad, 0, wyjeta!);
-  return kopia;
-}
 
 /**
  * Lista lekcji z przestawianiem.
@@ -65,8 +60,7 @@ export function LessonOrder({
     const dokad = event.key === "ArrowUp" ? index - 1 : event.key === "ArrowDown" ? index + 1 : null;
     if (dokad === null) return;
     event.preventDefault();
-    const nowa = przestaw(kolejnosc, index, dokad);
-    if (nowa !== kolejnosc) zapisz(nowa);
+    if (wouldMove(kolejnosc, index, dokad)) zapisz(moveItem(kolejnosc, index, dokad));
   }
 
   return (
@@ -79,9 +73,9 @@ export function LessonOrder({
             onDrop={(event) => {
               event.preventDefault();
               if (ciagniete === null) return;
-              const nowa = przestaw(kolejnosc, ciagniete, index);
+              const skad = ciagniete;
               setCiagniete(null);
-              if (nowa !== kolejnosc) zapisz(nowa);
+              if (wouldMove(kolejnosc, skad, index)) zapisz(moveItem(kolejnosc, skad, index));
             }}
             className={`card flex flex-wrap items-center gap-3 p-4 ${ciagniete === index ? "opacity-50" : ""}`}
           >
