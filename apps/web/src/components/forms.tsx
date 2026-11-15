@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode, useEffect, useId, useRef, useState } from "react";
+import { createContext, type ReactNode, useContext, useEffect, useId, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 
 import { slugify } from "@lingomemo/core";
@@ -74,6 +74,12 @@ function odtworz(form: HTMLFormElement, zapamietane: Wpisane[]) {
  *
  * Każdy formularz w panelu administratora używa tego komponentu zamiast gołego `<form>`.
  */
+/**
+ * Ostatni udany zapis albo `null`. Pola trzymane w stanie Reacta nie dają się wyczyścić przez
+ * `form.reset()`, więc dowiadują się o udanym zapisie stąd — po zmianie tożsamości obiektu.
+ */
+const UdanyZapis = createContext<FormState | null>(null);
+
 export function Form({
   action,
   state,
@@ -103,16 +109,18 @@ export function Form({
   }, [state]);
 
   return (
-    <form
-      ref={ref}
-      action={action}
-      className={className}
-      onSubmit={(event) => {
-        zapamietane.current = zapamietaj(event.currentTarget);
-      }}
-    >
-      {children}
-    </form>
+    <UdanyZapis.Provider value={state.ok && !state.error ? state : null}>
+      <form
+        ref={ref}
+        action={action}
+        className={className}
+        onSubmit={(event) => {
+          zapamietane.current = zapamietaj(event.currentTarget);
+        }}
+      >
+        {children}
+      </form>
+    </UdanyZapis.Provider>
   );
 }
 
@@ -143,6 +151,9 @@ export function Field({
   defaultValue,
   autoComplete,
   placeholder,
+  min,
+  max,
+  step,
 }: {
   label: string;
   name: string;
@@ -151,6 +162,11 @@ export function Field({
   defaultValue?: string;
   autoComplete?: string;
   placeholder?: string;
+  /** Dla pól liczbowych. Bez `step` przeglądarka przyjmuje wyłącznie liczby całkowite
+   *  i blokuje wysłanie formularza własnym dymkiem, zanim akcja w ogóle ruszy. */
+  min?: string;
+  max?: string;
+  step?: string;
 }) {
   return (
     <label className="flex flex-col gap-2">
@@ -163,6 +179,9 @@ export function Field({
         defaultValue={defaultValue}
         autoComplete={autoComplete}
         placeholder={placeholder}
+        min={min}
+        max={max}
+        step={step}
       />
     </label>
   );
@@ -194,6 +213,22 @@ export function TitleAndSlug({
   const [wlasny, setWlasny] = useState(defaultSlug !== "");
   const titleId = useId();
   const slugId = useId();
+
+  // Po udanym dodaniu formularz „nowego czegoś" czyści się cały, więc te dwa pola też.
+  // Formularz edycji ma wartości w `defaultTitle` — tam czyszczenie skasowałoby nazwę wpisaną
+  // przed chwilą, zanim strona przeładuje dane z bazy. Stan poprawiamy w trakcie renderowania,
+  // nie w efekcie: efekt z `setState` to kaskada renderów, której linter słusznie zabrania.
+  const nowy = defaultTitle === "" && defaultSlug === "";
+  const udany = useContext(UdanyZapis);
+  const [poprzedni, setPoprzedni] = useState(udany);
+  if (udany !== poprzedni) {
+    setPoprzedni(udany);
+    if (udany && nowy) {
+      setTitle("");
+      setSlug("");
+      setWlasny(false);
+    }
+  }
 
   return (
     <div className="grid gap-4 sm:grid-cols-2">
