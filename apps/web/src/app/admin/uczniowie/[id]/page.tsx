@@ -62,7 +62,9 @@ async function Student({ params }: { params: PageProps<"/admin/uczniowie/[id]">[
   // Stan dziennej puli podpowiedzi. `hints_left()` liczy dla pytającego, a tu pyta dorosły
   // o cudze konto — stąd osobne `hint_status`.
   const { data: hints } = await supabase.rpc("hint_status", { p_user: id });
-  const hintState = hints as { limit: number; usedToday: number; left: number; today: string } | null;
+  const hintState = hints as
+    | { limit: number; bonus: number; usedToday: number; left: number; today: string }
+    | null;
 
   const [{ data: stats, error }, { data: daily }, { data: courses }, { data: offer }, { data: weak }] =
     await Promise.all([
@@ -153,6 +155,7 @@ async function Student({ params }: { params: PageProps<"/admin/uczniowie/[id]">[
         used={hintState?.usedToday ?? 0}
         left={hintState?.left ?? 0}
         limit={hintState?.limit ?? 0}
+        bonus={hintState?.bonus ?? 0}
         today={hintState?.today ?? ""}
       />
 

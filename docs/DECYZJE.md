@@ -658,3 +658,19 @@ o profil wraca puste. Druga bramka w kodzie mogłaby się z regułą w bazie roz
 gdy funkcja zwraca `uuid[]` — Postgres czyta `any (podzapytanie)` jako porównanie z wierszami,
 nie z tablicą, i wywala się na `operator does not exist: uuid = uuid[]`. Funkcja zwraca więc
 `setof uuid`, a polityki używają `in (select ...)`.
+
+### Podpowiedź za ukończoną lekcję (2026-11-15)
+
+Pula pięciu podpowiedzi na dobę traktowała tak samo dziecko, które przerobiło dziś trzy lekcje,
+i takie, które weszło do aplikacji i od razu utknęło. Każda lekcja zaliczona danego dnia dokłada
+do puli tego dnia jedną podpowiedź.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Skąd bierze się dokładka | liczona na bieżąco z `lesson_progress.completed_at` przez `hint_bonus(uczeń)` | to samo podejście, co przy zużyciu: stan wychodzi z tego, co w bazie już jest, więc nie ma czego przyznawać, cofać ani zerować o północy | kolumna `bonus_hints` w `profiles` dopisywana przy zaliczeniu lekcji (wymaga crona, którego cała mechanika podpowiedzi unika) |
+| Co liczy się jako ukończona lekcja | pierwsze zaliczenie, po dacie `completed_at` w strefie dziecka | `finish_lesson_session` trzyma tę datę na `coalesce`, więc wpis powstaje raz; powtórka tej samej lekcji nie dokłada drugiej podpowiedzi | liczenie sesji skończonych dzisiaj (ta sama łatwa lekcja powtórzona pięć razy to pięć podpowiedzi) |
+| Poziom średni i trudny | nie dokładają nic | to dobrowolna dokładka do lekcji już zaliczonej, a nie kolejna ukończona lekcja; inaczej jedna lekcja dawałaby trzy podpowiedzi | doliczanie `lesson_level_progress` |
+| Gdzie doklejamy dokładkę | w `hints_left()`, obok limitu dziennego | wszystko, co liczy pulę, zostaje w jednym miejscu; `use_hint` i tak pyta tylko o `hints_left()` | osobne pole w `use_hint`; sprawdzanie limitu w przeglądarce |
+| Kto może wywołać `hint_bonus` | nikt z zewnątrz (brak nadania dla `authenticated`) | `security definer` z cudzym `uuid` w argumencie pozwalałby policzyć, ile lekcji zrobiło dziś inne dziecko; wołają ją tylko `hints_left` i `hint_status`, które same pilnują konta | nadanie dla `authenticated` „dla wygody" |
+| Skąd ekran podsumowania wie o dokładce | akcja `finishLesson` czyta `hints_left()` po zamknięciu lekcji, a ekran porównuje z pulą sprzed | dokładka nie jest niczym przyznawanym w `finish_lesson_session`, więc nie ma jej czego zwracać; różnica puli mówi dokładnie tyle, ile trzeba | dopisanie pola do odpowiedzi `finish_lesson_session` (przepisywanie 250-wierszowej funkcji po to, żeby policzyć to samo drugi raz) |
+| Co widzi rodzic | `hint_status` zwraca `bonus` osobno od `limit` | w karcie ucznia „zostało 7" przy puli „5 na dobę" wygląda na pomyłkę, dopóki nie widać, skąd te dwie dodatkowe | sama liczba „zostało" |

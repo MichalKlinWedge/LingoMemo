@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { HINTS, plural } from "@lingomemo/core";
+
 import { ChoiceExercise } from "@/components/exercises/choice";
 import { ImageChoiceExercise } from "@/components/exercises/image-choice";
 import { ListenMatchExercise } from "@/components/exercises/listen-match";
@@ -53,6 +55,9 @@ export function LessonRunner({
   const [phase, setPhase] = useState<Phase>("answering");
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [summary, setSummary] = useState<Summary | null>(null);
+  // Ile podpowiedzi dołożyła właśnie zaliczona lekcja. Nie pytamy o to bazy wprost: pula po
+  // zamknięciu lekcji minus pula sprzed niego to dokładnie tyle, ile przybyło.
+  const [hintsWon, setHintsWon] = useState(0);
   const [error, setError] = useState<string | null>(null);
   // Zadanie, w którego polu dziecko już coś napisało. Trzymamy IDENTYFIKATOR, nie flagę:
   // przy przejściu dalej wystarczy, że przestaje pasować do bieżącego zadania, więc nie trzeba
@@ -190,8 +195,10 @@ export function LessonRunner({
       return;
     }
     setSummary(finished.summary);
+    setHintsWon(Math.max(finished.hintsLeft - hints, 0));
+    setHints(finished.hintsLeft);
     setPhase("done");
-  }, [index, total]);
+  }, [hints, index, total]);
 
   if (phase === "done" && summary) {
     return (
@@ -200,6 +207,7 @@ export function LessonRunner({
         lessonId={lessonId}
         courseSlug={courseSlug}
         badgeNames={badgeNames}
+        hintsWon={hintsWon}
       />
     );
   }
@@ -489,11 +497,14 @@ function SummaryScreen({
   lessonId,
   courseSlug,
   badgeNames,
+  hintsWon,
 }: {
   summary: Summary;
   lessonId: string;
   courseSlug: string;
   badgeNames: Record<string, string>;
+  /** Ile podpowiedzi przybyło za zaliczenie tej lekcji. Zero przy etapie i przy powtórce. */
+  hintsWon: number;
 }) {
   const stars = "⭐".repeat(summary.stars) + "☆".repeat(3 - summary.stars);
   const split = summary.stages > 1;
@@ -523,6 +534,7 @@ function SummaryScreen({
         </p>
       )}
       {summary.xp > 0 && <p className="chip">+{summary.xp} punktów za {split ? "etap" : "lekcję"}</p>}
+      {hintsWon > 0 && <p className="chip">💡 +{plural(hintsWon, HINTS)} na dziś</p>}
       {summary.streak > 1 && <p className="chip">🔥 {summary.streak} dni z rzędu</p>}
       {summary.badges.length > 0 && (
         <p className="msg-ok">

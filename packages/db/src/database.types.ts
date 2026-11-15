@@ -733,7 +733,7 @@ isOneToOne: false
                            },
 "admin_parents":
 { Args: Record<PropertyKey, never>; Returns: {
-              "children": (string)[],"user_id": string
+              "children": (string)[],"requested_at": string,"user_id": string
             }[]
                            },
 "admin_remove_word":
@@ -859,6 +859,9 @@ isOneToOne: false
               "concept_id": string,"due_on": string,"lapses": number,"stability": number
             }[]
                            },
+"hint_bonus":
+{ Args: { "p_user": string }; Returns: number
+                           },
 "hint_limit":
 { Args: Record<PropertyKey, never>; Returns: number
                            },
@@ -951,6 +954,9 @@ isOneToOne: false
 { Args: { "p_lesson": string,"p_user": string }; Returns: {
               "concept_id": string,"exercise_id": string,"priority": number
             }[]
+                           },
+"request_child_access":
+{ Args: Record<PropertyKey, never>; Returns: undefined
                            },
 "review_limit":
 { Args: Record<PropertyKey, never>; Returns: number

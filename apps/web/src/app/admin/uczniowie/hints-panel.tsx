@@ -16,12 +16,15 @@ export function HintsPanel({
   used,
   left,
   limit,
+  bonus,
   today,
 }: {
   userId: string;
   used: number;
   left: number;
   limit: number;
+  /** Dokładka za lekcje zaliczone dzisiaj — jedna podpowiedź za lekcję. */
+  bonus: number;
   today: string;
 }) {
   const [state, action] = useActionState(resetHintsAction, {} as FormState);
@@ -32,13 +35,16 @@ export function HintsPanel({
 
       <p className="text-base text-zinc-600 dark:text-zinc-400">
         Podpowiedź zamienia trudne zadanie na łatwiejszą wersję tego samego słówka. Dziecko ma{" "}
-        {limit} na dobę, a pula wraca o północy — {new Date(`${today}T12:00:00`).toLocaleDateString("pl-PL")} to
-        doba liczona w jego strefie czasowej.
+        {limit} na dobę plus jedną za każdą lekcję zaliczoną tego dnia, a pula wraca o północy —{" "}
+        {new Date(`${today}T12:00:00`).toLocaleDateString("pl-PL")} to doba liczona w jego strefie
+        czasowej.
       </p>
 
       <div className="flex flex-wrap items-center gap-2">
         <span className="chip">💡 zostało: {left}</span>
         <span className="chip">zużyte dziś: {used}</span>
+        {/* Bez tego „zostało 7" przy puli 5 wygląda na pomyłkę. */}
+        {bonus > 0 && <span className="chip">+{bonus} za dzisiejsze lekcje</span>}
       </div>
 
       <Form action={action} state={state} className="flex flex-col gap-3">
