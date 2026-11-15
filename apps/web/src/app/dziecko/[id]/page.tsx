@@ -188,6 +188,14 @@ async function Child({ params }: { params: PageProps<"/dziecko/[id]">["params"] 
                                     <span className={lekcja.is_unlocked ? "" : "text-zinc-500"}>{lekcja.title}</span>
                                   </span>
                                   <span className="flex flex-wrap items-center gap-2 text-base">
+                                    {/* Etapy tylko tam, gdzie lekcja je ma. Przy lekcji na jedno
+                                        podejście „etapy: 1 z 1" to szum, a nie informacja. */}
+                                    {lekcja.stage_count > 1 && (
+                                      <span className="chip">
+                                        etapy: {Math.min(lekcja.stages_done, lekcja.stage_count)} z{" "}
+                                        {lekcja.stage_count}
+                                      </span>
+                                    )}
                                     <span className="text-zinc-600 dark:text-zinc-400">{lessonMark(lekcja).label}</span>
                                     {lekcja.stars > 0 && <span aria-hidden>{"⭐".repeat(lekcja.stars)}</span>}
                                   </span>

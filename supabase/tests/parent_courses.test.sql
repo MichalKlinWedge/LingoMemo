@@ -6,7 +6,7 @@
 -- dziecka, że nie dostaje cudzych i że po drodze nie otwiera się dostęp do kluczy odpowiedzi.
 
 begin;
-select plan(16);
+select plan(19);
 
 create or replace function pg_temp.make_user(p_email text) returns uuid
 language plpgsql as $$
@@ -80,6 +80,11 @@ select id, (select course_id from t_ctx) from t_ids where name in ('moje', 'obce
 insert into public.lesson_sessions (user_id, lesson_id, idempotency_key, total_exercises, correct_count)
 select id, (select lesson_id from t_ctx), 'test-' || name, 6, 5 from t_ids where name in ('moje', 'obce');
 
+-- Jeden zaliczony etap pierwszej lekcji. Dla długiej lekcji to jedyna liczba, która mówi,
+-- ile dziecku zostało — samo „zaczęta" tego nie niesie.
+insert into public.lesson_stage_progress (user_id, lesson_id, stage_nr, status)
+select id, (select lesson_id from t_ctx), 1, 'completed' from t_ids where name in ('moje', 'obce');
+
 -- --- rodzic ---
 
 select pg_temp.jako((select id from t_ids where name = 'rodzic'));
@@ -139,6 +144,24 @@ select is(
     where title = 'Lekcja o psach'),
   false,
   'i widać, że jest jeszcze zamknięta, a nie pominięta');
+
+select is(
+  (select stages_done from public.child_lessons((select id from t_ids where name = 'moje'))
+    where title = 'Lekcja o kotach'),
+  1,
+  'rodzic widzi zaliczone etapy lekcji');
+
+select is(
+  (select count(*)::integer from public.lesson_stage_progress
+    where user_id = (select id from t_ids where name = 'moje')),
+  1,
+  'bo polityka na lesson_stage_progress puszcza mu wiersze jego dziecka');
+
+select is(
+  (select count(*)::integer from public.lesson_stage_progress
+    where user_id = (select id from t_ids where name = 'obce')),
+  0,
+  'etapów cudzego dziecka już nie');
 
 select throws_ok(
   format('select * from public.child_lessons(%L)', (select id from t_ids where name = 'obce')),
