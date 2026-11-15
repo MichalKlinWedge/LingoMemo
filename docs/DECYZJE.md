@@ -318,3 +318,24 @@ układanych ręcznie wchodzi importem JSON.
   błąd za dobrą odpowiedź. Lepszy jeden klik więcej niż taka pułapka.
 - **Bez wskazania słówka zadanie nie wchodzi do powtórek.** Stan FSRS wisi na słówku, nie na
   zadaniu, więc lista słówek lekcji jest w formularzu, a nie w dokumentacji.
+
+## Czas nauki i statystyki dziecka (2026-11-15)
+
+| Obszar | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Skąd czas nauki | z `lesson_sessions`: od `started_at` do `finished_at` | to jedyne dwa znaczniki, które już są i opisują rzeczywiste wejście do lekcji i jej koniec; nic nie trzeba dopisywać po stronie przeglądarki | suma `attempts.response_ms` (mierzy czas myślenia nad zadaniem, nie czas nauki) oraz bicie „pulsu" z karty co kilkanaście sekund |
+| Sesja bez końca | liczy się jako zero | dziecko zamknęło kartę w połowie lekcji — nie wiadomo, czy uczyło się dwie minuty, czy odeszło od komputera na godzinę; zero jest fałszem mniejszym niż dowolne zgadnięcie | doliczanie czasu do ostatniej odpowiedzi w sesji |
+| Sesja dłuższa niż pół godziny | liczy się jako pół godziny (`session_seconds`) | lekcja ma kilkanaście zadań, więc pół godziny to już bardzo dużo; bez czapki jedno zapomniane okno robi z tygodnia nauki kilkanaście godzin i liczba przestaje cokolwiek znaczyć | surowa różnica znaczników oraz odrzucanie całej takiej sesji (znika też realna nauka sprzed przerwy) |
+| Kto liczy | widoki `v_my_stats` i `v_my_courses` w bazie | sumy i grupowania po dniach nie da się poprosić przez PostgREST, a liczenie tego w przeglądarce znaczy ściąganie całej historii odpowiedzi | liczenie w Server Action po stronie aplikacji |
+| Podgląd cudzych statystyk | te same widoki z `security_invoker`, bez funkcji dla administratora | polityki `*_read` już dopuszczają `is_admin()`, więc to samo zapytanie zwraca dziecku jeden wiersz, a dorosłemu wiersz każdego dziecka; druga ścieżka do tych samych liczb rozjechałaby się po pierwszej poprawce | funkcja `security definer` `student_stats(uuid)` obok widoków |
+| Lekcje w rozbiciu na kursy | liczone tylko opublikowane | inaczej „5 z 12" znaczyłoby co innego na ekranie dziecka (widzi opublikowane) i w panelu (widzi wszystko) | liczenie wszystkich lekcji |
+| Średni czas na lekcję | dzielone przez dokończone podejścia, nie przez zaliczone lekcje | lekcja powtarzana trzy razy zajęła trzy razy tyle czasu i tak ma być liczona | dzielenie przez `lessons_done` |
+| Kafelki i wykres tygodnia | wspólny komponent `stats-widgets.tsx` | ten sam zestaw ogląda dziecko na swoim ekranie i dorosły w panelu; dwie kopie po pierwszej poprawce pokazywałyby co innego | osobny wykres na każdej ze stron |
+
+### Pułapka: druga zmiana użytkownika w teście pgTAP
+
+`set_config('request.jwt.claims', …)` wyliczane z `auth.users` działa tylko za pierwszym razem —
+przy drugim wywołaniu rola to już `authenticated`, która tej tabeli nie czyta, i test pada na
+„permission denied for table users" zamiast na sprawdzanej regule. Claimy wszystkich kont
+układamy więc raz, jeszcze jako rola bazy, do tabeli tymczasowej (`t_claims`), a przełączanie
+użytkownika tylko je stamtąd podstawia.

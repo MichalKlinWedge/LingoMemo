@@ -24,6 +24,43 @@ export const DAYS: PluralForms = ['dzień', 'dni', 'dni'];
 export const EXERCISES: PluralForms = ['zadanie', 'zadania', 'zadań'];
 export const ENTRIES: PluralForms = ['zapis', 'zapisy', 'zapisów'];
 
+export const MINUTES: PluralForms = ['minuta', 'minuty', 'minut'];
+export const HOURS: PluralForms = ['godzina', 'godziny', 'godzin'];
+
+/**
+ * Czas nauki po ludzku: „2 godz. 05 min", „18 min", „niecała minuta".
+ *
+ * Sekund nie pokazujemy nigdzie poza pierwszą minutą — przy czasie liczonym od wejścia do
+ * lekcji do jej zakończenia dokładność co do sekundy i tak jest pozorna, a krótsza liczba
+ * czyta się szybciej. Minuty po godzinie mają wiodące zero, żeby „2 godz. 5 min" nie wyglądało
+ * jak „2,5 godziny".
+ */
+export function formatDuration(seconds: number): string {
+  const total = Math.max(0, Math.round(seconds));
+  if (total < 60) return 'niecała minuta';
+
+  const minutes = Math.floor(total / 60);
+  if (minutes < 60) return `${minutes} min`;
+
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  return rest === 0 ? `${hours} godz.` : `${hours} godz. ${String(rest).padStart(2, '0')} min`;
+}
+
+/** To samo w pełnym brzmieniu, do zdania i do czytnika ekranu: „2 godziny 5 minut". */
+export function spellDuration(seconds: number): string {
+  const total = Math.max(0, Math.round(seconds));
+  if (total < 60) return 'niecała minuta';
+
+  const minutes = Math.floor(total / 60);
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+
+  if (hours === 0) return plural(minutes, MINUTES);
+  if (rest === 0) return plural(hours, HOURS);
+  return `${plural(hours, HOURS)} ${plural(rest, MINUTES)}`;
+}
+
 /**
  * Nazwa w adresie z tytułu: „Dzikie zwierzęta" → „dzikie-zwierzeta".
  *

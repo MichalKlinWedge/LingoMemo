@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { LESSONS, plural, pluralForm, WORDS } from '../format.ts';
+import { formatDuration, LESSONS, plural, pluralForm, spellDuration, WORDS } from '../format.ts';
 
 describe('pluralForm', () => {
   it('dla jedynki daje formę pojedynczą', () => {
@@ -27,5 +27,38 @@ describe('pluralForm', () => {
   it('skleja liczbę z odmienionym rzeczownikiem', () => {
     expect(plural(3, LESSONS)).toBe('3 lekcje');
     expect(plural(5, LESSONS)).toBe('5 lekcji');
+  });
+});
+
+describe('formatDuration', () => {
+  it('poniżej minuty nie podaje liczby sekund', () => {
+    expect(formatDuration(0)).toBe('niecała minuta');
+    expect(formatDuration(59)).toBe('niecała minuta');
+  });
+
+  it('do godziny podaje same minuty, zaokrąglone w dół', () => {
+    expect(formatDuration(60)).toBe('1 min');
+    expect(formatDuration(119)).toBe('1 min');
+    expect(formatDuration(1080)).toBe('18 min');
+  });
+
+  it('powyżej godziny dopisuje minuty z wiodącym zerem', () => {
+    expect(formatDuration(3600)).toBe('1 godz.');
+    expect(formatDuration(7500)).toBe('2 godz. 05 min');
+    expect(formatDuration(9000)).toBe('2 godz. 30 min');
+  });
+
+  it('ujemnego czasu nie pokazuje jako ujemnego', () => {
+    expect(formatDuration(-10)).toBe('niecała minuta');
+  });
+});
+
+describe('spellDuration', () => {
+  it('odmienia godziny i minuty', () => {
+    expect(spellDuration(30)).toBe('niecała minuta');
+    expect(spellDuration(300)).toBe('5 minut');
+    expect(spellDuration(3600)).toBe('1 godzina');
+    expect(spellDuration(7500)).toBe('2 godziny 5 minut');
+    expect(spellDuration(18000)).toBe('5 godzin');
   });
 });
