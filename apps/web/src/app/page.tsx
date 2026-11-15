@@ -31,9 +31,12 @@ async function ParentHome() {
     <>
       <PageHeader title="Twoje dzieci" intro="Kliknij imię, żeby zobaczyć postępy." />
       {error && <p className="msg-error">{dbLoadError(error)}</p>}
+      {/* Prośba poszła sama przy logowaniu (`request_child_access`), więc nie każemy rodzicowi
+          szukać innej drogi — mówimy, że już czeka. */}
       {(children ?? []).length === 0 && !error && (
         <p className="text-zinc-600 dark:text-zinc-400">
-          Nie masz jeszcze przypisanego żadnego dziecka. Poproś o to administratora.
+          Nie masz jeszcze przypisanego żadnego dziecka. Administrator dostał prośbę o dostęp —
+          pokaże się tutaj, gdy ją zatwierdzi.
         </p>
       )}
       <ul className="flex flex-col gap-4">

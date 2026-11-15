@@ -45,6 +45,11 @@ async function People() {
   const timeOf = new Map((stats ?? []).map((row) => [row.user_id, row]));
   // Rodzic bez dzieci też jest w tej mapie — inaczej nie dałoby się mu żadnego przypisać.
   const childrenOf = new Map((parents ?? []).map((row) => [row.user_id, row.children ?? []]));
+  // Rodzic, który zalogował się bez przypisanego dziecka. Data mówi, od kiedy czeka — bez niej
+  // „prosi o dziecko" wyglądałoby tak samo po godzinie i po tygodniu.
+  const requestOf = new Map(
+    (parents ?? []).filter((row) => row.requested_at).map((row) => [row.user_id, row.requested_at as string]),
+  );
   const osoby: Osoba[] = (students ?? []).map((row) => ({
     userId: row.user_id,
     displayName: row.display_name,
@@ -81,6 +86,15 @@ async function People() {
                 <span className="chip">🔥 {student.streak_days}</span>
                 <span className="chip">🎚️ poziom {student.level}</span>
                 <span className="chip">⏱️ {formatDuration(extra?.seconds_total ?? 0)}</span>
+                {requestOf.has(student.user_id) && (
+                  <span
+                    className="chip"
+                    style={{ background: "var(--color-sun)" }}
+                    title={`Prosi od ${data(requestOf.get(student.user_id) ?? null)}`}
+                  >
+                    ⏳ czeka na dziecko
+                  </span>
+                )}
               </span>
             </div>
 
@@ -91,6 +105,8 @@ async function People() {
               {" · "}konto od {data(account?.created_at ?? null)}
               {" · "}ostatnie logowanie {data(account?.last_sign_in_at ?? null)}
               {account?.password_changed_at && ` · hasło zmieniane ${data(account.password_changed_at)}`}
+              {requestOf.has(student.user_id) &&
+                ` · prosi o przypisanie dziecka od ${data(requestOf.get(student.user_id) ?? null)}`}
             </p>
 
             <div className="flex flex-col gap-3">

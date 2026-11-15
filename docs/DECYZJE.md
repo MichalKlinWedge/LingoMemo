@@ -674,3 +674,21 @@ do puli tego dnia jedną podpowiedź.
 | Kto może wywołać `hint_bonus` | nikt z zewnątrz (brak nadania dla `authenticated`) | `security definer` z cudzym `uuid` w argumencie pozwalałby policzyć, ile lekcji zrobiło dziś inne dziecko; wołają ją tylko `hints_left` i `hint_status`, które same pilnują konta | nadanie dla `authenticated` „dla wygody" |
 | Skąd ekran podsumowania wie o dokładce | akcja `finishLesson` czyta `hints_left()` po zamknięciu lekcji, a ekran porównuje z pulą sprzed | dokładka nie jest niczym przyznawanym w `finish_lesson_session`, więc nie ma jej czego zwracać; różnica puli mówi dokładnie tyle, ile trzeba | dopisanie pola do odpowiedzi `finish_lesson_session` (przepisywanie 250-wierszowej funkcji po to, żeby policzyć to samo drugi raz) |
 | Co widzi rodzic | `hint_status` zwraca `bonus` osobno od `limit` | w karcie ucznia „zostało 7" przy puli „5 na dobę" wygląda na pomyłkę, dopóki nie widać, skąd te dwie dodatkowe | sama liczba „zostało" |
+
+## Prośba rodzica o przypisanie dziecka (2026-11-15)
+
+Rodzic po zalogowaniu bez przypisanego dziecka czytał „poproś administratora" i musiał to zrobić
+poza aplikacją. Teraz prośba zgłasza się sama.
+
+| Pytanie | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Kiedy idzie prośba | po udanym logowaniu i po rejestracji z zaproszenia, wywołaniem `request_child_access()` | rodzic czyta na stronie, że administrator prośbę dostał — musi ją dostać w tej samej chwili, nie przy następnym logowaniu | wywołanie przy renderowaniu strony głównej (zapis przy każdym odświeżeniu, w tym przy prerenderze) |
+| Kto decyduje, czy prośba ma sens | baza | funkcja odmawia kontu bez roli rodzica i kasuje prośbę rodzicowi, który dziecko już ma; przeglądarka nie musi tego wiedzieć, a podstawione wywołanie nic nie daje | warunek w aplikacji przed wywołaniem |
+| Co to jest | jedna data przy koncie (`app_private.parent_requests`) | administrator ma wiedzieć „ten rodzic czeka i od kiedy", a nie odhaczać zgłoszenia | kolejka zgłoszeń ze stanem „załatwione", powiadomienia mailowe |
+| Kiedy znika | w chwili przypisania pierwszego dziecka, wewnątrz `admin_set_child` | przypisanie JEST załatwieniem prośby; osobny przycisk „oznacz jako załatwione" to drugi stan, który rozjedzie się z pierwszym | ręczne kasowanie przez administratora |
+| Gdzie widać | chip `⏳ czeka na dziecko` i data w wierszu konta | lista kont to miejsce, w którym administrator i tak przypisuje dzieci — osobny ekran zgłoszeń trzeba by pamiętać, żeby otworzyć | osobna strona „Prośby" w panelu |
+| Powtórne wejście | `on conflict` odświeża `last_at`, `first_at` zostaje | to `first_at` mówi, jak długo rodzic czeka; gdyby nadpisywać, prośba sprzed tygodnia wyglądałaby na dzisiejszą | wstawianie nowego wiersza przy każdym logowaniu |
+
+**Pułapka:** test `invitations.test.sql` liczy wszystkie zaproszenia w bazie (`count(*) = 1`),
+więc wywraca się po ręcznym klikaniu w panelu na lokalnej bazie. To nie jest błąd kodu —
+`npm run test:db` zakłada bazę świeżo po `npm run db:reset`.

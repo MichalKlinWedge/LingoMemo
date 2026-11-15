@@ -24,6 +24,11 @@ export async function signIn(_prev: FormState, form: FormData): Promise<FormStat
   // Jeden komunikat na wszystkie przypadki: nie podpowiadamy, czy taki adres w ogóle istnieje.
   if (error) return { error: "Nie udało się zalogować. Sprawdź adres i hasło." };
 
+  // Rodzic bez przypisanego dziecka zostawia administratorowi prośbę, zamiast czytać na stronie
+  // „poproś administratora" i szukać innej drogi. Wołamy bezwarunkowo: o tym, czy prośba ma
+  // sens, decyduje baza — z konta ucznia i od rodzica, który dzieci już ma, nie zostaje nic.
+  await supabase.rpc("request_child_access");
+
   redirect(safeNext(form.get("next")));
 }
 
@@ -65,6 +70,11 @@ export async function acceptInvite(_prev: FormState, form: FormData): Promise<Fo
   // Token zrobił swoje. Z bazy nie da się go usunąć triggerem — Auth zapisuje metadane konta
   // jeszcze raz po nim i nadpisuje zmianę — więc czyścimy go stąd, już po założeniu konta.
   await supabase.auth.updateUser({ data: { invite: null } });
+
+  // To samo, co przy logowaniu: rodzic z zaproszenia nie ma jeszcze żadnego dziecka, a na
+  // stronie głównej od razu czyta, że administrator prośbę dostał — więc musi ją dostać teraz,
+  // nie dopiero przy następnym logowaniu.
+  await supabase.rpc("request_child_access");
 
   redirect("/");
 }
