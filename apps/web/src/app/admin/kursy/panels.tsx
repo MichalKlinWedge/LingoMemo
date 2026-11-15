@@ -206,6 +206,8 @@ function CourseFields({ languages, course }: { languages: Lang[]; course?: Cours
         slugPlaceholder="pl-en-starter"
         defaultTitle={course?.title ?? ""}
         defaultSlug={course?.slug ?? ""}
+        // Nowy kurs dostaje adres z nazwy i nikt go nie ogląda. Poprawiać da się go na stronie kursu.
+        slugHidden={course === undefined}
       />
       <Field
         label="Opis"
@@ -321,19 +323,15 @@ export function CourseTable({ courses, languages }: { courses: CourseRow[]; lang
           Jeszcze żadnego kursu. Zacznij od przycisku „Dodaj kurs”.
         </p>
       ) : (
-        <div className="card overflow-x-auto px-3 py-2">
+        <div className="card px-3 py-2">
           <table className="admin-table">
             <thead>
               <tr>
-                {/* Flaga jest ozdobą wiersza, nie danymi — nie ma czego czytać w nagłówku. */}
-                <th />
                 <th>Kurs</th>
-                <th className="hidden md:table-cell">Języki</th>
-                <th className="hidden text-right sm:table-cell">Działy</th>
+                <th>Języki</th>
                 <th className="hidden text-right sm:table-cell">Lekcje</th>
-                <th className="text-right">Słówka</th>
-                <th className="hidden text-right md:table-cell">Dzieci</th>
-                <th>Widoczny</th>
+                <th className="hidden text-right sm:table-cell">Słówka</th>
+                <th className="hidden sm:table-cell">Widoczny</th>
                 <th />
               </tr>
             </thead>
@@ -344,61 +342,64 @@ export function CourseTable({ courses, languages }: { courses: CourseRow[]; lang
                 return (
                   <Fragment key={course.id}>
                     <tr>
-                      <td className="w-10">
-                        <Flag code={course.target_lang} fallback={course.icon} size={32} />
-                      </td>
-                      <td>
-                        <Link href={`/admin/kursy/${course.slug}`} className="flex flex-col">
-                          <span className="font-semibold">{course.title}</span>
-                          <span className="font-mono text-sm text-zinc-500">{course.slug}</span>
+                      {/* `wrap-anywhere`: w wąskim oknie długa nazwa łamie się zamiast rozpychać
+                          tabelę poza kartę — kolumna z nazwą jest tą, która ma ustąpić. */}
+                      <td className="wrap-anywhere">
+                        <Link href={`/admin/kursy/${course.slug}`} className="block font-semibold">
+                          {course.title}
                         </Link>
+                        {/* Na telefonie nie ma kolumny „Widoczny", a to jedyny stan wart zauważenia. */}
+                        {!course.is_published && <span className="chip mt-1 sm:hidden">ukryty</span>}
                       </td>
-                      <td className="hidden whitespace-nowrap text-zinc-600 md:table-cell dark:text-zinc-400">
-                        {nameOf(course.source_lang)} → {nameOf(course.target_lang)}
-                      </td>
-                      <td className="hidden text-right tabular-nums sm:table-cell">{course.counts.units}</td>
-                      <td className="hidden text-right tabular-nums sm:table-cell">{course.counts.lessons}</td>
-                      <td className="text-right tabular-nums">{course.counts.words}</td>
-                      <td className="hidden text-right tabular-nums md:table-cell">{course.counts.students}</td>
                       <td>
+                        <span
+                          className="flex items-center gap-2"
+                          title={`${nameOf(course.source_lang)} → ${nameOf(course.target_lang)}`}
+                        >
+                          <Flag code={course.source_lang} size={24} />
+                          <span aria-hidden>→</span>
+                          <Flag code={course.target_lang} fallback={course.icon} size={24} />
+                          {/* Flagi to obrazki bez tekstu — czytnik ekranu dostaje nazwy języków. */}
+                          <span className="sr-only">
+                            {nameOf(course.source_lang)} → {nameOf(course.target_lang)}
+                          </span>
+                        </span>
+                      </td>
+                      <td className="hidden text-right tabular-nums sm:table-cell">{course.counts.lessons}</td>
+                      <td className="hidden text-right tabular-nums sm:table-cell">{course.counts.words}</td>
+                      <td className="hidden sm:table-cell">
                         <span className="chip">{course.is_published ? "widoczny" : "ukryty"}</span>
                       </td>
                       <td className="text-right">
+                        {/* Same ikony: nazwy akcji przy ośmiu kolumnach rozpychały tabelę poza kartę,
+                            a wtedy połowa przycisku „Usuń" była za krawędzią. */}
                         <div className="flex items-center justify-end gap-2">
                           <button
                             type="button"
                             className="btn-row"
                             aria-expanded={edycja}
+                            aria-label={edycja ? "Zwiń edycję kursu" : "Edytuj kurs"}
+                            title={edycja ? "Zwiń" : "Edytuj"}
                             onClick={() => przelacz(course.id, "edycja")}
                           >
-                            {edycja ? (
-                              "Zwiń"
-                            ) : (
-                              <>
-                                <span aria-hidden>✏️</span> Edytuj
-                              </>
-                            )}
+                            <span aria-hidden>{edycja ? "✖️" : "✏️"}</span>
                           </button>
                           <button
                             type="button"
                             className="btn-row"
                             aria-expanded={usuwanie}
+                            aria-label={usuwanie ? "Zwiń usuwanie kursu" : "Usuń kurs"}
+                            title={usuwanie ? "Zwiń" : "Usuń"}
                             onClick={() => przelacz(course.id, "usuwanie")}
                           >
-                            {usuwanie ? (
-                              "Zwiń"
-                            ) : (
-                              <>
-                                <span aria-hidden>🗑️</span> Usuń
-                              </>
-                            )}
+                            <span aria-hidden>{usuwanie ? "✖️" : "🗑️"}</span>
                           </button>
                         </div>
                       </td>
                     </tr>
                     {(edycja || usuwanie) && (
                       <tr>
-                        <td colSpan={9}>
+                        <td colSpan={6}>
                           {edycja ? (
                             <CourseEditor course={course} languages={languages} />
                           ) : (

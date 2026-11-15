@@ -199,6 +199,7 @@ export function TitleAndSlug({
   defaultSlug = "",
   titleLabel = "Nazwa",
   slugLabel = "Nazwa w adresie",
+  slugHidden = false,
 }: {
   titlePlaceholder?: string;
   slugPlaceholder?: string;
@@ -206,6 +207,13 @@ export function TitleAndSlug({
   defaultSlug?: string;
   titleLabel?: string;
   slugLabel?: string;
+  /**
+   * Adres bez własnego pola: składa się z nazwy i jedzie ukrytym polem. Przy zakładaniu czegoś
+   * nowego nie ma czego w nim poprawiać, a człowiek, który widzi „pl-en-starter", zatrzymuje się
+   * nad tym jak nad decyzją do podjęcia. Przy poprawianiu adres zostaje widoczny — wtedy jest już
+   * ustalony i bywa, że to właśnie jego trzeba zmienić.
+   */
+  slugHidden?: boolean;
 }) {
   const [title, setTitle] = useState(defaultTitle);
   const [slug, setSlug] = useState(defaultSlug);
@@ -231,7 +239,7 @@ export function TitleAndSlug({
   }
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className={slugHidden ? "" : "grid gap-4 sm:grid-cols-2"}>
       <label className="flex flex-col gap-2" htmlFor={titleId}>
         <span className="font-semibold">{titleLabel}</span>
         <input
@@ -248,25 +256,29 @@ export function TitleAndSlug({
         />
       </label>
 
-      <label className="flex flex-col gap-2" htmlFor={slugId}>
-        <span className="font-semibold">{slugLabel}</span>
-        <input
-          id={slugId}
-          className="field font-mono"
-          name="slug"
-          required
-          value={slug}
-          placeholder={slugPlaceholder}
-          autoComplete="off"
-          spellCheck={false}
-          onChange={(event) => {
-            const wpisane = event.target.value;
-            setSlug(wpisane);
-            // Puste pole znaczy „podpowiadaj dalej" — inaczej raz skasowany adres zostałby pusty.
-            setWlasny(wpisane !== "");
-          }}
-        />
-      </label>
+      {slugHidden && <input type="hidden" name="slug" value={slug} />}
+
+      {!slugHidden && (
+        <label className="flex flex-col gap-2" htmlFor={slugId}>
+          <span className="font-semibold">{slugLabel}</span>
+          <input
+            id={slugId}
+            className="field font-mono"
+            name="slug"
+            required
+            value={slug}
+            placeholder={slugPlaceholder}
+            autoComplete="off"
+            spellCheck={false}
+            onChange={(event) => {
+              const wpisane = event.target.value;
+              setSlug(wpisane);
+              // Puste pole znaczy „podpowiadaj dalej" — inaczej raz skasowany adres zostałby pusty.
+              setWlasny(wpisane !== "");
+            }}
+          />
+        </label>
+      )}
     </div>
   );
 }
