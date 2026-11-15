@@ -740,6 +740,9 @@ isOneToOne: false
 "admin_reorder_units":
 { Args: { "p_course": string,"p_ids": (string)[] }; Returns: Json
                            },
+"admin_reset_hints":
+{ Args: { "p_user": string }; Returns: number
+                           },
 "admin_update_profile":
 { Args: { "p_display_name": string,"p_time_zone"?: string,"p_user": string }; Returns: undefined
                            },
@@ -845,6 +848,9 @@ isOneToOne: false
 "hint_limit":
 { Args: Record<PropertyKey, never>; Returns: number
                            },
+"hint_status":
+{ Args: { "p_user": string }; Returns: Json
+                           },
 "hints_left":
 { Args: Record<PropertyKey, never>; Returns: number
                            },
@@ -859,6 +865,9 @@ isOneToOne: false
                            },
 "is_level_unlocked":
 { Args: { "p_lesson": string,"p_level": number,"p_user": string }; Returns: boolean
+                           },
+"is_unit_unlocked":
+{ Args: { "p_unit": string,"p_user": string }; Returns: boolean
                            },
 "learner_today":
 { Args: { "p_user": string }; Returns: string
@@ -908,6 +917,11 @@ isOneToOne: false
               "concept_id": string,"exercise_id": string,"priority": number
             }[]
                            },
+"pick_test_exercises":
+{ Args: { "p_lesson": string,"p_user": string }; Returns: {
+              "concept_id": string,"exercise_id": string,"priority": number
+            }[]
+                           },
 "review_limit":
 { Args: Record<PropertyKey, never>; Returns: number
                            },
@@ -923,6 +937,9 @@ isOneToOne: false
 "set_user_password":
 { Args: { "p_password": string,"p_user": string }; Returns: undefined
                            },
+"simpler_payload":
+{ Args: { "p_exercise": string }; Returns: Json
+                           },
 "split_answers":
 { Args: { "p": string }; Returns: (string)[]
                            },
@@ -937,6 +954,9 @@ isOneToOne: false
                            },
 "submit_attempt":
 { Args: { "p_answer": Json,"p_exercise": string,"p_hint_used"?: boolean,"p_response_ms"?: number,"p_session": string }; Returns: Json
+                           },
+"test_limit":
+{ Args: Record<PropertyKey, never>; Returns: number
                            },
 "use_hint":
 { Args: { "p_exercise": string,"p_session": string }; Returns: Json

@@ -54,3 +54,21 @@ export async function updateStudentAction(_prev: FormState, form: FormData): Pro
   refresh();
   return { ok: "Zapisane." };
 }
+
+/**
+ * Oddanie dziecku dzisiejszej puli podpowiedzi. Kasuje wpisy z dzisiaj, a nie całą historię —
+ * wczorajsze użycia są zapisem nauki i na dzisiejszą pulę i tak nie wpływają.
+ */
+export async function resetHintsAction(_prev: FormState, form: FormData): Promise<FormState> {
+  const { supabase } = await requireAdmin("/admin/uczniowie");
+
+  const user = String(form.get("user_id") ?? "");
+  if (!user) return { error: "Brakuje ucznia." };
+
+  const { data, error } = await supabase.rpc("admin_reset_hints", { p_user: user });
+  if (error) return { error: dbErrorMessage(error, "Nie udało się oddać podpowiedzi.") };
+
+  refresh();
+  const oddane = typeof data === "number" ? data : 0;
+  return { ok: oddane === 0 ? "Pula była pełna — nic nie trzeba było oddawać." : "Pula na dziś znowu pełna." };
+}

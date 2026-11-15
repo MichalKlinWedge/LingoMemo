@@ -7,6 +7,7 @@ import { CRUMB_HOME, CRUMB_PANEL } from "@/components/breadcrumbs";
 import { PageHeader } from "@/components/page-header";
 import { Loading, Shell } from "@/components/shell";
 import { accuracy, Tile, WeekChart } from "@/components/stats-widgets";
+import { HintsPanel } from "../hints-panel";
 import { LevelPanel } from "../level-panel";
 import { ProfilePanel } from "../profile-panel";
 import { requireAdmin } from "@/lib/auth";
@@ -55,6 +56,11 @@ async function Student({ params }: { params: PageProps<"/admin/uczniowie/[id]">[
     .eq("id", id)
     .maybeSingle();
   if (!profile) notFound();
+
+  // Stan dziennej puli podpowiedzi. `hints_left()` liczy dla pytającego, a tu pyta dorosły
+  // o cudze konto — stąd osobne `hint_status`.
+  const { data: hints } = await supabase.rpc("hint_status", { p_user: id });
+  const hintState = hints as { limit: number; usedToday: number; left: number; today: string } | null;
 
   const [{ data: stats, error }, { data: daily }, { data: courses }, { data: weak }] = await Promise.all([
     supabase.from("v_my_stats").select("*").eq("user_id", id).maybeSingle(),
@@ -135,6 +141,14 @@ async function Student({ params }: { params: PageProps<"/admin/uczniowie/[id]">[
       <ProfilePanel userId={profile.id} displayName={profile.display_name} timeZone={profile.time_zone} />
 
       <LevelPanel userId={profile.id} level={profile.level} />
+
+      <HintsPanel
+        userId={profile.id}
+        used={hintState?.usedToday ?? 0}
+        left={hintState?.left ?? 0}
+        limit={hintState?.limit ?? 0}
+        today={hintState?.today ?? ""}
+      />
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Tile icon="📘" value={stats?.lessons_done ?? 0} label="zaliczonych lekcji" />

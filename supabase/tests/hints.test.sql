@@ -5,7 +5,7 @@
 -- tylko raz na zadanie, że kończy się po pięciu i że wczorajsze użycia jej nie zjadają.
 
 begin;
-select plan(12);
+select plan(17);
 
 create or replace function pg_temp.make_user(p_email text) returns uuid
 language plpgsql as $$
@@ -196,6 +196,47 @@ select is(
   (select jsonb_array_length(v -> 'payload' -> 'options') from t_prostsze),
   2,
   'z trzech kafelków zostają dwa');
+
+-- --- stan puli w karcie ucznia i oddanie jej przez rodzica ---
+
+select is(
+  (public.hint_status((select id from t_ids where name = 'uczen')) ->> 'usedToday')::integer,
+  2,
+  'dziecko widzi w stanie puli swoje dzisiejsze użycia');
+
+select throws_ok(
+  format('select public.hint_status(%L)', (select id from t_ids where name = 'admin')),
+  '42501',
+  null,
+  'dziecko nie podejrzy puli cudzego konta');
+
+select throws_ok(
+  format('select public.admin_reset_hints(%L)', (select id from t_ids where name = 'uczen')),
+  null,
+  null,
+  'dziecko nie odda sobie puli samo');
+
+-- --- jako rodzic ---
+-- `auth.users` czyta tylko rola bazy, więc claims budujemy przed przełączeniem się na konto.
+reset role;
+
+select set_config('role', 'authenticated', true),
+       set_config('request.jwt.claims',
+         (select json_build_object('sub', u.id, 'role', 'authenticated',
+                 'app_metadata', coalesce(u.raw_app_meta_data, '{}'::jsonb))::text
+            from auth.users u where u.id = (select id from t_ids where name = 'admin')), true);
+
+-- Osobne polecenia, nie jedno z „and": `hint_status` jest `stable`, więc w tym samym poleceniu
+-- co kasowanie widziałby jeszcze stan sprzed niego.
+create temporary table t_reset as
+  select public.admin_reset_hints((select id from t_ids where name = 'uczen')) as ile;
+
+select is((select ile from t_reset), 2, 'rodzic oddaje dokładnie dzisiejsze użycia');
+
+select is(
+  (public.hint_status((select id from t_ids where name = 'uczen')) ->> 'left')::integer,
+  5,
+  'po oddaniu dziecko ma znowu pięć podpowiedzi');
 
 select * from finish();
 rollback;

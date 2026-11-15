@@ -599,3 +599,18 @@ warunkiem w `is_unit_unlocked`.
 Skutek dla kursów, które już istnieją: migracja dokłada test do każdego działu ze słówkami,
 więc dziecko w połowie kursu zobaczy dalsze działy zamknięte, dopóki nie zda testów działów
 wcześniejszych. To jest zamierzone — bez tego reguła nie dotyczyłaby żadnej istniejącej treści.
+
+### Podpowiedzi w karcie ucznia (2026-11-15)
+
+Dziecko widziało licznik w lekcji, dorosły nie widział nic — ani ile podpowiedzi poszło dziś, ani
+od kiedy liczy się doba tego dziecka. A gdy pula skończyła się nie z jego winy (zepsute zadanie,
+pomyłka w treści), nie było jak jej oddać inaczej niż zapytaniem SQL.
+
+- **`hint_status(uczeń)` zamiast `hints_left()`**: tamta liczy dla tego, kto pyta, a tu pyta
+  rodzic o cudze konto. Dostęp: własne konto albo administrator, nikt inny.
+- **Reset kasuje wpisy z DZISIAJ, nie całą historię.** Wczorajsze użycia są zapisem nauki,
+  a na dzisiejszą pulę i tak nie wpływają.
+- **Data doby wypisana wprost w panelu.** Pula odnawia się o północy w strefie dziecka, która
+  nie musi być strefą dorosłego patrzącego na ekran.
+- **Pułapka w teście**: `hint_status` jest `stable`, więc w jednym poleceniu z kasowaniem
+  widziałby jeszcze stan sprzed niego. Asercje muszą iść osobnymi poleceniami.
