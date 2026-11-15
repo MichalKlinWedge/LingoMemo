@@ -4,7 +4,7 @@
 -- czy punkty nie lecą dwa razy za to samo i czy po zaliczeniu lekcji otwiera się następna.
 
 begin;
-select plan(30);
+select plan(31);
 
 create or replace function pg_temp.make_user(p_email text) returns uuid
 language plpgsql as $$
@@ -54,12 +54,34 @@ values (
 );
 
 create temporary table t_ex as
-  select id, type, sort_order, payload
+  select id, type, sort_order, payload,
+         public.exercise_stage(id, (select id from t_lesson where nr = 1)) as stage
   from public.exercises
   where lesson_id = (select id from t_lesson where nr = 1);
 
-create temporary table t_session (id uuid);
+-- Lekcja startera przekroczyła 15 zadań, więc ma kilka etapów i po jednej sesji na każdy.
+create temporary table t_session (stage integer primary key, id uuid);
 create temporary table t_r (step text primary key, result jsonb);
+
+-- Odpowiedź wolno przysłać tylko w sesji swojego etapu. Ten pomocnik dobiera sesję do zadania,
+-- dzięki czemu asercje niżej mówią o zadaniu, a nie o tym, w którym kawałku lekcji ono leży.
+create or replace function pg_temp.sess(p_ex uuid) returns uuid
+language sql stable as $$
+  select s.id from t_session s join t_ex e on e.stage = s.stage where e.id = p_ex;
+$$;
+
+-- Zadania ze WSZYSTKICH etapów. `get_lesson_exercises` wydaje po jednym etapie naraz, a część
+-- asercji dotyczy całej lekcji.
+create or replace function pg_temp.zadania_lekcji()
+returns table (id uuid, type public.exercise_type, payload jsonb)
+language sql stable as $$
+  select x.id, x.type, x.payload
+  from generate_series(
+         1,
+         public.lesson_stage_count((select l.id from t_lesson l where l.nr = 1), (select u.id from t_user u))
+       ) g,
+       lateral public.get_lesson_exercises((select l.id from t_lesson l where l.nr = 1), g) x;
+$$;
 
 grant select on t_user, t_lesson, t_ex to authenticated;
 grant select, insert on t_session, t_r to authenticated;
@@ -70,17 +92,26 @@ select set_config('role', 'authenticated', true),
          (select json_build_object('sub', u.id, 'role', 'authenticated', 'app_metadata', '{}'::jsonb)::text
             from auth.users u where u.id = (select id from t_user)), true);
 
-insert into t_session select public.start_lesson_session((select id from t_lesson where nr = 1), 'test-1');
+do $open$
+declare
+  s integer;
+begin
+  for s in 1..public.lesson_stage_count((select id from t_lesson where nr = 1), (select id from t_user)) loop
+    insert into t_session
+    values (s, public.start_lesson_session((select id from t_lesson where nr = 1), 'test-' || s, s));
+  end loop;
+end;
+$open$;
 
 select is(
-  (select count(*)::integer from public.get_lesson_exercises((select id from t_lesson where nr = 1))),
+  (select count(*)::integer from pg_temp.zadania_lekcji()),
   (select count(*)::integer from t_ex),
-  'lekcja wydaje wszystkie swoje zadania'
+  'etapy razem wydają wszystkie zadania lekcji'
 );
 
 select is(
   (select count(*)::integer
-     from public.get_lesson_exercises((select id from t_lesson where nr = 1)) g
+     from pg_temp.zadania_lekcji() g
     where g.payload ? 'accepted' or g.payload ? 'answer' or g.payload ? 'solution'),
   0,
   'treść zadania nie zawiera poprawnej odpowiedzi'
@@ -89,7 +120,7 @@ select is(
 -- Poprawna odpowiedź na zadanie wyboru.
 insert into t_r
 select 'dobrze', public.submit_attempt(
-  (select id from t_session),
+  pg_temp.sess((select id from t_ex where type = 'translate_ab' order by sort_order limit 1)),
   (select id from t_ex where type = 'translate_ab' order by sort_order limit 1),
   jsonb_build_object('choice',
     (select payload -> 'accepted' ->> 0 from t_ex where type = 'translate_ab' order by sort_order limit 1)),
@@ -106,7 +137,7 @@ select is((select (result ->> 'grade')::integer from t_r where step = 'dobrze'),
 -- Błędna odpowiedź.
 insert into t_r
 select 'zle', public.submit_attempt(
-  (select id from t_session),
+  pg_temp.sess((select id from t_ex where type = 'translate_ba' and sort_order < 999 order by sort_order limit 1)),
   (select id from t_ex where type = 'translate_ba' and sort_order < 999 order by sort_order limit 1),
   jsonb_build_object('text', 'zupełnie nie to słowo'), 5000, false
 );
@@ -119,7 +150,7 @@ select isnt((select result -> 'correctAnswer' from t_r where step = 'zle'), 'nul
 -- Literówka.
 insert into t_r
 select 'literowka', public.submit_attempt(
-  (select id from t_session),
+  pg_temp.sess((select id from t_ex where sort_order = 999)),
   (select id from t_ex where sort_order = 999),
   jsonb_build_object('text', 'krolikk'), 6000, false
 );
@@ -134,7 +165,7 @@ select is((select (result ->> 'grade')::integer from t_r where step = 'literowka
 -- Punkty za to samo zadanie tylko raz w sesji.
 insert into t_r
 select 'powtorka', public.submit_attempt(
-  (select id from t_session),
+  pg_temp.sess((select id from t_ex where type = 'translate_ab' order by sort_order limit 1)),
   (select id from t_ex where type = 'translate_ab' order by sort_order limit 1),
   jsonb_build_object('choice',
     (select payload -> 'accepted' ->> 0 from t_ex where type = 'translate_ab' order by sort_order limit 1)),
@@ -153,7 +184,7 @@ select is(
 -- nie może opuścić bazy.
 select is(
   (select count(*)::integer
-     from public.get_lesson_exercises((select id from t_lesson where nr = 1)) g
+     from pg_temp.zadania_lekcji() g
     where g.type = 'listen_match' and g.payload ? 'pairs'),
   0,
   'dopasowywanie ze słuchu nie wydaje gotowych par'
@@ -161,7 +192,7 @@ select is(
 
 select is(
   (select jsonb_array_length(g.payload -> 'audio') + jsonb_array_length(g.payload -> 'words')
-     from public.get_lesson_exercises((select id from t_lesson where nr = 1)) g
+     from pg_temp.zadania_lekcji() g
     where g.type = 'listen_match'),
   8,
   'obie kolumny dopasowywania ze słuchu mają komplet kafelków'
@@ -169,7 +200,7 @@ select is(
 
 insert into t_r
 select 'sluch-zle', public.submit_attempt(
-  (select id from t_session),
+  pg_temp.sess((select id from t_ex where type = 'listen_match' limit 1)),
   (select id from t_ex where type = 'listen_match' limit 1),
   jsonb_build_object('pairs', jsonb_build_array(
     jsonb_build_object('a', 'pies', 'b', 'cat'),
@@ -186,7 +217,7 @@ select alike((select result ->> 'correctAnswer' from t_r where step = 'sluch-zle
 
 insert into t_r
 select 'sluch-dobrze', public.submit_attempt(
-  (select id from t_session),
+  pg_temp.sess((select id from t_ex where type = 'listen_match' limit 1)),
   (select id from t_ex where type = 'listen_match' limit 1),
   jsonb_build_object('pairs', (select payload -> 'pairs' from t_ex where type = 'listen_match' limit 1)),
   3000, false
@@ -201,7 +232,7 @@ select is((select (result ->> 'grade')::integer from t_r where step = 'sluch-dob
 -- ma, bo inaczej wystarczyłoby zajrzeć w odpowiedź serwera zamiast patrzeć na obrazki.
 insert into t_r
 select 'obrazek-zle', public.submit_attempt(
-  (select id from t_session),
+  pg_temp.sess((select id from t_ex where type = 'image_choice' limit 1)),
   (select id from t_ex where type = 'image_choice' limit 1),
   jsonb_build_object('choice', '2026/kot.png'),
   5000, false
@@ -216,7 +247,7 @@ select is((select result ->> 'correctAnswer' from t_r where step = 'obrazek-zle'
 -- odpowiedzią. Tu ma nie zostać uznana.
 insert into t_r
 select 'obrazek-prawie', public.submit_attempt(
-  (select id from t_session),
+  pg_temp.sess((select id from t_ex where type = 'image_choice' limit 1)),
   (select id from t_ex where type = 'image_choice' limit 1),
   jsonb_build_object('choice', '2026-pies-png'),
   5000, false
@@ -227,7 +258,7 @@ select is((select (result ->> 'correct')::boolean from t_r where step = 'obrazek
 
 insert into t_r
 select 'obrazek-dobrze', public.submit_attempt(
-  (select id from t_session),
+  pg_temp.sess((select id from t_ex where type = 'image_choice' limit 1)),
   (select id from t_ex where type = 'image_choice' limit 1),
   jsonb_build_object('choice', '2026/pies.png'),
   3000, false
@@ -273,19 +304,32 @@ begin
       when 'sentence_order' then jsonb_build_object('tokens', r.payload -> 'solution')
       else jsonb_build_object('text', r.payload -> 'accepted' ->> 0)
     end;
-    perform public.submit_attempt((select id from t_session), r.id, v, 9000, false);
+    perform public.submit_attempt(pg_temp.sess(r.id), r.id, v, 9000, false);
   end loop;
 end;
 $run$;
 
-create temporary table t_finish as select public.finish_lesson_session((select id from t_session)) as result;
+-- Zamykamy po kolei każdy etap. Dopiero ostatni mówi coś o całej lekcji, więc asercje niżej
+-- patrzą na jego podsumowanie.
+create temporary table t_finish (stage integer primary key, result jsonb);
+do $close$
+declare
+  s record;
+begin
+  for s in select stage, id from t_session order by stage loop
+    insert into t_finish values (s.stage, public.finish_lesson_session(s.id));
+  end loop;
+end;
+$close$;
 
-select is((select (result ->> 'score')::numeric from t_finish), 1.000::numeric,
+select is((select (result ->> 'score')::numeric from t_finish order by stage desc limit 1), 1.000::numeric,
           'wszystkie odpowiedzi poprawne dają pełny wynik');
-select is((select (result ->> 'stars')::integer from t_finish), 3,
+select is((select (result ->> 'stars')::integer from t_finish order by stage desc limit 1), 3,
           'pełny wynik to trzy gwiazdki');
-select is((select (result ->> 'passed')::boolean from t_finish), true,
-          'lekcja zaliczona');
+select is((select (result ->> 'passed')::boolean from t_finish order by stage desc limit 1), true,
+          'etap zaliczony');
+select is((select (result ->> 'lessonPassed')::boolean from t_finish order by stage desc limit 1), true,
+          'komplet etapów zalicza całą lekcję');
 
 select is(
   (select count(*)::integer from public.lessons where id = (select id from t_lesson where nr = 2)),

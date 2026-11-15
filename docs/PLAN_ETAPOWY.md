@@ -177,6 +177,16 @@ i drugim miejscem do utrzymania. Jeśli okaże się potrzebny, to osobny etap.
 
 ---
 
+## Etapy w długiej lekcji (2026-11-15)
+
+Lekcja z kilkunastoma nowymi słówkami to kilkadziesiąt zadań — za długo na jedno posiedzenie
+ośmiolatka. Lekcja dzieli się teraz na **etapy po najwyżej 15 zadań**; zaliczenie lekcji to
+zaliczenie wszystkich etapów. Podział liczy baza z liczby zadań, więc treść i format importu
+zostają bez zmian, a lekcje mieszczące się w 15 zadaniach mają jeden etap i zachowują się
+dokładnie jak dotąd. Szczegóły i odrzucone warianty w `docs/DECYZJE.md`.
+
+---
+
 ## Poza planem
 
 Generowanie lekcji przez Claude ze zdjęcia strony z książki. Format importu i model danych są

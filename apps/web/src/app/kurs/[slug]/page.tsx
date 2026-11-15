@@ -84,6 +84,14 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
                   {/* Powtórka obejmuje wszystkie przerobione słówka działu, zaległe na
                       początku — więc liczba jest taka sama jak przy zwykłej lekcji. */}
                   <span className="text-sm text-zinc-500">{plural(lesson.word_count ?? 0, WORDS)}</span>
+                  {/* Długa lekcja idzie etapami po najwyżej 15 zadań — dziecko ma z góry
+                      wiedzieć, że to kilka krótkich podejść, a nie jedno bardzo długie. */}
+                  {(lesson.stage_count ?? 1) > 1 && state !== "done" && (
+                    <span className="text-sm text-zinc-500">
+                      etap {Math.min((lesson.stages_done ?? 0) + 1, lesson.stage_count ?? 1)} z{" "}
+                      {lesson.stage_count}
+                    </span>
+                  )}
                 </li>
               );
             })}

@@ -23,17 +23,27 @@ export type Summary = {
   correct: number;
   score: number;
   stars: number;
+  /** Wynik ZAMKNIĘTEGO ETAPU. O całej lekcji mówi dopiero `lessonPassed`. */
   passed: boolean;
   xp: number;
   streak: number;
   badges: string[];
+  stage: number;
+  stages: number;
+  stagesDone: number;
+  lessonPassed: boolean;
 };
 
-export async function startLesson(lessonId: string, idempotencyKey: string): Promise<{ sessionId: string } | { error: string }> {
+export async function startLesson(
+  lessonId: string,
+  idempotencyKey: string,
+  stage: number,
+): Promise<{ sessionId: string } | { error: string }> {
   const { supabase } = await requireUser(`/lekcja/${lessonId}`);
   const { data, error } = await supabase.rpc("start_lesson_session", {
     p_lesson: lessonId,
     p_idempotency_key: idempotencyKey,
+    p_stage: stage,
   });
   if (error) return { error: dbErrorMessage(error, "Nie udało się zacząć lekcji.") };
   return { sessionId: data as string };

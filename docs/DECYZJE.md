@@ -339,3 +339,37 @@ przy drugim wywołaniu rola to już `authenticated`, która tej tabeli nie czyta
 „permission denied for table users" zamiast na sprawdzanej regule. Claimy wszystkich kont
 układamy więc raz, jeszcze jako rola bazy, do tabeli tymczasowej (`t_claims`), a przełączanie
 użytkownika tylko je stamtąd podstawia.
+
+## Etapy lekcji (2026-11-15)
+
+Lekcja „How do you spell that" z kursu dla czwartej klasy ma 18 słówek i 36 zadań. Dla dziecka
+to pół godziny bez przerwy, a przerwanie w połowie nie zapisywało dotąd niczego — przy następnym
+wejściu wszystko zaczynało się od nowa. Lekcja dzieli się więc na etapy po najwyżej 15 zadań,
+a `lesson_progress` dostaje `completed` dopiero wtedy, gdy zaliczone są wszystkie.
+
+| Obszar | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Skąd etapy | liczone w bazie z liczby zadań: `ceil(zadań / 15)`, zadanie `rn` trafia do `((rn-1) * etapów) / zadań + 1` | zero zmian w treści i w imporcie; lekcje do 15 zadań mają jeden etap i działają jak dotąd | etap jako pole w JSON-ie (każdy plik do poprawy, limit pilnowany ręcznie) oraz etap jako osobna lekcja (na mapie trzy kafelki zamiast jednego) |
+| Próg podziału | zawsze, gdy zadań jest więcej niż 15 | jeden warunek zamiast dwóch; „więcej niż 10 słówek" i tak znaczy ponad 30 zadań, bo każde słówko ma ich trzy | dosłowne „> 10 słówek" (lekcja z 10 słówkami zostawałaby jednym etapem na 30 zadań) |
+| Kawałki | równe co do jednego zadania (36 → 12/12/12, 31 → 11/10/10) | ostatni etap z jednym zadaniem wygląda jak usterka | pełne piętnastki i reszta na końcu (36 → 15/15/6) |
+| Przejście dalej | podsumowanie etapu z przyciskiem „Następny etap", puchar dopiero po ostatnim | dziecko widzi postęp i ma gdzie skończyć; „Lekcja zaliczona!" po pierwszym z trzech kawałków byłoby nieprawdą | wybór etapu z mapy (więcej klikania) i jeden ciąg bez przerw (znika cały zysk z dzielenia) |
+| Punkty za lekcję | `xp_reward` dzielone między etapy, reszta z dzielenia do ostatniego | przejście lekcji po kawałku daje tyle samo, co za jednym razem | pełna nagroda za każdy etap (trzykrotność) albo wypłata dopiero na końcu (dwa etapy bez nagrody) |
+| Wynik lekcji | średnia z najlepszych wyników etapów, etapy nierozegrane liczone jako zero | po pierwszym z trzech etapów na mapie widać jedną trzecią, a nie komplet gwiazdek | wynik ostatniego etapu (jeden słaby kawałek kasowałby dwa dobre) |
+
+Gwiazdki za lekcję pojawiają się dopiero po ostatnim etapie — wcześniej nie ma czego oceniać.
+Powtórka ma najwyżej `review_limit()` zadań, więc zawsze jest jednoetapowa.
+
+- **Sesja należy do etapu.** `lesson_sessions.stage_nr` i sprawdzenie w `submit_attempt`:
+  bez tego dało się przysłać identyfikator zadania z etapu trzeciego, siedząc w pierwszym.
+  Numer etapu zadania liczy `exercise_stage` — kolejność (`sort_order`, potem `id`) musi być
+  ta sama co w `get_lesson_exercises`, inaczej funkcja odbijałaby zadania z właściwego etapu.
+- **Argument domyślny nie dokłada się do istniejącej funkcji.** `get_lesson_exercises(uuid)`
+  i `start_lesson_session(uuid, text)` trzeba było najpierw skasować: obok wariantu
+  z `p_stage integer default 1` wywołanie jednoargumentowe stałoby się niejednoznaczne.
+  Stare wywołania (również w testach) działają dalej, bo trafiają na wartość domyślną.
+- **`create or replace view` nie zmieni typu istniejącej kolumny.** Przy dokładaniu
+  `stage_count` do `v_my_lessons` trzeba było przepisać `word_count` co do `::integer`
+  z migracji `…_review_count.sql`, inaczej Postgres odmawia podmiany widoku.
+- **Przejście do następnego etapu to ten sam adres z innym parametrem**, więc React trzymał
+  stan poprzedniego (numer zadania, ekran podsumowania). Komponent biegu lekcji dostaje
+  `key={stage}` i startuje od nowa.

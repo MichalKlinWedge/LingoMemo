@@ -8,7 +8,7 @@
 -- cofnięta przy wyjściu z niej.
 
 begin;
-select plan(19);
+select plan(22);
 
 create or replace function pg_temp.make_user(p_email text) returns uuid
 language plpgsql as $$
@@ -67,7 +67,29 @@ create temporary table t_lessons as
 
 -- Tabele tymczasowe należą do postgresa; bez tego odwołanie do nich po zmianie roli padłoby
 -- na brak uprawnień i test przeszedłby z niewłaściwego powodu.
-grant select on t_ids, t_lessons to authenticated;
+-- Lekcja robocza: gotowa, ale jeszcze nieopublikowana. Dla dziecka nie istnieje, administrator
+-- ma ją podejrzeć przed pokazaniem jej komukolwiek. Zadanie musi być choć jedno — bez zadań
+-- lekcja nie ma ani jednego etapu i wejście w nią kończy się innym błędem.
+create temporary table t_draft as
+with nowa as (
+  insert into public.lessons (unit_id, slug, title, sort_order, is_published)
+  select u.id, 'robocza', 'Lekcja robocza', 99, false
+    from public.units u
+    join public.courses c on c.id = u.course_id
+   where c.slug = 'pl-en-starter'
+   order by u.sort_order
+   limit 1
+  returning id
+)
+select id from nowa;
+
+insert into public.exercises (lesson_id, type, sort_order, payload, points)
+values (
+  (select id from t_draft), 'translate_ab', 1,
+  jsonb_build_object('prompt', 'pies', 'accepted', jsonb_build_array('dog')), 10
+);
+
+grant select on t_ids, t_lessons, t_draft to authenticated;
 
 -- --- uczeń ---
 select set_config('role', 'authenticated', true),
@@ -140,6 +162,13 @@ select throws_ok(
   'zamkniętej lekcji nie da się zacząć'
 );
 
+select throws_ok(
+  'select public.get_lesson_exercises((select id from t_draft))',
+  '22023',
+  null,
+  'lekcja przed publikacją dla dziecka nie istnieje'
+);
+
 -- Zmiana cudzego profilu przechodzi bez błędu, ale nie zmienia ani jednego wiersza.
 update public.profiles set display_name = 'wlamywacz'
  where id = (select id from t_ids where name = 'janek');
@@ -188,6 +217,18 @@ select is(
   public.is_lesson_unlocked((select id from t_lessons where nr = 2), (select id from t_ids where name = 'janek')),
   false,
   'patrząc na ucznia, administrator widzi jego kłódkę'
+);
+
+-- Podgląd roboczy: inaczej trzeba by opublikować lekcję, żeby ją sprawdzić, czyli pokazać
+-- dzieciom coś niesprawdzonego.
+select ok(
+  (select count(*) from public.get_lesson_exercises((select id from t_draft))) > 0,
+  'administrator podejrzy lekcję przed publikacją'
+);
+
+select lives_ok(
+  'select public.start_lesson_session((select id from t_draft), ''podglad'')',
+  'administrator zacznie lekcję przed publikacją'
 );
 
 select set_config('role', 'postgres', true), set_config('request.jwt.claims', '', true);

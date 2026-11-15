@@ -517,3 +517,22 @@ export async function setEnrollmentAction(_prev: FormState, form: FormData): Pro
   refresh();
   return { ok: "Zapisany na kurs." };
 }
+
+/**
+ * Nowa kolejność lekcji w dziale. Identyfikatory idą jednym ciągiem, a baza przepisuje numery
+ * w jednej transakcji — przy osobnych zapytaniach błąd w połowie zostawiłby dwie lekcje
+ * na tej samej pozycji, a mapa kursu układa je właśnie po tej kolumnie.
+ */
+export async function reorderLessonsAction(_prev: FormState, form: FormData): Promise<FormState> {
+  const { supabase } = await requireAdmin();
+
+  const unitId = text(form, "unit_id");
+  const ids = text(form, "ids").split(",").filter(Boolean);
+  if (!unitId || ids.length === 0) return { error: "Nie wiadomo, które lekcje przestawić." };
+
+  const { error } = await supabase.rpc("admin_reorder_lessons", { p_unit: unitId, p_ids: ids });
+  if (error) return { error: dbErrorMessage(error, "Nie udało się zapisać kolejności.") };
+
+  refresh();
+  return { ok: "Kolejność zapisana." };
+}

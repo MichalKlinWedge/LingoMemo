@@ -8,6 +8,7 @@ import { Loading, Shell } from "@/components/shell";
 import { requireAdmin } from "@/lib/auth";
 import { dbLoadError } from "@/lib/db-error";
 
+import { LessonOrder } from "../../lesson-order";
 import { NewLesson, UnitSettings } from "../../panels";
 
 async function Unit({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit]">["params"] }) {
@@ -62,31 +63,21 @@ async function Unit({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit]"
 
       <section className="flex flex-col gap-3">
         <h2 className="card-title">Lekcje</h2>
-        {(lessons ?? []).length === 0 && <p className="text-zinc-600 dark:text-zinc-400">Dział nie ma jeszcze lekcji.</p>}
-        <ul className="flex flex-col gap-3">
-          {(lessons ?? []).map((lesson) => (
-            <li key={lesson.id}>
-              <Link
-                href={`/admin/kursy/${course.slug}/${unit.slug}/${lesson.slug}`}
-                className="card flex flex-wrap items-center justify-between gap-3 p-4"
-              >
-                <span className="flex min-w-0 items-center gap-3">
-                  <span className="text-3xl" aria-hidden>
-                    {lesson.icon}
-                  </span>
-                  <span className="flex min-w-0 flex-col">
-                    <span className="font-semibold">{lesson.title}</span>
-                    <span className="text-base text-zinc-600 dark:text-zinc-400">
-                      {lesson.slug} · słówek: {words(lesson.id)}
-                      {lesson.kind === "review" && " · powtórka"}
-                    </span>
-                  </span>
-                </span>
-                <span className="chip">{lesson.is_published ? "widoczna" : "ukryta"}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        {(lessons ?? []).length === 0 ? (
+          <p className="text-zinc-600 dark:text-zinc-400">Dział nie ma jeszcze lekcji.</p>
+        ) : (
+          <>
+            <p className="text-base text-zinc-600 dark:text-zinc-400">
+              Kolejność zmienia się przeciągnięciem za uchwyt ⠿ albo strzałkami góra i dół.
+            </p>
+            <LessonOrder
+              unitId={unit.id}
+              courseSlug={course.slug}
+              unitSlug={unit.slug}
+              lessons={(lessons ?? []).map((lesson) => ({ ...lesson, words: words(lesson.id) }))}
+            />
+          </>
+        )}
       </section>
 
       <NewLesson unitId={unit.id} nextOrder={nextOrder} others={others} />

@@ -27,6 +27,8 @@ export function LessonRunner({
   exercises,
   targetLang,
   badgeNames,
+  stage,
+  stages,
 }: {
   lessonId: string;
   courseSlug: string;
@@ -34,6 +36,9 @@ export function LessonRunner({
   targetLang: string;
   /** Kod odznaki -> nazwa z ikoną. Dziecko ma zobaczyć „Pierwszy krok”, nie `first_lesson`. */
   badgeNames: Record<string, string>;
+  /** Który etap lekcji jest rozgrywany i ile ich jest w całej lekcji. */
+  stage: number;
+  stages: number;
 }) {
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>("answering");
@@ -69,7 +74,7 @@ export function LessonRunner({
       }
 
       if (sessionRef.current === null) {
-        const started = await startLesson(lessonId, keyRef.current);
+        const started = await startLesson(lessonId, keyRef.current, stage);
         if ("error" in started) {
           setError(started.error);
           setPhase("answering");
@@ -95,7 +100,7 @@ export function LessonRunner({
       play(result.verdict.correct ? "correct" : "wrong");
       setPhase("feedback");
     },
-    [exercise, lessonId, phase, play],
+    [exercise, lessonId, phase, play, stage],
   );
 
   const next = useCallback(async () => {
@@ -121,7 +126,14 @@ export function LessonRunner({
   }, [index, total]);
 
   if (phase === "done" && summary) {
-    return <SummaryScreen summary={summary} courseSlug={courseSlug} badgeNames={badgeNames} />;
+    return (
+      <SummaryScreen
+        summary={summary}
+        lessonId={lessonId}
+        courseSlug={courseSlug}
+        badgeNames={badgeNames}
+      />
+    );
   }
 
   if (!exercise) {
@@ -175,6 +187,13 @@ export function LessonRunner({
         >
           <span aria-hidden>{soundOn ? "🔔" : "🔕"}</span>
         </button>
+        {/* Przy jednoetapowej lekcji numer etapu byłby szumem — dziecko ma na pasku licznik
+            zadań i tyle. */}
+        {stages > 1 && (
+          <span className="chip" aria-label={`Etap ${stage} z ${stages}`}>
+            Etap {stage}/{stages}
+          </span>
+        )}
         <span className="chip">
           {index + 1}/{total}
         </span>
@@ -270,30 +289,50 @@ function Feedback({
   );
 }
 
+/**
+ * Podsumowanie. Przy lekcji wieloetapowej mówi o ETAPIE, a puchar zostaje na koniec — inaczej
+ * dziecko po pierwszym z trzech kawałków widziałoby „Lekcja zaliczona!" i nie miałoby powodu
+ * wracać po resztę.
+ */
 function SummaryScreen({
   summary,
+  lessonId,
   courseSlug,
   badgeNames,
 }: {
   summary: Summary;
+  lessonId: string;
   courseSlug: string;
   badgeNames: Record<string, string>;
 }) {
   const stars = "⭐".repeat(summary.stars) + "☆".repeat(3 - summary.stars);
+  const split = summary.stages > 1;
+  const nextStage = summary.passed && !summary.lessonPassed ? summary.stage + 1 : null;
+
+  const title = summary.lessonPassed
+    ? "Lekcja zaliczona!"
+    : summary.passed
+      ? `Etap ${summary.stage} z ${summary.stages} zaliczony!`
+      : "Jeszcze trochę";
 
   return (
     <div className="flex flex-col items-center gap-5 pt-6 text-center">
       <span className="anim-pop text-7xl" aria-hidden>
-        {summary.passed ? "🏆" : "🌱"}
+        {summary.lessonPassed ? "🏆" : summary.passed ? "🎯" : "🌱"}
       </span>
-      <h1>{summary.passed ? "Lekcja zaliczona!" : "Jeszcze trochę"}</h1>
+      <h1>{title}</h1>
       <p style={{ fontSize: "2.5rem", letterSpacing: "0.2em" }} aria-label={`${summary.stars} z 3 gwiazdek`}>
         {stars}
       </p>
       <p>
         Dobrze: <strong>{summary.correct}</strong> z <strong>{summary.total}</strong>
       </p>
-      {summary.xp > 0 && <p className="chip">+{summary.xp} punktów za lekcję</p>}
+      {split && !summary.lessonPassed && (
+        <p className="chip">
+          Etapy za tobą: {summary.stagesDone} z {summary.stages}
+        </p>
+      )}
+      {summary.xp > 0 && <p className="chip">+{summary.xp} punktów za {split ? "etap" : "lekcję"}</p>}
       {summary.streak > 1 && <p className="chip">🔥 {summary.streak} dni z rzędu</p>}
       {summary.badges.length > 0 && (
         <p className="msg-ok">
@@ -302,7 +341,15 @@ function SummaryScreen({
         </p>
       )}
       <div className="flex flex-wrap justify-center gap-3">
-        <Link href={`/kurs/${courseSlug}`} className="btn-primary">
+        {nextStage !== null && (
+          <Link href={`/lekcja/${lessonId}?etap=${nextStage}`} className="btn-primary">
+            Następny etap
+          </Link>
+        )}
+        <Link
+          href={`/kurs/${courseSlug}`}
+          className={nextStage !== null ? "btn-secondary" : "btn-primary"}
+        >
           Wróć do mapy
         </Link>
       </div>
