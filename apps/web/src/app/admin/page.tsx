@@ -6,6 +6,7 @@ import { Loading, Shell } from "@/components/shell";
 import { requireAdmin } from "@/lib/auth";
 
 const KAFELKI = [
+  { href: "/admin/kursy", icon: "📚", title: "Kursy", text: "Kursy, działy, lekcje i słówka." },
   { href: "/admin/import", icon: "📥", title: "Import lekcji", text: "Wklej lekcję z pliku JSON." },
   { href: "/admin/zaproszenia", icon: "✉️", title: "Zaproszenia", text: "Wygeneruj link do założenia konta." },
   { href: "/admin/uczniowie", icon: "🧒", title: "Uczniowie", text: "Kto się uczy i jak mu idzie." },

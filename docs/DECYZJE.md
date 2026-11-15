@@ -204,3 +204,25 @@ testów pgTAP przestały przechodzić.
 Warunek w seedzie sprawdza teraz TREŚĆ (czy istnieje dział tego kursu), a nie sam kurs. Przy
 okazji druga pułapka: aliasu w zapytaniu nie wolno nazwać tak jak zmiennej rekordowej z `declare`
 — plpgsql rozwiąże go jako zmienną i przerwie z „record is not assigned yet".
+
+## Panel treści (2026-11-15)
+
+| Obszar | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Zapis kursów, działów i lekcji | zwykłe zapytania pod politykami `*_admin` | polityki istnieją od pierwszej migracji i sprawdzają rolę przy każdym wierszu; funkcja nic by tu nie dołożyła poza kodem do utrzymania | osobne RPC na każdą operację |
+| Dodanie słówka | funkcja `admin_add_word`, `security definer` | pojęcie, dwa terminy, pozycja w lekcji i trzy zadania to pięć tabel — albo wchodzi wszystko, albo nic | pięć `insert()` z Server Action (przy błędzie w połowie zostaje słówko bez zadań) |
+| Zadania przy nowym słówku | trzy generowane automatem: tłumaczenie w obie strony i ze słuchu | lekcja założona w panelu jest od razu przechodzalna, a nie pusta | samo słówko (dziecko widzi lekcję bez zadań) oraz pełny edytor wszystkich siedmiu typów |
+| Dystraktory w wyborze z listy | trzy inne słowa z tej samej lekcji, losowane przy dodawaniu | bez nich zadanie wyboru ma jedną odpowiedź; pierwsze słówko w lekcji dostaje więc wersję do pisania | stały zestaw dystraktorów |
+| Usuwanie treści | brak w panelu | na pojęciach wiszą próby i stan powtórek (`lesson_items` ma `restrict`), a dziecko traci wtedy historię; ukrycie załatwia to samo bezpiecznie | pełny CRUD z kasowaniem |
+| Zapisy na kurs | polityka `enrollments_admin` obok `enrollments_insert_own` | administrator zapisuje i wypisuje cudze konta, dziecko dalej tylko siebie | funkcja `security definer` (jedna operacja na jednej tabeli nie potrzebuje transakcji) |
+| Wypisanie z kursu | nie rusza postępów | `lesson_progress`, `attempts` i `srs_state` wiszą na użytkowniku, nie na zapisie, więc ponowny zapis przywraca stan | kasowanie postępów razem z zapisem |
+
+### Pułapki znalezione przy panelu treści
+
+- **`on conflict` z indeksem częściowym wymaga powtórzenia warunku.** `terms_one_primary_idx`
+  jest `unique (concept_id, lang) where is_primary`, więc działa dopiero
+  `on conflict (concept_id, lang) where is_primary do update …` — bez `where` Postgres nie
+  znajduje indeksu i wywala się na „no unique or exclusion constraint matching".
+- **Next 16 nie uruchomi drugiego `next dev` w tym samym katalogu projektu.** Przy dwóch
+  sesjach pracujących na jednym checkoucie druga dostaje `Another next dev server is already
+  running` — podgląd w przeglądarce ma wtedy tylko ta sesja, która serwer uruchomiła.
