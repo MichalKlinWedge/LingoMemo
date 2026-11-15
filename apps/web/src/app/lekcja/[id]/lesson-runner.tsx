@@ -139,6 +139,23 @@ export function LessonRunner({
     );
   }
 
+  // Etap, w którym dziecko nie odpowiedziało ani razu — wszystkie zadania były ze słuchu,
+  // a przeglądarka nie ma głosu. Nie ma sesji, więc nie ma też czego podsumować: zamiast
+  // zablokowanego ostatniego zadania pokazujemy wyjście.
+  if (phase === "done") {
+    return (
+      <div className="flex flex-col items-center gap-4 pt-10 text-center">
+        <span className="text-6xl" aria-hidden>
+          🔈
+        </span>
+        <p>Tego etapu nie da się zrobić bez głosu w przeglądarce. Nic nie policzyliśmy.</p>
+        <Link href={`/kurs/${courseSlug}`} className="btn-primary">
+          Wróć do mapy
+        </Link>
+      </div>
+    );
+  }
+
   if (!exercise) {
     return (
       <div className="flex flex-col items-center gap-4 pt-10 text-center">
@@ -210,16 +227,23 @@ export function LessonRunner({
       </div>
 
       {exercise.type === "listening" ? (
-        <ListeningExercise exercise={exercise} locked={locked} onAnswer={handleAnswer} />
+        <ListeningExercise exercise={exercise} locked={locked} onAnswer={handleAnswer} onSkip={next} />
       ) : exercise.type === "listen_match" ? (
-        <ListenMatchExercise exercise={exercise} locked={locked} onAnswer={handleAnswer} />
+        <ListenMatchExercise exercise={exercise} locked={locked} onAnswer={handleAnswer} onSkip={next} />
       ) : exercise.type === "match_pairs" ? (
-        <MatchPairsExercise exercise={exercise} locked={locked} onAnswer={handleAnswer} targetLang={targetLang} />
+        <MatchPairsExercise
+          exercise={exercise}
+          locked={locked}
+          onAnswer={handleAnswer}
+          onSkip={next}
+          targetLang={targetLang}
+        />
       ) : exercise.type === "image_choice" ? (
         <ImageChoiceExercise
           exercise={exercise}
           locked={locked}
           onAnswer={handleAnswer}
+          onSkip={next}
           targetLang={targetLang}
           result={phase === "feedback" && verdict ? (verdict.correct ? "correct" : "wrong") : null}
           correctAnswer={
@@ -229,12 +253,13 @@ export function LessonRunner({
           }
         />
       ) : exercise.type === "sentence_order" ? (
-        <SentenceOrderExercise exercise={exercise} locked={locked} onAnswer={handleAnswer} />
+        <SentenceOrderExercise exercise={exercise} locked={locked} onAnswer={handleAnswer} onSkip={next} />
       ) : exercise.type === "fill_blank_choice" || (exercise.type === "translate_ab" && hasOptions) ? (
         <ChoiceExercise
           exercise={exercise}
           locked={locked}
           onAnswer={handleAnswer}
+          onSkip={next}
           targetLang={targetLang}
           result={phase === "feedback" && verdict ? (verdict.correct ? "correct" : "wrong") : null}
         />
@@ -243,6 +268,7 @@ export function LessonRunner({
           exercise={exercise}
           locked={locked}
           onAnswer={handleAnswer}
+          onSkip={next}
           // W `translate_ab` słowo nad polem jest w języku dziecka, w pozostałych w uczonym —
           // głośnik czytający „czarny" po angielsku brzmi jak awaria.
           promptLang={exercise.type === "translate_ab" ? sourceLang : targetLang}
@@ -256,6 +282,9 @@ export function LessonRunner({
           verdict={verdict}
           onNext={next}
           last={index + 1 >= total}
+          // Po ostatnim zadaniu etapu kończy się etap, nie lekcja — „Zakończ lekcję" przy
+          // dwunastu zadaniach z czterdziestu to obietnica, której przycisk nie dotrzyma.
+          lastLabel={stages > 1 && stage < stages ? "Zakończ etap" : "Zakończ lekcję"}
           // Przy wyborze obrazka poprawną odpowiedzią jest ścieżka do pliku. Dziecku mówi
           // ona tyle co nic — właściwy obrazek podświetla się na kafelku.
           showAnswer={exercise.type !== "image_choice"}
@@ -269,11 +298,14 @@ function Feedback({
   verdict,
   onNext,
   last,
+  lastLabel = "Zakończ lekcję",
   showAnswer = true,
 }: {
   verdict: Verdict;
   onNext: () => void;
   last: boolean;
+  /** Napis na przycisku po ostatnim zadaniu: etap albo cała lekcja. */
+  lastLabel?: string;
   showAnswer?: boolean;
 }) {
   const shown = showAnswer && typeof verdict.correctAnswer === "string" ? verdict.correctAnswer : null;
@@ -300,7 +332,7 @@ function Feedback({
       )}
       {verdict.correct && verdict.points > 0 && <p style={{ color: "#0f5c37" }}>+{verdict.points} punktów</p>}
       <button type="button" className="btn-primary" onClick={onNext} autoFocus>
-        {last ? "Zakończ lekcję" : "Dalej"}
+        {last ? lastLabel : "Dalej"}
       </button>
     </div>
   );

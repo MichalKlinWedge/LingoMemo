@@ -18,6 +18,12 @@ export type ExerciseProps = {
   /** Zablokowane po udzieleniu odpowiedzi, na czas pokazywania informacji zwrotnej. */
   locked: boolean;
   onAnswer: (answer: Answer) => void;
+  /**
+   * Przejście dalej BEZ zapisywania próby. Dla zadania, którego nie da się zrobić nie z winy
+   * dziecka — przeglądarka bez głosu dla języka. Pusta odpowiedź poszłaby do bazy jako błąd:
+   * mniej gwiazdek i słówko cofnięte w harmonogramie powtórek za cudzy brak syntezatora.
+   */
+  onSkip: () => void;
 };
 
 export const str = (value: Json | undefined): string => (typeof value === "string" ? value : "");

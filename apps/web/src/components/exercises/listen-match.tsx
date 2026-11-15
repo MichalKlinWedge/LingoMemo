@@ -2,6 +2,7 @@
 
 import type { Json } from "@lingomemo/db";
 
+import { mediaUrl } from "./media";
 import { type ExerciseProps, list, str } from "./types";
 import { useMatching } from "./use-matching";
 import { useSpeak } from "@/lib/use-speak";
@@ -27,7 +28,7 @@ const audioItems = (value: Json | undefined): AudioItem[] =>
  * ze słuchu — dałoby się je zrobić, nie włączając dźwięku ani razu. Z tego samego powodu numer
  * zostaje na liście połączonych par.
  */
-export function ListenMatchExercise({ exercise, locked, onAnswer }: ExerciseProps) {
+export function ListenMatchExercise({ exercise, locked, onAnswer, onSkip }: ExerciseProps) {
   const audio = audioItems(exercise.payload.audio);
   const words = list(exercise.payload.words);
   const lang = str(exercise.payload.lang) || "en-GB";
@@ -40,18 +41,22 @@ export function ListenMatchExercise({ exercise, locked, onAnswer }: ExerciseProp
   const tap = (item: AudioItem) => {
     if (locked) return;
     // Dotknięcie zawsze odtwarza — także ponowne, bo dziecko zwykle chce usłyszeć jeszcze raz.
-    speak(item.text, item.audioPath);
+    // W treści lekcji stoi ścieżka w buckecie, nie adres — adres składamy dopiero tutaj.
+    speak(item.text, mediaUrl(item.audioPath));
     if (!isPicked("b", item.text)) pick("b", item.text);
   };
 
-  // Bez głosu i bez nagrań zadania ze słuchu nie da się zrobić uczciwie — mówimy to wprost.
+  // Bez głosu i bez nagrań zadania ze słuchu nie da się zrobić uczciwie — mówimy to wprost
+  // i przechodzimy dalej BEZ odpowiedzi. Puste pary poszłyby do bazy jako błąd, czyli dziecko
+  // straciłoby gwiazdkę za to, że jego telefon nie ma głosu dla tego języka.
   if (voicesLoaded && !hasVoice && !audio.some((item) => item.audioPath)) {
     return (
       <div className="flex flex-col gap-4">
         <p className="msg-error">
           Ta przeglądarka nie potrafi wymówić tego języka, więc pomijamy zadanie ze słuchu.
+          Nie liczy się ani na plus, ani na minus.
         </p>
-        <button type="button" className="btn-secondary" onClick={() => onAnswer({ pairs: [] })}>
+        <button type="button" className="btn-secondary" onClick={onSkip}>
           Dalej
         </button>
       </div>

@@ -1,10 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
+import { mediaUrl } from "./media";
 import { SpeakButton } from "./speak-button";
 import { type ExerciseProps, list, str } from "./types";
-import { createClient } from "@/lib/supabase/client";
 
 /**
  * Wybór obrazka: słowo u góry, pod nim obrazki do dotknięcia. Jedyne zadanie, które dziecko
@@ -27,18 +27,13 @@ export function ImageChoiceExercise({
   correctAnswer: string | null;
 }) {
   const [picked, setPicked] = useState<string | null>(null);
+  // Ścieżki obrazków, których przeglądarka nie wczytała. Pusty kafelek wygląda jak dziura
+  // w układzie — dziecko klika w nicość, a administrator nie wie, że czegoś brakuje.
+  const [broken, setBroken] = useState<string[]>([]);
   const options = list(exercise.payload.options);
   const prompt = str(exercise.payload.prompt);
   const speak = str(exercise.payload.speak);
   const lang = str(exercise.payload.lang) || targetLang;
-
-  // Adres publiczny składamy z bucketu: w JSON-ie lekcji stoi sama ścieżka, żeby plik lekcji
-  // nie zestarzał się razem z adresem projektu w chmurze.
-  const urlOf = useMemo(() => {
-    const storage = createClient().storage.from("lesson-media");
-    return (path: string) =>
-      /^https?:\/\//.test(path) ? path : storage.getPublicUrl(path).data.publicUrl;
-  }, []);
 
   const pick = (option: string) => {
     if (locked) return;
@@ -75,15 +70,32 @@ export function ImageChoiceExercise({
               disabled={locked && picked !== option}
               onClick={() => pick(option)}
             >
-              {/* Zwykły <img>, nie next/image: obrazki wgrywa administrator w trakcie
-                  działania aplikacji, więc nie ma ich czym zoptymalizować przy budowaniu. */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={urlOf(option)}
-                alt=""
-                style={{ width: "100%", aspectRatio: "1 / 1", objectFit: "contain" }}
-                draggable={false}
-              />
+              {broken.includes(option) ? (
+                <span
+                  className="flex w-full flex-col items-center justify-center gap-1 rounded-xl"
+                  style={{ aspectRatio: "1 / 1", background: "var(--color-zinc-100)" }}
+                >
+                  <span className="text-4xl" aria-hidden>
+                    🖼
+                  </span>
+                  <span className="px-1 text-center font-mono text-sm text-zinc-600 dark:text-zinc-400">
+                    brak pliku
+                    <br />
+                    {option}
+                  </span>
+                </span>
+              ) : (
+                /* Zwykły <img>, nie next/image: obrazki wgrywa administrator w trakcie
+                   działania aplikacji, więc nie ma ich czym zoptymalizować przy budowaniu. */
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={mediaUrl(option) ?? ""}
+                  alt=""
+                  style={{ width: "100%", aspectRatio: "1 / 1", objectFit: "contain" }}
+                  draggable={false}
+                  onError={() => setBroken((było) => (było.includes(option) ? było : [...było, option]))}
+                />
+              )}
             </button>
           </li>
         ))}

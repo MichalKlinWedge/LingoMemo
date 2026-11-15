@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { mediaUrl } from "./media";
 import { SpeakButton } from "./speak-button";
 import { type ExerciseProps, str } from "./types";
 import { useSpeak } from "@/lib/use-speak";
@@ -12,12 +13,13 @@ import { useSpeak } from "@/lib/use-speak";
  * Próbujemy odezwać się sami zaraz po wejściu na zadanie, ale iOS odtwarza mowę wyłącznie
  * po dotknięciu ekranu, więc duży przycisk „Posłuchaj” jest podstawą, a nie dodatkiem.
  */
-export function ListeningExercise({ exercise, locked, onAnswer }: ExerciseProps) {
+export function ListeningExercise({ exercise, locked, onAnswer, onSkip }: ExerciseProps) {
   const [value, setValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const text = str(exercise.payload.speak);
   const lang = str(exercise.payload.lang) || "en-GB";
-  const audioUrl = str(exercise.payload.audioPath) || null;
+  // W treści lekcji stoi ścieżka w buckecie, nie adres — adres składamy dopiero tutaj.
+  const audioUrl = mediaUrl(str(exercise.payload.audioPath));
   const { speak, hasVoice, voicesLoaded } = useSpeak(lang);
 
   useEffect(() => {
@@ -32,14 +34,17 @@ export function ListeningExercise({ exercise, locked, onAnswer }: ExerciseProps)
     onAnswer({ text: value });
   };
 
-  // Bez głosu i bez nagrania zadania ze słuchu nie da się zrobić uczciwie — mówimy to wprost.
+  // Bez głosu i bez nagrania zadania ze słuchu nie da się zrobić uczciwie — mówimy to wprost
+  // i przechodzimy dalej BEZ odpowiedzi. Pusta odpowiedź poszłaby do bazy jako błąd, czyli
+  // dziecko straciłoby gwiazdkę za to, że jego telefon nie ma głosu dla tego języka.
   if (voicesLoaded && !hasVoice && !audioUrl) {
     return (
       <div className="flex flex-col gap-4">
         <p className="msg-error">
           Ta przeglądarka nie potrafi wymówić tego języka, więc pomijamy zadanie ze słuchu.
+          Nie liczy się ani na plus, ani na minus.
         </p>
-        <button type="button" className="btn-secondary" onClick={() => onAnswer({ text: "" })}>
+        <button type="button" className="btn-secondary" onClick={onSkip}>
           Dalej
         </button>
       </div>
