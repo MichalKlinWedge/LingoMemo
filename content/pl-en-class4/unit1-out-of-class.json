@@ -1,0 +1,223 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-class4",
+  "unit": { "slug": "en-4-unit1", "title": "UNIT 1", "sortOrder": 2 },
+  "lesson": {
+    "slug": "4u1-out-of-class",
+    "title": "Out of class",
+    "icon": "🎂",
+    "kind": "standard",
+    "sortOrder": 2,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "4u1-family",
+    "isPublished": true
+  },
+  "concepts": [
+    { "key": "friend.best-friend", "tags": ["🤝"], "terms": { "pl": [{ "text": "najlepszy przyjaciel", "pos": "noun" }], "en": [{ "text": "best friend", "pos": "noun", "ipa": "/ˌbest ˈfrend/" }] } },
+    { "key": "friend.friend", "tags": ["🙂"], "terms": { "pl": [{ "text": "przyjaciel", "pos": "noun" }], "en": [{ "text": "friend", "pos": "noun", "ipa": "/frend/" }] } },
+    { "key": "school.class", "tags": ["🏫"], "terms": { "pl": [{ "text": "klasa", "pos": "noun" }], "en": [{ "text": "class", "pos": "noun", "ipa": "/klɑːs/" }] } },
+    { "key": "school.classmate", "tags": ["🧑‍🤝‍🧑"], "terms": { "pl": [{ "text": "kolega z klasy", "pos": "noun" }], "en": [{ "text": "classmate", "pos": "noun", "ipa": "/ˈklɑːsmeɪt/" }] } },
+    { "key": "school.school-trip", "tags": ["🚌"], "terms": { "pl": [{ "text": "wycieczka szkolna", "pos": "noun" }], "en": [{ "text": "school trip", "pos": "noun", "ipa": "/ˈskuːl trɪp/" }] } },
+    { "key": "party.birthday", "tags": ["🎉"], "terms": { "pl": [{ "text": "urodziny", "pos": "noun" }], "en": [{ "text": "birthday", "pos": "noun", "ipa": "/ˈbɜːθdeɪ/" }] } },
+    { "key": "party.birthday-cake", "tags": ["🎂"], "terms": { "pl": [{ "text": "tort urodzinowy", "pos": "noun" }], "en": [{ "text": "birthday cake", "pos": "noun", "ipa": "/ˈbɜːθdeɪ keɪk/" }] } },
+    { "key": "party.cake", "tags": ["🍰"], "terms": { "pl": [{ "text": "ciasto", "pos": "noun" }], "en": [{ "text": "cake", "pos": "noun", "ipa": "/keɪk/" }] } },
+    { "key": "party.card", "tags": ["💌"], "terms": { "pl": [{ "text": "kartka z życzeniami", "pos": "noun" }], "en": [{ "text": "card", "pos": "noun", "ipa": "/kɑːd/" }] } },
+    { "key": "party.present", "tags": ["🎁"], "terms": { "pl": [{ "text": "prezent", "pos": "noun" }], "en": [{ "text": "present", "pos": "noun", "ipa": "/ˈprezənt/" }] } },
+    { "key": "adj.happy", "tags": ["😀"], "terms": { "pl": [{ "text": "szczęśliwy", "pos": "adjective" }], "en": [{ "text": "happy", "pos": "adjective", "ipa": "/ˈhæpi/" }] } },
+    { "key": "adj.lovely", "tags": ["💖"], "terms": { "pl": [{ "text": "uroczy", "pos": "adjective" }], "en": [{ "text": "lovely", "pos": "adjective", "ipa": "/ˈlʌvli/" }] } },
+    { "key": "adj.yummy", "tags": ["😋"], "terms": { "pl": [{ "text": "pyszny", "pos": "adjective" }], "en": [{ "text": "yummy", "pos": "adjective", "ipa": "/ˈjʌmi/" }] } },
+    { "key": "thing.mess", "tags": ["🙈"], "terms": { "pl": [{ "text": "bałagan", "pos": "noun" }], "en": [{ "text": "mess", "pos": "noun", "ipa": "/mes/" }] } },
+    { "key": "verb.eat", "tags": ["🍽️"], "terms": { "pl": [{ "text": "jeść", "pos": "verb" }], "en": [{ "text": "eat", "pos": "verb", "ipa": "/iːt/" }] } },
+    { "key": "say.my-darling", "tags": ["💞"], "terms": { "pl": [{ "text": "mój drogi", "pos": "phrase" }], "en": [{ "text": "my darling", "pos": "phrase", "ipa": "/maɪ ˈdɑːlɪŋ/" }] } },
+    { "key": "say.be-careful", "tags": ["⚠️"], "terms": { "pl": [{ "text": "Bądź ostrożny!", "pos": "phrase" }], "en": [{ "text": "Be careful!", "pos": "phrase" }] } },
+    { "key": "say.hold-this", "tags": ["🤲"], "terms": { "pl": [{ "text": "Potrzymaj to, proszę.", "pos": "phrase" }], "en": [{ "text": "Hold this, please.", "pos": "phrase" }] } },
+    { "key": "say.ive-got-it", "tags": ["👌"], "terms": { "pl": [{ "text": "Zajmę się tym.", "pos": "phrase" }], "en": [{ "text": "I've got it!", "pos": "phrase" }] } },
+    { "key": "say.happy-birthday", "tags": ["🥳"], "terms": { "pl": [{ "text": "Wszystkiego najlepszego z okazji urodzin!", "pos": "phrase" }], "en": [{ "text": "Happy birthday!", "pos": "phrase" }] } },
+    { "key": "say.lets-have-a-break", "tags": ["☕"], "terms": { "pl": [{ "text": "Zróbmy sobie przerwę.", "pos": "phrase" }], "en": [{ "text": "Let's have a break.", "pos": "phrase" }] } },
+    { "key": "say.seventy-years-old", "tags": ["🕯️"], "terms": { "pl": [{ "text": "Ona ma 70 lat.", "pos": "phrase" }], "en": [{ "text": "She is 70 years old.", "pos": "phrase" }] } }
+  ],
+  "exercises": [
+    { "type": "translate_ab", "conceptKey": "friend.best-friend", "payload": { "prompt": "najlepszy przyjaciel", "accepted": ["best friend", "a best friend"] } },
+    { "type": "translate_ab", "conceptKey": "friend.friend", "payload": { "prompt": "przyjaciel", "accepted": ["friend", "a friend"] } },
+    { "type": "translate_ab", "conceptKey": "school.class", "payload": { "prompt": "klasa", "accepted": ["class", "a class"] } },
+    { "type": "translate_ab", "conceptKey": "school.classmate", "payload": { "prompt": "kolega z klasy", "accepted": ["classmate", "a classmate"] } },
+    { "type": "translate_ab", "conceptKey": "school.school-trip", "payload": { "prompt": "wycieczka szkolna", "accepted": ["school trip", "a school trip"] } },
+    { "type": "translate_ab", "conceptKey": "party.birthday", "payload": { "prompt": "urodziny", "accepted": ["birthday", "a birthday"] } },
+    { "type": "translate_ab", "conceptKey": "party.birthday-cake", "payload": { "prompt": "tort urodzinowy", "accepted": ["birthday cake", "a birthday cake"] } },
+    { "type": "translate_ab", "conceptKey": "party.cake", "payload": { "prompt": "ciasto", "accepted": ["cake", "a cake"] } },
+    { "type": "translate_ab", "conceptKey": "party.card", "payload": { "prompt": "kartka z życzeniami", "accepted": ["card", "a card"] } },
+    { "type": "translate_ab", "conceptKey": "party.present", "payload": { "prompt": "prezent", "accepted": ["present", "a present"] } },
+    { "type": "translate_ab", "conceptKey": "adj.happy", "payload": { "prompt": "szczęśliwy", "accepted": ["happy"] } },
+    { "type": "translate_ab", "conceptKey": "adj.lovely", "payload": { "prompt": "uroczy", "accepted": ["lovely"] } },
+    { "type": "translate_ab", "conceptKey": "adj.yummy", "payload": { "prompt": "pyszny", "accepted": ["yummy"] } },
+    { "type": "translate_ab", "conceptKey": "thing.mess", "payload": { "prompt": "bałagan", "accepted": ["mess", "a mess"] } },
+    { "type": "translate_ab", "conceptKey": "verb.eat", "payload": { "prompt": "jeść", "accepted": ["eat", "to eat"] } },
+    { "type": "translate_ab", "conceptKey": "say.my-darling", "payload": { "prompt": "mój drogi", "accepted": ["my darling"] } },
+    {
+      "type": "translate_ab",
+      "conceptKey": "say.be-careful",
+      "payload": { "prompt": "Bądź ostrożny!", "accepted": ["Be careful!", "Be careful"], "options": ["Be careful!", "Hold this, please.", "I've got it!", "Let's have a break."] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "say.hold-this",
+      "payload": { "prompt": "Potrzymaj to, proszę.", "accepted": ["Hold this, please."], "options": ["Hold this, please.", "Be careful!", "Happy birthday!", "I've got it!"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "say.ive-got-it",
+      "payload": { "prompt": "Zajmę się tym.", "accepted": ["I've got it!", "Ive got it", "I have got it"], "options": ["I've got it!", "Let's have a break.", "Be careful!", "Hold this, please."] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "say.happy-birthday",
+      "payload": { "prompt": "Wszystkiego najlepszego z okazji urodzin!", "accepted": ["Happy birthday!", "Happy birthday"], "options": ["Happy birthday!", "Let's have a break.", "Nice to meet you.", "Be careful!"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "say.lets-have-a-break",
+      "payload": { "prompt": "Zróbmy sobie przerwę.", "accepted": ["Let's have a break.", "Lets have a break"], "options": ["Let's have a break.", "I've got it!", "Happy birthday!", "Hold this, please."] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "say.seventy-years-old",
+      "payload": { "prompt": "Ona ma 70 lat.", "accepted": ["She is 70 years old.", "She is seventy years old."], "options": ["She is 70 years old.", "She is 17 years old.", "He is 70 years old.", "She is 7 years old."] }
+    },
+    { "type": "translate_ba", "conceptKey": "party.present", "payload": { "prompt": "present", "accepted": ["prezent"] } },
+    { "type": "translate_ba", "conceptKey": "party.card", "payload": { "prompt": "card", "accepted": ["kartka z życzeniami", "kartka"] } },
+    { "type": "translate_ba", "conceptKey": "adj.yummy", "payload": { "prompt": "yummy", "accepted": ["pyszny"] } },
+    { "type": "translate_ba", "conceptKey": "thing.mess", "payload": { "prompt": "mess", "accepted": ["bałagan"] } },
+    { "type": "translate_ba", "conceptKey": "school.classmate", "payload": { "prompt": "classmate", "accepted": ["kolega z klasy", "koleżanka z klasy"] } },
+    { "type": "translate_ba", "conceptKey": "adj.lovely", "payload": { "prompt": "lovely", "accepted": ["uroczy"] } },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz w pary — urodziny.",
+        "pairs": [
+          { "a": "urodziny", "b": "birthday" },
+          { "a": "tort urodzinowy", "b": "birthday cake" },
+          { "a": "ciasto", "b": "cake" },
+          { "a": "kartka z życzeniami", "b": "card" },
+          { "a": "prezent", "b": "present" }
+        ]
+      }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz w pary — szkoła i przyjaciele.",
+        "pairs": [
+          { "a": "przyjaciel", "b": "friend" },
+          { "a": "najlepszy przyjaciel", "b": "best friend" },
+          { "a": "klasa", "b": "class" },
+          { "a": "kolega z klasy", "b": "classmate" },
+          { "a": "wycieczka szkolna", "b": "school trip" }
+        ]
+      }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz w pary — jaki? jaka?",
+        "pairs": [
+          { "a": "szczęśliwy", "b": "happy" },
+          { "a": "uroczy", "b": "lovely" },
+          { "a": "pyszny", "b": "yummy" },
+          { "a": "bałagan", "b": "mess" },
+          { "a": "jeść", "b": "eat" }
+        ]
+      }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz zwroty w pary.",
+        "pairs": [
+          { "a": "Bądź ostrożny!", "b": "Be careful!" },
+          { "a": "Potrzymaj to, proszę.", "b": "Hold this, please." },
+          { "a": "Zajmę się tym.", "b": "I've got it!" },
+          { "a": "Zróbmy sobie przerwę.", "b": "Let's have a break." },
+          { "a": "Wszystkiego najlepszego z okazji urodzin!", "b": "Happy birthday!" }
+        ]
+      }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj słowo.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "urodziny", "b": "birthday" },
+          { "a": "ciasto", "b": "cake" },
+          { "a": "prezent", "b": "present" },
+          { "a": "kartka z życzeniami", "b": "card" },
+          { "a": "przyjaciel", "b": "friend" },
+          { "a": "klasa", "b": "class" }
+        ]
+      }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj słowo.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "szczęśliwy", "b": "happy" },
+          { "a": "uroczy", "b": "lovely" },
+          { "a": "pyszny", "b": "yummy" },
+          { "a": "bałagan", "b": "mess" },
+          { "a": "jeść", "b": "eat" }
+        ]
+      }
+    },
+    { "type": "listening", "conceptKey": "party.birthday", "points": 15, "payload": { "speak": "birthday", "lang": "en-GB", "accepted": ["birthday"] } },
+    { "type": "listening", "conceptKey": "school.classmate", "points": 15, "payload": { "speak": "classmate", "lang": "en-GB", "accepted": ["classmate"] } },
+    { "type": "listening", "conceptKey": "party.present", "points": 15, "payload": { "speak": "present", "lang": "en-GB", "accepted": ["present"] } },
+    { "type": "listening", "conceptKey": "adj.yummy", "points": 15, "payload": { "speak": "yummy", "lang": "en-GB", "accepted": ["yummy"] } },
+    { "type": "listening", "conceptKey": "friend.best-friend", "points": 15, "payload": { "speak": "best friend", "lang": "en-GB", "accepted": ["best friend"] } },
+    {
+      "type": "sentence_order",
+      "conceptKey": "say.lets-have-a-break",
+      "points": 15,
+      "payload": { "prompt": "Zróbmy sobie przerwę.", "tokens": ["Let's", "have", "a", "break."], "solution": ["Let's", "have", "a", "break."] }
+    },
+    {
+      "type": "sentence_order",
+      "conceptKey": "say.hold-this",
+      "points": 15,
+      "payload": { "prompt": "Potrzymaj to, proszę.", "tokens": ["Hold", "this,", "please."], "solution": ["Hold", "this,", "please."] }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "party.birthday-cake",
+      "payload": { "sentence": "Happy birthday! Here is your birthday {{blank}}.", "options": ["cake", "card", "class", "mess"], "answer": "cake", "translation": "Wszystkiego najlepszego! Oto twój tort urodzinowy." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "adj.yummy",
+      "payload": { "sentence": "This cake is really {{blank}}!", "options": ["yummy", "careful", "happy", "lovely"], "answer": "yummy", "translation": "To ciasto jest naprawdę pyszne!" }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "friend.best-friend",
+      "payload": { "sentence": "Lian is my {{blank}} friend.", "options": ["best", "lovely", "happy", "yummy"], "answer": "best", "translation": "Lian jest moją najlepszą przyjaciółką." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "say.be-careful",
+      "payload": { "sentence": "{{blank}} careful! The cake is here.", "options": ["Be", "Have", "Do", "Is"], "answer": "Be", "translation": "Uważaj! Tort jest tutaj." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "thing.mess",
+      "payload": { "sentence": "Oh no, what a {{blank}}!", "options": ["mess", "cake", "class", "present"], "answer": "mess", "translation": "O nie, ale bałagan!" }
+    }
+  ]
+}

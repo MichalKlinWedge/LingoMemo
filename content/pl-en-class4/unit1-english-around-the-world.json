@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-class4",
+  "unit": { "slug": "en-4-unit1", "title": "UNIT 1", "sortOrder": 2 },
+  "lesson": {
+    "slug": "4u1-english-around-the-world",
+    "title": "English around the world",
+    "icon": "🌐",
+    "kind": "standard",
+    "sortOrder": 6,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "4u1-places",
+    "isPublished": true
+  },
+  "concepts": [
+    { "key": "country.england", "tags": ["🏴"], "terms": { "pl": [{ "text": "Anglia", "pos": "noun" }], "en": [{ "text": "England", "pos": "noun", "ipa": "/ˈɪŋglənd/" }] } },
+    { "key": "country.scotland", "tags": ["🏔️"], "terms": { "pl": [{ "text": "Szkocja", "pos": "noun" }], "en": [{ "text": "Scotland", "pos": "noun", "ipa": "/ˈskɒtlənd/" }] } },
+    { "key": "country.wales", "tags": ["🐉"], "terms": { "pl": [{ "text": "Walia", "pos": "noun" }], "en": [{ "text": "Wales", "pos": "noun", "ipa": "/weɪlz/" }] } },
+    { "key": "country.northern-ireland", "tags": ["☘️"], "terms": { "pl": [{ "text": "Irlandia Północna", "pos": "noun" }], "en": [{ "text": "Northern Ireland", "pos": "noun", "ipa": "/ˌnɔːðən ˈaɪələnd/" }] } },
+    { "key": "country.australia", "tags": ["🇦🇺"], "terms": { "pl": [{ "text": "Australia", "pos": "noun" }], "en": [{ "text": "Australia", "pos": "noun", "ipa": "/ɒˈstreɪliə/" }] } },
+    { "key": "country.canada", "tags": ["🇨🇦"], "terms": { "pl": [{ "text": "Kanada", "pos": "noun" }], "en": [{ "text": "Canada", "pos": "noun", "ipa": "/ˈkænədə/" }] } },
+    { "key": "word.capital-city", "tags": ["🏛️"], "terms": { "pl": [{ "text": "stolica", "pos": "noun" }], "en": [{ "text": "capital city", "pos": "noun", "ipa": "/ˈkæpətl ˈsɪti/" }] } },
+    { "key": "word.official-language", "tags": ["🗣️"], "terms": { "pl": [{ "text": "język urzędowy", "pos": "noun" }], "en": [{ "text": "official language", "pos": "noun", "ipa": "/əˈfɪʃəl ˈlæŋgwɪdʒ/" }] } }
+  ],
+  "exercises": [
+    { "type": "translate_ab", "conceptKey": "country.england", "payload": { "prompt": "Anglia", "accepted": ["England"] } },
+    { "type": "translate_ab", "conceptKey": "country.scotland", "payload": { "prompt": "Szkocja", "accepted": ["Scotland"] } },
+    { "type": "translate_ab", "conceptKey": "country.wales", "payload": { "prompt": "Walia", "accepted": ["Wales"] } },
+    { "type": "translate_ab", "conceptKey": "country.northern-ireland", "payload": { "prompt": "Irlandia Północna", "accepted": ["Northern Ireland"] } },
+    { "type": "translate_ab", "conceptKey": "country.australia", "payload": { "prompt": "Australia", "accepted": ["Australia"] } },
+    { "type": "translate_ab", "conceptKey": "country.canada", "payload": { "prompt": "Kanada", "accepted": ["Canada"] } },
+    { "type": "translate_ab", "conceptKey": "word.capital-city", "payload": { "prompt": "stolica", "accepted": ["capital city", "the capital city", "capital"] } },
+    { "type": "translate_ab", "conceptKey": "word.official-language", "payload": { "prompt": "język urzędowy", "accepted": ["official language", "the official language"] } },
+    { "type": "translate_ba", "conceptKey": "country.scotland", "payload": { "prompt": "Scotland", "accepted": ["Szkocja"] } },
+    { "type": "translate_ba", "conceptKey": "country.wales", "payload": { "prompt": "Wales", "accepted": ["Walia"] } },
+    { "type": "translate_ba", "conceptKey": "word.capital-city", "payload": { "prompt": "capital city", "accepted": ["stolica"] } },
+    { "type": "translate_ba", "conceptKey": "word.official-language", "payload": { "prompt": "official language", "accepted": ["język urzędowy"] } },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz w pary — cztery kraje Wielkiej Brytanii.",
+        "pairs": [
+          { "a": "Anglia", "b": "England" },
+          { "a": "Szkocja", "b": "Scotland" },
+          { "a": "Walia", "b": "Wales" },
+          { "a": "Irlandia Północna", "b": "Northern Ireland" }
+        ]
+      }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz kraj ze stolicą.",
+        "pairs": [
+          { "a": "the UK", "b": "London" },
+          { "a": "the USA", "b": "Washington" },
+          { "a": "Australia", "b": "Canberra" },
+          { "a": "Poland", "b": "Warsaw" },
+          { "a": "France", "b": "Paris" }
+        ]
+      }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj kraj.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "Anglia", "b": "England" },
+          { "a": "Szkocja", "b": "Scotland" },
+          { "a": "Walia", "b": "Wales" },
+          { "a": "Australia", "b": "Australia" },
+          { "a": "Kanada", "b": "Canada" }
+        ]
+      }
+    },
+    { "type": "listening", "conceptKey": "country.scotland", "points": 15, "payload": { "speak": "Scotland", "lang": "en-GB", "accepted": ["Scotland"] } },
+    { "type": "listening", "conceptKey": "country.australia", "points": 15, "payload": { "speak": "Australia", "lang": "en-GB", "accepted": ["Australia"] } },
+    { "type": "listening", "conceptKey": "word.capital-city", "points": 15, "payload": { "speak": "capital city", "lang": "en-GB", "accepted": ["capital city"] } },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "country.scotland",
+      "payload": { "sentence": "Scotland is in {{blank}}.", "options": ["the UK", "the USA", "Australia", "Canada"], "answer": "the UK", "translation": "Szkocja leży w Wielkiej Brytanii." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "country.australia",
+      "payload": { "sentence": "Sydney is in {{blank}}.", "options": ["Australia", "the USA", "the UK", "Canada"], "answer": "Australia", "translation": "Sydney leży w Australii." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "Many people speak Spanish in {{blank}}.", "options": ["the USA", "the UK", "Australia", "Poland"], "answer": "the USA", "translation": "Wiele osób mówi po hiszpańsku w Stanach Zjednoczonych." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "country.australia",
+      "payload": { "sentence": "The capital city of Australia is {{blank}}.", "options": ["Canberra", "Sydney", "London", "Washington"], "answer": "Canberra", "translation": "Stolicą Australii jest Canberra." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "word.capital-city",
+      "payload": { "sentence": "The capital city of the USA is {{blank}}.", "options": ["Washington", "New York", "London", "Canberra"], "answer": "Washington", "translation": "Stolicą Stanów Zjednoczonych jest Waszyngton." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "word.capital-city",
+      "payload": { "sentence": "The capital city of the UK is {{blank}}.", "options": ["London", "Dublin", "Edinburgh", "Cardiff"], "answer": "London", "translation": "Stolicą Wielkiej Brytanii jest Londyn." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "word.official-language",
+      "payload": { "sentence": "English is the {{blank}} language of the UK.", "options": ["official", "capital", "interesting", "favourite"], "answer": "official", "translation": "Angielski jest językiem urzędowym Wielkiej Brytanii." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "When it's winter in the UK, it is {{blank}} in Australia.", "options": ["summer", "winter", "Monday", "cold"], "answer": "summer", "translation": "Kiedy w Wielkiej Brytanii jest zima, w Australii jest lato." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "country.australia",
+      "payload": { "sentence": "It's Australia. {{blank}} capital is Canberra.", "options": ["Its", "It's", "Its'", "It is"], "answer": "Its", "translation": "To Australia. Jej stolicą jest Canberra." }
+    },
+    {
+      "type": "sentence_order",
+      "conceptKey": "country.england",
+      "points": 15,
+      "payload": {
+        "prompt": "Wielka Brytania to cztery kraje.",
+        "tokens": ["The", "UK", "is", "four", "different", "countries."],
+        "solution": ["The", "UK", "is", "four", "different", "countries."]
+      }
+    }
+  ]
+}

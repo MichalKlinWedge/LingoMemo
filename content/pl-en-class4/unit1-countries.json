@@ -1,0 +1,226 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-class4",
+  "unit": { "slug": "en-4-unit1", "title": "UNIT 1", "sortOrder": 2 },
+  "lesson": {
+    "slug": "4u1-countries",
+    "title": "Countries and nationalities",
+    "icon": "🌍",
+    "kind": "standard",
+    "sortOrder": 3,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "4u1-out-of-class",
+    "isPublished": true
+  },
+  "concepts": [
+    { "key": "country.poland", "tags": ["🇵🇱"], "terms": { "pl": [{ "text": "Polska", "pos": "noun" }], "en": [{ "text": "Poland", "pos": "noun", "ipa": "/ˈpəʊlənd/" }] } },
+    { "key": "country.uk", "tags": ["🇬🇧"], "terms": { "pl": [{ "text": "Wielka Brytania", "pos": "noun" }], "en": [{ "text": "the UK", "pos": "noun", "ipa": "/ðə ˌjuː ˈkeɪ/" }] } },
+    { "key": "country.usa", "tags": ["🇺🇸"], "terms": { "pl": [{ "text": "Stany Zjednoczone", "pos": "noun" }], "en": [{ "text": "the USA", "pos": "noun", "ipa": "/ðə ˌjuː es ˈeɪ/" }] } },
+    { "key": "country.china", "tags": ["🇨🇳"], "terms": { "pl": [{ "text": "Chiny", "pos": "noun" }], "en": [{ "text": "China", "pos": "noun", "ipa": "/ˈtʃaɪnə/" }] } },
+    { "key": "country.france", "tags": ["🇫🇷"], "terms": { "pl": [{ "text": "Francja", "pos": "noun" }], "en": [{ "text": "France", "pos": "noun", "ipa": "/frɑːns/" }] } },
+    { "key": "country.italy", "tags": ["🇮🇹"], "terms": { "pl": [{ "text": "Włochy", "pos": "noun" }], "en": [{ "text": "Italy", "pos": "noun", "ipa": "/ˈɪtəli/" }] } },
+    { "key": "country.spain", "tags": ["🇪🇸"], "terms": { "pl": [{ "text": "Hiszpania", "pos": "noun" }], "en": [{ "text": "Spain", "pos": "noun", "ipa": "/speɪn/" }] } },
+    { "key": "nat.polish", "tags": ["🇵🇱"], "terms": { "pl": [{ "text": "polski", "pos": "adjective" }], "en": [{ "text": "Polish", "pos": "adjective", "ipa": "/ˈpəʊlɪʃ/" }] } },
+    { "key": "nat.british", "tags": ["🇬🇧"], "terms": { "pl": [{ "text": "brytyjski", "pos": "adjective" }], "en": [{ "text": "British", "pos": "adjective", "ipa": "/ˈbrɪtɪʃ/" }] } },
+    { "key": "nat.american", "tags": ["🇺🇸"], "terms": { "pl": [{ "text": "amerykański", "pos": "adjective" }], "en": [{ "text": "American", "pos": "adjective", "ipa": "/əˈmerəkən/" }] } },
+    { "key": "nat.chinese", "tags": ["🇨🇳"], "terms": { "pl": [{ "text": "chiński", "pos": "adjective" }], "en": [{ "text": "Chinese", "pos": "adjective", "ipa": "/ˌtʃaɪˈniːz/" }] } },
+    { "key": "nat.french", "tags": ["🇫🇷"], "terms": { "pl": [{ "text": "francuski", "pos": "adjective" }], "en": [{ "text": "French", "pos": "adjective", "ipa": "/frentʃ/" }] } },
+    { "key": "nat.italian", "tags": ["🇮🇹"], "terms": { "pl": [{ "text": "włoski", "pos": "adjective" }], "en": [{ "text": "Italian", "pos": "adjective", "ipa": "/ɪˈtæliən/" }] } },
+    { "key": "nat.spanish", "tags": ["🇪🇸"], "terms": { "pl": [{ "text": "hiszpański", "pos": "adjective" }], "en": [{ "text": "Spanish", "pos": "adjective", "ipa": "/ˈspænɪʃ/" }] } },
+    { "key": "say.bye-now", "tags": ["👋"], "terms": { "pl": [{ "text": "Do zobaczenia!", "pos": "phrase" }], "en": [{ "text": "Bye now!", "pos": "phrase" }] } },
+    { "key": "thing.family-album", "tags": ["📔"], "terms": { "pl": [{ "text": "rodzinny album ze zdjęciami", "pos": "noun" }], "en": [{ "text": "family album", "pos": "noun" }] } },
+    { "key": "say.help", "tags": ["🆘"], "terms": { "pl": [{ "text": "Pomocy!", "pos": "phrase" }], "en": [{ "text": "Help!", "pos": "phrase" }] } },
+    { "key": "adj.hungry", "tags": ["🍽️"], "terms": { "pl": [{ "text": "głodny", "pos": "adjective" }], "en": [{ "text": "hungry", "pos": "adjective", "ipa": "/ˈhʌŋgri/" }] } },
+    { "key": "say.in-the-photo", "tags": ["🖼️"], "terms": { "pl": [{ "text": "na zdjęciu", "pos": "phrase" }], "en": [{ "text": "in the photo", "pos": "phrase" }] } },
+    { "key": "say.no-idea", "tags": ["🤷"], "terms": { "pl": [{ "text": "Nie mam pojęcia.", "pos": "phrase" }], "en": [{ "text": "No idea.", "pos": "phrase" }] } },
+    { "key": "say.sorry", "tags": ["🙏"], "terms": { "pl": [{ "text": "Przepraszam.", "pos": "phrase" }], "en": [{ "text": "Sorry.", "pos": "phrase" }] } },
+    { "key": "thing.superhero", "tags": ["🦸"], "terms": { "pl": [{ "text": "superbohater", "pos": "noun" }], "en": [{ "text": "superhero", "pos": "noun", "ipa": "/ˈsuːpəˌhɪərəʊ/" }] } },
+    { "key": "say.what-about-you", "tags": ["❓"], "terms": { "pl": [{ "text": "A co z tobą?", "pos": "phrase" }], "en": [{ "text": "What about you?", "pos": "phrase" }] } },
+    { "key": "say.youre-right", "tags": ["✅"], "terms": { "pl": [{ "text": "Masz rację.", "pos": "phrase" }], "en": [{ "text": "You're right.", "pos": "phrase" }] } }
+  ],
+  "exercises": [
+    { "type": "translate_ab", "conceptKey": "country.poland", "payload": { "prompt": "Polska", "accepted": ["Poland"] } },
+    { "type": "translate_ab", "conceptKey": "country.uk", "payload": { "prompt": "Wielka Brytania", "accepted": ["the UK", "UK"] } },
+    { "type": "translate_ab", "conceptKey": "country.usa", "payload": { "prompt": "Stany Zjednoczone", "accepted": ["the USA", "USA"] } },
+    { "type": "translate_ab", "conceptKey": "country.china", "payload": { "prompt": "Chiny", "accepted": ["China"] } },
+    { "type": "translate_ab", "conceptKey": "country.france", "payload": { "prompt": "Francja", "accepted": ["France"] } },
+    { "type": "translate_ab", "conceptKey": "country.italy", "payload": { "prompt": "Włochy", "accepted": ["Italy"] } },
+    { "type": "translate_ab", "conceptKey": "country.spain", "payload": { "prompt": "Hiszpania", "accepted": ["Spain"] } },
+    { "type": "translate_ab", "conceptKey": "nat.polish", "payload": { "prompt": "polski", "accepted": ["Polish"] } },
+    { "type": "translate_ab", "conceptKey": "nat.british", "payload": { "prompt": "brytyjski", "accepted": ["British"] } },
+    { "type": "translate_ab", "conceptKey": "nat.american", "payload": { "prompt": "amerykański", "accepted": ["American"] } },
+    { "type": "translate_ab", "conceptKey": "nat.chinese", "payload": { "prompt": "chiński", "accepted": ["Chinese"] } },
+    { "type": "translate_ab", "conceptKey": "nat.french", "payload": { "prompt": "francuski", "accepted": ["French"] } },
+    { "type": "translate_ab", "conceptKey": "nat.italian", "payload": { "prompt": "włoski", "accepted": ["Italian"] } },
+    { "type": "translate_ab", "conceptKey": "nat.spanish", "payload": { "prompt": "hiszpański", "accepted": ["Spanish"] } },
+    { "type": "translate_ab", "conceptKey": "adj.hungry", "payload": { "prompt": "głodny", "accepted": ["hungry"] } },
+    { "type": "translate_ab", "conceptKey": "thing.superhero", "payload": { "prompt": "superbohater", "accepted": ["superhero", "a superhero"] } },
+    { "type": "translate_ab", "conceptKey": "thing.family-album", "payload": { "prompt": "rodzinny album ze zdjęciami", "accepted": ["family album", "a family album"] } },
+    { "type": "translate_ab", "conceptKey": "say.in-the-photo", "payload": { "prompt": "na zdjęciu", "accepted": ["in the photo"] } },
+    {
+      "type": "translate_ab",
+      "conceptKey": "say.bye-now",
+      "payload": { "prompt": "Do zobaczenia!", "accepted": ["Bye now!", "Bye now"], "options": ["Bye now!", "Help!", "Sorry.", "No idea."] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "say.help",
+      "payload": { "prompt": "Pomocy!", "accepted": ["Help!", "Help"], "options": ["Help!", "Sorry.", "Bye now!", "You're right."] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "say.no-idea",
+      "payload": { "prompt": "Nie mam pojęcia.", "accepted": ["No idea.", "No idea"], "options": ["No idea.", "You're right.", "What about you?", "Sorry."] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "say.sorry",
+      "payload": { "prompt": "Przepraszam.", "accepted": ["Sorry.", "Sorry"], "options": ["Sorry.", "Help!", "Bye now!", "No idea."] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "say.what-about-you",
+      "payload": { "prompt": "A co z tobą?", "accepted": ["What about you?", "What about you"], "options": ["What about you?", "You're right.", "No idea.", "Help!"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "say.youre-right",
+      "payload": { "prompt": "Masz rację.", "accepted": ["You're right.", "Youre right", "You are right."], "options": ["You're right.", "No idea.", "What about you?", "Sorry."] }
+    },
+    { "type": "translate_ba", "conceptKey": "country.uk", "payload": { "prompt": "the UK", "accepted": ["Wielka Brytania"] } },
+    { "type": "translate_ba", "conceptKey": "nat.british", "payload": { "prompt": "British", "accepted": ["brytyjski"] } },
+    { "type": "translate_ba", "conceptKey": "nat.chinese", "payload": { "prompt": "Chinese", "accepted": ["chiński"] } },
+    { "type": "translate_ba", "conceptKey": "adj.hungry", "payload": { "prompt": "hungry", "accepted": ["głodny"] } },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz nazwy państw w pary.",
+        "pairs": [
+          { "a": "Polska", "b": "Poland" },
+          { "a": "Wielka Brytania", "b": "the UK" },
+          { "a": "Stany Zjednoczone", "b": "the USA" },
+          { "a": "Chiny", "b": "China" },
+          { "a": "Francja", "b": "France" },
+          { "a": "Włochy", "b": "Italy" }
+        ]
+      }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz narodowości w pary.",
+        "pairs": [
+          { "a": "polski", "b": "Polish" },
+          { "a": "brytyjski", "b": "British" },
+          { "a": "amerykański", "b": "American" },
+          { "a": "chiński", "b": "Chinese" },
+          { "a": "francuski", "b": "French" },
+          { "a": "włoski", "b": "Italian" }
+        ]
+      }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz państwo z narodowością.",
+        "pairs": [
+          { "a": "Poland", "b": "Polish" },
+          { "a": "Spain", "b": "Spanish" },
+          { "a": "Italy", "b": "Italian" },
+          { "a": "France", "b": "French" },
+          { "a": "China", "b": "Chinese" },
+          { "a": "the USA", "b": "American" }
+        ]
+      }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz zwroty w pary.",
+        "pairs": [
+          { "a": "Do zobaczenia!", "b": "Bye now!" },
+          { "a": "Pomocy!", "b": "Help!" },
+          { "a": "Nie mam pojęcia.", "b": "No idea." },
+          { "a": "Przepraszam.", "b": "Sorry." },
+          { "a": "A co z tobą?", "b": "What about you?" },
+          { "a": "Masz rację.", "b": "You're right." }
+        ]
+      }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj państwo.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "Polska", "b": "Poland" },
+          { "a": "Chiny", "b": "China" },
+          { "a": "Francja", "b": "France" },
+          { "a": "Włochy", "b": "Italy" },
+          { "a": "Hiszpania", "b": "Spain" }
+        ]
+      }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj narodowość.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "polski", "b": "Polish" },
+          { "a": "brytyjski", "b": "British" },
+          { "a": "amerykański", "b": "American" },
+          { "a": "chiński", "b": "Chinese" },
+          { "a": "hiszpański", "b": "Spanish" }
+        ]
+      }
+    },
+    { "type": "listening", "conceptKey": "country.china", "points": 15, "payload": { "speak": "China", "lang": "en-GB", "accepted": ["China"] } },
+    { "type": "listening", "conceptKey": "nat.chinese", "points": 15, "payload": { "speak": "Chinese", "lang": "en-GB", "accepted": ["Chinese"] } },
+    { "type": "listening", "conceptKey": "nat.spanish", "points": 15, "payload": { "speak": "Spanish", "lang": "en-GB", "accepted": ["Spanish"] } },
+    { "type": "listening", "conceptKey": "thing.superhero", "points": 15, "payload": { "speak": "superhero", "lang": "en-GB", "accepted": ["superhero"] } },
+    { "type": "listening", "conceptKey": "adj.hungry", "points": 15, "payload": { "speak": "hungry", "lang": "en-GB", "accepted": ["hungry"] } },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "nat.polish",
+      "payload": { "sentence": "I'm from Poland. I'm {{blank}}.", "options": ["Polish", "Poland", "Polsky", "Poles"], "answer": "Polish", "translation": "Jestem z Polski. Jestem Polakiem." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "nat.british",
+      "payload": { "sentence": "Alex is from the UK. He's {{blank}}.", "options": ["British", "Britain", "Britishman", "English"], "answer": "British", "translation": "Alex jest z Wielkiej Brytanii. Jest Brytyjczykiem." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "nat.spanish",
+      "payload": { "sentence": "Lucas is from Spain. He's {{blank}}.", "options": ["Spanish", "Spain", "Spainish", "Spanian"], "answer": "Spanish", "translation": "Lucas jest z Hiszpanii. Jest Hiszpanem." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "nat.italian",
+      "payload": { "sentence": "Antonio is from Italy. He's {{blank}}.", "options": ["Italian", "Italy", "Italish", "Italiano"], "answer": "Italian", "translation": "Antonio jest z Włoch. Jest Włochem." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "nat.chinese",
+      "payload": { "sentence": "Lian's mum is from China. She's {{blank}}.", "options": ["Chinese", "China", "Chinish", "Chinan"], "answer": "Chinese", "translation": "Mama Lian jest z Chin. Jest Chinką." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "nat.american",
+      "payload": { "sentence": "Maria is from the USA. She's {{blank}}.", "options": ["American", "America", "the USA", "Americish"], "answer": "American", "translation": "Maria jest ze Stanów Zjednoczonych. Jest Amerykanką." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "nat.french",
+      "payload": { "sentence": "Marie is from France. She's {{blank}}.", "options": ["French", "France", "Frenchish", "Francish"], "answer": "French", "translation": "Marie jest z Francji. Jest Francuzką." }
+    }
+  ]
+}

@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-class4",
+  "unit": { "slug": "en-4-unit1", "title": "UNIT 1", "sortOrder": 2 },
+  "lesson": {
+    "slug": "4u1-places",
+    "title": "Places and photos",
+    "icon": "📸",
+    "kind": "standard",
+    "sortOrder": 5,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "4u1-introductions",
+    "isPublished": true
+  },
+  "concepts": [
+    { "key": "place.at-home", "tags": ["🏠"], "terms": { "pl": [{ "text": "w domu", "pos": "phrase" }], "en": [{ "text": "at home", "pos": "phrase", "ipa": "/ət ˈhəʊm/" }] } },
+    { "key": "place.at-school", "tags": ["🏫"], "terms": { "pl": [{ "text": "w szkole", "pos": "phrase" }], "en": [{ "text": "at school", "pos": "phrase", "ipa": "/ət ˈskuːl/" }] } },
+    { "key": "place.at-a-party", "tags": ["🎈"], "terms": { "pl": [{ "text": "na przyjęciu", "pos": "phrase" }], "en": [{ "text": "at a party", "pos": "phrase", "ipa": "/ət ə ˈpɑːti/" }] } },
+    { "key": "place.in-the-garden", "tags": ["🌳"], "terms": { "pl": [{ "text": "w ogrodzie", "pos": "phrase" }], "en": [{ "text": "in the garden", "pos": "phrase", "ipa": "/ɪn ðə ˈgɑːdn/" }] } },
+    { "key": "place.in-the-park", "tags": ["🌲"], "terms": { "pl": [{ "text": "w parku", "pos": "phrase" }], "en": [{ "text": "in the park", "pos": "phrase", "ipa": "/ɪn ðə ˈpɑːk/" }] } },
+    { "key": "place.on-holiday", "tags": ["🏖️"], "terms": { "pl": [{ "text": "na wakacjach", "pos": "phrase" }], "en": [{ "text": "on holiday", "pos": "phrase", "ipa": "/ɒn ˈhɒlədeɪ/" }] } },
+    { "key": "adj.favourite", "tags": ["⭐"], "terms": { "pl": [{ "text": "ulubiony", "pos": "adjective" }], "en": [{ "text": "favourite", "pos": "adjective", "ipa": "/ˈfeɪvərət/" }] } },
+    { "key": "family.great-grandmother", "tags": ["👵"], "terms": { "pl": [{ "text": "prababcia", "pos": "noun" }], "en": [{ "text": "great-grandmother", "pos": "noun", "ipa": "/ˈgreɪt ˈgrænmʌðə/" }] } },
+    { "key": "adv.near", "tags": ["📍"], "terms": { "pl": [{ "text": "blisko", "pos": "adverb" }], "en": [{ "text": "near", "pos": "adverb", "ipa": "/nɪə/" }] } },
+    { "key": "adv.too", "tags": ["➕"], "terms": { "pl": [{ "text": "też", "pos": "adverb" }], "en": [{ "text": "too", "pos": "adverb", "ipa": "/tuː/" }] } },
+    { "key": "adj.interesting", "tags": ["🤔"], "terms": { "pl": [{ "text": "interesujący", "pos": "adjective" }], "en": [{ "text": "interesting", "pos": "adjective", "ipa": "/ˈɪntrəstɪŋ/" }] } },
+    { "key": "verb.spell", "tags": ["🔤"], "terms": { "pl": [{ "text": "literować", "pos": "verb" }], "en": [{ "text": "spell", "pos": "verb", "ipa": "/spel/" }] } },
+    { "key": "event.friendship-day", "tags": ["🫶"], "terms": { "pl": [{ "text": "Międzynarodowy Dzień Przyjaźni", "pos": "noun" }], "en": [{ "text": "International Friendship Day", "pos": "noun" }] } }
+  ],
+  "exercises": [
+    { "type": "translate_ab", "conceptKey": "place.at-home", "payload": { "prompt": "w domu", "accepted": ["at home"] } },
+    { "type": "translate_ab", "conceptKey": "place.at-school", "payload": { "prompt": "w szkole", "accepted": ["at school"] } },
+    { "type": "translate_ab", "conceptKey": "place.at-a-party", "payload": { "prompt": "na przyjęciu", "accepted": ["at a party"] } },
+    { "type": "translate_ab", "conceptKey": "place.in-the-garden", "payload": { "prompt": "w ogrodzie", "accepted": ["in the garden"] } },
+    { "type": "translate_ab", "conceptKey": "place.in-the-park", "payload": { "prompt": "w parku", "accepted": ["in the park"] } },
+    { "type": "translate_ab", "conceptKey": "place.on-holiday", "payload": { "prompt": "na wakacjach", "accepted": ["on holiday"] } },
+    { "type": "translate_ab", "conceptKey": "adj.favourite", "payload": { "prompt": "ulubiony", "accepted": ["favourite", "favorite"] } },
+    { "type": "translate_ab", "conceptKey": "family.great-grandmother", "payload": { "prompt": "prababcia", "accepted": ["great-grandmother", "great grandmother"] } },
+    { "type": "translate_ab", "conceptKey": "adv.near", "payload": { "prompt": "blisko", "accepted": ["near"] } },
+    { "type": "translate_ab", "conceptKey": "adv.too", "payload": { "prompt": "też", "accepted": ["too"] } },
+    { "type": "translate_ab", "conceptKey": "adj.interesting", "payload": { "prompt": "interesujący", "accepted": ["interesting"] } },
+    { "type": "translate_ab", "conceptKey": "verb.spell", "payload": { "prompt": "literować", "accepted": ["spell", "to spell"] } },
+    { "type": "translate_ab", "conceptKey": "event.friendship-day", "payload": { "prompt": "Międzynarodowy Dzień Przyjaźni", "accepted": ["International Friendship Day"] } },
+    { "type": "translate_ba", "conceptKey": "place.on-holiday", "payload": { "prompt": "on holiday", "accepted": ["na wakacjach"] } },
+    { "type": "translate_ba", "conceptKey": "place.in-the-garden", "payload": { "prompt": "in the garden", "accepted": ["w ogrodzie"] } },
+    { "type": "translate_ba", "conceptKey": "adj.favourite", "payload": { "prompt": "favourite", "accepted": ["ulubiony"] } },
+    { "type": "translate_ba", "conceptKey": "family.great-grandmother", "payload": { "prompt": "great-grandmother", "accepted": ["prababcia"] } },
+    { "type": "translate_ba", "conceptKey": "adj.interesting", "payload": { "prompt": "interesting", "accepted": ["interesujący"] } },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz miejsca w pary.",
+        "pairs": [
+          { "a": "w domu", "b": "at home" },
+          { "a": "w szkole", "b": "at school" },
+          { "a": "na przyjęciu", "b": "at a party" },
+          { "a": "w ogrodzie", "b": "in the garden" },
+          { "a": "w parku", "b": "in the park" },
+          { "a": "na wakacjach", "b": "on holiday" }
+        ]
+      }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz słówka w pary.",
+        "pairs": [
+          { "a": "ulubiony", "b": "favourite" },
+          { "a": "prababcia", "b": "great-grandmother" },
+          { "a": "blisko", "b": "near" },
+          { "a": "też", "b": "too" },
+          { "a": "interesujący", "b": "interesting" },
+          { "a": "literować", "b": "spell" }
+        ]
+      }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj miejsce.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "w domu", "b": "at home" },
+          { "a": "w szkole", "b": "at school" },
+          { "a": "na przyjęciu", "b": "at a party" },
+          { "a": "w parku", "b": "in the park" },
+          { "a": "na wakacjach", "b": "on holiday" }
+        ]
+      }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj słowo.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "ulubiony", "b": "favourite" },
+          { "a": "blisko", "b": "near" },
+          { "a": "też", "b": "too" },
+          { "a": "interesujący", "b": "interesting" },
+          { "a": "literować", "b": "spell" }
+        ]
+      }
+    },
+    { "type": "listening", "conceptKey": "adj.favourite", "points": 15, "payload": { "speak": "favourite", "lang": "en-GB", "accepted": ["favourite", "favorite"] } },
+    { "type": "listening", "conceptKey": "adj.interesting", "points": 15, "payload": { "speak": "interesting", "lang": "en-GB", "accepted": ["interesting"] } },
+    { "type": "listening", "conceptKey": "place.on-holiday", "points": 15, "payload": { "speak": "on holiday", "lang": "en-GB", "accepted": ["on holiday"] } },
+    { "type": "listening", "conceptKey": "place.in-the-garden", "points": 15, "payload": { "speak": "in the garden", "lang": "en-GB", "accepted": ["in the garden"] } },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "place.at-school",
+      "payload": { "sentence": "Desks, chairs and a board. We're {{blank}}.", "options": ["at school", "on holiday", "in the garden", "at a party"], "answer": "at school", "translation": "Ławki, krzesła i tablica. Jesteśmy w szkole." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "place.at-a-party",
+      "payload": { "sentence": "Balloons and a big cake. We're {{blank}}.", "options": ["at a party", "at home", "in the park", "at school"], "answer": "at a party", "translation": "Balony i wielki tort. Jesteśmy na przyjęciu." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "place.on-holiday",
+      "payload": { "sentence": "The sea and the sand. We're {{blank}}.", "options": ["on holiday", "at home", "in the garden", "at school"], "answer": "on holiday", "translation": "Morze i piasek. Jesteśmy na wakacjach." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "place.in-the-park",
+      "payload": { "sentence": "Trees, a bench and a dog. We're {{blank}}.", "options": ["in the park", "at school", "at a party", "at home"], "answer": "in the park", "translation": "Drzewa, ławka i pies. Jesteśmy w parku." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "Jamie is from Manchester in the {{blank}}.", "options": ["UK", "USA", "Italy", "Poland"], "answer": "UK", "translation": "Jamie jest z Manchesteru w Wielkiej Brytanii." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "Jamie's grandfather Antonio is {{blank}}.", "options": ["Italian", "British", "Polish", "Chinese"], "answer": "Italian", "translation": "Dziadek Jamiego, Antonio, jest Włochem." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "family.great-grandmother",
+      "payload": { "sentence": "Harriet is Jamie's {{blank}}.", "options": ["great-grandmother", "granny", "aunt", "cousin"], "answer": "great-grandmother", "translation": "Harriet jest prababcią Jamiego." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "It's Harriet's birthday. She's {{blank}} years old.", "options": ["eighty", "eighteen", "eight", "ninety"], "answer": "eighty", "translation": "Harriet ma urodziny. Ma osiemdziesiąt lat." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "place.in-the-park",
+      "payload": { "sentence": "Yuki is Gina's dog. He's big and friendly. They're {{blank}} near Gina's house.", "options": ["in the park", "at school", "at a party", "on holiday"], "answer": "in the park", "translation": "Yuki to pies Giny. Jest duży i przyjazny. Są w parku blisko domu Giny." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "My best friend is {{blank}}.", "options": ["Jack", "jack", "JACK", "jAck"], "answer": "Jack", "translation": "Imiona piszemy wielką literą." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "Giorgia and Toni are {{blank}}.", "options": ["Italian", "italian", "ITALIAN", "iTalian"], "answer": "Italian", "translation": "Narodowości piszemy wielką literą." }
+    }
+  ]
+}

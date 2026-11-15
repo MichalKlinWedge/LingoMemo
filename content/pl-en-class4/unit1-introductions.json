@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-class4",
+  "unit": { "slug": "en-4-unit1", "title": "UNIT 1", "sortOrder": 2 },
+  "lesson": {
+    "slug": "4u1-introductions",
+    "title": "Nice to meet you!",
+    "icon": "🤝",
+    "kind": "standard",
+    "sortOrder": 4,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "4u1-countries",
+    "isPublished": true
+  },
+  "concepts": [
+    { "key": "intro.this-is-my-mum", "tags": ["👩"], "terms": { "pl": [{ "text": "Lucas, to jest moja mama.", "pos": "phrase" }], "en": [{ "text": "Lucas, this is my mum.", "pos": "phrase" }] } },
+    { "key": "intro.he-is-my-classmate", "tags": ["🧑‍🤝‍🧑"], "terms": { "pl": [{ "text": "To mój kolega z klasy.", "pos": "phrase" }], "en": [{ "text": "He is my classmate.", "pos": "phrase" }] } },
+    { "key": "intro.hello-lucas", "tags": ["👋"], "terms": { "pl": [{ "text": "Cześć, Lucas.", "pos": "phrase" }], "en": [{ "text": "Hello, Lucas.", "pos": "phrase" }] } },
+    { "key": "intro.nice-to-meet-you", "tags": ["🤝"], "terms": { "pl": [{ "text": "Miło cię poznać.", "pos": "phrase" }], "en": [{ "text": "Nice to meet you.", "pos": "phrase" }] } },
+    { "key": "intro.nice-to-meet-you-too", "tags": ["😊"], "terms": { "pl": [{ "text": "Ciebie także miło poznać.", "pos": "phrase" }], "en": [{ "text": "Nice to meet you too.", "pos": "phrase" }] } },
+    { "key": "thing.bag", "tags": ["🎒"], "terms": { "pl": [{ "text": "plecak", "pos": "noun" }], "en": [{ "text": "bag", "pos": "noun", "ipa": "/bæg/", "forms": [{ "label": "liczba mnoga", "text": "bags" }] }] } },
+    { "key": "adj.famous", "tags": ["🌟"], "terms": { "pl": [{ "text": "sławny", "pos": "adjective" }], "en": [{ "text": "famous", "pos": "adjective", "ipa": "/ˈfeɪməs/" }] } },
+    { "key": "people.kids", "tags": ["🧒"], "terms": { "pl": [{ "text": "dzieciaki", "pos": "noun" }], "en": [{ "text": "kids", "pos": "noun", "ipa": "/kɪdz/" }] } },
+    { "key": "people.neighbour", "tags": ["🏘️"], "terms": { "pl": [{ "text": "sąsiad", "pos": "noun" }], "en": [{ "text": "neighbour", "pos": "noun", "ipa": "/ˈneɪbə/" }] } },
+    { "key": "say.lets-go", "tags": ["🚶"], "terms": { "pl": [{ "text": "Chodźmy.", "pos": "phrase" }], "en": [{ "text": "Let's go.", "pos": "phrase" }] } }
+  ],
+  "exercises": [
+    {
+      "type": "translate_ab",
+      "conceptKey": "intro.nice-to-meet-you",
+      "payload": { "prompt": "Miło cię poznać.", "accepted": ["Nice to meet you.", "Nice to meet you"], "options": ["Nice to meet you.", "Nice to meet you too.", "Hello, Lucas.", "Let's go."] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "intro.nice-to-meet-you-too",
+      "payload": { "prompt": "Ciebie także miło poznać.", "accepted": ["Nice to meet you too.", "Nice to meet you too"], "options": ["Nice to meet you too.", "Nice to meet you.", "He is my classmate.", "Let's go."] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "intro.this-is-my-mum",
+      "payload": { "prompt": "Lucas, to jest moja mama.", "accepted": ["Lucas, this is my mum.", "Lucas this is my mum"], "options": ["Lucas, this is my mum.", "Mum, this is Lucas.", "He is my classmate.", "Nice to meet you."] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "intro.he-is-my-classmate",
+      "payload": { "prompt": "To mój kolega z klasy.", "accepted": ["He is my classmate.", "He's my classmate."], "options": ["He is my classmate.", "She is my sister.", "He is my neighbour.", "Nice to meet you too."] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "intro.hello-lucas",
+      "payload": { "prompt": "Cześć, Lucas.", "accepted": ["Hello, Lucas.", "Hello Lucas", "Hi, Lucas."], "options": ["Hello, Lucas.", "Nice to meet you.", "Let's go.", "He is my classmate."] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "say.lets-go",
+      "payload": { "prompt": "Chodźmy.", "accepted": ["Let's go.", "Lets go"], "options": ["Let's go.", "Let's have a break.", "Nice to meet you.", "Hold this, please."] }
+    },
+    { "type": "translate_ab", "conceptKey": "thing.bag", "payload": { "prompt": "plecak", "accepted": ["bag", "a bag"] } },
+    { "type": "translate_ab", "conceptKey": "adj.famous", "payload": { "prompt": "sławny", "accepted": ["famous"] } },
+    { "type": "translate_ab", "conceptKey": "people.kids", "payload": { "prompt": "dzieciaki", "accepted": ["kids"] } },
+    { "type": "translate_ab", "conceptKey": "people.neighbour", "payload": { "prompt": "sąsiad", "accepted": ["neighbour", "a neighbour", "neighbor"] } },
+    { "type": "translate_ba", "conceptKey": "people.neighbour", "payload": { "prompt": "neighbour", "accepted": ["sąsiad", "sąsiadka"] } },
+    { "type": "translate_ba", "conceptKey": "adj.famous", "payload": { "prompt": "famous", "accepted": ["sławny"] } },
+    { "type": "translate_ba", "conceptKey": "people.kids", "payload": { "prompt": "kids", "accepted": ["dzieciaki", "dzieci"] } },
+    { "type": "translate_ba", "conceptKey": "thing.bag", "payload": { "prompt": "bag", "accepted": ["plecak", "torba"] } },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz zwroty z przedstawiania.",
+        "pairs": [
+          { "a": "Miło cię poznać.", "b": "Nice to meet you." },
+          { "a": "Ciebie także miło poznać.", "b": "Nice to meet you too." },
+          { "a": "Cześć, Lucas.", "b": "Hello, Lucas." },
+          { "a": "To mój kolega z klasy.", "b": "He is my classmate." },
+          { "a": "Lucas, to jest moja mama.", "b": "Lucas, this is my mum." }
+        ]
+      }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz słówka w pary.",
+        "pairs": [
+          { "a": "plecak", "b": "bag" },
+          { "a": "sławny", "b": "famous" },
+          { "a": "dzieciaki", "b": "kids" },
+          { "a": "sąsiad", "b": "neighbour" },
+          { "a": "Chodźmy.", "b": "Let's go." }
+        ]
+      }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "plecak", "b": "bag" },
+          { "a": "sławny", "b": "famous" },
+          { "a": "dzieciaki", "b": "kids" },
+          { "a": "sąsiad", "b": "neighbour" },
+          { "a": "Chodźmy.", "b": "Let's go." }
+        ]
+      }
+    },
+    { "type": "listening", "conceptKey": "people.neighbour", "points": 15, "payload": { "speak": "neighbour", "lang": "en-GB", "accepted": ["neighbour", "neighbor"] } },
+    { "type": "listening", "conceptKey": "adj.famous", "points": 15, "payload": { "speak": "famous", "lang": "en-GB", "accepted": ["famous"] } },
+    { "type": "listening", "conceptKey": "intro.nice-to-meet-you", "points": 15, "payload": { "speak": "Nice to meet you.", "lang": "en-GB", "accepted": ["Nice to meet you.", "Nice to meet you"] } },
+    {
+      "type": "sentence_order",
+      "conceptKey": "intro.nice-to-meet-you",
+      "points": 15,
+      "payload": { "prompt": "Miło cię poznać.", "tokens": ["Nice", "to", "meet", "you."], "solution": ["Nice", "to", "meet", "you."] }
+    },
+    {
+      "type": "sentence_order",
+      "conceptKey": "intro.this-is-my-mum",
+      "points": 15,
+      "payload": { "prompt": "Lucas, to jest moja mama.", "tokens": ["Lucas,", "this", "is", "my", "mum."], "solution": ["Lucas,", "this", "is", "my", "mum."] }
+    },
+    {
+      "type": "sentence_order",
+      "conceptKey": "intro.he-is-my-classmate",
+      "points": 15,
+      "payload": { "prompt": "To mój kolega z klasy.", "tokens": ["He", "is", "my", "classmate."], "solution": ["He", "is", "my", "classmate."] }
+    },
+    {
+      "type": "sentence_order",
+      "conceptKey": "people.neighbour",
+      "points": 15,
+      "payload": { "prompt": "On jest naszym nowym sąsiadem.", "tokens": ["He's", "our", "new", "neighbour."], "solution": ["He's", "our", "new", "neighbour."] }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "intro.nice-to-meet-you",
+      "payload": { "sentence": "A: Hello, I'm George. B: {{blank}}", "options": ["Nice to meet you, George.", "Very well, thanks.", "I've got it.", "Be careful!"], "answer": "Nice to meet you, George.", "translation": "A: Cześć, jestem George. B: Miło cię poznać, George." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "intro.hello-lucas",
+      "payload": { "sentence": "A: Mum, this is Sam. B: {{blank}}", "options": ["Hello, Sam.", "He's my classmate.", "Hold this, please.", "No idea."], "answer": "Hello, Sam.", "translation": "A: Mamo, to jest Sam. B: Cześć, Sam." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "intro.nice-to-meet-you",
+      "payload": { "sentence": "A: Kate, this is my sister, Lisa. B: {{blank}}", "options": ["Hi, Lisa. Nice to meet you.", "Be careful!", "She's my friend.", "Let's go."], "answer": "Hi, Lisa. Nice to meet you.", "translation": "A: Kate, to jest moja siostra Lisa. B: Cześć, Lisa. Miło cię poznać." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "intro.nice-to-meet-you-too",
+      "payload": { "sentence": "A: Nice to meet you, Anna. B: {{blank}}", "options": ["Nice to meet you too.", "That's nice.", "Thank you.", "No idea."], "answer": "Nice to meet you too.", "translation": "A: Miło cię poznać, Anno. B: Ciebie także miło poznać." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "intro.this-is-my-mum",
+      "payload": { "sentence": "Mum, {{blank}} is Lucas.", "options": ["this", "these", "he", "it"], "answer": "this", "translation": "Mamo, to jest Lucas." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "people.neighbour",
+      "payload": { "sentence": "Lucas lives next to us. He's our new {{blank}}.", "options": ["neighbour", "classmate", "cousin", "friend"], "answer": "neighbour", "translation": "Lucas mieszka obok nas. Jest naszym nowym sąsiadem." }
+    }
+  ]
+}

@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-class4",
+  "unit": { "slug": "en-4-unit1", "title": "UNIT 1", "sortOrder": 2 },
+  "lesson": {
+    "slug": "4u1-test",
+    "title": "Test: Family and friends",
+    "icon": "🏁",
+    "kind": "standard",
+    "sortOrder": 7,
+    "xpReward": 100,
+    "passThreshold": 0.9,
+    "prerequisiteLessonSlug": "4u1-english-around-the-world",
+    "isPublished": true
+  },
+  "concepts": [
+    { "key": "family.mum", "tags": ["🤱"], "terms": { "pl": [{ "text": "mama", "pos": "noun" }], "en": [{ "text": "mum", "pos": "noun", "ipa": "/mʌm/" }] } },
+    { "key": "family.dad", "tags": ["🧔"], "terms": { "pl": [{ "text": "tata", "pos": "noun" }], "en": [{ "text": "dad", "pos": "noun", "ipa": "/dæd/" }] } },
+    { "key": "family.grandfather", "tags": ["👴"], "terms": { "pl": [{ "text": "dziadek", "pos": "noun" }], "en": [{ "text": "grandfather", "pos": "noun", "ipa": "/ˈgrændˌfɑːðə/" }, { "text": "grandad", "pos": "noun", "ipa": "/ˈgrændæd/", "isPrimary": false }] } },
+    { "key": "family.grandmother", "tags": ["👵"], "terms": { "pl": [{ "text": "babcia", "pos": "noun" }], "en": [{ "text": "grandmother", "pos": "noun", "ipa": "/ˈgrænˌmʌðə/" }, { "text": "granny", "pos": "noun", "ipa": "/ˈgræni/", "isPrimary": false }] } },
+    { "key": "family.brother", "tags": ["🧑"], "terms": { "pl": [{ "text": "brat", "pos": "noun" }], "en": [{ "text": "brother", "pos": "noun", "ipa": "/ˈbrʌðə/" }] } },
+    { "key": "family.sister", "tags": ["👩‍🦰"], "terms": { "pl": [{ "text": "siostra", "pos": "noun" }], "en": [{ "text": "sister", "pos": "noun", "ipa": "/ˈsɪstə/" }] } },
+    { "key": "family.aunt", "tags": ["👩‍🦱"], "terms": { "pl": [{ "text": "ciocia", "pos": "noun" }], "en": [{ "text": "aunt", "pos": "noun", "ipa": "/ɑːnt/" }] } },
+    { "key": "family.uncle", "tags": ["👨‍🦰"], "terms": { "pl": [{ "text": "wujek", "pos": "noun" }], "en": [{ "text": "uncle", "pos": "noun", "ipa": "/ˈʌŋkəl/" }] } },
+    { "key": "family.cousin", "tags": ["🧒"], "terms": { "pl": [{ "text": "kuzyn", "pos": "noun" }, { "text": "kuzynka", "pos": "noun", "isPrimary": false }], "en": [{ "text": "cousin", "pos": "noun", "ipa": "/ˈkʌzən/" }] } },
+    { "key": "place.at-school", "tags": ["🏫"], "terms": { "pl": [{ "text": "w szkole", "pos": "phrase" }], "en": [{ "text": "at school", "pos": "phrase", "ipa": "/ət ˈskuːl/" }] } },
+    { "key": "place.at-a-party", "tags": ["🎈"], "terms": { "pl": [{ "text": "na przyjęciu", "pos": "phrase" }], "en": [{ "text": "at a party", "pos": "phrase", "ipa": "/ət ə ˈpɑːti/" }] } },
+    { "key": "place.on-holiday", "tags": ["🏖️"], "terms": { "pl": [{ "text": "na wakacjach", "pos": "phrase" }], "en": [{ "text": "on holiday", "pos": "phrase", "ipa": "/ɒn ˈhɒlədeɪ/" }] } }
+  ],
+  "exercises": [
+    { "type": "translate_ab", "conceptKey": "family.grandfather", "payload": { "prompt": "dziadek (krótko, jak mówi dziecko)", "accepted": ["grandad", "granddad"] } },
+    { "type": "translate_ab", "conceptKey": "family.grandmother", "payload": { "prompt": "babcia (krótko, jak mówi dziecko)", "accepted": ["granny"] } },
+    { "type": "translate_ab", "conceptKey": "family.uncle", "payload": { "prompt": "wujek", "accepted": ["uncle"] } },
+    { "type": "translate_ab", "conceptKey": "family.aunt", "payload": { "prompt": "ciocia", "accepted": ["aunt"] } },
+    { "type": "translate_ab", "conceptKey": "family.mum", "payload": { "prompt": "mama", "accepted": ["mum"] } },
+    { "type": "translate_ab", "conceptKey": "family.dad", "payload": { "prompt": "tata", "accepted": ["dad"] } },
+    { "type": "translate_ab", "conceptKey": "family.cousin", "payload": { "prompt": "kuzyn", "accepted": ["cousin"] } },
+    { "type": "translate_ab", "conceptKey": "family.sister", "payload": { "prompt": "siostra", "accepted": ["sister"] } },
+    { "type": "translate_ab", "conceptKey": "family.brother", "payload": { "prompt": "brat", "accepted": ["brother"] } },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "Chinese - Spain - the UK. The odd one out is {{blank}}.", "options": ["Chinese", "Spain", "the UK"], "answer": "Chinese", "translation": "Chinese to narodowość, a nie państwo." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "the USA - Italian - the UK. The odd one out is {{blank}}.", "options": ["Italian", "the USA", "the UK"], "answer": "Italian", "translation": "Italian to narodowość, a nie państwo." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "France - Poland - American. The odd one out is {{blank}}.", "options": ["American", "France", "Poland"], "answer": "American", "translation": "American to narodowość, a nie państwo." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "Spanish - British - China. The odd one out is {{blank}}.", "options": ["China", "Spanish", "British"], "answer": "China", "translation": "China to państwo, a nie narodowość." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "French - the USA - Polish. The odd one out is {{blank}}.", "options": ["the USA", "French", "Polish"], "answer": "the USA", "translation": "the USA to państwo, a nie narodowość." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "place.at-school",
+      "payload": { "sentence": "Desks and chairs in rows. We're {{blank}}.", "options": ["at school", "in the park", "in the garden"], "answer": "at school", "translation": "Ławki i krzesła w rzędach. Jesteśmy w szkole." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "place.at-a-party",
+      "payload": { "sentence": "Balloons and a cake. We're {{blank}}.", "options": ["at a party", "at home", "on holiday"], "answer": "at a party", "translation": "Balony i tort. Jesteśmy na przyjęciu." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "place.on-holiday",
+      "payload": { "sentence": "The sea and the sand. We're {{blank}}.", "options": ["on holiday", "at home", "in the garden"], "answer": "on holiday", "translation": "Morze i piasek. Jesteśmy na wakacjach." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "Luke / cake. It's {{blank}} cake.", "options": ["Luke's", "Lukes", "Luke", "Luke is"], "answer": "Luke's", "translation": "To jest ciasto Luke'a." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "family.grandmother",
+      "payload": { "sentence": "Granny / birthday. It's {{blank}} birthday.", "options": ["Granny's", "Grannys", "Granny", "Grannies"], "answer": "Granny's", "translation": "To są urodziny babci." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "Megan / son. Jason is {{blank}} son.", "options": ["Megan's", "Megans", "Megan", "Megan is"], "answer": "Megan's", "translation": "Jason jest synem Megan." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "family.dad",
+      "payload": { "sentence": "Dad / sister. Megan is {{blank}} sister.", "options": ["Dad's", "Dads", "Dad", "Dad is"], "answer": "Dad's", "translation": "Megan jest siostrą taty." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "family.cousin",
+      "payload": { "sentence": "Tom / cousin. Anna is {{blank}} cousin.", "options": ["Tom's", "Toms", "Tom", "Tom is"], "answer": "Tom's", "translation": "Anna jest kuzynką Toma." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "Ala / parents. Maja and Adam are {{blank}} parents.", "options": ["Ala's", "Alas", "Ala", "Ala is"], "answer": "Ala's", "translation": "Maja i Adam są rodzicami Ali." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "My name's Maria. I {{blank}} thirteen.", "options": ["am", "is", "are"], "answer": "am", "translation": "Mam na imię Maria. Mam trzynaście lat." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "I {{blank}} from the USA.", "options": ["am", "is", "are"], "answer": "am", "translation": "Jestem ze Stanów Zjednoczonych." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "My best friend {{blank}} Isabel.", "options": ["is", "am", "are"], "answer": "is", "translation": "Moja najlepsza przyjaciółka to Isabel." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "Her family {{blank}} English.", "options": ["is", "am", "are"], "answer": "is", "translation": "Jej rodzina jest angielska." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "We {{blank}} classmates.", "options": ["are", "am", "is"], "answer": "are", "translation": "Jesteśmy kolegami z klasy." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "Her two brothers {{blank}} my friends too.", "options": ["are", "am", "is"], "answer": "are", "translation": "Jej dwaj bracia też są moimi przyjaciółmi." }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz połówki zdań.",
+        "pairs": [
+          { "a": "Jane's best", "b": "friend is her neighbour." },
+          { "a": "Your brother is", "b": "in my class." },
+          { "a": "It's my", "b": "birthday today!" },
+          { "a": "That isn't", "b": "your schoolbag." },
+          { "a": "His cousin", "b": "George is eleven." }
+        ]
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "I'm fifteen. - I'm {{blank}} fifteen.", "options": ["not", "no", "don't", "isn't"], "answer": "not", "translation": "Mam piętnaście lat. — Nie mam piętnastu lat." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "We're at home. - We {{blank}} at home.", "options": ["aren't", "isn't", "not", "amn't"], "answer": "aren't", "translation": "Jesteśmy w domu. — Nie jesteśmy w domu." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "Jamie: Mum, this is David. {{blank}} is my friend.", "options": ["He", "She", "It", "This"], "answer": "He", "translation": "Mamo, to jest David. To mój przyjaciel." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "Jamie: David, {{blank}} is my mum.", "options": ["this", "He", "Nice", "meet"], "answer": "this", "translation": "David, to jest moja mama." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "David: Hello, Mrs Smith. {{blank}} to meet you.", "options": ["Nice", "He", "this", "meet"], "answer": "Nice", "translation": "Dzień dobry, pani Smith. Miło panią poznać." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "Mum: Nice to {{blank}} you too, David.", "options": ["meet", "Nice", "this", "He"], "answer": "meet", "translation": "Ciebie także miło poznać, Davidzie." }
+    }
+  ]
+}
