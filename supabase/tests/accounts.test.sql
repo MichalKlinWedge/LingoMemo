@@ -5,7 +5,7 @@
 -- (bcrypt `$2a$`), oraz że stare sesje konta znikają.
 
 begin;
-select plan(12);
+select plan(16);
 
 create or replace function pg_temp.make_user(p_email text) returns uuid
 language plpgsql as $$
@@ -36,6 +36,12 @@ grant select on t_ids to authenticated;
 insert into auth.sessions (id, user_id, created_at, updated_at)
 values (gen_random_uuid(), (select id from t_ids where name = 'zosia'), now(), now());
 
+-- Token odświeżania BEZ sesji. Kaskada z auth.sessions go nie dotknie, więc jeśli przeżyje
+-- zmianę hasła, znaczy to, że stare urządzenie dalej odświeża sobie dostęp.
+insert into auth.refresh_tokens (instance_id, token, user_id, revoked, created_at, updated_at)
+values ('00000000-0000-0000-0000-000000000000', 'token-bez-sesji',
+        (select id::text from t_ids where name = 'zosia'), false, now(), now());
+
 -- --- uczeń ---
 select set_config('role', 'authenticated', true),
        set_config('request.jwt.claims',
@@ -51,14 +57,16 @@ select throws_ok(
 );
 
 select throws_ok(
-  format('select public.set_user_password(%L, ''nowe-haslo-123'')', (select id from t_ids where name = 'zosia')),
+  format('select public.set_user_password(%L, ''nowe-haslo-123'', ''stare-haslo'')',
+         (select id from t_ids where name = 'zosia')),
   '42501',
   null,
   'uczeń nie zmieni cudzego hasła'
 );
 
 select throws_ok(
-  format('select public.set_user_password(%L, ''nowe-haslo-123'')', (select id from t_ids where name = 'janek')),
+  format('select public.set_user_password(%L, ''nowe-haslo-123'', ''stare-haslo'')',
+         (select id from t_ids where name = 'janek')),
   '42501',
   null,
   'uczeń nie zmieni nawet własnego hasła tą drogą'
@@ -88,21 +96,41 @@ select is(
 );
 
 select throws_ok(
-  format('select public.set_user_password(%L, ''krotkie'')', (select id from t_ids where name = 'zosia')),
+  format('select public.set_user_password(%L, ''krotkie'', ''stare-haslo'')',
+         (select id from t_ids where name = 'zosia')),
   '22023',
   null,
   'hasło krótsze niż osiem znaków nie przechodzi'
 );
 
 select throws_ok(
-  'select public.set_user_password(''00000000-0000-0000-0000-000000000001''::uuid, ''nowe-haslo-123'')',
+  'select public.set_user_password(''00000000-0000-0000-0000-000000000001''::uuid, ''nowe-haslo-123'', ''stare-haslo'')',
   '22023',
   null,
   'nie da się ustawić hasła nieistniejącemu kontu'
 );
 
+-- Sama otwarta sesja administratora nie wystarczy: na wspólnym tablecie to byłoby zaproszenie
+-- do przejęcia wszystkich kont.
+select throws_ok(
+  format('select public.set_user_password(%L, ''nowe-haslo-123'', ''zle-haslo-admina'')',
+         (select id from t_ids where name = 'zosia')),
+  '42501',
+  null,
+  'bez własnego hasła administrator niczego nie zmieni'
+);
+
+select throws_ok(
+  format('select public.set_user_password(%L, ''nowe-haslo-123'', null)',
+         (select id from t_ids where name = 'zosia')),
+  '42501',
+  null,
+  'puste hasło administratora też nie przechodzi'
+);
+
 select lives_ok(
-  format('select public.set_user_password(%L, ''nowe-haslo-123'')', (select id from t_ids where name = 'zosia')),
+  format('select public.set_user_password(%L, ''nowe-haslo-123'', ''stare-haslo'')',
+         (select id from t_ids where name = 'zosia')),
   'administrator ustawia hasło uczniowi'
 );
 
@@ -133,6 +161,20 @@ select is(
     where r.user_id = (select id from t_ids where name = 'zosia')),
   (select id from t_ids where name = 'admin'),
   'ślad w password_resets wskazuje administratora, który zmienił hasło'
+);
+
+select is(
+  (select count(*)::integer from auth.refresh_tokens r
+    where r.user_id = (select id::text from t_ids where name = 'zosia')),
+  0,
+  'token odświeżania bez sesji też znika'
+);
+
+select is(
+  (select r.was_self from app_private.password_resets r
+    where r.user_id = (select id from t_ids where name = 'zosia')),
+  false,
+  'ślad odnotowuje, że hasło zmienił ktoś inny niż właściciel konta'
 );
 
 select * from finish();

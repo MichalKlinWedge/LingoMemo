@@ -7,12 +7,21 @@ import { type FormState, Status, SubmitButton } from "@/components/forms";
 
 /**
  * Proste słowa bez polskich znaków: hasło ma być do podyktowania dziecku i do wpisania
- * na tablecie. Dwa słowa i liczba to ponad milion kombinacji, a zapamiętać da się za pierwszym
- * razem.
+ * na tablecie. Dwa słowa z listy 64 i liczba dwucyfrowa dają 64 × 64 × 90 = 368 640 kombinacji,
+ * a zapamiętać da się za pierwszym razem.
+ *
+ * Lista ma dokładnie 64 pozycje nie bez powodu: 2^32 dzieli się przez 64 bez reszty, więc reszta
+ * z dzielenia losowej liczby nie faworyzuje żadnego słowa.
  */
 const SLOWA = [
   "kotek", "piesek", "slonce", "rower", "balon", "ryba", "jablko", "zielony",
   "burza", "lampa", "mapa", "banan", "tygrys", "chmura", "ogorek", "statek",
+  "zebra", "panda", "delfin", "sowa", "lisek", "bocian", "motyl", "zyrafa",
+  "kaczka", "krowa", "konik", "owieczka", "myszka", "zabka", "slimak", "pajak",
+  "gruszka", "sliwka", "malina", "arbuz", "marchew", "dynia", "cytryna", "orzech",
+  "zamek", "skarb", "rakieta", "planeta", "gwiazda", "ksiezyc", "kometa", "latarnia",
+  "pociag", "autobus", "tramwaj", "samolot", "lodka", "wozek", "hulajnoga", "skuter",
+  "zima", "wiosna", "lato", "jesien", "deszcz", "tecza", "wiatr", "mroz",
 ];
 
 function losoweHaslo(): string {
@@ -54,6 +63,18 @@ export function PasswordForm({ userId, displayName, self }: { userId: string; di
             placeholder="co najmniej 8 znaków"
           />
         </label>
+        <label className="flex flex-col gap-2">
+          <span className="font-semibold">Potwierdź swoim hasłem</span>
+          <input
+            className="field"
+            name="admin_password"
+            type="password"
+            required
+            autoComplete="current-password"
+            placeholder="Twoje hasło"
+          />
+        </label>
+
         <div className="flex flex-wrap items-center gap-2">
           <SubmitButton pendingLabel="Zmieniam…">Ustaw hasło</SubmitButton>
           <button type="button" className="btn-secondary" onClick={() => setHaslo(losoweHaslo())}>
