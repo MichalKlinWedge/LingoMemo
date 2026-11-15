@@ -122,5 +122,12 @@ begin
       v_sort := v_sort + 1;
     end loop;
   end loop;
+
+  -- Po jednej powtórce na dział. Nie ma własnych zadań — zestaw buduje się z tego, co według
+  -- FSRS czeka na powtórzenie u konkretnego dziecka.
+  for u in select un.id, un.title from public.units un where un.course_id = v_course loop
+    insert into public.lessons (unit_id, slug, title, icon, kind, sort_order, review_scope_unit_id, xp_reward, is_published)
+    values (u.id, 'powtorka', 'Powtórka', '🔁', 'review', 99, u.id, 30, true);
+  end loop;
 end;
 $seed$;

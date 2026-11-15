@@ -109,3 +109,21 @@ podejść do tego samego słówka w jednej lekcji jest poprawnie uwzględnione.
   `units!unit_id(...)`.
 - **Przycisk w przycisku to nieprawidłowy HTML.** Głośnik przy odpowiedzi stoi obok kafelka,
   nie w środku.
+
+## Powtórki działu (2026-11-15)
+
+| Obszar | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Zadania w powtórce | istniejące zadania słówek wybranych przez FSRS | zestaw inny dla każdego dziecka i każdego dnia, bez duplikowania treści; silnik lekcji bez zmian | generowanie zadań w locie (nie mają wiersza w `exercises`, więc nie da się do nich przypiąć próby) oraz osobna lekcja z ręcznie dobranymi zadaniami (natychmiast rozjeżdża się z postępami) |
+| Kolejność | najpierw zaległe, potem najczęściej mylone, reszta losowo | dziecko najpierw nadrabia, a dopiero potem utrwala | sama kolejność z FSRS — przy równych terminach dawałaby zawsze ten sam zestaw |
+| Otwarcie powtórki | po pierwszej zaliczonej lekcji w dziale | wcześniej nie ma czego powtarzać | po ukończeniu całego działu — powtórka przydaje się właśnie po drodze |
+
+### Pułapki znalezione przy Etapie 4
+
+- **`create or replace view` nie zmieni typu kolumny.** `count(*)` daje `bigint`; zamiana na
+  `integer` wymaga `drop view` i utworzenia od nowa.
+- **Wysokość w procentach wewnątrz kontenera flex bywa nieokreślona** — słupki wykresu po prostu
+  znikają. Wysokości wykresu liczymy w pikselach.
+- **Funkcja `security definer` z parametrem użytkownika jest testowalna, ta z `auth.uid()` — nie.**
+  `pick_review_exercises(lesson, user)` przyjmuje użytkownika jawnie, dzięki czemu test pgTAP
+  może przygotować dane jako `postgres`, zanim przełączy się na rolę ucznia.

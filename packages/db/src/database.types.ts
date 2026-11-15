@@ -462,7 +462,15 @@ isOneToOne: false
                 }
           }
           Views: {
-            "v_my_lessons": {
+            "v_my_daily": {
+                  Row: {
+                    "answers": number | null,"correct": number | null,"day": string | null,"user_id": string
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
+                },"v_my_lessons": {
                   Row: {
                     "best_score": number | null,"icon": string | null,"id": string,"is_unlocked": boolean | null,"kind": Database["public"]['Enums']["lesson_kind"],"prerequisite_lesson_id": string | null,"slug": string,"sort_order": number,"stars": number | null,"status": string | null,"title": string,"unit_id": string,"word_count": number | null,"xp_reward": number
                   }
@@ -488,6 +496,34 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"v_my_stats": {
+                  Row: {
+                    "badges_earned": number | null,"best_streak": number | null,"lessons_done": number | null,"streak_days": number | null,"total_points": number | null,"user_id": string,"words_due": number | null,"words_mastered": number | null,"words_seen": number | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
+                },"v_my_weak_words": {
+                  Row: {
+                    "concept_id": string,"due_on": string,"lapses": number,"source_text": string | null,"stability": number,"target_text": string | null,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                           "concept_id"?: string | null,"due_on"?: string | null,"lapses"?: number | null,"source_text"?: never,"stability"?: number | null,"target_text"?: never,"user_id"?: string | null
+                         }
+                        Update: {
+                           "concept_id"?: string | null,"due_on"?: string | null,"lapses"?: number | null,"source_text"?: never,"stability"?: number | null,"target_text"?: never,"user_id"?: string | null
+                         }
+                        Relationships: [
+                    {
+      foreignKeyName: "srs_state_concept_id_fkey"
+      columns: ["concept_id"]
+isOneToOne: false
+      referencedRelation: "concepts"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"v_user_points": {
                   Row: {
                     "total_points": number | null,"user_id": string
@@ -510,6 +546,9 @@ isOneToOne: false
                            },
 "create_invite":
 { Args: { "p_course"?: string,"p_days"?: number,"p_display_name"?: string,"p_email"?: string,"p_max_uses"?: number,"p_role"?: string }; Returns: string
+                           },
+"exercise_allowed_in_lesson":
+{ Args: { "p_exercise": string,"p_lesson": string }; Returns: boolean
                            },
 "finish_lesson_session":
 { Args: { "p_session": string }; Returns: Json
@@ -583,6 +622,9 @@ isOneToOne: false
 "is_lesson_unlocked":
 { Args: { "p_lesson": string,"p_user": string }; Returns: boolean
                            },
+"lesson_exercise_count":
+{ Args: { "p_lesson": string,"p_user": string }; Returns: number
+                           },
 "list_invites":
 { Args: Record<PropertyKey, never>; Returns: {
               "course_title": string,"created_at": string,"display_name": string,"email": string,"expires_at": string,"id": string,"max_uses": number,"revoked_at": string,"role": string,"status": string,"token_prefix": string,"used_count": number
@@ -590,6 +632,14 @@ isOneToOne: false
                            },
 "normalize_answer":
 { Args: { "p": string }; Returns: string
+                           },
+"pick_review_exercises":
+{ Args: { "p_lesson": string,"p_user": string }; Returns: {
+              "concept_id": string,"exercise_id": string,"priority": number
+            }[]
+                           },
+"review_limit":
+{ Args: Record<PropertyKey, never>; Returns: number
                            },
 "revoke_invite":
 { Args: { "p_id": string }; Returns: undefined

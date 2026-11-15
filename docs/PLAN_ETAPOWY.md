@@ -111,6 +111,16 @@ każdej odpowiedzi, `get_review_set`, lekcja powtórkowa z działu, statystyki u
 **Kryterium odbioru:** po ukończeniu lekcji punkty i gwiazdki zgadzają się z regułami,
 a powtórka działu podaje dokładnie słówka zaległe i wcześniej pomylone.
 
+**Stan (2026-11-15):** zrobione i sprawdzone w przeglądarce. Powtórka otwiera się po pierwszej
+zaliczonej lekcji w dziale, zaczyna od słówka najbardziej zaległego i najczęściej mylonego,
+przyjmuje odpowiedzi i przesuwa termin w FSRS. Ekran nagród pokazuje 8 odznak ze stanem zdobycia,
+statystyki — punkty, serię, słówka umiane i zaległe, wykres tygodnia oraz listę słówek do
+poćwiczenia. 70 testów pgTAP (doszło 10 dla powtórek).
+
+Powtórka **nie ma własnych zadań** — bierze istniejące zadania dla słówek, które według FSRS
+czekają. Dzięki temu zestaw jest inny dla każdego dziecka i każdego dnia, a silnik lekcji
+pozostaje ten sam.
+
 ---
 
 ## Etap 5 — pozostałe typy zadań i dopracowanie interfejsu

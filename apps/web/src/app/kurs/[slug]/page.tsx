@@ -79,6 +79,8 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
                     </Link>
                   )}
                   <span className="text-base leading-tight">{lesson.title}</span>
+                  {/* Powtórka obejmuje wszystkie przerobione słówka działu, zaległe na
+                      początku — więc liczba jest taka sama jak przy zwykłej lekcji. */}
                   <span className="text-sm text-zinc-500">{plural(lesson.word_count ?? 0, WORDS)}</span>
                 </li>
               );
