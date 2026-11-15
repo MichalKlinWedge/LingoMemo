@@ -84,14 +84,19 @@ select ok(
   'token zaproszenia ma co najmniej 40 znaków'
 );
 
+-- Po prefiksie tokenu, a nie po liczbie wszystkich wierszy: lista pokazuje zaproszenia całej
+-- bazy, więc jedno wygenerowane z ręki na localhoście (albo zostawione przez inny test) wywalało
+-- ten test na „have: 2, want: 1" — na czymś, czego ten test w ogóle nie sprawdza.
 select is(
-  (select count(*)::integer from public.list_invites()),
+  (select count(*)::integer from public.list_invites() li
+    where li.token_prefix = left((select token from t_tok where name = 'ok'), 8)),
   1,
   'administrator widzi wygenerowane zaproszenie'
 );
 
 select is(
-  (select status from public.list_invites() limit 1),
+  (select li.status from public.list_invites() li
+    where li.token_prefix = left((select token from t_tok where name = 'ok'), 8)),
   'aktywne',
   'świeże zaproszenie jest aktywne'
 );
