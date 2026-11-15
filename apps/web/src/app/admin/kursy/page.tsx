@@ -20,6 +20,7 @@ async function Courses() {
     { data: lessons },
     { data: concepts },
     { data: enrollments },
+    { data: started },
   ] = await Promise.all([
     supabase
       .from("courses")
@@ -30,6 +31,9 @@ async function Courses() {
     supabase.from("lessons").select("unit_id"),
     supabase.from("concepts").select("course_id"),
     supabase.from("enrollments").select("course_id"),
+    // Czy w kursie jest ślad nauki. Po tym kosz w wierszu wie, czy obiecywać skasowanie,
+    // czy ukrycie — liczy to baza, bo śladów jest kilka rodzajów i leżą w trzech tabelach.
+    supabase.rpc("list_courses_started"),
   ]);
 
   const loadError = error ?? unitsError;
@@ -49,6 +53,7 @@ async function Courses() {
   const lessonCount = ile(lessons ?? [], (lesson) => courseOfUnit.get(lesson.unit_id));
   const wordCount = ile(concepts ?? [], (concept) => concept.course_id);
   const studentCount = ile(enrollments ?? [], (enrollment) => enrollment.course_id);
+  const zaczete = new Set((started ?? []).filter((row) => row.started).map((row) => row.course_id));
 
   const rows = (courses ?? []).map((course) => ({
     ...course,
@@ -58,6 +63,7 @@ async function Courses() {
       words: wordCount.get(course.id) ?? 0,
       students: studentCount.get(course.id) ?? 0,
     },
+    started: zaczete.has(course.id),
   }));
 
   return <CourseTable courses={rows} languages={languages ?? []} />;

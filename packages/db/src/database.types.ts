@@ -731,6 +731,11 @@ isOneToOne: false
 "admin_import_lesson":
 { Args: { "p_payload": Json }; Returns: Json
                            },
+"admin_parents":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "children": (string)[],"user_id": string
+            }[]
+                           },
 "admin_remove_word":
 { Args: { "p_concept": string,"p_lesson": string }; Returns: Json
                            },
@@ -742,6 +747,12 @@ isOneToOne: false
                            },
 "admin_reset_hints":
 { Args: { "p_user": string }; Returns: number
+                           },
+"admin_set_child":
+{ Args: { "p_child": string,"p_linked": boolean,"p_parent": string }; Returns: undefined
+                           },
+"admin_set_parent":
+{ Args: { "p_is_parent": boolean,"p_user": string }; Returns: undefined
                            },
 "admin_update_profile":
 { Args: { "p_display_name": string,"p_time_zone"?: string,"p_user": string }; Returns: undefined
@@ -766,6 +777,9 @@ isOneToOne: false
                            },
 "child_exercise":
 { Args: { "p_exercise": string }; Returns: Json
+                           },
+"course_started":
+{ Args: { "p_course": string }; Returns: boolean
                            },
 "create_invite":
 { Args: { "p_course"?: string,"p_days"?: number,"p_display_name"?: string,"p_email"?: string,"p_max_uses"?: number,"p_role"?: string }; Returns: string
@@ -866,6 +880,9 @@ isOneToOne: false
 "is_level_unlocked":
 { Args: { "p_lesson": string,"p_level": number,"p_user": string }; Returns: boolean
                            },
+"is_parent":
+{ Args: Record<PropertyKey, never>; Returns: boolean
+                           },
 "is_unit_unlocked":
 { Args: { "p_unit": string,"p_user": string }; Returns: boolean
                            },
@@ -894,6 +911,11 @@ isOneToOne: false
               "created_at": string,"display_name": string,"email": string,"is_admin": boolean,"last_sign_in_at": string,"password_changed_at": string,"user_id": string
             }[]
                            },
+"list_courses_started":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "course_id": string,"started": boolean
+            }[]
+                           },
 "list_invites":
 { Args: Record<PropertyKey, never>; Returns: {
               "course_title": string,"created_at": string,"display_name": string,"email": string,"expires_at": string,"id": string,"max_uses": number,"revoked_at": string,"role": string,"status": string,"token_prefix": string,"used_count": number
@@ -902,6 +924,14 @@ isOneToOne: false
 "list_students":
 { Args: Record<PropertyKey, never>; Returns: {
               "created_at": string,"display_name": string,"email": string,"is_admin": boolean,"last_active_on": string,"lessons_done": number,"level": number,"streak_days": number,"total_points": number,"user_id": string,"words_seen": number
+            }[]
+                           },
+"my_child_ids":
+{ Args: Record<PropertyKey, never>; Returns: string[]
+                           },
+"my_children":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "display_name": string,"user_id": string
             }[]
                            },
 "normalize_answer":

@@ -134,18 +134,41 @@ export async function updateCourseAction(_prev: FormState, form: FormData): Prom
   return { ok: "Zapisane." };
 }
 
-/** Usunięcie kursu razem z zawartością i postępami dzieci. Kolejności pilnuje funkcja w bazie. */
+/**
+ * Usunięcie kursu — albo jego ukrycie, jeśli ktoś się już z niego uczył. O tym, co się stanie,
+ * rozstrzyga `admin_delete_course` w bazie; tutaj tylko dobieramy do tego zabezpieczenie
+ * i komunikat.
+ *
+ * Przepisania adresu żądamy wyłącznie przy prawdziwym kasowaniu, i pytamy o to bazę, a nie
+ * formularz — inaczej wystarczyłoby podstawić własny `POST` bez pola `confirm`, żeby skasować
+ * kurs bez potwierdzenia.
+ */
 export async function deleteCourseAction(_prev: FormState, form: FormData): Promise<FormState> {
   const { supabase } = await requireAdmin();
 
   const id = text(form, "id");
   if (!id) return { error: "Nie wiadomo, który kurs usunąć." };
 
-  const confirmError = badConfirm(form, text(form, "current_slug"));
-  if (confirmError) return { error: confirmError };
+  const { data: started, error: startedError } = await supabase.rpc("list_courses_started");
+  if (startedError) return { error: dbErrorMessage(startedError, "Nie udało się sprawdzić postępów w kursie.") };
 
-  const { error } = await supabase.rpc("admin_delete_course", { p_course: id });
+  const zaczety = (started ?? []).find((row) => row.course_id === id)?.started === true;
+  if (!zaczety) {
+    const confirmError = badConfirm(form, text(form, "current_slug"));
+    if (confirmError) return { error: confirmError };
+  }
+
+  const { data, error } = await supabase.rpc("admin_delete_course", { p_course: id });
   if (error) return { error: dbErrorMessage(error, "Nie udało się usunąć kursu.") };
+
+  // Ukryty kurs zostaje na liście administratora, więc nie ma dokąd przerzucać — za to trzeba
+  // powiedzieć, że nie został skasowany.
+  if ((data as { action?: string } | null)?.action === "hidden") {
+    refresh();
+    return {
+      ok: "Ktoś już się uczył z tego kursu, więc nie został skasowany — jest teraz ukryty przed dziećmi.",
+    };
+  }
 
   redirect("/admin/kursy");
 }

@@ -614,3 +614,19 @@ pomyłka w treści), nie było jak jej oddać inaczej niż zapytaniem SQL.
   nie musi być strefą dorosłego patrzącego na ekran.
 - **Pułapka w teście**: `hint_status` jest `stable`, więc w jednym poleceniu z kasowaniem
   widziałby jeszcze stan sprzed niego. Asercje muszą iść osobnymi poleceniami.
+
+### Usunięcie kursu zależy od tego, czy ktoś go zaczął (2026-11-15)
+
+„Usuń kurs" znaczyło dotąd zawsze to samo: kurs znikał razem z działami, lekcjami, słówkami
+i postępami dzieci. Przy kursie, którego nikt nie tknął, ta ceremonia jest przesadzona; przy
+kursie, który dziecko już robi, jedno kliknięcie kasuje historię nauki, serie dni i harmonogram
+powtórek — a tego nie odtworzy żaden backup treści, bo to nie jest treść.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Co robi „Usuń" | kurs bez śladu nauki znika, kurs ze śladem schodzi na `is_published = false` | nieodwracalne zostaje tylko tam, gdzie nie ma czego stracić | zawsze kasowanie; zawsze ukrywanie (lista zarastałaby kursami do wyrzucenia) |
+| Kto decyduje | baza, w `admin_delete_course` | przeglądarka nie zna śladów nauki, a formularz da się podstawić | wybór oddany administratorowi w panelu — to pytanie, na które baza zna odpowiedź |
+| Co znaczy „zaczął" | `course_started`: sesja lekcji, wynik podejścia albo stan powtórek | każdy ślad powstaje w innym momencie; sesję da się skasować, a powtórki zostają | sam zapis na kurs (`enrollments`) — dziecko zapisane, które nic nie otworzyło, nic nie traci |
+| Skąd panel wie z góry | `list_courses_started()`, jedno zapytanie na całą listę | „Usuń" musi mówić prawdę PRZED kliknięciem, inaczej kłamie w jedną albo w drugą stronę | sprawdzanie po fakcie, z komunikatu zwrotnego |
+| Przepisanie sluga | tylko przy prawdziwym kasowaniu | ukrycie cofa się jednym odznaczeniem „Widoczne dla dzieci", więc kazanie przepisywać adres uczy klikać na ślepo | przepisywanie zawsze; brak przepisywania w obu przypadkach |
+| Miękkie kasowanie | nie ma, wystarcza `is_published` | kolumnę `deleted_at` musiałoby omijać każde zapytanie o kursy, a `is_published` robi dokładnie to, o co chodzi | `deleted_at` i filtr w widokach |
