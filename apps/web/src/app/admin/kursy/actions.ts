@@ -207,7 +207,11 @@ export async function updateUnitAction(_prev: FormState, form: FormData): Promis
     return { error: saveError(error, "Dział o takim adresie (slug) już jest w tym kursie.", "Nie udało się zapisać działu.") };
   }
 
-  if (slug !== text(form, "current_slug")) redirect(`/admin/kursy/${text(form, "course_slug")}/${slug}`);
+  // Slug siedzi w adresie strony działu, więc po jego zmianie dotychczasowy adres prowadzi
+  // donikąd. Formularz z listy działów nie podaje `current_slug`: tam slug nie jest w adresie
+  // i nie ma dokąd przerzucać — wyrzucenie z listy kursu byłoby zaskoczeniem.
+  const from = text(form, "current_slug");
+  if (from !== "" && slug !== from) redirect(`/admin/kursy/${text(form, "course_slug")}/${slug}`);
 
   refresh();
   return { ok: "Zapisane." };

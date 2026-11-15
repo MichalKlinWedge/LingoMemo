@@ -12,6 +12,8 @@ import {
   deleteLessonAction,
   deleteUnitAction,
   removeWordAction,
+  reorderLessonsAction,
+  reorderUnitsAction,
   setEnrollmentAction,
   updateCourseAction,
   updateLessonAction,
@@ -20,6 +22,8 @@ import {
 } from "@/app/admin/kursy/actions";
 import { Flag } from "@/components/flag";
 import { Field, Form, Status, SubmitButton, TitleAndSlug, type FormState } from "@/components/forms";
+
+import { SortableTable, type SortableTableRow } from "./sortable-rows";
 
 /** Pole wyboru „opublikowane". Treść nieopublikowana jest widoczna tylko dla administratora. */
 function Published({ defaultChecked }: { defaultChecked?: boolean }) {
@@ -114,6 +118,71 @@ function Danger({
       </summary>
       <DangerForm action={action} warning={warning} slug={slug} hidden={hidden} label={label} />
     </details>
+  );
+}
+
+/** Co jest rozwinięte pod wierszem tabeli. Najwyżej jedno naraz i najwyżej w jednym wierszu. */
+type RowState = { id: string; co: "edycja" | "usuwanie" } | null;
+
+/**
+ * Ołówek i kosz w wierszu tabeli.
+ *
+ * Same ikony bez napisów: nazwy akcji przy sześciu kolumnach rozpychały tabelę poza kartę,
+ * a wtedy połowa przycisku „Usuń" zostawała za krawędzią. Nazwa jest w `aria-label` i w dymku,
+ * więc czytnik ekranu i mysz dowiadują się, co robi przycisk.
+ */
+function RowActions({
+  what,
+  whatOf,
+  open,
+  onToggle,
+}: {
+  /** Biernik: „kurs", „dział", „lekcję" — do „Edytuj …" i „Usuń …". */
+  what: string;
+  /** Dopełniacz: „kursu", „działu", „lekcji" — do „Zwiń edycję …". */
+  whatOf: string;
+  open: "edycja" | "usuwanie" | null;
+  onToggle: (co: "edycja" | "usuwanie") => void;
+}) {
+  const przyciski = [
+    { co: "edycja" as const, ikona: "✏️", nazwa: `Edytuj ${what}`, zwin: `Zwiń edycję ${whatOf}`, tytul: "Edytuj" },
+    { co: "usuwanie" as const, ikona: "🗑️", nazwa: `Usuń ${what}`, zwin: `Zwiń usuwanie ${whatOf}`, tytul: "Usuń" },
+  ];
+
+  return (
+    <div className="flex items-center justify-end gap-2">
+      {przyciski.map((przycisk) => {
+        const otwarty = open === przycisk.co;
+        return (
+          <button
+            key={przycisk.co}
+            type="button"
+            className="btn-row"
+            aria-expanded={otwarty}
+            aria-label={otwarty ? przycisk.zwin : przycisk.nazwa}
+            title={otwarty ? "Zwiń" : przycisk.tytul}
+            onClick={() => onToggle(przycisk.co)}
+          >
+            <span aria-hidden>{otwarty ? "✖️" : przycisk.ikona}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Przycisk „Dodaj …" nad tabelą, który rozwija formularz zamiast trzymać go rozłożonego na stałe. */
+function AddButton({ label, open, onToggle }: { label: string; open: boolean; onToggle: () => void }) {
+  return (
+    <button type="button" className="btn-secondary px-5" aria-expanded={open} onClick={onToggle}>
+      {open ? (
+        "Zwiń"
+      ) : (
+        <>
+          <span aria-hidden>➕</span> {label}
+        </>
+      )}
+    </button>
   );
 }
 
@@ -295,7 +364,7 @@ function deleteWarning(counts: CourseCounts): string {
  */
 export function CourseTable({ courses, languages }: { courses: CourseRow[]; languages: Lang[] }) {
   const [nowy, setNowy] = useState(false);
-  const [otwarte, setOtwarte] = useState<{ id: string; co: "edycja" | "usuwanie" } | null>(null);
+  const [otwarte, setOtwarte] = useState<RowState>(null);
 
   const nameOf = (code: string) => languages.find((lang) => lang.code === code)?.name_pl ?? code;
   const przelacz = (id: string, co: "edycja" | "usuwanie") =>
@@ -305,15 +374,7 @@ export function CourseTable({ courses, languages }: { courses: CourseRow[]; lang
     <section className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="card-title">Kursy</h2>
-        <button type="button" className="btn-secondary px-5" aria-expanded={nowy} onClick={() => setNowy(!nowy)}>
-          {nowy ? (
-            "Zwiń"
-          ) : (
-            <>
-              <span aria-hidden>➕</span> Dodaj kurs
-            </>
-          )}
-        </button>
+        <AddButton label="Dodaj kurs" open={nowy} onToggle={() => setNowy(!nowy)} />
       </div>
 
       {nowy && <NewCourse languages={languages} />}
@@ -371,30 +432,12 @@ export function CourseTable({ courses, languages }: { courses: CourseRow[]; lang
                         <span className="chip">{course.is_published ? "widoczny" : "ukryty"}</span>
                       </td>
                       <td className="text-right">
-                        {/* Same ikony: nazwy akcji przy ośmiu kolumnach rozpychały tabelę poza kartę,
-                            a wtedy połowa przycisku „Usuń" była za krawędzią. */}
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            type="button"
-                            className="btn-row"
-                            aria-expanded={edycja}
-                            aria-label={edycja ? "Zwiń edycję kursu" : "Edytuj kurs"}
-                            title={edycja ? "Zwiń" : "Edytuj"}
-                            onClick={() => przelacz(course.id, "edycja")}
-                          >
-                            <span aria-hidden>{edycja ? "✖️" : "✏️"}</span>
-                          </button>
-                          <button
-                            type="button"
-                            className="btn-row"
-                            aria-expanded={usuwanie}
-                            aria-label={usuwanie ? "Zwiń usuwanie kursu" : "Usuń kurs"}
-                            title={usuwanie ? "Zwiń" : "Usuń"}
-                            onClick={() => przelacz(course.id, "usuwanie")}
-                          >
-                            <span aria-hidden>{usuwanie ? "✖️" : "🗑️"}</span>
-                          </button>
-                        </div>
+                        <RowActions
+                          what="kurs"
+                          whatOf="kursu"
+                          open={otwarte?.id === course.id ? otwarte.co : null}
+                          onToggle={(co) => przelacz(course.id, co)}
+                        />
                       </td>
                     </tr>
                     {(edycja || usuwanie) && (
@@ -462,24 +505,204 @@ export function CourseSettings({
   );
 }
 
-export function NewUnit({ courseId, nextOrder }: { courseId: string; nextOrder: number }) {
+/** Ile w dziale jest zawartości. Po tym widać, czy dział żyje, i co zniknie przy kasowaniu. */
+export type UnitCounts = { lessons: number; words: number };
+
+export type UnitRow = {
+  id: string;
+  slug: string;
+  title: string;
+  icon: string | null;
+  color: string | null;
+  sort_order: number;
+  is_published: boolean;
+  counts: UnitCounts;
+};
+
+/**
+ * Pola działu — te same w dodawaniu i w poprawianiu, z tego samego powodu co w kursie:
+ * dwa osobne formularze rozjeżdżają się przy pierwszej dołożonej kolumnie.
+ *
+ * Nie ma tu pola „Kolejność". Kolejność zmienia się przeciągnięciem wiersza, a liczba w formularzu
+ * mówiła to samo drugim głosem — po przestawieniu listy pokazywała wartość z chwili wejścia
+ * na stronę i zapis formularza cofał przeciągnięcie. Numer jedzie ukrytym polem.
+ */
+function UnitFields({ unit }: { unit?: Omit<UnitRow, "counts"> }) {
+  return (
+    <>
+      <TitleAndSlug
+        titlePlaceholder="Jedzenie"
+        slugPlaceholder="jedzenie"
+        defaultTitle={unit?.title ?? ""}
+        defaultSlug={unit?.slug ?? ""}
+        // Nowy dział dostaje adres z nazwy i nikt go nie ogląda. Poprawia się go w edycji.
+        slugHidden={unit === undefined}
+      />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Ikona" name="icon" required={false} placeholder="🍎" defaultValue={unit?.icon ?? ""} />
+        <Field label="Kolor" name="color" required={false} placeholder="#f97316" defaultValue={unit?.color ?? ""} />
+      </div>
+      <Published defaultChecked={unit?.is_published ?? true} />
+    </>
+  );
+}
+
+function NewUnit({ courseId, nextOrder }: { courseId: string; nextOrder: number }) {
   const [state, action] = useActionState<FormState, FormData>(createUnitAction, {});
 
   return (
     <section className="card flex flex-col gap-4 p-6">
-      <h2 className="card-title">Nowy dział</h2>
+      <h3 className="card-title">Nowy dział</h3>
       <Form action={action} state={state} className="flex flex-col gap-4">
         <input type="hidden" name="course_id" value={courseId} />
-        <TitleAndSlug titlePlaceholder="Jedzenie" slugPlaceholder="jedzenie" />
-        <div className="grid gap-4 sm:grid-cols-3">
-          <Field label="Ikona" name="icon" required={false} placeholder="🍎" />
-          <Field label="Kolor" name="color" required={false} placeholder="#f97316" />
-          <Field label="Kolejność" name="sort_order" type="number" min="0" defaultValue={String(nextOrder)} />
-        </div>
-        <Published defaultChecked />
+        {/* Nowy dział ląduje na końcu listy — stamtąd przestawia się go przeciągnięciem. */}
+        <input type="hidden" name="sort_order" value={String(nextOrder)} />
+        <UnitFields />
         <Status state={state} />
         <SubmitButton pendingLabel="Dodaję…">Dodaj dział</SubmitButton>
       </Form>
+    </section>
+  );
+}
+
+/**
+ * Poprawianie działu bez opuszczania listy. Bez `current_slug` — to on włącza w akcji przerzucenie
+ * na stronę działu po zmianie sluga, a tutaj adres strony się nie zmienia i wyrzucenie z listy
+ * kursu w środku poprawiania byłoby zaskoczeniem.
+ */
+function UnitEditor({ unit }: { unit: UnitRow }) {
+  const [state, action] = useActionState<FormState, FormData>(updateUnitAction, {});
+
+  return (
+    <Form action={action} state={state} className="flex flex-col gap-4 py-4">
+      <input type="hidden" name="id" value={unit.id} />
+      <input type="hidden" name="sort_order" value={String(unit.sort_order)} />
+      <UnitFields unit={unit} />
+      <Status state={state} />
+      <SubmitButton pendingLabel="Zapisuję…">Zapisz dział</SubmitButton>
+    </Form>
+  );
+}
+
+/** Co zniknie razem z działem. To samo zdanie na liście kursu i na stronie działu. */
+function unitDeleteWarning(lessons: number): string {
+  return (
+    `Znikną lekcje działu (${lessons}) razem z ich zadaniami i postępami dzieci. ` +
+    `Słówka zostają przy kursie — wisi na nich stan powtórek, więc dziecko ich nie traci. ` +
+    `Tego się nie cofnie; żeby tylko schować dział, odznacz „Widoczne dla dzieci".`
+  );
+}
+
+/**
+ * Działy kursu jako tabela — to samo, co kursy dostały piętro wyżej.
+ *
+ * Każdy dział był kartą na całą szerokość, a pod listą stał rozłożony na stałe formularz
+ * „Nowy dział": przy trzech działach to on zajmował pół ekranu i on przyciągał wzrok.
+ * Teraz formularz wychodzi spod przycisku, a działy są wierszami — widać naraz wszystkie,
+ * ile mają lekcji i słówek, i czy dziecko je widzi.
+ *
+ * Poprawianie i kasowanie dzieje się w wierszu; na stronę działu wchodzi się po lekcje,
+ * a nie po to, żeby zmienić nazwę. Otwarty jest najwyżej jeden wiersz: każdy formularz ma
+ * wartości wzięte przy wejściu na stronę, więc kilka naraz kusi, żeby wpisać coś w dwóch,
+ * a zapisać jeden.
+ */
+export function UnitTable({
+  courseId,
+  courseSlug,
+  units,
+}: {
+  courseId: string;
+  courseSlug: string;
+  units: UnitRow[];
+}) {
+  const [nowy, setNowy] = useState(false);
+  const [otwarte, setOtwarte] = useState<RowState>(null);
+
+  const nextOrder = Math.max(0, ...units.map((unit) => unit.sort_order)) + 1;
+  const przelacz = (id: string, co: "edycja" | "usuwanie") =>
+    setOtwarte(otwarte?.id === id && otwarte.co === co ? null : { id, co });
+
+  const rows: SortableTableRow[] = units.map((unit) => {
+    const otwarty = otwarte?.id === unit.id ? otwarte.co : null;
+    return {
+      id: unit.id,
+      label: unit.title,
+      cells: (
+        <>
+          {/* `wrap-anywhere`: w wąskim oknie długa nazwa łamie się zamiast rozpychać tabelę
+              poza kartę — kolumna z nazwą jest tą, która ma ustąpić. */}
+          <td className="wrap-anywhere">
+            <Link href={`/admin/kursy/${courseSlug}/${unit.slug}`} className="flex items-center gap-2 font-semibold">
+              <span className="text-2xl" aria-hidden>
+                {unit.icon}
+              </span>
+              {unit.title}
+            </Link>
+            {/* Na telefonie nie ma kolumny „Widoczny", a to jedyny stan wart zauważenia. */}
+            {!unit.is_published && <span className="chip mt-1 sm:hidden">ukryty</span>}
+          </td>
+          <td className="hidden text-right tabular-nums sm:table-cell">{unit.counts.lessons}</td>
+          <td className="hidden text-right tabular-nums sm:table-cell">{unit.counts.words}</td>
+          <td className="hidden sm:table-cell">
+            <span className="chip">{unit.is_published ? "widoczny" : "ukryty"}</span>
+          </td>
+          <td className="text-right">
+            <RowActions what="dział" whatOf="działu" open={otwarty} onToggle={(co) => przelacz(unit.id, co)} />
+          </td>
+        </>
+      ),
+      expanded:
+        otwarty === "edycja" ? (
+          <UnitEditor unit={unit} />
+        ) : otwarty === "usuwanie" ? (
+          <DangerForm
+            action={deleteUnitAction}
+            slug={unit.slug}
+            hidden={{ id: unit.id, current_slug: unit.slug, course_slug: courseSlug }}
+            warning={unitDeleteWarning(unit.counts.lessons)}
+            label="Usuń dział z lekcjami"
+            className="flex flex-col gap-4 py-4"
+          />
+        ) : undefined,
+    };
+  });
+
+  return (
+    <section className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="card-title">Działy</h2>
+        <AddButton label="Dodaj dział" open={nowy} onToggle={() => setNowy(!nowy)} />
+      </div>
+
+      {nowy && <NewUnit courseId={courseId} nextOrder={nextOrder} />}
+
+      {units.length === 0 ? (
+        <p className="text-zinc-600 dark:text-zinc-400">
+          Kurs nie ma jeszcze działów. Zacznij od przycisku „Dodaj dział”.
+        </p>
+      ) : (
+        <>
+          <p className="text-base text-zinc-600 dark:text-zinc-400">
+            Kolejność zmienia się przeciągnięciem za uchwyt ⠿ albo strzałkami góra i dół.
+          </p>
+          <SortableTable
+            parentId={courseId}
+            action={reorderUnitsAction}
+            noun="dział"
+            columns={6}
+            head={
+              <>
+                <th>Dział</th>
+                <th className="hidden text-right sm:table-cell">Lekcje</th>
+                <th className="hidden text-right sm:table-cell">Słówka</th>
+                <th className="hidden sm:table-cell">Widoczny</th>
+                <th />
+              </>
+            }
+            rows={rows}
+          />
+        </>
+      )}
     </section>
   );
 }
@@ -489,15 +712,7 @@ export function UnitSettings({
   courseSlug,
   lessons,
 }: {
-  unit: {
-    id: string;
-    slug: string;
-    title: string;
-    icon: string | null;
-    color: string | null;
-    sort_order: number;
-    is_published: boolean;
-  };
+  unit: Omit<UnitRow, "counts">;
   courseSlug: string;
   lessons: number;
 }) {
@@ -508,15 +723,11 @@ export function UnitSettings({
       <Editor summary="Edytuj dział">
         <Form action={action} state={state} className="flex flex-col gap-4">
           <input type="hidden" name="id" value={unit.id} />
+          {/* Po czym poznać, że slug się zmienił — akcja przerzuca wtedy na nowy adres. */}
           <input type="hidden" name="current_slug" value={unit.slug} />
           <input type="hidden" name="course_slug" value={courseSlug} />
-          <TitleAndSlug defaultTitle={unit.title} defaultSlug={unit.slug} />
-          <div className="grid gap-4 sm:grid-cols-3">
-            <Field label="Ikona" name="icon" required={false} defaultValue={unit.icon ?? ""} />
-            <Field label="Kolor" name="color" required={false} defaultValue={unit.color ?? ""} />
-            <Field label="Kolejność" name="sort_order" type="number" min="0" defaultValue={String(unit.sort_order)} />
-          </div>
-          <Published defaultChecked={unit.is_published} />
+          <input type="hidden" name="sort_order" value={String(unit.sort_order)} />
+          <UnitFields unit={unit} />
           <Status state={state} />
           <SubmitButton pendingLabel="Zapisuję…">Zapisz dział</SubmitButton>
         </Form>
@@ -527,11 +738,7 @@ export function UnitSettings({
         heading="Usuń dział"
         slug={unit.slug}
         hidden={{ id: unit.id, current_slug: unit.slug, course_slug: courseSlug }}
-        warning={
-          `Znikną lekcje działu (${lessons}) razem z ich zadaniami i postępami dzieci. ` +
-          `Słówka zostają przy kursie — wisi na nich stan powtórek, więc dziecko ich nie traci. ` +
-          `Tego się nie cofnie; żeby tylko schować dział, odznacz „Widoczne dla dzieci".`
-        }
+        warning={unitDeleteWarning(lessons)}
         label="Usuń dział z lekcjami"
       />
     </>
@@ -546,7 +753,13 @@ export function UnitSettings({
  */
 type LessonOption = { id: string; title: string; unit: string };
 
-/** Wspólne pola lekcji dla dodawania i edycji — żeby nie rozjechały się między formularzami. */
+/**
+ * Wspólne pola lekcji dla dodawania i edycji — żeby nie rozjechały się między formularzami.
+ *
+ * Bez pola „Kolejność": tak samo jak w dziale, numer zmienia się przeciągnięciem wiersza,
+ * a formularz pokazywał wartość z chwili wejścia na stronę i zapisem cofał przestawienie.
+ * Numer jedzie ukrytym polem, które dokłada formularz.
+ */
 function LessonFields({
   lesson,
   others,
@@ -556,9 +769,8 @@ function LessonFields({
 }) {
   return (
     <>
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Ikona" name="icon" required={false} defaultValue={lesson?.icon ?? ""} placeholder="🍏" />
-        <Field label="Kolejność" name="sort_order" type="number" min="0" defaultValue={String(lesson?.sort_order ?? 1)} />
         <Field label="Punkty za ukończenie" name="xp_reward" type="number" min="0" step="5" defaultValue={String(lesson?.xp_reward ?? 50)} />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
@@ -601,19 +813,189 @@ function LessonFields({
   );
 }
 
-export function NewLesson({ unitId, nextOrder, others }: { unitId: string; nextOrder: number; others: LessonOption[] }) {
+function NewLesson({ unitId, nextOrder, others }: { unitId: string; nextOrder: number; others: LessonOption[] }) {
   const [state, action] = useActionState<FormState, FormData>(createLessonAction, {});
 
   return (
     <section className="card flex flex-col gap-4 p-6">
-      <h2 className="card-title">Nowa lekcja</h2>
+      <h3 className="card-title">Nowa lekcja</h3>
       <Form action={action} state={state} className="flex flex-col gap-4">
         <input type="hidden" name="unit_id" value={unitId} />
-        <TitleAndSlug titlePlaceholder="Owoce" slugPlaceholder="owoce" />
-        <LessonFields others={others} lesson={{ title: "", icon: null, kind: "standard", sort_order: nextOrder, xp_reward: 50, pass_threshold: 0.8, prerequisite_lesson_id: null, is_published: true }} />
+        {/* Nowa lekcja ląduje na końcu działu — stamtąd przestawia się ją przeciągnięciem. */}
+        <input type="hidden" name="sort_order" value={String(nextOrder)} />
+        {/* Adres lekcji składa się z nazwy: w nowej nie ma czego w nim poprawiać. */}
+        <TitleAndSlug titlePlaceholder="Owoce" slugPlaceholder="owoce" slugHidden />
+        <LessonFields others={others} />
         <Status state={state} />
         <SubmitButton pendingLabel="Dodaję…">Dodaj lekcję</SubmitButton>
       </Form>
+    </section>
+  );
+}
+
+/** Ile w lekcji jest zawartości i co po niej wisi — po tym widać, co zniknie przy kasowaniu. */
+export type LessonCounts = { words: number; exercises: number; children: number; opened: number };
+
+export type LessonRow = {
+  id: string;
+  slug: string;
+  title: string;
+  icon: string | null;
+  kind: string;
+  sort_order: number;
+  xp_reward: number;
+  pass_threshold: number;
+  prerequisite_lesson_id: string | null;
+  is_published: boolean;
+  counts: LessonCounts;
+};
+
+/** Poprawianie lekcji w wierszu listy. Nazwa w adresie zostaje — jej akcja i tak nie zmienia. */
+function LessonEditor({ lesson, unitId, others }: { lesson: LessonRow; unitId: string; others: LessonOption[] }) {
+  const [state, action] = useActionState<FormState, FormData>(updateLessonAction, {});
+
+  return (
+    <Form action={action} state={state} className="flex flex-col gap-4 py-4">
+      <input type="hidden" name="id" value={lesson.id} />
+      <input type="hidden" name="unit_id" value={unitId} />
+      <input type="hidden" name="sort_order" value={String(lesson.sort_order)} />
+      <Field label="Nazwa" name="title" defaultValue={lesson.title} />
+      <LessonFields lesson={lesson} others={others.filter((item) => item.id !== lesson.id)} />
+      <Status state={state} />
+      <SubmitButton pendingLabel="Zapisuję…">Zapisz lekcję</SubmitButton>
+    </Form>
+  );
+}
+
+/** Co zniknie razem z lekcją. To samo zdanie na liście działu i na stronie lekcji. */
+function lessonDeleteWarning(counts: Omit<LessonCounts, "words">): string {
+  return (
+    `Znikną zadania lekcji (${counts.exercises}) oraz postępy dzieci z tej lekcji ` +
+    `(${counts.children}). Słówka zostają przy kursie razem ze stanem powtórek dziecka. ` +
+    (counts.opened > 0 ? `Lekcje otwierane po tej (${counts.opened}) staną się dostępne od razu. ` : "") +
+    `Tego się nie cofnie; żeby tylko schować lekcję, odznacz „Widoczne dla dzieci".`
+  );
+}
+
+/**
+ * Lekcje działu jako tabela — to samo, co dostały kursy i działy.
+ *
+ * Wcześniej każda lekcja była kartą, a pod listą stał rozłożony na stałe formularz „Nowa lekcja"
+ * z ośmioma polami: przy czterech lekcjach formularz zajmował więcej miejsca niż one wszystkie
+ * razem. Teraz lekcje są wierszami — widać naraz, ile która ma słówek i czy dziecko ją widzi —
+ * a formularz wychodzi spod przycisku.
+ */
+export function LessonTable({
+  unitId,
+  courseSlug,
+  unitSlug,
+  lessons,
+  others,
+}: {
+  unitId: string;
+  courseSlug: string;
+  unitSlug: string;
+  lessons: LessonRow[];
+  others: LessonOption[];
+}) {
+  const [nowa, setNowa] = useState(false);
+  const [otwarte, setOtwarte] = useState<RowState>(null);
+
+  const nextOrder = Math.max(0, ...lessons.map((lesson) => lesson.sort_order)) + 1;
+  const przelacz = (id: string, co: "edycja" | "usuwanie") =>
+    setOtwarte(otwarte?.id === id && otwarte.co === co ? null : { id, co });
+
+  const rows: SortableTableRow[] = lessons.map((lesson) => {
+    const otwarty = otwarte?.id === lesson.id ? otwarte.co : null;
+    return {
+      id: lesson.id,
+      label: lesson.title,
+      cells: (
+        <>
+          <td className="wrap-anywhere">
+            <Link
+              href={`/admin/kursy/${courseSlug}/${unitSlug}/${lesson.slug}`}
+              className="flex items-center gap-2 font-semibold"
+            >
+              <span className="text-2xl" aria-hidden>
+                {lesson.icon}
+              </span>
+              {lesson.title}
+            </Link>
+            <span className="flex flex-wrap gap-2">
+              {lesson.kind === "review" && <span className="chip mt-1">powtórka</span>}
+              {/* Na telefonie nie ma kolumny „Widoczna", a to jedyny stan wart zauważenia. */}
+              {!lesson.is_published && <span className="chip mt-1 sm:hidden">ukryta</span>}
+            </span>
+          </td>
+          <td className="hidden text-right tabular-nums sm:table-cell">{lesson.counts.words}</td>
+          <td className="hidden text-right tabular-nums sm:table-cell">{lesson.counts.exercises}</td>
+          <td className="hidden sm:table-cell">
+            <span className="chip">{lesson.is_published ? "widoczna" : "ukryta"}</span>
+          </td>
+          <td className="text-right">
+            <RowActions what="lekcję" whatOf="lekcji" open={otwarty} onToggle={(co) => przelacz(lesson.id, co)} />
+          </td>
+        </>
+      ),
+      expanded:
+        otwarty === "edycja" ? (
+          <LessonEditor lesson={lesson} unitId={unitId} others={others} />
+        ) : otwarty === "usuwanie" ? (
+          <DangerForm
+            action={deleteLessonAction}
+            slug={lesson.slug}
+            hidden={{
+              id: lesson.id,
+              current_slug: lesson.slug,
+              course_slug: courseSlug,
+              unit_slug: unitSlug,
+            }}
+            warning={lessonDeleteWarning(lesson.counts)}
+            label="Usuń lekcję z zadaniami"
+            className="flex flex-col gap-4 py-4"
+          />
+        ) : undefined,
+    };
+  });
+
+  return (
+    <section className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="card-title">Lekcje</h2>
+        <AddButton label="Dodaj lekcję" open={nowa} onToggle={() => setNowa(!nowa)} />
+      </div>
+
+      {nowa && <NewLesson unitId={unitId} nextOrder={nextOrder} others={others} />}
+
+      {lessons.length === 0 ? (
+        <p className="text-zinc-600 dark:text-zinc-400">
+          Dział nie ma jeszcze lekcji. Zacznij od przycisku „Dodaj lekcję”.
+        </p>
+      ) : (
+        <>
+          <p className="text-base text-zinc-600 dark:text-zinc-400">
+            Kolejność zmienia się przeciągnięciem za uchwyt ⠿ albo strzałkami góra i dół. To ona
+            decyduje o tym, co dziecko widzi na mapie kursu.
+          </p>
+          <SortableTable
+            parentId={unitId}
+            action={reorderLessonsAction}
+            noun="lekcję"
+            columns={6}
+            head={
+              <>
+                <th>Lekcja</th>
+                <th className="hidden text-right sm:table-cell">Słówka</th>
+                <th className="hidden text-right sm:table-cell">Zadania</th>
+                <th className="hidden sm:table-cell">Widoczna</th>
+                <th />
+              </>
+            }
+            rows={rows}
+          />
+        </>
+      )}
     </section>
   );
 }
@@ -626,12 +1008,12 @@ export function LessonSettings({
   unitSlug,
   counts,
 }: {
-  lesson: { id: string; slug: string; title: string; icon: string | null; kind: string; sort_order: number; xp_reward: number; pass_threshold: number; prerequisite_lesson_id: string | null; is_published: boolean };
+  lesson: Omit<LessonRow, "counts">;
   unitId: string;
   others: LessonOption[];
   courseSlug: string;
   unitSlug: string;
-  counts: { exercises: number; children: number; opened: number };
+  counts: Omit<LessonCounts, "words">;
 }) {
   const [state, action] = useActionState<FormState, FormData>(updateLessonAction, {});
 
@@ -641,6 +1023,7 @@ export function LessonSettings({
         <Form action={action} state={state} className="flex flex-col gap-4">
           <input type="hidden" name="id" value={lesson.id} />
           <input type="hidden" name="unit_id" value={unitId} />
+          <input type="hidden" name="sort_order" value={String(lesson.sort_order)} />
           <Field label="Nazwa" name="title" defaultValue={lesson.title} />
           <LessonFields lesson={lesson} others={others} />
           <Status state={state} />
@@ -653,14 +1036,7 @@ export function LessonSettings({
         heading="Usuń lekcję"
         slug={lesson.slug}
         hidden={{ id: lesson.id, current_slug: lesson.slug, course_slug: courseSlug, unit_slug: unitSlug }}
-        warning={
-          `Znikną zadania lekcji (${counts.exercises}) oraz postępy dzieci z tej lekcji ` +
-          `(${counts.children}). Słówka zostają przy kursie razem ze stanem powtórek dziecka. ` +
-          (counts.opened > 0
-            ? `Lekcje otwierane po tej (${counts.opened}) staną się dostępne od razu. `
-            : "") +
-          `Tego się nie cofnie; żeby tylko schować lekcję, odznacz „Widoczne dla dzieci".`
-        }
+        warning={lessonDeleteWarning(counts)}
         label="Usuń lekcję z zadaniami"
       />
     </>

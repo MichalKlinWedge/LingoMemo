@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
@@ -8,9 +7,7 @@ import { Loading, Shell } from "@/components/shell";
 import { requireAdmin } from "@/lib/auth";
 import { dbLoadError } from "@/lib/db-error";
 
-import { reorderLessonsAction } from "../../actions";
-import { SortableRows } from "../../sortable-rows";
-import { NewLesson, UnitSettings } from "../../panels";
+import { LessonTable, UnitSettings, type LessonRow } from "../../panels";
 
 async function Unit({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit]">["params"] }) {
   const { slug, unit: unitSlug } = await params;
@@ -36,13 +33,12 @@ async function Unit({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit]"
     .eq("course_id", course.id)
     .order("sort_order");
 
-  const [{ data: lessons, error }, { data: items }, { data: courseLessons }] = await Promise.all([
+  const [{ data: lessons, error }, { data: courseLessons }] = await Promise.all([
     supabase
       .from("lessons")
-      .select("id, slug, title, icon, kind, sort_order, is_published")
+      .select("id, slug, title, icon, kind, sort_order, xp_reward, pass_threshold, prerequisite_lesson_id, is_published")
       .eq("unit_id", unit.id)
       .order("sort_order"),
-    supabase.from("lesson_items").select("lesson_id"),
     supabase
       .from("lessons")
       .select("id, title, unit_id")
@@ -52,13 +48,46 @@ async function Unit({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit]"
 
   if (error) return <p className="msg-error">{dbLoadError(error)}</p>;
 
-  const words = (lessonId: string) => (items ?? []).filter((item) => item.lesson_id === lessonId).length;
-  const nextOrder = Math.max(0, ...(lessons ?? []).map((lesson) => lesson.sort_order)) + 1;
+  // Liczniki wierszy bierzemy hurtem, jednym zapytaniem na rodzaj: lekcji w dziale jest kilka,
+  // a tak idzie to jedną rundą do bazy niezależnie od tego, ile ich przybędzie.
+  const lessonIds = (lessons ?? []).map((lesson) => lesson.id);
+  const [{ data: items }, { data: exercises }, { data: progress }, { data: opens }] = await Promise.all([
+    supabase.from("lesson_items").select("lesson_id, concept_id").in("lesson_id", lessonIds),
+    supabase.from("exercises").select("id, lesson_id").in("lesson_id", lessonIds),
+    // Co przepadnie przy kasowaniu lekcji: postępy dzieci i warunki wstępne innych lekcji.
+    supabase.from("lesson_progress").select("lesson_id, user_id").in("lesson_id", lessonIds),
+    supabase.from("lessons").select("id, prerequisite_lesson_id").in("prerequisite_lesson_id", lessonIds),
+  ]);
+
+  const ile = <T,>(rows: T[] | null, klucz: (row: T) => string | null) => {
+    const licznik = new Map<string, number>();
+    for (const row of rows ?? []) {
+      const id = klucz(row);
+      if (id) licznik.set(id, (licznik.get(id) ?? 0) + 1);
+    }
+    return licznik;
+  };
+
+  const wordCount = ile(items ?? [], (item) => item.lesson_id);
+  const exerciseCount = ile(exercises ?? [], (item) => item.lesson_id);
+  const childCount = ile(progress ?? [], (item) => item.lesson_id);
+  const openedCount = ile(opens ?? [], (item) => item.prerequisite_lesson_id);
+
   const others = (courseUnits ?? []).flatMap((item) =>
     (courseLessons ?? [])
       .filter((entry) => entry.unit_id === item.id)
       .map((entry) => ({ id: entry.id, title: entry.title, unit: item.title })),
   );
+
+  const rows: LessonRow[] = (lessons ?? []).map((lesson) => ({
+    ...lesson,
+    counts: {
+      words: wordCount.get(lesson.id) ?? 0,
+      exercises: exerciseCount.get(lesson.id) ?? 0,
+      children: childCount.get(lesson.id) ?? 0,
+      opened: openedCount.get(lesson.id) ?? 0,
+    },
+  }));
 
   return (
     <>
@@ -79,49 +108,13 @@ async function Unit({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit]"
 
       <UnitSettings unit={unit} courseSlug={course.slug} lessons={(lessons ?? []).length} />
 
-      <section className="flex flex-col gap-3">
-        <h2 className="card-title">Lekcje</h2>
-        {(lessons ?? []).length === 0 ? (
-          <p className="text-zinc-600 dark:text-zinc-400">Dział nie ma jeszcze lekcji.</p>
-        ) : (
-          <>
-            <p className="text-base text-zinc-600 dark:text-zinc-400">
-              Kolejność zmienia się przeciągnięciem za uchwyt ⠿ albo strzałkami góra i dół.
-            </p>
-            <SortableRows
-              parentId={unit.id}
-              action={reorderLessonsAction}
-              noun="lekcję"
-              items={(lessons ?? []).map((lesson) => ({
-                id: lesson.id,
-                label: lesson.title,
-                content: (
-                  <>
-                    <Link
-                      href={`/admin/kursy/${course.slug}/${unit.slug}/${lesson.slug}`}
-                      className="flex min-w-0 flex-1 items-center gap-3"
-                    >
-                      <span className="text-3xl" aria-hidden>
-                        {lesson.icon}
-                      </span>
-                      <span className="flex min-w-0 flex-col">
-                        <span className="font-semibold">{lesson.title}</span>
-                        <span className="text-base text-zinc-600 dark:text-zinc-400">
-                          {lesson.slug} · słówek: {words(lesson.id)}
-                          {lesson.kind === "review" && " · powtórka"}
-                        </span>
-                      </span>
-                    </Link>
-                    <span className="chip">{lesson.is_published ? "widoczna" : "ukryta"}</span>
-                  </>
-                ),
-              }))}
-            />
-          </>
-        )}
-      </section>
-
-      <NewLesson unitId={unit.id} nextOrder={nextOrder} others={others} />
+      <LessonTable
+        unitId={unit.id}
+        courseSlug={course.slug}
+        unitSlug={unit.slug}
+        lessons={rows}
+        others={others}
+      />
     </>
   );
 }

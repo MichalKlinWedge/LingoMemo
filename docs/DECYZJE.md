@@ -488,3 +488,26 @@ trudniejsze zadanie, nawet gdy chciało, a dorosły musiał to przestawiać w pa
 `profiles.level` i `set_learner_level` zostają w bazie i w panelu, ale nie filtrują już niczego —
 usunięcie pola to osobna decyzja. Funkcje dobierające po sufucie (`visible_exercises`,
 `allowed_exercise_level`, rampa) zostały usunięte, bo nikt ich już nie wołał.
+
+### Listy w panelu jako tabele (2026-11-15)
+
+Kursy, działy i lekcje były listami kart na całą szerokość, a pod każdą listą stał rozłożony
+na stałe formularz „Nowy …". Przy czterech kursach ten formularz zajmował więcej miejsca niż
+wszystkie kursy razem i to on przyciągał wzrok, choć zakłada się kurs raz, a listę czyta się
+przy każdym wejściu. Panel jest ekranem dla dorosłego, nie dla dziecka — tu liczy się jedno
+spojrzenie na całość, nie kafelek pod palec.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Postać listy | tabela (`.admin-table`), jeden wiersz na wpis | widać naraz wszystkie wpisy, ich liczniki i to, czy dziecko je widzi | karty (jeden wpis na ekran telefonu, trzy na monitorze) |
+| Dodawanie | formularz rozwijany przyciskiem „➕ Dodaj …" nad tabelą | rzadka czynność nie zabiera miejsca częstej | formularz rozłożony na stałe; osobna podstrona „nowy …" (traci kontekst listy) |
+| Poprawianie i kasowanie | w wierszu, pod ołówkiem i koszem | zmiana nazwy nie wymaga wchodzenia na podstronę wpisu; na podstronę wchodzi się po zawartość | tylko na podstronie wpisu |
+| Ile wierszy rozwiniętych | najwyżej jeden, i najwyżej jedna rzecz w nim | każdy formularz ma wartości wzięte przy wejściu na stronę, więc kilka otwartych naraz kusi, żeby wpisać coś w dwóch, a zapisać jeden | wiele otwartych wierszy |
+| Przyciski w wierszu | same ikony, nazwa w `aria-label` i w dymku | nazwy akcji przy sześciu kolumnach rozpychały tabelę poza kartę i połowa przycisku „Usuń" zostawała za krawędzią | ikona z napisem |
+| Pole „Kolejność" | usunięte z formularzy działu i lekcji; numer jedzie ukrytym polem | kolejność zmienia się przeciągnięciem wiersza, a pole pokazywało wartość z chwili wejścia na stronę — zapis formularza cofał przestawienie | zostawienie pola obok przeciągania (dwa głosy o tym samym) |
+| Kolumny na telefonie | liczniki i „widoczny" schowane (`hidden sm:table-cell`), stan „ukryty" jako chip pod nazwą | bez tego tabela rozpychała się poza kartę i strona przewijała się w poziomie | przewijanie tabeli w poziomie |
+| Przeciąganie w tabeli | `SortableTable` trzyma w stanie same identyfikatory, nie wiersze | zawartość wiersza przychodzi z góry i zmienia się przy rozwinięciu formularza, więc odłożona kopia pokazywałaby poprzednią | trzymanie całych wierszy (jak w poprzednim `SortableRows`) |
+
+Slug po zmianie: formularz z listy nie podaje `current_slug`, więc akcja nie przerzuca nigdzie —
+adres strony z listą się nie zmienia. Podaje go formularz na podstronie wpisu, gdzie slug siedzi
+w adresie i po zmianie trzeba przejść na nowy.

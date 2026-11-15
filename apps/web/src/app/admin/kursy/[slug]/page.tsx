@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
@@ -9,9 +8,7 @@ import { Loading, Shell } from "@/components/shell";
 import { requireAdmin } from "@/lib/auth";
 import { dbLoadError } from "@/lib/db-error";
 
-import { reorderUnitsAction } from "../actions";
-import { CourseSettings, EnrollmentButton, NewUnit } from "../panels";
-import { SortableRows } from "../sortable-rows";
+import { CourseSettings, EnrollmentButton, UnitTable, type UnitRow } from "../panels";
 
 async function Course({ params }: { params: PageProps<"/admin/kursy/[slug]">["params"] }) {
   const { slug } = await params;
@@ -28,6 +25,7 @@ async function Course({ params }: { params: PageProps<"/admin/kursy/[slug]">["pa
   const [
     { data: units, error: unitsError },
     { data: lessons },
+    { data: items },
     { data: students, error: studentsError },
     { data: enrolled },
     { data: languages },
@@ -35,10 +33,12 @@ async function Course({ params }: { params: PageProps<"/admin/kursy/[slug]">["pa
   ] = await Promise.all([
     supabase
       .from("units")
-      .select("id, slug, title, icon, sort_order, is_published")
+      .select("id, slug, title, icon, color, sort_order, is_published")
       .eq("course_id", course.id)
       .order("sort_order"),
     supabase.from("lessons").select("id, unit_id"),
+    // Słówka działu: pozycje lekcji, nie słówka kursu — to samo słówko może być w dwóch lekcjach.
+    supabase.from("lesson_items").select("lesson_id, concept_id"),
     supabase.rpc("list_students"),
     supabase.from("enrollments").select("user_id").eq("course_id", course.id),
     supabase.from("languages").select("code, name_pl").eq("is_active", true).order("code"),
@@ -49,9 +49,15 @@ async function Course({ params }: { params: PageProps<"/admin/kursy/[slug]">["pa
   const error = unitsError ?? studentsError;
   if (error) return <p className="msg-error">{dbLoadError(error)}</p>;
 
-  const lessonCount = (unitId: string) => (lessons ?? []).filter((lesson) => lesson.unit_id === unitId).length;
+  const unitLessons = (unitId: string) => (lessons ?? []).filter((lesson) => lesson.unit_id === unitId);
+  /** Różne słówka w całym dziale: ta sama para słów w dwóch lekcjach to jedno słówko. */
+  const unitWords = (unitId: string) => {
+    const lessonIds = new Set(unitLessons(unitId).map((lesson) => lesson.id));
+    const concepts = (items ?? []).filter((item) => lessonIds.has(item.lesson_id)).map((item) => item.concept_id);
+    return new Set(concepts).size;
+  };
+
   const enrolledIds = new Set((enrolled ?? []).map((row) => row.user_id));
-  const nextOrder = Math.max(0, ...(units ?? []).map((unit) => unit.sort_order)) + 1;
   const unitIds = new Set((units ?? []).map((unit) => unit.id));
   const counts = {
     units: (units ?? []).length,
@@ -59,6 +65,11 @@ async function Course({ params }: { params: PageProps<"/admin/kursy/[slug]">["pa
     words: words ?? 0,
     students: enrolledIds.size,
   };
+
+  const unitRows: UnitRow[] = (units ?? []).map((unit) => ({
+    ...unit,
+    counts: { lessons: unitLessons(unit.id).length, words: unitWords(unit.id) },
+  }));
 
   return (
     <>
@@ -74,48 +85,7 @@ async function Course({ params }: { params: PageProps<"/admin/kursy/[slug]">["pa
 
       <CourseSettings course={course} languages={languages ?? []} counts={counts} />
 
-      <section className="flex flex-col gap-3">
-        <h2 className="card-title">Działy</h2>
-        {(units ?? []).length === 0 ? (
-          <p className="text-zinc-600 dark:text-zinc-400">Kurs nie ma jeszcze działów.</p>
-        ) : (
-          <>
-            <p className="text-base text-zinc-600 dark:text-zinc-400">
-              Kolejność zmienia się przeciągnięciem za uchwyt ⠿ albo strzałkami góra i dół.
-            </p>
-            <SortableRows
-              parentId={course.id}
-              action={reorderUnitsAction}
-              noun="dział"
-              items={(units ?? []).map((unit) => ({
-                id: unit.id,
-                label: unit.title,
-                content: (
-                  <>
-                    <Link
-                      href={`/admin/kursy/${course.slug}/${unit.slug}`}
-                      className="flex min-w-0 flex-1 items-center gap-3"
-                    >
-                      <span className="text-3xl" aria-hidden>
-                        {unit.icon}
-                      </span>
-                      <span className="flex min-w-0 flex-col">
-                        <span className="font-semibold">{unit.title}</span>
-                        <span className="text-base text-zinc-600 dark:text-zinc-400">
-                          {unit.slug} · lekcji: {lessonCount(unit.id)}
-                        </span>
-                      </span>
-                    </Link>
-                    <span className="chip">{unit.is_published ? "widoczny" : "ukryty"}</span>
-                  </>
-                ),
-              }))}
-            />
-          </>
-        )}
-      </section>
-
-      <NewUnit courseId={course.id} nextOrder={nextOrder} />
+      <UnitTable courseId={course.id} courseSlug={course.slug} units={unitRows} />
 
       <section className="flex flex-col gap-3">
         <h2 className="card-title">Kto się uczy tego kursu</h2>
