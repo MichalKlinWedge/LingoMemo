@@ -1,0 +1,203 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-class4",
+  "unit": { "slug": "en-4-unit0", "title": "UNIT 0", "sortOrder": 1 },
+  "lesson": {
+    "slug": "4u0-in-my-bag",
+    "title": "In my bag",
+    "icon": "🎒",
+    "kind": "standard",
+    "sortOrder": 5,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "4u0-colours",
+    "isPublished": true
+  },
+  "concepts": [
+    { "key": "thing.book", "tags": ["📕"], "terms": { "pl": [{ "text": "książka", "pos": "noun" }], "en": [{ "text": "book", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "books" }] }] } },
+    { "key": "thing.coloured-pencil", "tags": ["🖍️"], "terms": { "pl": [{ "text": "kredka", "pos": "noun" }], "en": [{ "text": "coloured pencil", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "coloured pencils" }] }] } },
+    { "key": "thing.notebook", "tags": ["📓"], "terms": { "pl": [{ "text": "zeszyt", "pos": "noun" }], "en": [{ "text": "notebook", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "notebooks" }] }] } },
+    { "key": "thing.pen", "tags": ["🖊️"], "terms": { "pl": [{ "text": "długopis", "pos": "noun" }], "en": [{ "text": "pen", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "pens" }] }] } },
+    { "key": "thing.pencil", "tags": ["✏️"], "terms": { "pl": [{ "text": "ołówek", "pos": "noun" }], "en": [{ "text": "pencil", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "pencils" }] }] } },
+    { "key": "thing.pencil-case", "tags": ["🧰"], "terms": { "pl": [{ "text": "piórnik", "pos": "noun" }], "en": [{ "text": "pencil case", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "pencil cases" }] }] } },
+    { "key": "thing.pencil-sharpener", "tags": ["🌀"], "terms": { "pl": [{ "text": "temperówka", "pos": "noun" }], "en": [{ "text": "pencil sharpener", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "pencil sharpeners" }] }] } },
+    { "key": "thing.rubber", "tags": ["🧽"], "terms": { "pl": [{ "text": "gumka do mazania", "pos": "noun" }], "en": [{ "text": "rubber", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "rubbers" }] }] } },
+    { "key": "thing.ruler", "tags": ["📏"], "terms": { "pl": [{ "text": "linijka", "pos": "noun" }], "en": [{ "text": "ruler", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "rulers" }] }] } },
+    { "key": "spell.sandwich", "tags": ["🥪"], "terms": { "pl": [{ "text": "kanapka", "pos": "noun" }], "en": [{ "text": "sandwich", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "sandwiches" }] }] } },
+    { "key": "thing.scissors", "tags": ["✂️"], "terms": { "pl": [{ "text": "nożyczki", "pos": "noun" }], "en": [{ "text": "scissors", "pos": "noun" }] } },
+    { "key": "room.bin", "tags": ["🗑️"], "terms": { "pl": [{ "text": "kosz na śmieci", "pos": "noun" }], "en": [{ "text": "bin", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "bins" }] }] } },
+    { "key": "room.board", "tags": ["⬛"], "terms": { "pl": [{ "text": "tablica", "pos": "noun" }], "en": [{ "text": "board", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "boards" }] }] } },
+    { "key": "room.chair", "tags": ["🪑"], "terms": { "pl": [{ "text": "krzesło", "pos": "noun" }], "en": [{ "text": "chair", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "chairs" }] }] } },
+    { "key": "room.clock", "tags": ["🕐"], "terms": { "pl": [{ "text": "zegar", "pos": "noun" }], "en": [{ "text": "clock", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "clocks" }] }] } },
+    { "key": "room.desk", "tags": ["🏫"], "terms": { "pl": [{ "text": "ławka", "pos": "noun" }], "en": [{ "text": "desk", "pos": "noun", "forms": [{ "label": "liczba mnoga", "text": "desks" }] }] } }
+  ],
+  "exercises": [
+    { "type": "translate_ab", "conceptKey": "thing.book", "payload": { "prompt": "książka", "accepted": ["book", "a book"] } },
+    { "type": "translate_ab", "conceptKey": "thing.coloured-pencil", "payload": { "prompt": "kredka", "accepted": ["coloured pencil", "a coloured pencil", "colored pencil"] } },
+    { "type": "translate_ab", "conceptKey": "thing.notebook", "payload": { "prompt": "zeszyt", "accepted": ["notebook", "a notebook"] } },
+    { "type": "translate_ab", "conceptKey": "thing.pen", "payload": { "prompt": "długopis", "accepted": ["pen", "a pen"] } },
+    { "type": "translate_ab", "conceptKey": "thing.pencil", "payload": { "prompt": "ołówek", "accepted": ["pencil", "a pencil"] } },
+    { "type": "translate_ab", "conceptKey": "thing.pencil-case", "payload": { "prompt": "piórnik", "accepted": ["pencil case", "a pencil case"] } },
+    { "type": "translate_ab", "conceptKey": "thing.pencil-sharpener", "payload": { "prompt": "temperówka", "accepted": ["pencil sharpener", "a pencil sharpener"] } },
+    { "type": "translate_ab", "conceptKey": "thing.rubber", "payload": { "prompt": "gumka do mazania", "accepted": ["rubber", "a rubber"] } },
+    { "type": "translate_ab", "conceptKey": "thing.ruler", "payload": { "prompt": "linijka", "accepted": ["ruler", "a ruler"] } },
+    { "type": "translate_ab", "conceptKey": "spell.sandwich", "payload": { "prompt": "kanapka", "accepted": ["sandwich", "a sandwich"] } },
+    { "type": "translate_ab", "conceptKey": "thing.scissors", "payload": { "prompt": "nożyczki", "accepted": ["scissors"] } },
+    { "type": "translate_ab", "conceptKey": "room.bin", "payload": { "prompt": "kosz na śmieci", "accepted": ["bin", "a bin"] } },
+    { "type": "translate_ab", "conceptKey": "room.board", "payload": { "prompt": "tablica", "accepted": ["board", "a board"] } },
+    { "type": "translate_ab", "conceptKey": "room.chair", "payload": { "prompt": "krzesło", "accepted": ["chair", "a chair"] } },
+    { "type": "translate_ab", "conceptKey": "room.clock", "payload": { "prompt": "zegar", "accepted": ["clock", "a clock"] } },
+    { "type": "translate_ab", "conceptKey": "room.desk", "payload": { "prompt": "ławka", "accepted": ["desk", "a desk"] } },
+    { "type": "translate_ba", "conceptKey": "thing.coloured-pencil", "payload": { "prompt": "coloured pencil", "accepted": ["kredka"] } },
+    { "type": "translate_ba", "conceptKey": "thing.pencil-sharpener", "payload": { "prompt": "pencil sharpener", "accepted": ["temperówka"] } },
+    { "type": "translate_ba", "conceptKey": "thing.rubber", "payload": { "prompt": "rubber", "accepted": ["gumka do mazania", "gumka"] } },
+    { "type": "translate_ba", "conceptKey": "thing.scissors", "payload": { "prompt": "scissors", "accepted": ["nożyczki"] } },
+    { "type": "translate_ba", "conceptKey": "room.board", "payload": { "prompt": "board", "accepted": ["tablica"] } },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz w pary — co jest w plecaku.",
+        "pairs": [
+          { "a": "książka", "b": "book" },
+          { "a": "zeszyt", "b": "notebook" },
+          { "a": "długopis", "b": "pen" },
+          { "a": "ołówek", "b": "pencil" },
+          { "a": "kredka", "b": "coloured pencil" },
+          { "a": "piórnik", "b": "pencil case" }
+        ]
+      }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz w pary — co jest w plecaku.",
+        "pairs": [
+          { "a": "temperówka", "b": "pencil sharpener" },
+          { "a": "gumka do mazania", "b": "rubber" },
+          { "a": "linijka", "b": "ruler" },
+          { "a": "kanapka", "b": "sandwich" },
+          { "a": "nożyczki", "b": "scissors" }
+        ]
+      }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz w pary — co jest w klasie.",
+        "pairs": [
+          { "a": "kosz na śmieci", "b": "bin" },
+          { "a": "tablica", "b": "board" },
+          { "a": "krzesło", "b": "chair" },
+          { "a": "zegar", "b": "clock" },
+          { "a": "ławka", "b": "desk" }
+        ]
+      }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj przedmiot.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "książka", "b": "book" },
+          { "a": "zeszyt", "b": "notebook" },
+          { "a": "długopis", "b": "pen" },
+          { "a": "linijka", "b": "ruler" },
+          { "a": "nożyczki", "b": "scissors" },
+          { "a": "piórnik", "b": "pencil case" }
+        ]
+      }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj przedmiot z klasy.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "kosz na śmieci", "b": "bin" },
+          { "a": "tablica", "b": "board" },
+          { "a": "krzesło", "b": "chair" },
+          { "a": "zegar", "b": "clock" },
+          { "a": "ławka", "b": "desk" }
+        ]
+      }
+    },
+    { "type": "listening", "conceptKey": "thing.notebook", "points": 15, "payload": { "speak": "notebook", "lang": "en-GB", "accepted": ["notebook"] } },
+    { "type": "listening", "conceptKey": "thing.rubber", "points": 15, "payload": { "speak": "rubber", "lang": "en-GB", "accepted": ["rubber"] } },
+    { "type": "listening", "conceptKey": "thing.scissors", "points": 15, "payload": { "speak": "scissors", "lang": "en-GB", "accepted": ["scissors"] } },
+    { "type": "listening", "conceptKey": "room.clock", "points": 15, "payload": { "speak": "clock", "lang": "en-GB", "accepted": ["clock"] } },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "thing.notebook",
+      "payload": { "sentence": "{{blank}} notebook", "options": ["a", "an"], "answer": "a", "translation": "zeszyt" }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "{{blank}} apple", "options": ["an", "a"], "answer": "an", "translation": "jabłko" }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "thing.pencil",
+      "payload": { "sentence": "{{blank}} pencil", "options": ["a", "an"], "answer": "a", "translation": "ołówek" }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "{{blank}} egg", "options": ["an", "a"], "answer": "an", "translation": "jajko" }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "thing.ruler",
+      "payload": { "sentence": "{{blank}} ruler", "options": ["a", "an"], "answer": "a", "translation": "linijka" }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "{{blank}} elephant", "options": ["an", "a"], "answer": "an", "translation": "słoń" }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "thing.book",
+      "payload": { "sentence": "{{blank}} book", "options": ["a", "an"], "answer": "a", "translation": "książka" }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": { "sentence": "{{blank}} orange", "options": ["an", "a"], "answer": "an", "translation": "pomarańcza" }
+    },
+    {
+      "type": "inflection",
+      "conceptKey": "thing.pencil",
+      "points": 15,
+      "payload": { "base": "a pencil", "formLabel": "sześć sztuk", "instruction": "Napisz liczbę mnogą.", "accepted": ["six pencils", "pencils"] }
+    },
+    {
+      "type": "inflection",
+      "points": 15,
+      "payload": { "base": "an orange", "formLabel": "dwie sztuki", "instruction": "Napisz liczbę mnogą.", "accepted": ["two oranges", "oranges"] }
+    },
+    {
+      "type": "inflection",
+      "points": 15,
+      "payload": { "base": "a box", "formLabel": "cztery sztuki", "instruction": "Napisz liczbę mnogą.", "accepted": ["four boxes", "boxes"] }
+    },
+    {
+      "type": "inflection",
+      "conceptKey": "spell.sandwich",
+      "points": 15,
+      "payload": { "base": "a sandwich", "formLabel": "dwie sztuki", "instruction": "Napisz liczbę mnogą.", "accepted": ["two sandwiches", "sandwiches"] }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "thing.pencil",
+      "payload": { "sentence": "{{blank}} a pencil.", "options": ["It's", "They're"], "answer": "It's", "translation": "To jest ołówek." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "thing.pencil",
+      "payload": { "sentence": "{{blank}} pencils.", "options": ["They're", "It's"], "answer": "They're", "translation": "To są ołówki." }
+    }
+  ]
+}

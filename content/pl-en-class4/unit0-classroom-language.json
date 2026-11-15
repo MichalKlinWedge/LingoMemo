@@ -1,0 +1,330 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-class4",
+  "unit": { "slug": "en-4-unit0", "title": "UNIT 0", "sortOrder": 1 },
+  "lesson": {
+    "slug": "4u0-classroom-language",
+    "title": "Classroom language",
+    "icon": "🙋",
+    "kind": "standard",
+    "sortOrder": 6,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "4u0-in-my-bag",
+    "isPublished": true
+  },
+  "concepts": [
+    { "key": "cl.open-books", "tags": ["📖"], "terms": { "pl": [{ "text": "Otwórzcie książki.", "pos": "phrase" }], "en": [{ "text": "Open your books.", "pos": "phrase" }] } },
+    { "key": "cl.close-books", "tags": ["📕"], "terms": { "pl": [{ "text": "Zamknijcie książki.", "pos": "phrase" }], "en": [{ "text": "Close your books.", "pos": "phrase" }] } },
+    { "key": "cl.listen", "tags": ["👂"], "terms": { "pl": [{ "text": "Posłuchajcie opowiadania.", "pos": "phrase" }], "en": [{ "text": "Listen to the story.", "pos": "phrase" }] } },
+    { "key": "cl.look", "tags": ["👀"], "terms": { "pl": [{ "text": "Popatrzcie na zdjęcie.", "pos": "phrase" }], "en": [{ "text": "Look at the photo.", "pos": "phrase" }] } },
+    { "key": "cl.read", "tags": ["📜"], "terms": { "pl": [{ "text": "Przeczytajcie tekst.", "pos": "phrase" }], "en": [{ "text": "Read the text.", "pos": "phrase" }] } },
+    { "key": "cl.sit-down", "tags": ["🪑"], "terms": { "pl": [{ "text": "Usiądźcie.", "pos": "phrase" }], "en": [{ "text": "Sit down.", "pos": "phrase" }] } },
+    { "key": "cl.stand-up", "tags": ["🧍"], "terms": { "pl": [{ "text": "Wstańcie.", "pos": "phrase" }], "en": [{ "text": "Stand up.", "pos": "phrase" }] } },
+    { "key": "cl.work-in-pairs", "tags": ["👫"], "terms": { "pl": [{ "text": "Pracujcie w parach.", "pos": "phrase" }], "en": [{ "text": "Work in pairs.", "pos": "phrase" }] } },
+    { "key": "cl.write-name", "tags": ["✍️"], "terms": { "pl": [{ "text": "Napiszcie swoje imię.", "pos": "phrase" }], "en": [{ "text": "Write your name.", "pos": "phrase" }] } },
+    { "key": "cl.can-you-help", "tags": ["🙋"], "terms": { "pl": [{ "text": "Czy możesz mi pomóc?", "pos": "phrase" }], "en": [{ "text": "Can you help me?", "pos": "phrase" }] } },
+    { "key": "cl.can-you-repeat", "tags": ["🔁"], "terms": { "pl": [{ "text": "Czy możesz powtórzyć?", "pos": "phrase" }], "en": [{ "text": "Can you repeat that?", "pos": "phrase" }] } },
+    { "key": "cl.im-ready", "tags": ["✅"], "terms": { "pl": [{ "text": "Jestem gotowy.", "pos": "phrase" }], "en": [{ "text": "I'm ready.", "pos": "phrase" }] } },
+    { "key": "cl.in-english", "tags": ["🇬🇧"], "terms": { "pl": [{ "text": "Jak jest „kredka\" po angielsku?", "pos": "phrase" }], "en": [{ "text": "What's kredka in English?", "pos": "phrase" }] } }
+  ],
+  "exercises": [
+    {
+      "type": "translate_ab",
+      "conceptKey": "cl.open-books",
+      "payload": {
+        "prompt": "Otwórzcie książki.",
+        "accepted": ["Open your books."],
+        "options": ["Open your books.", "Close your books.", "Read the text.", "Sit down."]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "cl.close-books",
+      "payload": {
+        "prompt": "Zamknijcie książki.",
+        "accepted": ["Close your books."],
+        "options": ["Close your books.", "Open your books.", "Work in pairs.", "Stand up."]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "cl.listen",
+      "payload": {
+        "prompt": "Posłuchajcie opowiadania.",
+        "accepted": ["Listen to the story.", "Listen."],
+        "options": ["Listen to the story.", "Look at the photo.", "Read the text.", "Write your name."]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "cl.look",
+      "payload": {
+        "prompt": "Popatrzcie na zdjęcie.",
+        "accepted": ["Look at the photo.", "Look."],
+        "options": ["Look at the photo.", "Listen to the story.", "Open your books.", "Sit down."]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "cl.read",
+      "payload": {
+        "prompt": "Przeczytajcie tekst.",
+        "accepted": ["Read the text.", "Read."],
+        "options": ["Read the text.", "Write your name.", "Close your books.", "Work in pairs."]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "cl.sit-down",
+      "payload": {
+        "prompt": "Usiądźcie.",
+        "accepted": ["Sit down."],
+        "options": ["Sit down.", "Stand up.", "Work in pairs.", "I'm ready."]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "cl.stand-up",
+      "payload": {
+        "prompt": "Wstańcie.",
+        "accepted": ["Stand up."],
+        "options": ["Stand up.", "Sit down.", "Open your books.", "Can you help me?"]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "cl.work-in-pairs",
+      "payload": {
+        "prompt": "Pracujcie w parach.",
+        "accepted": ["Work in pairs."],
+        "options": ["Work in pairs.", "Write your name.", "Read the text.", "Stand up."]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "cl.write-name",
+      "payload": {
+        "prompt": "Napiszcie swoje imię.",
+        "accepted": ["Write your name."],
+        "options": ["Write your name.", "Read the text.", "Look at the photo.", "Close your books."]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "cl.can-you-help",
+      "payload": {
+        "prompt": "Czy możesz mi pomóc?",
+        "accepted": ["Can you help me?"],
+        "options": ["Can you help me?", "Can you repeat that?", "What's kredka in English?", "I'm ready."]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "cl.can-you-repeat",
+      "payload": {
+        "prompt": "Czy możesz powtórzyć?",
+        "accepted": ["Can you repeat that?", "Can you repeat?"],
+        "options": ["Can you repeat that?", "Can you help me?", "Sit down.", "Work in pairs."]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "cl.im-ready",
+      "payload": {
+        "prompt": "Jestem gotowy.",
+        "accepted": ["I'm ready.", "Im ready.", "I am ready."],
+        "options": ["I'm ready.", "Can you help me?", "Stand up.", "Read the text."]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "cl.in-english",
+      "payload": {
+        "prompt": "Jak jest „kredka\" po angielsku?",
+        "accepted": ["What's kredka in English?", "Whats kredka in English?"],
+        "options": ["What's kredka in English?", "Can you repeat that?", "What's your name?", "I'm ready."]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "cl.stand-up",
+      "payload": {
+        "prompt": "Stand up.",
+        "accepted": ["Wstańcie.", "Wstań."],
+        "options": ["Wstańcie.", "Usiądźcie.", "Otwórzcie książki.", "Pracujcie w parach."]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "cl.open-books",
+      "payload": {
+        "prompt": "Open your books.",
+        "accepted": ["Otwórzcie książki."],
+        "options": ["Otwórzcie książki.", "Zamknijcie książki.", "Przeczytajcie tekst.", "Napiszcie swoje imię."]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "cl.work-in-pairs",
+      "payload": {
+        "prompt": "Work in pairs.",
+        "accepted": ["Pracujcie w parach."],
+        "options": ["Pracujcie w parach.", "Usiądźcie.", "Posłuchajcie opowiadania.", "Popatrzcie na zdjęcie."]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "cl.can-you-help",
+      "payload": {
+        "prompt": "Can you help me?",
+        "accepted": ["Czy możesz mi pomóc?"],
+        "options": ["Czy możesz mi pomóc?", "Czy możesz powtórzyć?", "Jestem gotowy.", "Wstańcie."]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "cl.im-ready",
+      "payload": {
+        "prompt": "I'm ready.",
+        "accepted": ["Jestem gotowy.", "Jestem gotowa."],
+        "options": ["Jestem gotowy.", "Czy możesz mi pomóc?", "Zamknijcie książki.", "Usiądźcie."]
+      }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz polecenia nauczyciela w pary.",
+        "pairs": [
+          { "a": "Otwórzcie książki.", "b": "Open your books." },
+          { "a": "Zamknijcie książki.", "b": "Close your books." },
+          { "a": "Usiądźcie.", "b": "Sit down." },
+          { "a": "Wstańcie.", "b": "Stand up." },
+          { "a": "Pracujcie w parach.", "b": "Work in pairs." },
+          { "a": "Napiszcie swoje imię.", "b": "Write your name." }
+        ]
+      }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz w pary.",
+        "pairs": [
+          { "a": "Posłuchajcie opowiadania.", "b": "Listen to the story." },
+          { "a": "Popatrzcie na zdjęcie.", "b": "Look at the photo." },
+          { "a": "Przeczytajcie tekst.", "b": "Read the text." },
+          { "a": "Czy możesz mi pomóc?", "b": "Can you help me?" },
+          { "a": "Czy możesz powtórzyć?", "b": "Can you repeat that?" },
+          { "a": "Jestem gotowy.", "b": "I'm ready." }
+        ]
+      }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj polecenia i dopasuj je.",
+        "lang": "en-GB",
+        "pairs": [
+          { "a": "Usiądźcie.", "b": "Sit down." },
+          { "a": "Wstańcie.", "b": "Stand up." },
+          { "a": "Otwórzcie książki.", "b": "Open your books." },
+          { "a": "Pracujcie w parach.", "b": "Work in pairs." },
+          { "a": "Jestem gotowy.", "b": "I'm ready." }
+        ]
+      }
+    },
+    { "type": "listening", "conceptKey": "cl.sit-down", "points": 15, "payload": { "speak": "Sit down.", "lang": "en-GB", "accepted": ["Sit down.", "sit down"] } },
+    { "type": "listening", "conceptKey": "cl.stand-up", "points": 15, "payload": { "speak": "Stand up.", "lang": "en-GB", "accepted": ["Stand up.", "stand up"] } },
+    { "type": "listening", "conceptKey": "cl.im-ready", "points": 15, "payload": { "speak": "I'm ready.", "lang": "en-GB", "accepted": ["I'm ready.", "Im ready", "I am ready"] } },
+    {
+      "type": "sentence_order",
+      "conceptKey": "cl.close-books",
+      "points": 15,
+      "payload": { "prompt": "Zamknijcie książki.", "tokens": ["Close", "your", "books."], "solution": ["Close", "your", "books."] }
+    },
+    {
+      "type": "sentence_order",
+      "conceptKey": "cl.work-in-pairs",
+      "points": 15,
+      "payload": { "prompt": "Pracujcie w parach.", "tokens": ["Work", "in", "pairs."], "solution": ["Work", "in", "pairs."] }
+    },
+    {
+      "type": "sentence_order",
+      "conceptKey": "cl.can-you-help",
+      "points": 15,
+      "payload": { "prompt": "Czy możesz mi pomóc?", "tokens": ["Can", "you", "help", "me?"], "solution": ["Can", "you", "help", "me?"] }
+    },
+    {
+      "type": "sentence_order",
+      "conceptKey": "cl.can-you-repeat",
+      "points": 15,
+      "payload": {
+        "prompt": "Czy możesz to powtórzyć, proszę?",
+        "tokens": ["Can", "you", "repeat", "that,", "please?"],
+        "solution": ["Can", "you", "repeat", "that,", "please?"]
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "cl.can-you-help",
+      "payload": {
+        "sentence": "Can you help me, Miss? - Yes, Maria. How can I {{blank}} you?",
+        "options": ["help", "repeat", "read", "write"],
+        "answer": "help",
+        "translation": "Czy może mi Pani pomóc? — Tak, Mario. W czym mogę ci pomóc?"
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "cl.in-english",
+      "payload": {
+        "sentence": "How do we say elefante in English? - We say {{blank}}.",
+        "options": ["elephant", "giraffe", "apple", "pencil"],
+        "answer": "elephant",
+        "translation": "Jak powiemy „elefante\" po angielsku? — Mówimy „elephant\"."
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "payload": {
+        "sentence": "What does amazing mean? - It {{blank}} really good.",
+        "options": ["means", "says", "makes", "reads"],
+        "answer": "means",
+        "translation": "Co znaczy „amazing\"? — To znaczy „naprawdę dobry\"."
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "cl.im-ready",
+      "payload": {
+        "sentence": "I'm {{blank}}! - Good. Class, are you ready too?",
+        "options": ["ready", "tired", "here", "late"],
+        "answer": "ready",
+        "translation": "Jestem gotowy! — Dobrze. Klaso, wy też jesteście gotowi?"
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "cl.can-you-repeat",
+      "payload": {
+        "sentence": "Can you {{blank}} that, please? - Yes, Tomas. Giraffe. Giraffe. OK?",
+        "options": ["repeat", "help", "open", "close"],
+        "answer": "repeat",
+        "translation": "Czy możesz to powtórzyć, proszę? — Tak, Tomaszu. Giraffe. Giraffe. OK?"
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "cl.stand-up",
+      "payload": {
+        "sentence": "Stand up, {{blank}}!",
+        "options": ["please", "thanks", "hello", "yes"],
+        "answer": "please",
+        "translation": "Wstańcie, proszę!"
+      }
+    }
+  ]
+}
