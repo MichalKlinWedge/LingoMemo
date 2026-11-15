@@ -23,6 +23,7 @@ nie zmiana w kodzie.
 | `supabase/migrations` | Schemat bazy — jedna migracja na temat, nigdy edycja starej |
 | `supabase/tests` | Testy uprawnień (pgTAP) |
 | `tools/seed-dev` | Dane demo i nadanie pierwszego administratora (wyłącznie na localhoście) |
+| `content/pl-en` | Lekcje jako pliki JSON — źródło treści kursu |
 | `docs` | Plan etapowy i decyzje architektoniczne |
 
 ## Uruchomienie lokalne
@@ -81,6 +82,20 @@ W Vercel (projekt [lingo-memo](https://vercel.com/michalklinwedge/lingo-memo)):
 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_SITE_URL`.
 Build jest opisany w `vercel.json` (region `dub1` — tam, gdzie baza, budowanie z workspace `apps/web`).
 `SUPABASE_SERVICE_ROLE_KEY` **nie trafia do Vercela** — jest potrzebny tylko lokalnie.
+
+## Treść kursu
+
+Lekcje są plikami w `content/<kurs>/`. Wgrywa się je panelem (**Panel → Import lekcji**) albo
+z wiersza poleceń:
+
+```
+npm run import:lesson -- content/pl-en/*.json --dry-run    # samo sprawdzenie plików
+npm run import:lesson -- content/pl-en/zwierzeta-na-wsi.json --remote
+```
+
+Import jest idempotentny — ponowne wgranie tego samego pliku aktualizuje lekcję, zamiast
+dokładać drugą. Lekcje z warunkiem wstępnym trzeba wgrywać po tej, od której zależą;
+`prerequisiteLessonSlug` przyjmuje `lekcja` (ten sam dział) albo `dzial/lekcja`.
 
 ## Dokumenty
 

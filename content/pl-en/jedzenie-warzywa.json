@@ -1,0 +1,295 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-starter",
+  "unit": {
+    "slug": "jedzenie",
+    "title": "Jedzenie",
+    "icon": "🍎",
+    "sortOrder": 3
+  },
+  "lesson": {
+    "slug": "warzywa",
+    "title": "Warzywa",
+    "icon": "🥕",
+    "sortOrder": 2,
+    "prerequisiteLessonSlug": "owoce",
+    "xpReward": 50,
+    "passThreshold": 0.8
+  },
+  "concepts": [
+    {
+      "key": "food.carrot",
+      "tags": [
+        "🥕"
+      ],
+      "terms": {
+        "pl": [
+          {
+            "text": "marchewka",
+            "pos": "noun"
+          }
+        ],
+        "en": [
+          {
+            "text": "carrot",
+            "pos": "noun",
+            "forms": [
+              {
+                "label": "plural",
+                "text": "carrots"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "key": "food.potato",
+      "tags": [
+        "🥔"
+      ],
+      "terms": {
+        "pl": [
+          {
+            "text": "ziemniak",
+            "pos": "noun"
+          }
+        ],
+        "en": [
+          {
+            "text": "potato",
+            "pos": "noun",
+            "forms": [
+              {
+                "label": "plural",
+                "text": "potatoes"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "key": "food.tomato",
+      "tags": [
+        "🍅"
+      ],
+      "terms": {
+        "pl": [
+          {
+            "text": "pomidor",
+            "pos": "noun"
+          }
+        ],
+        "en": [
+          {
+            "text": "tomato",
+            "pos": "noun",
+            "forms": [
+              {
+                "label": "plural",
+                "text": "tomatoes"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "key": "food.cucumber",
+      "tags": [
+        "🥒"
+      ],
+      "terms": {
+        "pl": [
+          {
+            "text": "ogórek",
+            "pos": "noun"
+          }
+        ],
+        "en": [
+          {
+            "text": "cucumber",
+            "pos": "noun",
+            "forms": [
+              {
+                "label": "plural",
+                "text": "cucumbers"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "exercises": [
+    {
+      "type": "translate_ab",
+      "conceptKey": "food.carrot",
+      "payload": {
+        "prompt": "marchewka",
+        "accepted": [
+          "carrot"
+        ],
+        "options": [
+          "carrot",
+          "potato",
+          "tomato",
+          "cucumber"
+        ]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "food.carrot",
+      "payload": {
+        "prompt": "carrot",
+        "accepted": [
+          "marchewka"
+        ]
+      }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "food.carrot",
+      "points": 15,
+      "payload": {
+        "speak": "carrot",
+        "lang": "en-GB",
+        "accepted": [
+          "carrot"
+        ]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "food.potato",
+      "payload": {
+        "prompt": "ziemniak",
+        "accepted": [
+          "potato"
+        ],
+        "options": [
+          "potato",
+          "carrot",
+          "tomato",
+          "cucumber"
+        ]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "food.potato",
+      "payload": {
+        "prompt": "potato",
+        "accepted": [
+          "ziemniak"
+        ]
+      }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "food.potato",
+      "points": 15,
+      "payload": {
+        "speak": "potato",
+        "lang": "en-GB",
+        "accepted": [
+          "potato"
+        ]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "food.tomato",
+      "payload": {
+        "prompt": "pomidor",
+        "accepted": [
+          "tomato"
+        ],
+        "options": [
+          "tomato",
+          "carrot",
+          "potato",
+          "cucumber"
+        ]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "food.tomato",
+      "payload": {
+        "prompt": "tomato",
+        "accepted": [
+          "pomidor"
+        ]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "food.cucumber",
+      "payload": {
+        "prompt": "ogórek",
+        "accepted": [
+          "cucumber"
+        ],
+        "options": [
+          "cucumber",
+          "carrot",
+          "potato",
+          "tomato"
+        ]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "food.cucumber",
+      "payload": {
+        "prompt": "cucumber",
+        "accepted": [
+          "ogórek"
+        ]
+      }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz słówka w pary",
+        "pairs": [
+          {
+            "a": "marchewka",
+            "b": "carrot"
+          },
+          {
+            "a": "ziemniak",
+            "b": "potato"
+          },
+          {
+            "a": "pomidor",
+            "b": "tomato"
+          },
+          {
+            "a": "ogórek",
+            "b": "cucumber"
+          }
+        ]
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "food.tomato",
+      "payload": {
+        "sentence": "The {{blank}} is red.",
+        "options": [
+          "tomato",
+          "carrot",
+          "potato",
+          "cucumber"
+        ],
+        "answer": "tomato",
+        "translation": "Pomidor jest czerwony."
+      }
+    }
+  ]
+}

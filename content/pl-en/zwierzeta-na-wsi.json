@@ -1,0 +1,300 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-starter",
+  "unit": {
+    "slug": "zwierzeta",
+    "title": "Zwierzęta",
+    "icon": "🐾",
+    "sortOrder": 1
+  },
+  "lesson": {
+    "slug": "na-wsi",
+    "title": "Na wsi",
+    "icon": "🐮",
+    "sortOrder": 2,
+    "prerequisiteLessonSlug": "domowe",
+    "xpReward": 50,
+    "passThreshold": 0.8
+  },
+  "concepts": [
+    {
+      "key": "animal.horse",
+      "tags": [
+        "🐴"
+      ],
+      "terms": {
+        "pl": [
+          {
+            "text": "koń",
+            "pos": "noun"
+          }
+        ],
+        "en": [
+          {
+            "text": "horse",
+            "pos": "noun",
+            "forms": [
+              {
+                "label": "plural",
+                "text": "horses"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "key": "animal.cow",
+      "tags": [
+        "🐮"
+      ],
+      "terms": {
+        "pl": [
+          {
+            "text": "krowa",
+            "pos": "noun"
+          }
+        ],
+        "en": [
+          {
+            "text": "cow",
+            "pos": "noun",
+            "forms": [
+              {
+                "label": "plural",
+                "text": "cows"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "key": "animal.sheep",
+      "tags": [
+        "🐑"
+      ],
+      "terms": {
+        "pl": [
+          {
+            "text": "owca",
+            "pos": "noun"
+          }
+        ],
+        "en": [
+          {
+            "text": "sheep",
+            "pos": "noun",
+            "forms": [
+              {
+                "label": "plural",
+                "text": "sheep"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "key": "animal.pig",
+      "tags": [
+        "🐷"
+      ],
+      "terms": {
+        "pl": [
+          {
+            "text": "świnia",
+            "pos": "noun"
+          }
+        ],
+        "en": [
+          {
+            "text": "pig",
+            "pos": "noun",
+            "forms": [
+              {
+                "label": "plural",
+                "text": "pigs"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "exercises": [
+    {
+      "type": "translate_ab",
+      "conceptKey": "animal.horse",
+      "payload": {
+        "prompt": "koń",
+        "accepted": [
+          "horse"
+        ],
+        "options": [
+          "horse",
+          "cow",
+          "sheep",
+          "pig"
+        ]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "animal.horse",
+      "payload": {
+        "prompt": "horse",
+        "accepted": [
+          "koń"
+        ]
+      }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "animal.horse",
+      "points": 15,
+      "payload": {
+        "speak": "horse",
+        "lang": "en-GB",
+        "accepted": [
+          "horse"
+        ]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "animal.cow",
+      "payload": {
+        "prompt": "krowa",
+        "accepted": [
+          "cow"
+        ],
+        "options": [
+          "cow",
+          "horse",
+          "sheep",
+          "pig"
+        ]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "animal.cow",
+      "payload": {
+        "prompt": "cow",
+        "accepted": [
+          "krowa"
+        ]
+      }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "animal.cow",
+      "points": 15,
+      "payload": {
+        "speak": "cow",
+        "lang": "en-GB",
+        "accepted": [
+          "cow"
+        ]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "animal.sheep",
+      "payload": {
+        "prompt": "owca",
+        "accepted": [
+          "sheep"
+        ],
+        "options": [
+          "sheep",
+          "horse",
+          "cow",
+          "pig"
+        ]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "animal.sheep",
+      "payload": {
+        "prompt": "sheep",
+        "accepted": [
+          "owca"
+        ]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "animal.pig",
+      "payload": {
+        "prompt": "świnia",
+        "accepted": [
+          "pig"
+        ],
+        "options": [
+          "pig",
+          "horse",
+          "cow",
+          "sheep"
+        ]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "animal.pig",
+      "payload": {
+        "prompt": "pig",
+        "accepted": [
+          "świnia"
+        ]
+      }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz słówka w pary",
+        "pairs": [
+          {
+            "a": "koń",
+            "b": "horse"
+          },
+          {
+            "a": "krowa",
+            "b": "cow"
+          },
+          {
+            "a": "owca",
+            "b": "sheep"
+          },
+          {
+            "a": "świnia",
+            "b": "pig"
+          }
+        ]
+      }
+    },
+    {
+      "type": "sentence_order",
+      "conceptKey": "animal.horse",
+      "points": 20,
+      "payload": {
+        "prompt": "Ułóż zdanie: Koń jest duży.",
+        "tokens": [
+          "The",
+          "horse",
+          "is",
+          "big"
+        ],
+        "solution": [
+          "The",
+          "horse",
+          "is",
+          "big"
+        ]
+      }
+    }
+  ]
+}

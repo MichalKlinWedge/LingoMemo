@@ -1,0 +1,295 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-starter",
+  "unit": {
+    "slug": "zwierzeta",
+    "title": "Zwierzęta",
+    "icon": "🐾",
+    "sortOrder": 1
+  },
+  "lesson": {
+    "slug": "dzikie",
+    "title": "Dzikie zwierzęta",
+    "icon": "🦁",
+    "sortOrder": 3,
+    "prerequisiteLessonSlug": "na-wsi",
+    "xpReward": 50,
+    "passThreshold": 0.8
+  },
+  "concepts": [
+    {
+      "key": "animal.lion",
+      "tags": [
+        "🦁"
+      ],
+      "terms": {
+        "pl": [
+          {
+            "text": "lew",
+            "pos": "noun"
+          }
+        ],
+        "en": [
+          {
+            "text": "lion",
+            "pos": "noun",
+            "forms": [
+              {
+                "label": "plural",
+                "text": "lions"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "key": "animal.elephant",
+      "tags": [
+        "🐘"
+      ],
+      "terms": {
+        "pl": [
+          {
+            "text": "słoń",
+            "pos": "noun"
+          }
+        ],
+        "en": [
+          {
+            "text": "elephant",
+            "pos": "noun",
+            "forms": [
+              {
+                "label": "plural",
+                "text": "elephants"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "key": "animal.monkey",
+      "tags": [
+        "🐒"
+      ],
+      "terms": {
+        "pl": [
+          {
+            "text": "małpa",
+            "pos": "noun"
+          }
+        ],
+        "en": [
+          {
+            "text": "monkey",
+            "pos": "noun",
+            "forms": [
+              {
+                "label": "plural",
+                "text": "monkeys"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "key": "animal.giraffe",
+      "tags": [
+        "🦒"
+      ],
+      "terms": {
+        "pl": [
+          {
+            "text": "żyrafa",
+            "pos": "noun"
+          }
+        ],
+        "en": [
+          {
+            "text": "giraffe",
+            "pos": "noun",
+            "forms": [
+              {
+                "label": "plural",
+                "text": "giraffes"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "exercises": [
+    {
+      "type": "translate_ab",
+      "conceptKey": "animal.lion",
+      "payload": {
+        "prompt": "lew",
+        "accepted": [
+          "lion"
+        ],
+        "options": [
+          "lion",
+          "elephant",
+          "monkey",
+          "giraffe"
+        ]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "animal.lion",
+      "payload": {
+        "prompt": "lion",
+        "accepted": [
+          "lew"
+        ]
+      }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "animal.lion",
+      "points": 15,
+      "payload": {
+        "speak": "lion",
+        "lang": "en-GB",
+        "accepted": [
+          "lion"
+        ]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "animal.elephant",
+      "payload": {
+        "prompt": "słoń",
+        "accepted": [
+          "elephant"
+        ],
+        "options": [
+          "elephant",
+          "lion",
+          "monkey",
+          "giraffe"
+        ]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "animal.elephant",
+      "payload": {
+        "prompt": "elephant",
+        "accepted": [
+          "słoń"
+        ]
+      }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "animal.elephant",
+      "points": 15,
+      "payload": {
+        "speak": "elephant",
+        "lang": "en-GB",
+        "accepted": [
+          "elephant"
+        ]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "animal.monkey",
+      "payload": {
+        "prompt": "małpa",
+        "accepted": [
+          "monkey"
+        ],
+        "options": [
+          "monkey",
+          "lion",
+          "elephant",
+          "giraffe"
+        ]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "animal.monkey",
+      "payload": {
+        "prompt": "monkey",
+        "accepted": [
+          "małpa"
+        ]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "animal.giraffe",
+      "payload": {
+        "prompt": "żyrafa",
+        "accepted": [
+          "giraffe"
+        ],
+        "options": [
+          "giraffe",
+          "lion",
+          "elephant",
+          "monkey"
+        ]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "animal.giraffe",
+      "payload": {
+        "prompt": "giraffe",
+        "accepted": [
+          "żyrafa"
+        ]
+      }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz słówka w pary",
+        "pairs": [
+          {
+            "a": "lew",
+            "b": "lion"
+          },
+          {
+            "a": "słoń",
+            "b": "elephant"
+          },
+          {
+            "a": "małpa",
+            "b": "monkey"
+          },
+          {
+            "a": "żyrafa",
+            "b": "giraffe"
+          }
+        ]
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "animal.elephant",
+      "payload": {
+        "sentence": "The {{blank}} is very big.",
+        "options": [
+          "elephant",
+          "monkey",
+          "lion",
+          "giraffe"
+        ],
+        "answer": "elephant",
+        "translation": "Słoń jest bardzo duży."
+      }
+    }
+  ]
+}

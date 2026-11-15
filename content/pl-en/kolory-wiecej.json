@@ -1,0 +1,271 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-starter",
+  "unit": {
+    "slug": "kolory",
+    "title": "Kolory",
+    "icon": "🎨",
+    "sortOrder": 2
+  },
+  "lesson": {
+    "slug": "wiecej",
+    "title": "Więcej kolorów",
+    "icon": "⚫",
+    "sortOrder": 2,
+    "prerequisiteLessonSlug": "podstawowe",
+    "xpReward": 50,
+    "passThreshold": 0.8
+  },
+  "concepts": [
+    {
+      "key": "color.black",
+      "tags": [
+        "⚫"
+      ],
+      "terms": {
+        "pl": [
+          {
+            "text": "czarny",
+            "pos": "noun"
+          }
+        ],
+        "en": [
+          {
+            "text": "black",
+            "pos": "noun"
+          }
+        ]
+      }
+    },
+    {
+      "key": "color.white",
+      "tags": [
+        "⚪"
+      ],
+      "terms": {
+        "pl": [
+          {
+            "text": "biały",
+            "pos": "noun"
+          }
+        ],
+        "en": [
+          {
+            "text": "white",
+            "pos": "noun"
+          }
+        ]
+      }
+    },
+    {
+      "key": "color.brown",
+      "tags": [
+        "🟤"
+      ],
+      "terms": {
+        "pl": [
+          {
+            "text": "brązowy",
+            "pos": "noun"
+          }
+        ],
+        "en": [
+          {
+            "text": "brown",
+            "pos": "noun"
+          }
+        ]
+      }
+    },
+    {
+      "key": "color.pink",
+      "tags": [
+        "🩷"
+      ],
+      "terms": {
+        "pl": [
+          {
+            "text": "różowy",
+            "pos": "noun"
+          }
+        ],
+        "en": [
+          {
+            "text": "pink",
+            "pos": "noun"
+          }
+        ]
+      }
+    }
+  ],
+  "exercises": [
+    {
+      "type": "translate_ab",
+      "conceptKey": "color.black",
+      "payload": {
+        "prompt": "czarny",
+        "accepted": [
+          "black"
+        ],
+        "options": [
+          "black",
+          "white",
+          "brown",
+          "pink"
+        ]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "color.black",
+      "payload": {
+        "prompt": "black",
+        "accepted": [
+          "czarny"
+        ]
+      }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "color.black",
+      "points": 15,
+      "payload": {
+        "speak": "black",
+        "lang": "en-GB",
+        "accepted": [
+          "black"
+        ]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "color.white",
+      "payload": {
+        "prompt": "biały",
+        "accepted": [
+          "white"
+        ],
+        "options": [
+          "white",
+          "black",
+          "brown",
+          "pink"
+        ]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "color.white",
+      "payload": {
+        "prompt": "white",
+        "accepted": [
+          "biały"
+        ]
+      }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "color.white",
+      "points": 15,
+      "payload": {
+        "speak": "white",
+        "lang": "en-GB",
+        "accepted": [
+          "white"
+        ]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "color.brown",
+      "payload": {
+        "prompt": "brązowy",
+        "accepted": [
+          "brown"
+        ],
+        "options": [
+          "brown",
+          "black",
+          "white",
+          "pink"
+        ]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "color.brown",
+      "payload": {
+        "prompt": "brown",
+        "accepted": [
+          "brązowy"
+        ]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "color.pink",
+      "payload": {
+        "prompt": "różowy",
+        "accepted": [
+          "pink"
+        ],
+        "options": [
+          "pink",
+          "black",
+          "white",
+          "brown"
+        ]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "color.pink",
+      "payload": {
+        "prompt": "pink",
+        "accepted": [
+          "różowy"
+        ]
+      }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz słówka w pary",
+        "pairs": [
+          {
+            "a": "czarny",
+            "b": "black"
+          },
+          {
+            "a": "biały",
+            "b": "white"
+          },
+          {
+            "a": "brązowy",
+            "b": "brown"
+          },
+          {
+            "a": "różowy",
+            "b": "pink"
+          }
+        ]
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "color.white",
+      "payload": {
+        "sentence": "Snow is {{blank}}.",
+        "options": [
+          "white",
+          "black",
+          "brown",
+          "pink"
+        ],
+        "answer": "white",
+        "translation": "Śnieg jest biały."
+      }
+    }
+  ]
+}

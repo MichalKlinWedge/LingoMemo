@@ -1,0 +1,322 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-starter",
+  "unit": {
+    "slug": "liczby",
+    "title": "Liczby",
+    "icon": "🔢",
+    "sortOrder": 4
+  },
+  "lesson": {
+    "slug": "do-pieciu",
+    "title": "Od jednego do pięciu",
+    "icon": "5️⃣",
+    "sortOrder": 1,
+    "prerequisiteLessonSlug": "kolory/wiecej",
+    "xpReward": 50,
+    "passThreshold": 0.8
+  },
+  "concepts": [
+    {
+      "key": "number.one",
+      "tags": [
+        "1️⃣"
+      ],
+      "terms": {
+        "pl": [
+          {
+            "text": "jeden",
+            "pos": "noun"
+          }
+        ],
+        "en": [
+          {
+            "text": "one",
+            "pos": "noun"
+          }
+        ]
+      }
+    },
+    {
+      "key": "number.two",
+      "tags": [
+        "2️⃣"
+      ],
+      "terms": {
+        "pl": [
+          {
+            "text": "dwa",
+            "pos": "noun"
+          }
+        ],
+        "en": [
+          {
+            "text": "two",
+            "pos": "noun"
+          }
+        ]
+      }
+    },
+    {
+      "key": "number.three",
+      "tags": [
+        "3️⃣"
+      ],
+      "terms": {
+        "pl": [
+          {
+            "text": "trzy",
+            "pos": "noun"
+          }
+        ],
+        "en": [
+          {
+            "text": "three",
+            "pos": "noun"
+          }
+        ]
+      }
+    },
+    {
+      "key": "number.four",
+      "tags": [
+        "4️⃣"
+      ],
+      "terms": {
+        "pl": [
+          {
+            "text": "cztery",
+            "pos": "noun"
+          }
+        ],
+        "en": [
+          {
+            "text": "four",
+            "pos": "noun"
+          }
+        ]
+      }
+    },
+    {
+      "key": "number.five",
+      "tags": [
+        "5️⃣"
+      ],
+      "terms": {
+        "pl": [
+          {
+            "text": "pięć",
+            "pos": "noun"
+          }
+        ],
+        "en": [
+          {
+            "text": "five",
+            "pos": "noun"
+          }
+        ]
+      }
+    }
+  ],
+  "exercises": [
+    {
+      "type": "translate_ab",
+      "conceptKey": "number.one",
+      "payload": {
+        "prompt": "jeden",
+        "accepted": [
+          "one"
+        ],
+        "options": [
+          "one",
+          "two",
+          "three",
+          "four"
+        ]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "number.one",
+      "payload": {
+        "prompt": "one",
+        "accepted": [
+          "jeden"
+        ]
+      }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "number.one",
+      "points": 15,
+      "payload": {
+        "speak": "one",
+        "lang": "en-GB",
+        "accepted": [
+          "one"
+        ]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "number.two",
+      "payload": {
+        "prompt": "dwa",
+        "accepted": [
+          "two"
+        ],
+        "options": [
+          "two",
+          "one",
+          "three",
+          "four"
+        ]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "number.two",
+      "payload": {
+        "prompt": "two",
+        "accepted": [
+          "dwa"
+        ]
+      }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "number.two",
+      "points": 15,
+      "payload": {
+        "speak": "two",
+        "lang": "en-GB",
+        "accepted": [
+          "two"
+        ]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "number.three",
+      "payload": {
+        "prompt": "trzy",
+        "accepted": [
+          "three"
+        ],
+        "options": [
+          "three",
+          "one",
+          "two",
+          "four"
+        ]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "number.three",
+      "payload": {
+        "prompt": "three",
+        "accepted": [
+          "trzy"
+        ]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "number.four",
+      "payload": {
+        "prompt": "cztery",
+        "accepted": [
+          "four"
+        ],
+        "options": [
+          "four",
+          "one",
+          "two",
+          "three"
+        ]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "number.four",
+      "payload": {
+        "prompt": "four",
+        "accepted": [
+          "cztery"
+        ]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "number.five",
+      "payload": {
+        "prompt": "pięć",
+        "accepted": [
+          "five"
+        ],
+        "options": [
+          "five",
+          "one",
+          "two",
+          "three"
+        ]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "number.five",
+      "payload": {
+        "prompt": "five",
+        "accepted": [
+          "pięć"
+        ]
+      }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz słówka w pary",
+        "pairs": [
+          {
+            "a": "jeden",
+            "b": "one"
+          },
+          {
+            "a": "dwa",
+            "b": "two"
+          },
+          {
+            "a": "trzy",
+            "b": "three"
+          },
+          {
+            "a": "cztery",
+            "b": "four"
+          }
+        ]
+      }
+    },
+    {
+      "type": "sentence_order",
+      "conceptKey": "number.two",
+      "points": 20,
+      "payload": {
+        "prompt": "Ułóż zdanie: Mam dwa koty.",
+        "tokens": [
+          "I",
+          "have",
+          "two",
+          "cats"
+        ],
+        "solution": [
+          "I",
+          "have",
+          "two",
+          "cats"
+        ]
+      }
+    }
+  ]
+}

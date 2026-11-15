@@ -1,0 +1,271 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-starter",
+  "unit": {
+    "slug": "kolory",
+    "title": "Kolory",
+    "icon": "🎨",
+    "sortOrder": 2
+  },
+  "lesson": {
+    "slug": "podstawowe",
+    "title": "Kolory",
+    "icon": "🔴",
+    "sortOrder": 1,
+    "prerequisiteLessonSlug": "zwierzeta/dzikie",
+    "xpReward": 50,
+    "passThreshold": 0.8
+  },
+  "concepts": [
+    {
+      "key": "color.red",
+      "tags": [
+        "🔴"
+      ],
+      "terms": {
+        "pl": [
+          {
+            "text": "czerwony",
+            "pos": "noun"
+          }
+        ],
+        "en": [
+          {
+            "text": "red",
+            "pos": "noun"
+          }
+        ]
+      }
+    },
+    {
+      "key": "color.blue",
+      "tags": [
+        "🔵"
+      ],
+      "terms": {
+        "pl": [
+          {
+            "text": "niebieski",
+            "pos": "noun"
+          }
+        ],
+        "en": [
+          {
+            "text": "blue",
+            "pos": "noun"
+          }
+        ]
+      }
+    },
+    {
+      "key": "color.green",
+      "tags": [
+        "🟢"
+      ],
+      "terms": {
+        "pl": [
+          {
+            "text": "zielony",
+            "pos": "noun"
+          }
+        ],
+        "en": [
+          {
+            "text": "green",
+            "pos": "noun"
+          }
+        ]
+      }
+    },
+    {
+      "key": "color.yellow",
+      "tags": [
+        "🟡"
+      ],
+      "terms": {
+        "pl": [
+          {
+            "text": "żółty",
+            "pos": "noun"
+          }
+        ],
+        "en": [
+          {
+            "text": "yellow",
+            "pos": "noun"
+          }
+        ]
+      }
+    }
+  ],
+  "exercises": [
+    {
+      "type": "translate_ab",
+      "conceptKey": "color.red",
+      "payload": {
+        "prompt": "czerwony",
+        "accepted": [
+          "red"
+        ],
+        "options": [
+          "red",
+          "blue",
+          "green",
+          "yellow"
+        ]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "color.red",
+      "payload": {
+        "prompt": "red",
+        "accepted": [
+          "czerwony"
+        ]
+      }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "color.red",
+      "points": 15,
+      "payload": {
+        "speak": "red",
+        "lang": "en-GB",
+        "accepted": [
+          "red"
+        ]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "color.blue",
+      "payload": {
+        "prompt": "niebieski",
+        "accepted": [
+          "blue"
+        ],
+        "options": [
+          "blue",
+          "red",
+          "green",
+          "yellow"
+        ]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "color.blue",
+      "payload": {
+        "prompt": "blue",
+        "accepted": [
+          "niebieski"
+        ]
+      }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "color.blue",
+      "points": 15,
+      "payload": {
+        "speak": "blue",
+        "lang": "en-GB",
+        "accepted": [
+          "blue"
+        ]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "color.green",
+      "payload": {
+        "prompt": "zielony",
+        "accepted": [
+          "green"
+        ],
+        "options": [
+          "green",
+          "red",
+          "blue",
+          "yellow"
+        ]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "color.green",
+      "payload": {
+        "prompt": "green",
+        "accepted": [
+          "zielony"
+        ]
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "color.yellow",
+      "payload": {
+        "prompt": "żółty",
+        "accepted": [
+          "yellow"
+        ],
+        "options": [
+          "yellow",
+          "red",
+          "blue",
+          "green"
+        ]
+      }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "color.yellow",
+      "payload": {
+        "prompt": "yellow",
+        "accepted": [
+          "żółty"
+        ]
+      }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz słówka w pary",
+        "pairs": [
+          {
+            "a": "czerwony",
+            "b": "red"
+          },
+          {
+            "a": "niebieski",
+            "b": "blue"
+          },
+          {
+            "a": "zielony",
+            "b": "green"
+          },
+          {
+            "a": "żółty",
+            "b": "yellow"
+          }
+        ]
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "color.blue",
+      "payload": {
+        "sentence": "The sky is {{blank}}.",
+        "options": [
+          "blue",
+          "green",
+          "red",
+          "yellow"
+        ],
+        "answer": "blue",
+        "translation": "Niebo jest niebieskie."
+      }
+    }
+  ]
+}
