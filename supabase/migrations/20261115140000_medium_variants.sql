@@ -192,6 +192,13 @@ revoke execute on function public.sentence_distractors(uuid, text, text[]) from 
 revoke execute on function public.build_medium_variants(uuid) from anon, public;
 
 -- Treść, która jest już w bazie.
+--
+-- Wyzwalacz na czas przebiegu jest wyłączony. Działa na wiersz, więc przy kilkuset dorobionych
+-- zadaniach odpalałby się kilkaset razy, a każde odpalenie przeczesuje całą lekcję — push do
+-- bazy w chmurze przestawał się kończyć. Pętla niżej i tak obsługuje wszystkie lekcje, więc
+-- wyzwalacz nie miałby tu nic do dorobienia.
+alter table public.exercises disable trigger exercises_variants;
+
 do $backfill$
 declare
   v_lesson uuid;
@@ -201,3 +208,5 @@ begin
   end loop;
 end;
 $backfill$;
+
+alter table public.exercises enable trigger exercises_variants;
