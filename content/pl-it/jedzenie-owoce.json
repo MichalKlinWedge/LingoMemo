@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-it-starter",
+  "unit": { "slug": "jedzenie", "title": "Jedzenie", "icon": "🍽️", "sortOrder": 2 },
+  "lesson": {
+    "slug": "owoce",
+    "title": "La frutta",
+    "icon": "🍎",
+    "kind": "standard",
+    "sortOrder": 1,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "pierwsze-kroki/zwierzeta",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"food.apple","tags":["🍎"],"terms":{"pl":[{"text":"jabłko","pos":"noun"}],"it":[{"text":"mela","pos":"noun","ipa":"/ˈmela/","article":"la"}]}},
+    {"key":"food.pear","tags":["🍐"],"terms":{"pl":[{"text":"gruszka","pos":"noun"}],"it":[{"text":"pera","pos":"noun","ipa":"/ˈpera/","article":"la"}]}},
+    {"key":"food.banana","tags":["🍌"],"terms":{"pl":[{"text":"banan","pos":"noun"}],"it":[{"text":"banana","pos":"noun","ipa":"/baˈnana/","article":"la"}]}},
+    {"key":"food.strawberry","tags":["🍓"],"terms":{"pl":[{"text":"truskawka","pos":"noun"}],"it":[{"text":"fragola","pos":"noun","ipa":"/ˈfraɡola/","article":"la"}]}},
+    {"key":"food.grapes","tags":["🍇"],"terms":{"pl":[{"text":"winogrona","pos":"noun"}],"it":[{"text":"uva","pos":"noun","ipa":"/ˈuva/","article":"l'","note":"Po włosku jedna sztuka: „l’uva”, a nie „winogrona”."}]}},
+    {"key":"food.orange","tags":["🍊"],"terms":{"pl":[{"text":"pomarańcza","pos":"noun"}],"it":[{"text":"arancia","pos":"noun","ipa":"/aˈrantʃa/","article":"l'","note":"„Cia” czyta się jak „cza”."}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"food.apple","payload":{"prompt":"jabłko","accepted":["mela","la mela"],"options":["mela","pera","banana","fragola"]}},
+    {"type":"translate_ab","conceptKey":"food.pear","payload":{"prompt":"gruszka","accepted":["pera","la pera"],"options":["pera","banana","fragola","uva"]}},
+    {"type":"translate_ab","conceptKey":"food.banana","payload":{"prompt":"banan","accepted":["banana","la banana"],"options":["banana","fragola","uva","arancia"]}},
+    {"type":"translate_ab","conceptKey":"food.strawberry","payload":{"prompt":"truskawka","accepted":["fragola","la fragola"],"options":["fragola","uva","arancia","mela"]}},
+    {"type":"translate_ab","conceptKey":"food.grapes","payload":{"prompt":"winogrona","accepted":["uva","l'uva"],"options":["uva","arancia","mela","pera"]}},
+    {"type":"translate_ab","conceptKey":"food.orange","payload":{"prompt":"pomarańcza","accepted":["arancia","l'arancia"],"options":["arancia","mela","pera","banana"]}},
+    {"type":"translate_ba","conceptKey":"food.apple","payload":{"prompt":"mela","accepted":["jabłko"]}},
+    {"type":"translate_ba","conceptKey":"food.pear","payload":{"prompt":"pera","accepted":["gruszka"]}},
+    {"type":"translate_ba","conceptKey":"food.banana","payload":{"prompt":"banana","accepted":["banan"]}},
+    {"type":"translate_ba","conceptKey":"food.strawberry","payload":{"prompt":"fragola","accepted":["truskawka"]}},
+    {"type":"translate_ba","conceptKey":"food.grapes","payload":{"prompt":"uva","accepted":["winogrona"]}},
+    {"type":"translate_ba","conceptKey":"food.orange","payload":{"prompt":"arancia","accepted":["pomarańcza"]}},
+    {"type":"listening","conceptKey":"food.strawberry","points":15,"payload":{"speak":"fragola","lang":"it-IT","accepted":["fragola"]}},
+    {"type":"listening","conceptKey":"food.orange","points":15,"payload":{"speak":"arancia","lang":"it-IT","accepted":["arancia"]}},
+    {"type":"listening","conceptKey":"food.grapes","points":15,"payload":{"speak":"uva","lang":"it-IT","accepted":["uva"]}},
+    {"type":"listening","conceptKey":"food.pear","points":15,"payload":{"speak":"pera","lang":"it-IT","accepted":["pera"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"jabłko","b":"mela"},{"a":"gruszka","b":"pera"},{"a":"banan","b":"banana"},{"a":"truskawka","b":"fragola"},{"a":"winogrona","b":"uva"},{"a":"pomarańcza","b":"arancia"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"it-IT","pairs":[{"a":"jabłko","b":"mela"},{"a":"gruszka","b":"pera"},{"a":"banan","b":"banana"},{"a":"truskawka","b":"fragola"},{"a":"pomarańcza","b":"arancia"}]}},
+    {"type":"fill_blank_choice","conceptKey":"food.apple","payload":{"sentence":"La {{blank}} è rossa.","options":["mela","pera","banana","uva"],"answer":"mela","translation":"Jabłko jest czerwone."}},
+    {"type":"fill_blank_choice","conceptKey":"food.banana","payload":{"sentence":"La {{blank}} è gialla.","options":["banana","fragola","arancia","pera"],"answer":"banana","translation":"Banan jest żółty."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: Lubię jabłka.","tokens":["mi","piacciono","le","mele"],"solution":["mi","piacciono","le","mele"]}},
+    {"type":"inflection","conceptKey":"food.apple","points":15,"payload":{"base":"mela","formLabel":"liczba mnoga","instruction":"Napisz po włosku: więcej niż jedno jabłko.","accepted":["mele"]}}
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-it-starter",
+  "unit": { "slug": "jedzenie", "title": "Jedzenie", "icon": "🍽️", "sortOrder": 2 },
+  "lesson": {
+    "slug": "sniadanie",
+    "title": "La colazione",
+    "icon": "🍞",
+    "kind": "standard",
+    "sortOrder": 4,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "napoje",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"food.bread","tags":["🍞"],"terms":{"pl":[{"text":"chleb","pos":"noun"}],"it":[{"text":"pane","pos":"noun","ipa":"/ˈpane/","article":"il"}]}},
+    {"key":"food.butter","tags":["🧈"],"terms":{"pl":[{"text":"masło","pos":"noun"}],"it":[{"text":"burro","pos":"noun","ipa":"/ˈburro/","article":"il"}]}},
+    {"key":"food.jam","tags":["🍓"],"terms":{"pl":[{"text":"dżem","pos":"noun"}],"it":[{"text":"marmellata","pos":"noun","ipa":"/marmelˈlata/","article":"la"}]}},
+    {"key":"food.egg","tags":["🥚"],"terms":{"pl":[{"text":"jajko","pos":"noun"}],"it":[{"text":"uovo","pos":"noun","ipa":"/ˈwɔvo/","article":"l'","note":"Czyta się „uOvo”, z „u” jak krótkie „ł”."}]}},
+    {"key":"food.cheese","tags":["🧀"],"terms":{"pl":[{"text":"ser","pos":"noun"}],"it":[{"text":"formaggio","pos":"noun","ipa":"/forˈmaddʒo/","article":"il","note":"„Ggio” brzmi jak „dżdżo”."}]}},
+    {"key":"food.honey","tags":["🍯"],"terms":{"pl":[{"text":"miód","pos":"noun"}],"it":[{"text":"miele","pos":"noun","ipa":"/ˈmjɛle/","article":"il"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"food.bread","payload":{"prompt":"chleb","accepted":["pane","il pane"],"options":["pane","burro","marmellata","uovo"]}},
+    {"type":"translate_ab","conceptKey":"food.butter","payload":{"prompt":"masło","accepted":["burro","il burro"],"options":["burro","marmellata","uovo","formaggio"]}},
+    {"type":"translate_ab","conceptKey":"food.jam","payload":{"prompt":"dżem","accepted":["marmellata","la marmellata"],"options":["marmellata","uovo","formaggio","miele"]}},
+    {"type":"translate_ab","conceptKey":"food.egg","payload":{"prompt":"jajko","accepted":["uovo","l'uovo"],"options":["uovo","formaggio","miele","pane"]}},
+    {"type":"translate_ab","conceptKey":"food.cheese","payload":{"prompt":"ser","accepted":["formaggio","il formaggio"],"options":["formaggio","miele","pane","burro"]}},
+    {"type":"translate_ab","conceptKey":"food.honey","payload":{"prompt":"miód","accepted":["miele","il miele"],"options":["miele","pane","burro","marmellata"]}},
+    {"type":"translate_ba","conceptKey":"food.bread","payload":{"prompt":"pane","accepted":["chleb"]}},
+    {"type":"translate_ba","conceptKey":"food.butter","payload":{"prompt":"burro","accepted":["masło"]}},
+    {"type":"translate_ba","conceptKey":"food.jam","payload":{"prompt":"marmellata","accepted":["dżem"]}},
+    {"type":"translate_ba","conceptKey":"food.egg","payload":{"prompt":"uovo","accepted":["jajko"]}},
+    {"type":"translate_ba","conceptKey":"food.cheese","payload":{"prompt":"formaggio","accepted":["ser"]}},
+    {"type":"translate_ba","conceptKey":"food.honey","payload":{"prompt":"miele","accepted":["miód"]}},
+    {"type":"listening","conceptKey":"food.bread","points":15,"payload":{"speak":"pane","lang":"it-IT","accepted":["pane"]}},
+    {"type":"listening","conceptKey":"food.cheese","points":15,"payload":{"speak":"formaggio","lang":"it-IT","accepted":["formaggio"]}},
+    {"type":"listening","conceptKey":"food.egg","points":15,"payload":{"speak":"uovo","lang":"it-IT","accepted":["uovo"]}},
+    {"type":"listening","conceptKey":"food.honey","points":15,"payload":{"speak":"miele","lang":"it-IT","accepted":["miele"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"chleb","b":"pane"},{"a":"masło","b":"burro"},{"a":"dżem","b":"marmellata"},{"a":"jajko","b":"uovo"},{"a":"ser","b":"formaggio"},{"a":"miód","b":"miele"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"it-IT","pairs":[{"a":"chleb","b":"pane"},{"a":"masło","b":"burro"},{"a":"dżem","b":"marmellata"},{"a":"ser","b":"formaggio"},{"a":"miód","b":"miele"}]}},
+    {"type":"fill_blank_choice","conceptKey":"food.bread","payload":{"sentence":"Mangio il {{blank}} con il burro.","options":["pane","latte","uovo","miele"],"answer":"pane","translation":"Jem chleb z masłem."}},
+    {"type":"fill_blank_choice","conceptKey":"food.cheese","payload":{"sentence":"Il {{blank}} è giallo.","options":["formaggio","pane","burro","miele"],"answer":"formaggio","translation":"Ser jest żółty."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: Na śniadanie jem chleb.","tokens":["a","colazione","mangio","il","pane"],"solution":["a","colazione","mangio","il","pane"]}},
+    {"type":"inflection","conceptKey":"food.cheese","points":15,"payload":{"base":"formaggio","formLabel":"liczba mnoga","instruction":"Napisz po włosku: więcej niż jeden ser.","accepted":["formaggi"]}}
+  ]
+}

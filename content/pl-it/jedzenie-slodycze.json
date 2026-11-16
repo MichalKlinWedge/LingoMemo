@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-it-starter",
+  "unit": { "slug": "jedzenie", "title": "Jedzenie", "icon": "🍽️", "sortOrder": 2 },
+  "lesson": {
+    "slug": "slodycze",
+    "title": "I dolci",
+    "icon": "🍰",
+    "kind": "standard",
+    "sortOrder": 6,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "obiad",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"food.icecream","tags":["🍦"],"terms":{"pl":[{"text":"lody","pos":"noun"}],"it":[{"text":"gelato","pos":"noun","ipa":"/dʒeˈlato/","article":"il","note":"„Ge” czyta się jak „dże”."}]}},
+    {"key":"food.cake","tags":["🍰"],"terms":{"pl":[{"text":"ciasto","pos":"noun"}],"it":[{"text":"torta","pos":"noun","ipa":"/ˈtɔrta/","article":"la"}]}},
+    {"key":"food.biscuit","tags":["🍪"],"terms":{"pl":[{"text":"ciastko","pos":"noun"}],"it":[{"text":"biscotto","pos":"noun","ipa":"/bisˈkɔtto/","article":"il"}]}},
+    {"key":"food.candy","tags":["🍬"],"terms":{"pl":[{"text":"cukierek","pos":"noun"}],"it":[{"text":"caramella","pos":"noun","ipa":"/karaˈmɛlla/","article":"la"}]}},
+    {"key":"food.chocolate","tags":["🍫"],"terms":{"pl":[{"text":"czekolada","pos":"noun"}],"it":[{"text":"cioccolato","pos":"noun","ipa":"/tʃokkoˈlato/","article":"il","note":"„Cio” czyta się jak „czo”."}]}},
+    {"key":"food.pudding","tags":["🍮"],"terms":{"pl":[{"text":"budyń","pos":"noun"}],"it":[{"text":"budino","pos":"noun","ipa":"/buˈdino/","article":"il"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"food.icecream","payload":{"prompt":"lody","accepted":["gelato","il gelato"],"options":["gelato","torta","biscotto","caramella"]}},
+    {"type":"translate_ab","conceptKey":"food.cake","payload":{"prompt":"ciasto","accepted":["torta","la torta"],"options":["torta","biscotto","caramella","cioccolato"]}},
+    {"type":"translate_ab","conceptKey":"food.biscuit","payload":{"prompt":"ciastko","accepted":["biscotto","il biscotto"],"options":["biscotto","caramella","cioccolato","budino"]}},
+    {"type":"translate_ab","conceptKey":"food.candy","payload":{"prompt":"cukierek","accepted":["caramella","la caramella"],"options":["caramella","cioccolato","budino","gelato"]}},
+    {"type":"translate_ab","conceptKey":"food.chocolate","payload":{"prompt":"czekolada","accepted":["cioccolato","il cioccolato"],"options":["cioccolato","budino","gelato","torta"]}},
+    {"type":"translate_ab","conceptKey":"food.pudding","payload":{"prompt":"budyń","accepted":["budino","il budino"],"options":["budino","gelato","torta","biscotto"]}},
+    {"type":"translate_ba","conceptKey":"food.icecream","payload":{"prompt":"gelato","accepted":["lody"]}},
+    {"type":"translate_ba","conceptKey":"food.cake","payload":{"prompt":"torta","accepted":["ciasto"]}},
+    {"type":"translate_ba","conceptKey":"food.biscuit","payload":{"prompt":"biscotto","accepted":["ciastko"]}},
+    {"type":"translate_ba","conceptKey":"food.candy","payload":{"prompt":"caramella","accepted":["cukierek"]}},
+    {"type":"translate_ba","conceptKey":"food.chocolate","payload":{"prompt":"cioccolato","accepted":["czekolada"]}},
+    {"type":"translate_ba","conceptKey":"food.pudding","payload":{"prompt":"budino","accepted":["budyń"]}},
+    {"type":"listening","conceptKey":"food.icecream","points":15,"payload":{"speak":"gelato","lang":"it-IT","accepted":["gelato"]}},
+    {"type":"listening","conceptKey":"food.biscuit","points":15,"payload":{"speak":"biscotto","lang":"it-IT","accepted":["biscotto"]}},
+    {"type":"listening","conceptKey":"food.chocolate","points":15,"payload":{"speak":"cioccolato","lang":"it-IT","accepted":["cioccolato"]}},
+    {"type":"listening","conceptKey":"food.candy","points":15,"payload":{"speak":"caramella","lang":"it-IT","accepted":["caramella"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"lody","b":"gelato"},{"a":"ciasto","b":"torta"},{"a":"ciastko","b":"biscotto"},{"a":"cukierek","b":"caramella"},{"a":"czekolada","b":"cioccolato"},{"a":"budyń","b":"budino"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"it-IT","pairs":[{"a":"lody","b":"gelato"},{"a":"ciasto","b":"torta"},{"a":"ciastko","b":"biscotto"},{"a":"cukierek","b":"caramella"},{"a":"budyń","b":"budino"}]}},
+    {"type":"fill_blank_choice","conceptKey":"food.icecream","payload":{"sentence":"Il {{blank}} è freddo.","options":["gelato","biscotto","budino","formaggio"],"answer":"gelato","translation":"Lody są zimne."}},
+    {"type":"fill_blank_choice","conceptKey":"food.cake","payload":{"sentence":"La {{blank}} di compleanno è grande.","options":["torta","caramella","pizza","pasta"],"answer":"torta","translation":"Tort urodzinowy jest duży."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: Bardzo lubię lody.","tokens":["mi","piace","molto","il","gelato"],"solution":["mi","piace","molto","il","gelato"]}},
+    {"type":"inflection","conceptKey":"food.biscuit","points":15,"payload":{"base":"biscotto","formLabel":"liczba mnoga","instruction":"Napisz po włosku: więcej niż jedno ciastko.","accepted":["biscotti"]}}
+  ]
+}

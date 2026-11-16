@@ -21,6 +21,10 @@ begin
 end;
 $$;
 
+-- Klucze `test.*`, nie `food.*`: lekcja wchodzi do prawdziwego kursu `pl-en-starter`, a klucz
+-- pojęcia jest unikalny w obrębie kursu, nie całej bazy. Asercje niżej liczą pojęcia po samym
+-- kluczu, więc `food.apple` dzieliłoby wiersz z lekcją „Owoce" tego kursu i liczyło dodatkowo
+-- jabłka z kursów do innych języków, które mają własne `food.apple`.
 create or replace function pg_temp.lekcja(p_slug text, p_title text, p_exercises jsonb) returns jsonb
 language sql immutable as $$
   select jsonb_build_object(
@@ -30,12 +34,12 @@ language sql immutable as $$
     'lesson', jsonb_build_object('slug', p_slug, 'title', p_title, 'sortOrder', 1,
                                  'xpReward', 40, 'passThreshold', 0.75, 'isPublished', true),
     'concepts', jsonb_build_array(
-      jsonb_build_object('key', 'food.apple', 'tags', jsonb_build_array('🍎'),
+      jsonb_build_object('key', 'test.apple', 'tags', jsonb_build_array('🍎'),
         'terms', jsonb_build_object(
           'pl', jsonb_build_array(jsonb_build_object('text', 'jabłko', 'pos', 'noun')),
           'en', jsonb_build_array(jsonb_build_object('text', 'apple', 'pos', 'noun',
                   'forms', jsonb_build_array(jsonb_build_object('label', 'plural', 'text', 'apples')))))),
-      jsonb_build_object('key', 'food.bread',
+      jsonb_build_object('key', 'test.bread',
         'terms', jsonb_build_object(
           'pl', jsonb_build_array(jsonb_build_object('text', 'chleb')),
           'en', jsonb_build_array(jsonb_build_object('text', 'bread'))))),
@@ -87,9 +91,9 @@ select throws_ok(
 -- --- właściwy import ---
 create temporary table t_run as
   select public.admin_import_lesson(pg_temp.lekcja('jedzenie', 'Jedzenie', jsonb_build_array(
-    jsonb_build_object('type', 'translate_ab', 'conceptKey', 'food.apple', 'points', 10,
+    jsonb_build_object('type', 'translate_ab', 'conceptKey', 'test.apple', 'points', 10,
       'payload', jsonb_build_object('prompt', 'jabłko', 'accepted', jsonb_build_array('apple'))),
-    jsonb_build_object('type', 'translate_ba', 'conceptKey', 'food.bread',
+    jsonb_build_object('type', 'translate_ba', 'conceptKey', 'test.bread',
       'payload', jsonb_build_object('prompt', 'bread', 'accepted', jsonb_build_array('chleb')))
   ))) as report;
 grant select on t_run to authenticated;
@@ -108,7 +112,7 @@ select is(
   (select count(*)::integer from public.term_forms tf
     join public.terms t on t.id = tf.term_id
     join public.concepts c on c.id = t.concept_id
-   where c.key = 'food.apple' and tf.form_label = 'plural'),
+   where c.key = 'test.apple' and tf.form_label = 'plural'),
   1,
   'odmiany słowa też wchodzą'
 );
@@ -123,7 +127,7 @@ select is(
 -- --- ponowny import tego samego pliku ---
 create temporary table t_again as
   select public.admin_import_lesson(pg_temp.lekcja('jedzenie', 'Jedzenie po poprawce', jsonb_build_array(
-    jsonb_build_object('type', 'translate_ab', 'conceptKey', 'food.apple',
+    jsonb_build_object('type', 'translate_ab', 'conceptKey', 'test.apple',
       'payload', jsonb_build_object('prompt', 'jabłko', 'accepted', jsonb_build_array('apple')))
   ))) as report;
 grant select on t_again to authenticated;
@@ -148,7 +152,7 @@ select is(
 );
 
 select is(
-  (select count(*)::integer from public.concepts where key = 'food.apple'),
+  (select count(*)::integer from public.concepts where key = 'test.apple'),
   1,
   'słówko nie jest dublowane przy ponownym imporcie'
 );
@@ -157,7 +161,7 @@ select is(
 select is(
   (select count(*)::integer from public.terms t
     join public.concepts c on c.id = t.concept_id
-   where c.key = 'food.apple'),
+   where c.key = 'test.apple'),
   2,
   'po ponownym imporcie słówko ma dokładnie dwa zapisy, po jednym na język'
 );
@@ -170,7 +174,7 @@ select set_config('role', 'service_role', true),
 
 select lives_ok(
   $$select public.admin_import_lesson(pg_temp.lekcja('serwisowa', 'Z wiersza polecen', jsonb_build_array(
-      jsonb_build_object('type', 'translate_ab', 'conceptKey', 'food.apple',
+      jsonb_build_object('type', 'translate_ab', 'conceptKey', 'test.apple',
         'payload', jsonb_build_object('prompt', 'jablko', 'accepted', jsonb_build_array('apple'))))))$$,
   'klucz serwisowy importuje lekcję bez konta administratora'
 );

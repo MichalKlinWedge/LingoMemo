@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-it-starter",
+  "unit": { "slug": "jedzenie", "title": "Jedzenie", "icon": "🍽️", "sortOrder": 2 },
+  "lesson": {
+    "slug": "napoje",
+    "title": "Le bevande",
+    "icon": "🥤",
+    "kind": "standard",
+    "sortOrder": 3,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "warzywa",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"drink.water","tags":["💧"],"terms":{"pl":[{"text":"woda","pos":"noun"}],"it":[{"text":"acqua","pos":"noun","ipa":"/ˈakkwa/","article":"l'","note":"„Cqu” brzmi jak długie „kkw”."}]}},
+    {"key":"drink.milk","tags":["🥛"],"terms":{"pl":[{"text":"mleko","pos":"noun"}],"it":[{"text":"latte","pos":"noun","ipa":"/ˈlatte/","article":"il"}]}},
+    {"key":"drink.juice","tags":["🧃"],"terms":{"pl":[{"text":"sok","pos":"noun"}],"it":[{"text":"succo","pos":"noun","ipa":"/ˈsukko/","article":"il"}]}},
+    {"key":"drink.tea","tags":["🍵"],"terms":{"pl":[{"text":"herbata","pos":"noun"}],"it":[{"text":"tè","pos":"noun","ipa":"/tɛ/","article":"il","note":"Kreseczka nad „e” mówi, że akcent pada tutaj."}]}},
+    {"key":"drink.cocoa","tags":["☕"],"terms":{"pl":[{"text":"kakao","pos":"noun"}],"it":[{"text":"cacao","pos":"noun","ipa":"/kaˈkao/","article":"il"}]}},
+    {"key":"drink.lemonade","tags":["🍋"],"terms":{"pl":[{"text":"lemoniada","pos":"noun"}],"it":[{"text":"limonata","pos":"noun","ipa":"/limoˈnata/","article":"la"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"drink.water","payload":{"prompt":"woda","accepted":["acqua","l'acqua"],"options":["acqua","latte","succo","tè"]}},
+    {"type":"translate_ab","conceptKey":"drink.milk","payload":{"prompt":"mleko","accepted":["latte","il latte"],"options":["latte","succo","tè","cacao"]}},
+    {"type":"translate_ab","conceptKey":"drink.juice","payload":{"prompt":"sok","accepted":["succo","il succo"],"options":["succo","tè","cacao","limonata"]}},
+    {"type":"translate_ab","conceptKey":"drink.tea","payload":{"prompt":"herbata","accepted":["tè","il tè"],"options":["tè","cacao","limonata","acqua"]}},
+    {"type":"translate_ab","conceptKey":"drink.cocoa","payload":{"prompt":"kakao","accepted":["cacao","il cacao"],"options":["cacao","limonata","acqua","latte"]}},
+    {"type":"translate_ab","conceptKey":"drink.lemonade","payload":{"prompt":"lemoniada","accepted":["limonata","la limonata"],"options":["limonata","acqua","latte","succo"]}},
+    {"type":"translate_ba","conceptKey":"drink.water","payload":{"prompt":"acqua","accepted":["woda"]}},
+    {"type":"translate_ba","conceptKey":"drink.milk","payload":{"prompt":"latte","accepted":["mleko"]}},
+    {"type":"translate_ba","conceptKey":"drink.juice","payload":{"prompt":"succo","accepted":["sok"]}},
+    {"type":"translate_ba","conceptKey":"drink.tea","payload":{"prompt":"tè","accepted":["herbata"]}},
+    {"type":"translate_ba","conceptKey":"drink.cocoa","payload":{"prompt":"cacao","accepted":["kakao"]}},
+    {"type":"translate_ba","conceptKey":"drink.lemonade","payload":{"prompt":"limonata","accepted":["lemoniada"]}},
+    {"type":"listening","conceptKey":"drink.water","points":15,"payload":{"speak":"acqua","lang":"it-IT","accepted":["acqua"]}},
+    {"type":"listening","conceptKey":"drink.juice","points":15,"payload":{"speak":"succo","lang":"it-IT","accepted":["succo"]}},
+    {"type":"listening","conceptKey":"drink.cocoa","points":15,"payload":{"speak":"cacao","lang":"it-IT","accepted":["cacao"]}},
+    {"type":"listening","conceptKey":"drink.lemonade","points":15,"payload":{"speak":"limonata","lang":"it-IT","accepted":["limonata"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"woda","b":"acqua"},{"a":"mleko","b":"latte"},{"a":"sok","b":"succo"},{"a":"herbata","b":"tè"},{"a":"kakao","b":"cacao"},{"a":"lemoniada","b":"limonata"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"it-IT","pairs":[{"a":"woda","b":"acqua"},{"a":"mleko","b":"latte"},{"a":"sok","b":"succo"},{"a":"herbata","b":"tè"},{"a":"lemoniada","b":"limonata"}]}},
+    {"type":"fill_blank_choice","conceptKey":"drink.milk","payload":{"sentence":"Bevo un bicchiere di {{blank}}.","options":["latte","pane","carota","mela"],"answer":"latte","translation":"Piję szklankę mleka."}},
+    {"type":"fill_blank_choice","conceptKey":"drink.water","payload":{"sentence":"{{blank}} è fredda.","options":["L'acqua","Il latte","Il succo","Il tè"],"answer":"L'acqua","translation":"Woda jest zimna."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: Poproszę szklankę wody.","tokens":["vorrei","un","bicchiere","d'acqua"],"solution":["vorrei","un","bicchiere","d'acqua"]}},
+    {"type":"inflection","conceptKey":"drink.lemonade","points":15,"payload":{"base":"limonata","formLabel":"liczba mnoga","instruction":"Napisz po włosku: więcej niż jedna lemoniada.","accepted":["limonate"]}}
+  ]
+}

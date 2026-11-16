@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-it-starter",
+  "unit": { "slug": "jedzenie", "title": "Jedzenie", "icon": "🍽️", "sortOrder": 2 },
+  "lesson": {
+    "slug": "warzywa",
+    "title": "La verdura",
+    "icon": "🥕",
+    "kind": "standard",
+    "sortOrder": 2,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "owoce",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"food.carrot","tags":["🥕"],"terms":{"pl":[{"text":"marchewka","pos":"noun"}],"it":[{"text":"carota","pos":"noun","ipa":"/kaˈrɔta/","article":"la"}]}},
+    {"key":"food.potato","tags":["🥔"],"terms":{"pl":[{"text":"ziemniak","pos":"noun"}],"it":[{"text":"patata","pos":"noun","ipa":"/paˈtata/","article":"la"}]}},
+    {"key":"food.tomato","tags":["🍅"],"terms":{"pl":[{"text":"pomidor","pos":"noun"}],"it":[{"text":"pomodoro","pos":"noun","ipa":"/pomoˈdɔro/","article":"il"}]}},
+    {"key":"food.cucumber","tags":["🥒"],"terms":{"pl":[{"text":"ogórek","pos":"noun"}],"it":[{"text":"cetriolo","pos":"noun","ipa":"/tʃetriˈɔlo/","article":"il","note":"„Ce” czyta się jak „cze”."}]}},
+    {"key":"food.onion","tags":["🧅"],"terms":{"pl":[{"text":"cebula","pos":"noun"}],"it":[{"text":"cipolla","pos":"noun","ipa":"/tʃiˈpolla/","article":"la"}]}},
+    {"key":"food.salad","tags":["🥗"],"terms":{"pl":[{"text":"sałata","pos":"noun"}],"it":[{"text":"insalata","pos":"noun","ipa":"/insaˈlata/","article":"l'"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"food.carrot","payload":{"prompt":"marchewka","accepted":["carota","la carota"],"options":["carota","patata","pomodoro","cetriolo"]}},
+    {"type":"translate_ab","conceptKey":"food.potato","payload":{"prompt":"ziemniak","accepted":["patata","la patata"],"options":["patata","pomodoro","cetriolo","cipolla"]}},
+    {"type":"translate_ab","conceptKey":"food.tomato","payload":{"prompt":"pomidor","accepted":["pomodoro","il pomodoro"],"options":["pomodoro","cetriolo","cipolla","insalata"]}},
+    {"type":"translate_ab","conceptKey":"food.cucumber","payload":{"prompt":"ogórek","accepted":["cetriolo","il cetriolo"],"options":["cetriolo","cipolla","insalata","carota"]}},
+    {"type":"translate_ab","conceptKey":"food.onion","payload":{"prompt":"cebula","accepted":["cipolla","la cipolla"],"options":["cipolla","insalata","carota","patata"]}},
+    {"type":"translate_ab","conceptKey":"food.salad","payload":{"prompt":"sałata","accepted":["insalata","l'insalata"],"options":["insalata","carota","patata","pomodoro"]}},
+    {"type":"translate_ba","conceptKey":"food.carrot","payload":{"prompt":"carota","accepted":["marchewka"]}},
+    {"type":"translate_ba","conceptKey":"food.potato","payload":{"prompt":"patata","accepted":["ziemniak"]}},
+    {"type":"translate_ba","conceptKey":"food.tomato","payload":{"prompt":"pomodoro","accepted":["pomidor"]}},
+    {"type":"translate_ba","conceptKey":"food.cucumber","payload":{"prompt":"cetriolo","accepted":["ogórek"]}},
+    {"type":"translate_ba","conceptKey":"food.onion","payload":{"prompt":"cipolla","accepted":["cebula"]}},
+    {"type":"translate_ba","conceptKey":"food.salad","payload":{"prompt":"insalata","accepted":["sałata"]}},
+    {"type":"listening","conceptKey":"food.carrot","points":15,"payload":{"speak":"carota","lang":"it-IT","accepted":["carota"]}},
+    {"type":"listening","conceptKey":"food.cucumber","points":15,"payload":{"speak":"cetriolo","lang":"it-IT","accepted":["cetriolo"]}},
+    {"type":"listening","conceptKey":"food.onion","points":15,"payload":{"speak":"cipolla","lang":"it-IT","accepted":["cipolla"]}},
+    {"type":"listening","conceptKey":"food.tomato","points":15,"payload":{"speak":"pomodoro","lang":"it-IT","accepted":["pomodoro"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"marchewka","b":"carota"},{"a":"ziemniak","b":"patata"},{"a":"pomidor","b":"pomodoro"},{"a":"ogórek","b":"cetriolo"},{"a":"cebula","b":"cipolla"},{"a":"sałata","b":"insalata"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"it-IT","pairs":[{"a":"marchewka","b":"carota"},{"a":"ziemniak","b":"patata"},{"a":"pomidor","b":"pomodoro"},{"a":"cebula","b":"cipolla"},{"a":"sałata","b":"insalata"}]}},
+    {"type":"fill_blank_choice","conceptKey":"food.tomato","payload":{"sentence":"Il {{blank}} è rosso.","options":["pomodoro","cetriolo","cipolla","insalata"],"answer":"pomodoro","translation":"Pomidor jest czerwony."}},
+    {"type":"fill_blank_choice","conceptKey":"food.carrot","payload":{"sentence":"La {{blank}} è arancione.","options":["carota","patata","cipolla","insalata"],"answer":"carota","translation":"Marchewka jest pomarańczowa."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: Jem marchewkę codziennie.","tokens":["mangio","una","carota","ogni","giorno"],"solution":["mangio","una","carota","ogni","giorno"]}},
+    {"type":"inflection","conceptKey":"food.tomato","points":15,"payload":{"base":"pomodoro","formLabel":"liczba mnoga","instruction":"Napisz po włosku: więcej niż jeden pomidor.","accepted":["pomodori"]}}
+  ]
+}

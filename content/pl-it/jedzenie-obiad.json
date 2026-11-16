@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-it-starter",
+  "unit": { "slug": "jedzenie", "title": "Jedzenie", "icon": "🍽️", "sortOrder": 2 },
+  "lesson": {
+    "slug": "obiad",
+    "title": "Il pranzo",
+    "icon": "🍝",
+    "kind": "standard",
+    "sortOrder": 5,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "sniadanie",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"food.pasta","tags":["🍝"],"terms":{"pl":[{"text":"makaron","pos":"noun"}],"it":[{"text":"pasta","pos":"noun","ipa":"/ˈpasta/","article":"la"}]}},
+    {"key":"food.pizza","tags":["🍕"],"terms":{"pl":[{"text":"pizza","pos":"noun"}],"it":[{"text":"pizza","pos":"noun","ipa":"/ˈpittsa/","article":"la","note":"„Zz” brzmi jak „c”: PICCA."}]}},
+    {"key":"food.soup","tags":["🍲"],"terms":{"pl":[{"text":"zupa","pos":"noun"}],"it":[{"text":"zuppa","pos":"noun","ipa":"/ˈtsuppa/","article":"la"}]}},
+    {"key":"food.rice","tags":["🍚"],"terms":{"pl":[{"text":"ryż","pos":"noun"}],"it":[{"text":"riso","pos":"noun","ipa":"/ˈriso/","article":"il"}]}},
+    {"key":"food.meat","tags":["🍖"],"terms":{"pl":[{"text":"mięso","pos":"noun"}],"it":[{"text":"carne","pos":"noun","ipa":"/ˈkarne/","article":"la"}]}},
+    {"key":"food.fish","tags":["🐟"],"terms":{"pl":[{"text":"ryba","pos":"noun"}],"it":[{"text":"pesce","pos":"noun","ipa":"/ˈpeʃʃe/","article":"il","note":"„Sce” czyta się jak „sze”."}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"food.pasta","payload":{"prompt":"makaron","accepted":["pasta","la pasta"],"options":["pasta","pizza","zuppa","riso"]}},
+    {"type":"translate_ab","conceptKey":"food.pizza","payload":{"prompt":"pizza","accepted":["pizza","la pizza"],"options":["pizza","zuppa","riso","carne"]}},
+    {"type":"translate_ab","conceptKey":"food.soup","payload":{"prompt":"zupa","accepted":["zuppa","la zuppa"],"options":["zuppa","riso","carne","pesce"]}},
+    {"type":"translate_ab","conceptKey":"food.rice","payload":{"prompt":"ryż","accepted":["riso","il riso"],"options":["riso","carne","pesce","pasta"]}},
+    {"type":"translate_ab","conceptKey":"food.meat","payload":{"prompt":"mięso","accepted":["carne","la carne"],"options":["carne","pesce","pasta","pizza"]}},
+    {"type":"translate_ab","conceptKey":"food.fish","payload":{"prompt":"ryba","accepted":["pesce","il pesce"],"options":["pesce","pasta","pizza","zuppa"]}},
+    {"type":"translate_ba","conceptKey":"food.pasta","payload":{"prompt":"pasta","accepted":["makaron"]}},
+    {"type":"translate_ba","conceptKey":"food.pizza","payload":{"prompt":"pizza","accepted":["pizza"]}},
+    {"type":"translate_ba","conceptKey":"food.soup","payload":{"prompt":"zuppa","accepted":["zupa"]}},
+    {"type":"translate_ba","conceptKey":"food.rice","payload":{"prompt":"riso","accepted":["ryż"]}},
+    {"type":"translate_ba","conceptKey":"food.meat","payload":{"prompt":"carne","accepted":["mięso"]}},
+    {"type":"translate_ba","conceptKey":"food.fish","payload":{"prompt":"pesce","accepted":["ryba"]}},
+    {"type":"listening","conceptKey":"food.pasta","points":15,"payload":{"speak":"pasta","lang":"it-IT","accepted":["pasta"]}},
+    {"type":"listening","conceptKey":"food.soup","points":15,"payload":{"speak":"zuppa","lang":"it-IT","accepted":["zuppa"]}},
+    {"type":"listening","conceptKey":"food.fish","points":15,"payload":{"speak":"pesce","lang":"it-IT","accepted":["pesce"]}},
+    {"type":"listening","conceptKey":"food.meat","points":15,"payload":{"speak":"carne","lang":"it-IT","accepted":["carne"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"makaron","b":"pasta"},{"a":"pizza","b":"pizza"},{"a":"zupa","b":"zuppa"},{"a":"ryż","b":"riso"},{"a":"mięso","b":"carne"},{"a":"ryba","b":"pesce"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"it-IT","pairs":[{"a":"makaron","b":"pasta"},{"a":"pizza","b":"pizza"},{"a":"zupa","b":"zuppa"},{"a":"ryż","b":"riso"},{"a":"ryba","b":"pesce"}]}},
+    {"type":"fill_blank_choice","conceptKey":"food.pasta","payload":{"sentence":"A pranzo mangio la {{blank}}.","options":["pasta","pane","mela","carota"],"answer":"pasta","translation":"Na obiad jem makaron."}},
+    {"type":"fill_blank_choice","conceptKey":"food.fish","payload":{"sentence":"Il {{blank}} nuota nel mare.","options":["pesce","riso","pane","formaggio"],"answer":"pesce","translation":"Ryba pływa w morzu."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: Pizza jest dobra.","tokens":["la","pizza","è","buona"],"solution":["la","pizza","è","buona"]}},
+    {"type":"inflection","conceptKey":"food.pizza","points":15,"payload":{"base":"pizza","formLabel":"liczba mnoga","instruction":"Napisz po włosku: więcej niż jedna pizza.","accepted":["pizze"]}}
+  ]
+}
