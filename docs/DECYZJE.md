@@ -634,8 +634,9 @@ powtórek — a tego nie odtworzy żaden backup treści, bo to nie jest treść.
 
 ## Rola rodzica (2026-11-15)
 
-Rodzic nie robi lekcji — ma wgląd w postępy swoich dzieci i nic poza tym. Dzieci przypisuje
-administrator.
+Rodzic ma wgląd w postępy swoich dzieci. Dzieci przypisuje administrator. Pierwotnie rola nie
+dawała nic poza wglądem — od wpisu „Rodzic uczy się swoich kursów" (2026-11-16) rodzic robi też
+własne lekcje, na tych samych zasadach co dziecko.
 
 | Pytanie | Wybór | Dlaczego | Odrzucone |
 |---|---|---|---|
@@ -647,9 +648,9 @@ administrator.
 | Skąd rodzic bierze konto | zaproszenie z rolą `parent` albo nadanie roli istniejącemu kontu w panelu | obie drogi prowadzą do tego samego wiersza w `parent_users` | wyłącznie zaproszenie (nie da się awansować konta, które już istnieje) |
 | Gdzie przypisuje się dzieci | w karcie rodzica, przełącznikami | rodziców jest dwoje, a dzieci kilkoro — krótsza lista do klikania i od razu widać, komu brakuje przypisania | wybór rodzica w karcie dziecka (dziecko może mieć dwoje rodziców, więc i tak nie jest to wybór jednego z listy) |
 | Odebranie roli | kasuje też powiązania | rola odebrana z zostawionymi dziećmi to cicha furtka, gdyby nadać ją temu samemu kontu ponownie | zostawianie powiązań „na wszelki wypadek" |
-| Zapis na kurs w zaproszeniu | pomijany dla roli `parent` | rodzic dostałby pusty wiersz w `enrollments` i kafelek kursu na stronie, której nie ma po co otwierać | zapisywanie wszystkich tak samo |
+| Zapis na kurs w zaproszeniu | pomijany dla roli `parent` — **zmienione**, patrz „Rodzic uczy się swoich kursów" (2026-11-16) | wówczas: rodzic dostałby pusty wiersz w `enrollments` i kafelek kursu na stronie, której nie ma po co otwierać | zapisywanie wszystkich tak samo |
 
-Strona główna rozgałęzia się po claimie: rodzic widzi listę dzieci zamiast kafelków kursów,
+Strona główna rozgałęzia się po claimie: rodzic widzi listę dzieci nad kafelkami swoich kursów,
 a karta dziecka (`/dziecko/[id]`) nie sprawdza uprawnień sama — pokazuje to, co przepuści RLS.
 Wejście pod adres cudzego dziecka kończy się komunikatem „Nie widzisz tego konta", bo zapytanie
 o profil wraca puste. Druga bramka w kodzie mogłaby się z regułą w bazie rozjechać.
@@ -973,4 +974,30 @@ O trudności decyduje dziecko, klikając kwadracik na mapie kursu — i to jest 
 |---|---|---|---|
 | Co znika | sekcja na `/admin/uczniowie/[id]` wraz z komponentem i akcją `setLearnerLevelAction` | martwy kod bez jedynego wywołania zostaje w repozytorium tylko po to, żeby mylić | zostawienie panelu z dopiskiem „nieaktywny" |
 | Co zostaje | kolumna `profiles.level`, funkcja `set_learner_level` i jej test pgTAP | usunięcie kolumny to migracja kasująca dane, a sufit poziomu może jeszcze wrócić jako ustawienie rodzica | `drop column` razem z funkcją |
-| Lista uczniów | chip „poziom: N" zostaje | pokazuje stan kolumny, a nie obiecuje, że da się go zmienić | usunięcie chipu przy okazji (osobna zmiana, inny ekran) |
+| Lista uczniów | „poziom: N" znika też z rozwiniętego wiersza | liczba, której nikt nie ustawia i nic nie czyta, jest w tabeli szumem | zostawienie jej jako podglądu kolumny |
+
+### Rodzic uczy się swoich kursów (2026-11-16)
+
+Poprawka do „Roli rodzica" wyżej. Rola powstała jako czysty wgląd — „rodzic nie robi lekcji" —
+i to założenie weszło w trzy miejsca: strona główna pokazywała mu wyłącznie dzieci, zaproszenie
+z kursem celowo nie zakładało mu zapisu, a komentarze w bazie tłumaczyły, dlaczego tak ma być.
+Tymczasem rodzic uczący się razem z dzieckiem to najzwyklejszy przypadek: ten sam kurs, własne
+konto, własne powtórki.
+
+W bazie nie trzeba było niczego otwierać — i to jest tu najważniejsze. Nauką rządzi zapis na kurs
+(`is_enrolled` pod `is_lesson_unlocked`), a ten nigdy nie pytał o rolę. Zmiana to jeden wyjątek
+mniej w wyzwalaczu zaproszeń i jedna sekcja więcej na stronie głównej.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Co daje dostęp do nauki | zapis na kurs, tak samo jak u dziecka | o tym, kto się czego uczy, decyduje administrator — rola mówi tylko, czyje postępy wolno czytać | rola jako dostęp (rodzic uczy się wszystkiego), automatyczny zapis na kursy swoich dzieci (rodzic dwójki dzieci dostaje nagle cztery kursy) |
+| Zapis w zaproszeniu | zakładany każdemu, kogo zaprasza, rodzica nie wyłączając | skoro administrator wpisał kurs w zaproszenie, to znaczy, że ten ktoś ma się tego kursu uczyć | osobne pole „zapisz też rodzica" w formularzu zaproszenia |
+| Rodzaj zapisu | zwykły wiersz w `enrollments` | zapis to zapis; drugi rodzaj („rodzic uczy się kursu dziecka") znaczyłby to samo, a trzeba by go sprawdzać w każdej funkcji nauki | kolumna `is_parent` w `enrollments` |
+| Strona główna | dzieci, pod nimi własne kursy, na końcu „Inne kursy" z prośbą | rodzic przychodzi tu po dzieci, ale kursy ma mieć pod ręką bez szukania; ta sama lista i ten sam przycisk prośby co u dziecka | osobny ekran „moja nauka" dla rodzica, przełącznik trybu dziecko/rodzic |
+| Rodzic-administrator | widzi jedno i drugie | jedno konto obsługuje oba, a ukrywanie dzieci przed administratorem nic nie chroni | rozdzielanie widoków po dwu claimach |
+| Postępy | księgują się na koncie rodzica | każdy wiersz postępu ma `user_id`, więc statystyki dziecka pozostają nietknięte | wspólny wynik „rodziny" |
+| `exercises` | **dalej zamknięte** | rodzic robiący lekcje dostaje treść zadań z `get_lesson_exercises`, bez `accepted` / `answer` / `solution` — jak dziecko | otwarcie tabeli dla rodzica, bo „i tak się uczy" |
+
+Test `parent_learns.test.sql` pilnuje obu końców tej zmiany: że rodzic po zapisie zaczyna lekcję
+i dostaje zadania, oraz że zapis DZIECKA mu kursu nie otwiera, a tabeli `exercises` nie widzi
+ani przed zapisem, ani po nim.
