@@ -3,6 +3,7 @@ import { Suspense } from "react";
 
 import { formatDuration, LESSONS, plural, WORDS } from "@lingomemo/core";
 
+import { BadgeList } from "@/app/badge-list";
 import { CourseRequest } from "@/app/course-request";
 import { Flag } from "@/components/flag";
 import { PageHeader } from "@/components/page-header";
@@ -300,6 +301,18 @@ async function Child({ params }: { params: PageProps<"/dziecko/[id]">["params"] 
 
       {/* Co dziecko ostatnio robiło, lekcja po lekcji. Tabele statystyk mówią „ile", a to jest
           jedyne miejsce, w którym widać „co" — i czy wczorajsze podejście zostało dokończone. */}
+      {/* Odznaki PYTAJĄCEGO, nie dziecka — cała reszta strony jest o dziecku, więc mówi to
+          wprost podpis. Rodzic uczący się razem z nim ma swoje nagrody tam, gdzie i tak zagląda
+          po jego postępy; dziecku pokazuje je z tego samego ekranu. */}
+      <BadgeList
+        title="Twoje odznaki"
+        note={
+          <p className="text-base text-zinc-600 dark:text-zinc-400">
+            To Twoje odznaki za własną naukę — postępy dziecka są wyżej.
+          </p>
+        }
+      />
+
       <section className="flex flex-col gap-3">
         <h2 className="card-title">Ostatnie lekcje</h2>
         {(tries ?? []).length === 0 ? (

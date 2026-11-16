@@ -1012,6 +1012,11 @@ karcie — pełna lista, razem z niezdobytymi, zostaje w „Nagrodach". Sekcja j
 tylko dla rodzica: to ta sama strona własnych postępów, a rozgałęzianie jej po roli dodałoby warunek
 bez żadnego zysku.
 
+Sekcja odznak (`app/badge-list.tsx`) stoi w obu miejscach, w których rodzic bywa: w „Twoich
+postępach" i na karcie dziecka. Zawsze pokazuje odznaki ZALOGOWANEGO, nigdy oglądanego dziecka —
+stąd brak parametru „czyje" i podpis „to Twoje odznaki za własną naukę", bo cała reszta tamtej
+strony jest o dziecku.
+
 Prośba o dostęp stoi też przy kursach dziecka, na jego karcie: rodzic czyta, czego uczy się
 dziecko, i w tym samym wierszu widzi albo „uczysz się tego kursu" (odnośnik do mapy), albo
 przycisk prośby dla SIEBIE. To zwykłe `request_course_access` — nowej drogi nie ma, bo zapis
