@@ -768,6 +768,15 @@ h2 {
     vertical-align: middle;
   }
 
+  /* Adres e-mail to jedno długie słowo, którego przeglądarka nie ma gdzie złamać — kolumna
+     rozpychała się ponad szerokość karty i pod tabelą pojawiał się poziomy pasek. `anywhere`
+     (w odróżnieniu od `break-word`) zmienia też szerokość minimalną komórki, więc tabela mieści
+     się przy każdym adresie, a nie tylko przy krótkim. Reguła jest wyłącznie dla adresu: na całej
+     komórce łamała w środku słowa także imiona („Magda lena Kowal czyk") i etykiety ról. */
+  .admin-table .cell-mail {
+    overflow-wrap: anywhere;
+  }
+
   /* Podświetlenie wiersza mieszane z fioletu — ta sama reguła działa w obu motywach. */
   .admin-table tbody tr:hover > td {
     background: color-mix(in srgb, var(--color-brand) 7%, transparent);

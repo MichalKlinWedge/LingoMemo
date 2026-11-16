@@ -29,16 +29,20 @@ export const MINUTES: PluralForms = ['minuta', 'minuty', 'minut'];
 export const HOURS: PluralForms = ['godzina', 'godziny', 'godzin'];
 
 /**
- * Czas nauki po ludzku: „2 godz. 05 min", „18 min", „niecała minuta".
+ * Czas nauki po ludzku: „2 godz. 05 min", „18 min", „< 1 min".
  *
  * Sekund nie pokazujemy nigdzie poza pierwszą minutą — przy czasie liczonym od wejścia do
  * lekcji do jej zakończenia dokładność co do sekundy i tak jest pozorna, a krótsza liczba
  * czyta się szybciej. Minuty po godzinie mają wiodące zero, żeby „2 godz. 5 min" nie wyglądało
  * jak „2,5 godziny".
+ *
+ * Pierwsza minuta to „< 1 min", a nie „niecała minuta": ta wartość stoi w kolumnie tabeli kont
+ * obok „55 min" i pełnym zdaniem rozpychała kolumnę szerzej niż wszystkie pozostałe razem.
+ * Wersja do czytania w zdaniu i dla czytnika ekranu jest w `spellDuration`.
  */
 export function formatDuration(seconds: number): string {
   const total = Math.max(0, Math.round(seconds));
-  if (total < 60) return 'niecała minuta';
+  if (total < 60) return '< 1 min';
 
   const minutes = Math.floor(total / 60);
   if (minutes < 60) return `${minutes} min`;

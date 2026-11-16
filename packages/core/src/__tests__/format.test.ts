@@ -32,8 +32,8 @@ describe('pluralForm', () => {
 
 describe('formatDuration', () => {
   it('poniżej minuty nie podaje liczby sekund', () => {
-    expect(formatDuration(0)).toBe('niecała minuta');
-    expect(formatDuration(59)).toBe('niecała minuta');
+    expect(formatDuration(0)).toBe('< 1 min');
+    expect(formatDuration(59)).toBe('< 1 min');
   });
 
   it('do godziny podaje same minuty, zaokrąglone w dół', () => {
@@ -49,7 +49,7 @@ describe('formatDuration', () => {
   });
 
   it('ujemnego czasu nie pokazuje jako ujemnego', () => {
-    expect(formatDuration(-10)).toBe('niecała minuta');
+    expect(formatDuration(-10)).toBe('< 1 min');
   });
 });
 

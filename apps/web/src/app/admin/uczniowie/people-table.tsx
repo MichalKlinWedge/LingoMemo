@@ -55,7 +55,7 @@ export function PeopleTable({ rows, people }: { rows: PersonRow[]; people: Osoba
   const [otwarte, setOtwarte] = useState<string | null>(null);
 
   return (
-    <div className="card overflow-x-auto px-3 py-2">
+    <div className="card px-3 py-2">
       <table className="admin-table">
         <thead>
           <tr>
@@ -81,7 +81,7 @@ export function PeopleTable({ rows, people }: { rows: PersonRow[]; people: Osoba
                         {row.displayName}
                         {row.self && " · to Ty"}
                       </Link>
-                      <span className="text-sm text-zinc-500">{row.email}</span>
+                      <span className="cell-mail text-sm text-zinc-500">{row.email}</span>
                     </span>
                   </td>
                   <td>
@@ -116,13 +116,19 @@ export function PeopleTable({ rows, people }: { rows: PersonRow[]; people: Osoba
                   <td className="hidden text-right tabular-nums sm:table-cell">{row.streak}</td>
                   <td className="hidden whitespace-nowrap text-right sm:table-cell">{row.time}</td>
                   <td className="text-right">
+                    {/* Poniżej 640 px zostaje sama ikona: podpis i tak powtarza się w każdym
+                        wierszu, a zabiera szerokość, której brakuje imieniu. Nazwę dla czytnika
+                        ekranu niesie `aria-label` — i mówi, czyje to konto, czego sześć
+                        jednakowych „Konto" nie mówiło. */}
                     <button
                       type="button"
                       className="btn-row"
                       aria-expanded={open}
+                      aria-label={`${open ? "Zwiń" : "Konto"}: ${row.displayName}`}
                       onClick={() => setOtwarte(open ? null : row.userId)}
                     >
-                      {open ? "Zwiń" : <><span aria-hidden>✏️</span> Konto</>}
+                      <span aria-hidden>{open ? "✕" : "✏️"}</span>
+                      <span className="hidden sm:inline">{open ? "Zwiń" : "Konto"}</span>
                     </button>
                   </td>
                 </tr>
