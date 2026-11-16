@@ -111,6 +111,13 @@ async function People() {
     };
   });
 
+  // Alfabetycznie po imieniu. `list_students` zwraca wiersze w kolejności zakładania kont —
+  // przy kilku kontach to było bez znaczenia, przy kilkunastu znalezienie dziecka wymagało
+  // przeczytania całej listy. Collator, nie `localeCompare` w pętli: polskie „Ł" ma stanąć
+  // między „L" a „M", a nie na końcu alfabetu.
+  const poAlfabecie = new Intl.Collator("pl", { sensitivity: "base" });
+  rows.sort((a, b) => poAlfabecie.compare(a.displayName, b.displayName));
+
   return <PeopleTable rows={rows} people={osoby} />;
 }
 

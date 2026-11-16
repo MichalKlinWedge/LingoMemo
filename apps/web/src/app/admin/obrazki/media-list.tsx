@@ -1,10 +1,11 @@
 "use client";
 
-import { useActionState, useEffect, useId, useMemo, useRef, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 
 import { EXERCISES, plural, WORDS } from "@lingomemo/core";
 
 import { type FormState, Status, SubmitButton } from "@/components/forms";
+import { TableEmpty, TableFilter, TablePager, useTableBrowse } from "@/components/table-browse";
 
 import { deleteMediaAction } from "./actions";
 
@@ -33,11 +34,6 @@ function data(iso: string | null): string {
   return iso ? new Date(iso).toLocaleDateString("pl-PL") : "—";
 }
 
-/**
- * Ile plików na stronie. Biblioteka rośnie z każdą lekcją, a kilkaset wierszy naraz to strona,
- * której przeglądarka nie zdąży narysować, zanim administrator zacznie przewijać.
- */
-const NA_STRONIE = 20;
 
 /** Jeden plik jako wiersz tabeli. Kasowanie nie dzieje się tutaj — wiersz tylko o nie prosi. */
 function Wiersz({ file, onDelete }: { file: MediaFile; onDelete: () => void }) {
@@ -180,10 +176,8 @@ function Potwierdzenie({ file, onClose }: { file: MediaFile; onClose: () => void
  */
 export function MediaList({ files }: { files: MediaFile[] }) {
   const [doKasacji, setDoKasacji] = useState<MediaFile | null>(null);
-  const [szukane, setSzukane] = useState("");
-  const [strona, setStrona] = useState(0);
   const okno = useRef<HTMLDialogElement>(null);
-  const poleId = useId();
+  const stan = useTableBrowse(files, (file) => file.path);
 
   useEffect(() => {
     const element = okno.current;
@@ -191,29 +185,6 @@ export function MediaList({ files }: { files: MediaFile[] }) {
     if (doKasacji && !element.open) element.showModal();
     else if (!doKasacji && element.open) element.close();
   }, [doKasacji]);
-
-  // Filtrowanie po ścieżce, bez rozróżniania wielkości liter: nazwy plików są z małych liter,
-  // ale szuka się ich tak, jak się je pamięta.
-  const pasujace = useMemo(() => {
-    const fraza = szukane.trim().toLowerCase();
-    return fraza === "" ? files : files.filter((file) => file.path.toLowerCase().includes(fraza));
-  }, [files, szukane]);
-
-  // Nowa fraza wraca na pierwszą stronę: wynik jest inny, więc „strona 3" znaczyłaby co innego
-  // niż przed chwilą. Stan poprawiamy w trakcie renderowania, nie w efekcie — efekt z `setState`
-  // to kaskada renderów, której linter słusznie zabrania.
-  const [poprzednieSzukane, setPoprzednieSzukane] = useState(szukane);
-  if (szukane !== poprzednieSzukane) {
-    setPoprzednieSzukane(szukane);
-    setStrona(0);
-  }
-
-  const stron = Math.max(1, Math.ceil(pasujace.length / NA_STRONIE));
-  // Skasowanie ostatniego pliku na ostatniej stronie zostawiłoby pustą stronę, a lista przychodzi
-  // z serwera już bez niego — dlatego numer strony przycinamy przy każdym renderowaniu.
-  const biezaca = Math.min(strona, stron - 1);
-  const od = biezaca * NA_STRONIE;
-  const widoczne = pasujace.slice(od, od + NA_STRONIE);
 
   if (files.length === 0) {
     return (
@@ -225,81 +196,44 @@ export function MediaList({ files }: { files: MediaFile[] }) {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap items-center gap-3">
-        <label className="flex min-w-60 flex-1 flex-col gap-1" htmlFor={poleId}>
-          <span className="sr-only">Filtruj po ścieżce</span>
-          <input
-            id={poleId}
-            className="field"
-            type="search"
-            value={szukane}
-            placeholder="Szukaj w ścieżce, np. „liczba” albo „2026/kolor”"
-            autoComplete="off"
-            spellCheck={false}
-            onChange={(event) => setSzukane(event.target.value)}
-          />
-        </label>
-        <span className="text-zinc-600 dark:text-zinc-400" role="status">
-          {pasujace.length === files.length
-            ? `Pokazane ${od + 1}–${od + widoczne.length} z ${files.length}`
-            : `Pasuje ${pasujace.length} z ${files.length}`}
-        </span>
-      </div>
+      <TableFilter
+        stan={stan}
+        etykieta="Filtruj po ścieżce"
+        placeholder="Szukaj w ścieżce, np. „liczba” albo „2026/kolor”"
+      />
 
-      {pasujace.length === 0 && (
-        <p className="text-zinc-600 dark:text-zinc-400">
-          Żaden plik nie ma tego w ścieżce. Wyczyść pole, żeby zobaczyć całą bibliotekę.
-        </p>
+      {stan.pasujace.length === 0 && (
+        <TableEmpty>Żaden plik nie ma tego w ścieżce. Wyczyść pole, żeby zobaczyć całą bibliotekę.</TableEmpty>
       )}
 
-      {pasujace.length > 0 && (
+      <TablePager stan={stan} etykieta="Strony biblioteki, nad tabelą" />
+
+      {stan.pasujace.length > 0 && (
         <div className="card px-3 py-2">
           {/* Poziome przewijanie wewnątrz karty: ścieżka ma zagwarantowaną szerokość, a kolumna
               użycia bywa długa („3 słówka · 22 zadania") — bez tego przy wąskim oknie przycisk
               „Usuń" wychodził poza obramowanie karty zamiast zostać w środku. */}
           <div className="overflow-x-auto">
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>Obrazek</th>
-                <th>Ścieżka</th>
-                <th className="hidden sm:table-cell">Użycie</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {widoczne.map((file) => (
-                <Wiersz key={file.path} file={file} onDelete={() => setDoKasacji(file)} />
-              ))}
-            </tbody>
-          </table>
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Obrazek</th>
+                  <th>Ścieżka</th>
+                  <th className="hidden sm:table-cell">Użycie</th>
+                  <th />
+                </tr>
+              </thead>
+              <tbody>
+                {stan.widoczne.map((file) => (
+                  <Wiersz key={file.path} file={file} onDelete={() => setDoKasacji(file)} />
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
 
-      {stron > 1 && (
-        <nav className="flex flex-wrap items-center justify-center gap-3" aria-label="Strony biblioteki">
-          <button
-            type="button"
-            className="btn-row"
-            disabled={biezaca === 0}
-            onClick={() => setStrona(biezaca - 1)}
-          >
-            ← Poprzednia
-          </button>
-          <span className="text-zinc-600 dark:text-zinc-400" role="status">
-            Strona {biezaca + 1} z {stron}
-          </span>
-          <button
-            type="button"
-            className="btn-row"
-            disabled={biezaca === stron - 1}
-            onClick={() => setStrona(biezaca + 1)}
-          >
-            Następna →
-          </button>
-        </nav>
-      )}
+      <TablePager stan={stan} etykieta="Strony biblioteki, pod tabelą" />
 
       {/* Element okna stoi w drzewie na stałe, a wymienia się tylko jego treść: `showModal()`
           i `close()` potrzebują tego samego elementu, a nie nowego przy każdym otwarciu.

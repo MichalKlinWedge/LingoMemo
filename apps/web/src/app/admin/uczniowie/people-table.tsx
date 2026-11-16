@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Fragment, type ReactNode, useState } from "react";
 
 import { PasswordForm } from "@/app/admin/konta/password-form";
+import { TableEmpty, TableFilter, TablePager, useTableBrowse } from "@/components/table-browse";
 
 import { FamilyPanel, type Osoba } from "./family-panel";
 
@@ -53,107 +54,133 @@ export type PersonRow = {
  */
 export function PeopleTable({ rows, people }: { rows: PersonRow[]; people: Osoba[] }) {
   const [otwarte, setOtwarte] = useState<string | null>(null);
+  // Filtr obejmuje imię, adres i rolę: szuka się raz po imieniu, raz po adresie, a „rodzic"
+  // bywa pytaniem samym w sobie („kto tu jest rodzicem?").
+  const stan = useTableBrowse(rows, (row) => `${row.displayName} ${row.email} ${row.role}`);
+
+  // Zmiana filtra albo strony zwija otwarty wiersz: formularz hasła ma wartości wzięte przy
+  // wejściu na stronę, a wiersz, który zniknął z widoku i wrócił, nie powinien być nadal
+  // rozwinięty — dorosły nie pamięta, że go otwierał.
+  const [widok, setWidok] = useState(`${stan.szukane}|${stan.strona}`);
+  if (widok !== `${stan.szukane}|${stan.strona}`) {
+    setWidok(`${stan.szukane}|${stan.strona}`);
+    setOtwarte(null);
+  }
 
   return (
-    <div className="card px-3 py-2">
-      <table className="admin-table">
-        <thead>
-          <tr>
-            <th>Kto</th>
-            <th>Rola</th>
-            <th className="hidden text-right sm:table-cell">Punkty</th>
-            <th className="hidden text-right sm:table-cell">Lekcje</th>
-            <th className="hidden text-right sm:table-cell">Seria</th>
-            <th className="hidden text-right sm:table-cell">Czas</th>
-            <th />
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => {
-            const open = otwarte === row.userId;
-            return (
-              <Fragment key={row.userId}>
-                <tr>
-                  <td>
-                    <span className="flex flex-col">
-                      {/* Imię prowadzi do karty dziecka — tam jest wykres i słabe słówka. */}
-                      <Link href={`/admin/uczniowie/${row.userId}`} className="font-semibold hover:text-brand">
-                        {row.displayName}
-                        {row.self && " · to Ty"}
-                      </Link>
-                      <span className="cell-mail text-sm text-zinc-500">{row.email}</span>
-                    </span>
-                  </td>
-                  <td>
-                    <span className="flex flex-wrap items-center gap-1">
-                      <span className="chip text-sm">{row.role}</span>
-                      {row.waiting && (
-                        <span
-                          className="chip text-sm"
-                          style={{ background: "var(--color-sun)" }}
-                          title="Rodzic czeka na przypisanie dziecka"
-                        >
-                          <Znak>⏳</Znak>
-                        </span>
-                      )}
-                      {/* Osobny znacznik, bo to inne czekanie: nie na dziecko, tylko na kurs.
-                          Dymek wymienia kursy, a kliknięcie prowadzi na kartę dziecka — to tam
-                          stoi przycisk zapisu, czyli miejsce, w którym prośbę się przyjmuje. */}
-                      {row.asking.length > 0 && (
-                        <Link
-                          href={`/admin/uczniowie/${row.userId}`}
-                          className="chip text-sm"
-                          style={{ background: "var(--color-sun)" }}
-                          title={`Prosi o dostęp: ${row.asking.join(", ")} — kliknij, żeby zapisać`}
-                        >
-                          <Znak>✋</Znak>
-                        </Link>
-                      )}
-                    </span>
-                  </td>
-                  <td className="hidden text-right tabular-nums sm:table-cell">{row.points}</td>
-                  <td className="hidden text-right tabular-nums sm:table-cell">{row.lessons}</td>
-                  <td className="hidden text-right tabular-nums sm:table-cell">{row.streak}</td>
-                  <td className="hidden whitespace-nowrap text-right sm:table-cell">{row.time}</td>
-                  <td className="text-right">
-                    {/* Poniżej 640 px zostaje sama ikona: podpis i tak powtarza się w każdym
-                        wierszu, a zabiera szerokość, której brakuje imieniu. Nazwę dla czytnika
-                        ekranu niesie `aria-label` — i mówi, czyje to konto, czego sześć
-                        jednakowych „Konto" nie mówiło. */}
-                    <button
-                      type="button"
-                      className="btn-row"
-                      aria-expanded={open}
-                      aria-label={`${open ? "Zwiń" : "Konto"}: ${row.displayName}`}
-                      onClick={() => setOtwarte(open ? null : row.userId)}
-                    >
-                      <span aria-hidden>{open ? "✕" : "✏️"}</span>
-                      <span className="hidden sm:inline">{open ? "Zwiń" : "Konto"}</span>
-                    </button>
-                  </td>
-                </tr>
+    <div className="flex flex-col gap-3">
+      <TableFilter stan={stan} etykieta="Filtruj po imieniu, adresie albo roli" placeholder="Szukaj osoby" />
 
-                {open && (
-                  <tr>
-                    <td colSpan={7}>
-                      <div className="flex flex-col gap-4 py-3">
-                        <p className="text-sm text-zinc-500">{row.details}</p>
-                        <FamilyPanel
-                          userId={row.userId}
-                          isParent={row.isParent}
-                          childIds={row.childIds}
-                          people={people}
-                        />
-                        <PasswordForm userId={row.userId} displayName={row.displayName} self={row.self} />
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </Fragment>
-            );
-          })}
-        </tbody>
-      </table>
+      {stan.pasujace.length === 0 && (
+        <TableEmpty>Nikt taki tu nie figuruje. Wyczyść pole, żeby zobaczyć wszystkich.</TableEmpty>
+      )}
+
+      <TablePager stan={stan} etykieta="Strony listy kont, nad tabelą" />
+
+      {stan.pasujace.length > 0 && (
+        <div className="card px-3 py-2">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Kto</th>
+                <th>Rola</th>
+                <th className="hidden text-right sm:table-cell">Punkty</th>
+                <th className="hidden text-right sm:table-cell">Lekcje</th>
+                <th className="hidden text-right sm:table-cell">Seria</th>
+                <th className="hidden text-right sm:table-cell">Czas</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {stan.widoczne.map((row) => {
+                const open = otwarte === row.userId;
+                return (
+                  <Fragment key={row.userId}>
+                    <tr>
+                      <td>
+                        <span className="flex flex-col">
+                          {/* Imię prowadzi do karty dziecka — tam jest wykres i słabe słówka. */}
+                          <Link href={`/admin/uczniowie/${row.userId}`} className="font-semibold hover:text-brand">
+                            {row.displayName}
+                            {row.self && " · to Ty"}
+                          </Link>
+                          <span className="cell-mail text-sm text-zinc-500">{row.email}</span>
+                        </span>
+                      </td>
+                      <td>
+                        <span className="flex flex-wrap items-center gap-1">
+                          <span className="chip text-sm">{row.role}</span>
+                          {row.waiting && (
+                            <span
+                              className="chip text-sm"
+                              style={{ background: "var(--color-sun)" }}
+                              title="Rodzic czeka na przypisanie dziecka"
+                            >
+                              <Znak>⏳</Znak>
+                            </span>
+                          )}
+                          {/* Osobny znacznik, bo to inne czekanie: nie na dziecko, tylko na kurs.
+                              Dymek wymienia kursy, a kliknięcie prowadzi na kartę dziecka — to tam
+                              stoi przycisk zapisu, czyli miejsce, w którym prośbę się przyjmuje. */}
+                          {row.asking.length > 0 && (
+                            <Link
+                              href={`/admin/uczniowie/${row.userId}`}
+                              className="chip text-sm"
+                              style={{ background: "var(--color-sun)" }}
+                              title={`Prosi o dostęp: ${row.asking.join(", ")} — kliknij, żeby zapisać`}
+                            >
+                              <Znak>✋</Znak>
+                            </Link>
+                          )}
+                        </span>
+                      </td>
+                      <td className="hidden text-right tabular-nums sm:table-cell">{row.points}</td>
+                      <td className="hidden text-right tabular-nums sm:table-cell">{row.lessons}</td>
+                      <td className="hidden text-right tabular-nums sm:table-cell">{row.streak}</td>
+                      <td className="hidden whitespace-nowrap text-right sm:table-cell">{row.time}</td>
+                      <td className="text-right">
+                        {/* Poniżej 640 px zostaje sama ikona: podpis i tak powtarza się w każdym
+                            wierszu, a zabiera szerokość, której brakuje imieniu. Nazwę dla czytnika
+                            ekranu niesie `aria-label` — i mówi, czyje to konto, czego sześć
+                            jednakowych „Konto" nie mówiło. */}
+                        <button
+                          type="button"
+                          className="btn-row"
+                          aria-expanded={open}
+                          aria-label={`${open ? "Zwiń" : "Konto"}: ${row.displayName}`}
+                          onClick={() => setOtwarte(open ? null : row.userId)}
+                        >
+                          <span aria-hidden>{open ? "✕" : "✏️"}</span>
+                          <span className="hidden sm:inline">{open ? "Zwiń" : "Konto"}</span>
+                        </button>
+                      </td>
+                    </tr>
+
+                    {open && (
+                      <tr>
+                        <td colSpan={7}>
+                          <div className="flex flex-col gap-4 py-3">
+                            <p className="text-sm text-zinc-500">{row.details}</p>
+                            <FamilyPanel
+                              userId={row.userId}
+                              isParent={row.isParent}
+                              childIds={row.childIds}
+                              people={people}
+                            />
+                            <PasswordForm userId={row.userId} displayName={row.displayName} self={row.self} />
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <TablePager stan={stan} etykieta="Strony listy kont, pod tabelą" />
     </div>
   );
 }
