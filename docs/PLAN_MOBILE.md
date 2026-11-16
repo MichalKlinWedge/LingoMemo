@@ -249,6 +249,31 @@ po każdej lekcji i raz na dobę.
 **Kryterium odbioru:** dziecko dostaje po południu powiadomienie „5 słówek czeka”, wchodzi
 z powiadomienia wprost w powtórkę, robi ją i seria dni rośnie.
 
+**Stan (2026-11-16):** powtórki i testy działu działały już w M1, bo to zwykłe lekcje — zadania
+wydaje im to samo `get_lesson_exercises`. Doszły trzy ekrany i przypomnienia:
+
+- **Plansza ze słówkami** (`app/lekcja/[id]/nauka.tsx`, sowa przy kafelku na mapie): karty
+  z obrazkiem albo emoji, słowo w języku kursu, zapis fonetyczny i tłumaczenie; dotknięcie karty
+  czyta słowo, „Przeczytaj wszystkie" idzie po kolei (następne słowo startuje z wywołania
+  zwrotnego poprzedniego, bo syntezator nie mówi z góry, ile wypowiedź potrwa). Nic tu nie jest
+  sprawdzane i nic nie wchodzi do powtórek.
+- **Nagrody** (`app/nagrody.tsx`): wszystkie odznaki, zdobyte w kolorach z datą, pozostałe pod
+  kłódką — dziecko ma widzieć, co jest do zdobycia.
+- **Postępy** (`app/statystyki.tsx`): osiem klocków (punkty, seria, umiane, zaległe, lekcje,
+  poznane słówka, czas w tygodniu, celność), wykres tygodnia, kursy z czasem nauki i „do
+  poćwiczenia" — wszystko z widoków `v_my_*`, z filtrem po użytkowniku przy każdym.
+- **Przypomnienie o powtórkach** (`features/reminders/`): przełącznik i godzina (15–20) na ekranie
+  kursów, zgoda na powiadomienia i dokładne alarmy brane na miejscu, treść z liczbą zaległych
+  słówek. Powiadomienie jest dzienne i powtarzalne, a treść powstaje przy planowaniu — dlatego
+  planuje się od nowa przy każdym wejściu na ekran kursów (czyli po każdej lekcji). Przeliczanie
+  przy zamkniętej aplikacji wymaga zadania w tle, czyli nowego APK: zostaje na M4.
+
+**Poprawka z telefonu (2026-11-16):** pasek z „Dalej" przyklejony do dołu ekranu wchodził pod
+przyciski systemowe Androida (tryb edge-to-edge jest w SDK 54+ domyślny). Informacja zwrotna stoi
+teraz w treści, zaraz pod zadaniem — tam, gdzie chwilę wcześniej było „Nie wiem, pomiń" — a po
+sprawdzeniu odpowiedzi ekran sam zjeżdża na dół. Wszystkie ekrany dostały zapas na dole wielkości
+paska nawigacji (`useSafeAreaInsets`).
+
 ### Etap M4 — dystrybucja i stabilizacja
 
 APK na kanale `dzieci` (`eas build --profile dzieci`), aktualizacje OTA najpierw na kanał

@@ -1103,3 +1103,28 @@ każdym razem). Pamięć podręczna przyda się dopiero przy nauce bez sieci, a 
 Reguła ogólna, która z tego wychodzi: **nowy moduł natywny to nowy APK**, więc w trakcie etapu
 dokładamy tylko to, co da się zrobić na tym, co już jest w aplikacji. Tak samo dzieli pracę
 ExpeditionPlan (oznaczenia OTA i APK w `ANALIZA_TELEFON.md`).
+
+### Telefon: informacja zwrotna w treści, nie przyklejona do dołu (2026-11-16)
+
+Na webie pasek „Brawo! / Nie tym razem" z przyciskiem „Dalej" jest przyklejony do dołu okna.
+Na telefonie ta sama konstrukcja wchodziła **pod przyciski systemowe Androida**: od SDK 54 tryb
+edge-to-edge jest domyślny, więc pasek nawigacji leży na treści, a nie obok niej. Dziecko widziało
+„Dalej" przycięte i trafiało w niego co drugi raz.
+
+Teraz informacja zwrotna jest zwykłym elementem treści, zaraz pod zadaniem — w miejscu, w którym
+chwilę wcześniej stało „Nie wiem, pomiń" — a po sprawdzeniu odpowiedzi ekran sam zjeżdża na dół
+(`scrollToEnd`), żeby przy dłuższym zadaniu (pary, rozsypanka) nie wypadła poza widok. Każdy ekran
+dolicza przy tym do dolnego marginesu wysokość wcięcia systemowego (`useSafeAreaInsets`).
+
+Odrzucone: samo podniesienie paska o wysokość wcięcia. Pasek zostałby wtedy przyklejony do dołu
+i nadal zabierałby wysokość ekranu, której przy otwartej klawiaturze brakuje najbardziej —
+a „Dalej" byłby daleko od tego, co dziecko właśnie czytało.
+
+### Telefon: przypomnienie o powtórkach bez zadania w tle (2026-11-16)
+
+Treść przypomnienia („5 słówek czeka") powstaje w chwili planowania, a powtarzający się wyzwalacz
+dzienny nie umie jej odświeżyć sam. Zamiast zadania w tle (`expo-background-task` — moduł natywny,
+czyli nowy APK) przypomnienie planuje się od nowa przy każdym wejściu na ekran kursów i po
+zaliczonej lekcji, czyli dokładnie wtedy, gdy liczba zaległych mogła się zmienić. Dziecko, które
+nie otwiera aplikacji, dostanie liczbę z ostatniego wejścia — a to i tak więcej, niż dałoby
+przypomnienie bez liczby. Zadanie w tle wraca w Etapie M4, razem z pierwszym APK dla dzieci.
