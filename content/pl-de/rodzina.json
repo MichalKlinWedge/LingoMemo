@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-de-starter",
+  "unit": { "slug": "pierwsze-kroki", "title": "Pierwsze kroki", "icon": "👋", "sortOrder": 1 },
+  "lesson": {
+    "slug": "rodzina",
+    "title": "Die Familie",
+    "icon": "👨‍👩‍👧",
+    "kind": "standard",
+    "sortOrder": 6,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "w-klasie",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"family.mum","tags":["👩"],"terms":{"pl":[{"text":"mama","pos":"noun"}],"de":[{"text":"Mama","pos":"noun","ipa":"/ˈmama/","article":"die"}]}},
+    {"key":"family.dad","tags":["👨"],"terms":{"pl":[{"text":"tata","pos":"noun"}],"de":[{"text":"Papa","pos":"noun","ipa":"/ˈpapa/","article":"der"}]}},
+    {"key":"family.brother","tags":["👦"],"terms":{"pl":[{"text":"brat","pos":"noun"}],"de":[{"text":"Bruder","pos":"noun","ipa":"/ˈbʁuːdɐ/","article":"der"}]}},
+    {"key":"family.sister","tags":["👧"],"terms":{"pl":[{"text":"siostra","pos":"noun"}],"de":[{"text":"Schwester","pos":"noun","ipa":"/ˈʃvɛstɐ/","article":"die"}]}},
+    {"key":"family.grandma","tags":["👵"],"terms":{"pl":[{"text":"babcia","pos":"noun"}],"de":[{"text":"Oma","pos":"noun","ipa":"/ˈoːma/","article":"die"}]}},
+    {"key":"family.grandpa","tags":["👴"],"terms":{"pl":[{"text":"dziadek","pos":"noun"}],"de":[{"text":"Opa","pos":"noun","ipa":"/ˈoːpa/","article":"der"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"family.mum","payload":{"prompt":"mama","accepted":["Mama","die Mama"],"options":["Mama","Papa","Bruder","Schwester"]}},
+    {"type":"translate_ab","conceptKey":"family.dad","payload":{"prompt":"tata","accepted":["Papa","der Papa"],"options":["Papa","Bruder","Schwester","Oma"]}},
+    {"type":"translate_ab","conceptKey":"family.brother","payload":{"prompt":"brat","accepted":["Bruder","der Bruder"],"options":["Bruder","Schwester","Oma","Opa"]}},
+    {"type":"translate_ab","conceptKey":"family.sister","payload":{"prompt":"siostra","accepted":["Schwester","die Schwester"],"options":["Schwester","Oma","Opa","Mama"]}},
+    {"type":"translate_ab","conceptKey":"family.grandma","payload":{"prompt":"babcia","accepted":["Oma","die Oma"],"options":["Oma","Opa","Mama","Papa"]}},
+    {"type":"translate_ab","conceptKey":"family.grandpa","payload":{"prompt":"dziadek","accepted":["Opa","der Opa"],"options":["Opa","Mama","Papa","Bruder"]}},
+    {"type":"translate_ba","conceptKey":"family.mum","payload":{"prompt":"Mama","accepted":["mama"]}},
+    {"type":"translate_ba","conceptKey":"family.dad","payload":{"prompt":"Papa","accepted":["tata"]}},
+    {"type":"translate_ba","conceptKey":"family.brother","payload":{"prompt":"Bruder","accepted":["brat"]}},
+    {"type":"translate_ba","conceptKey":"family.sister","payload":{"prompt":"Schwester","accepted":["siostra"]}},
+    {"type":"translate_ba","conceptKey":"family.grandma","payload":{"prompt":"Oma","accepted":["babcia"]}},
+    {"type":"translate_ba","conceptKey":"family.grandpa","payload":{"prompt":"Opa","accepted":["dziadek"]}},
+    {"type":"listening","conceptKey":"family.dad","points":15,"payload":{"speak":"Papa","lang":"de-DE","accepted":["Papa"]}},
+    {"type":"listening","conceptKey":"family.brother","points":15,"payload":{"speak":"Bruder","lang":"de-DE","accepted":["Bruder"]}},
+    {"type":"listening","conceptKey":"family.sister","points":15,"payload":{"speak":"Schwester","lang":"de-DE","accepted":["Schwester"]}},
+    {"type":"listening","conceptKey":"family.grandma","points":15,"payload":{"speak":"Oma","lang":"de-DE","accepted":["Oma"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"mama","b":"Mama"},{"a":"tata","b":"Papa"},{"a":"brat","b":"Bruder"},{"a":"siostra","b":"Schwester"},{"a":"babcia","b":"Oma"},{"a":"dziadek","b":"Opa"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"de-DE","pairs":[{"a":"mama","b":"Mama"},{"a":"tata","b":"Papa"},{"a":"brat","b":"Bruder"},{"a":"siostra","b":"Schwester"},{"a":"babcia","b":"Oma"},{"a":"dziadek","b":"Opa"}]}},
+    {"type":"fill_blank_choice","conceptKey":"family.mum","payload":{"sentence":"Meine {{blank}} heißt Anna.","options":["Mama","Schwester","Oma","Papa"],"answer":"Mama","translation":"Moja mama ma na imię Anna."}},
+    {"type":"fill_blank_choice","conceptKey":"family.brother","payload":{"sentence":"Mein {{blank}} ist acht Jahre alt.","options":["Bruder","Schwester","Mama","Oma"],"answer":"Bruder","translation":"Mój brat ma osiem lat."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: To jest moja mama.","tokens":["das","ist","meine","Mama"],"solution":["das","ist","meine","Mama"]}}
+  ]
+}

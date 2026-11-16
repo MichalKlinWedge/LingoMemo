@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-de-starter",
+  "unit": { "slug": "pierwsze-kroki", "title": "Pierwsze kroki", "icon": "👋", "sortOrder": 1 },
+  "lesson": {
+    "slug": "w-klasie",
+    "title": "In der Klasse",
+    "icon": "🎒",
+    "kind": "standard",
+    "sortOrder": 5,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "kolory",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"thing.book","tags":["📕"],"terms":{"pl":[{"text":"książka","pos":"noun"}],"de":[{"text":"Buch","pos":"noun","ipa":"/buːx/","article":"das"}]}},
+    {"key":"thing.notebook","tags":["📓"],"terms":{"pl":[{"text":"zeszyt","pos":"noun"}],"de":[{"text":"Heft","pos":"noun","ipa":"/hɛft/","article":"das"}]}},
+    {"key":"thing.pen","tags":["🖊️"],"terms":{"pl":[{"text":"długopis","pos":"noun"}],"de":[{"text":"Kugelschreiber","pos":"noun","ipa":"/ˈkuːɡlʃraɪbɐ/","article":"der","note":"W szkole mówi się krócej: „Kuli”."}]}},
+    {"key":"thing.pencil","tags":["✏️"],"terms":{"pl":[{"text":"ołówek","pos":"noun"}],"de":[{"text":"Bleistift","pos":"noun","ipa":"/ˈblaɪʃtɪft/","article":"der"}]}},
+    {"key":"thing.scissors","tags":["✂️"],"terms":{"pl":[{"text":"nożyczki","pos":"noun"}],"de":[{"text":"Schere","pos":"noun","ipa":"/ˈʃeːʁə/","article":"die"}]}},
+    {"key":"thing.ruler","tags":["📏"],"terms":{"pl":[{"text":"linijka","pos":"noun"}],"de":[{"text":"Lineal","pos":"noun","ipa":"/lineˈaːl/","article":"das"}]}}
+  ],
+  "exercises": [
+    {"type":"image_choice","conceptKey":"thing.book","payload":{"prompt":"das Buch","speak":"Buch","lang":"de-DE","options":["2026/rzecz-book.svg","2026/rzecz-scissors.svg","2026/rzecz-ruler.svg","2026/rzecz-pen.svg"],"answer":"2026/rzecz-book.svg"}},
+    {"type":"image_choice","conceptKey":"thing.notebook","payload":{"prompt":"das Heft","speak":"Heft","lang":"de-DE","options":["2026/rzecz-notebook.svg","2026/rzecz-chair.svg","2026/rzecz-scissors.svg","2026/rzecz-pen.svg"],"answer":"2026/rzecz-notebook.svg"}},
+    {"type":"image_choice","conceptKey":"thing.pen","payload":{"prompt":"der Kugelschreiber","speak":"Kugelschreiber","lang":"de-DE","options":["2026/rzecz-pen.svg","2026/rzecz-book.svg","2026/rzecz-ruler.svg","2026/rzecz-chair.svg"],"answer":"2026/rzecz-pen.svg"}},
+    {"type":"image_choice","conceptKey":"thing.pencil","payload":{"prompt":"der Bleistift","speak":"Bleistift","lang":"de-DE","options":["2026/rzecz-pencil.svg","2026/rzecz-notebook.svg","2026/rzecz-scissors.svg","2026/rzecz-clock.svg"],"answer":"2026/rzecz-pencil.svg"}},
+    {"type":"image_choice","conceptKey":"thing.scissors","payload":{"prompt":"die Schere","speak":"Schere","lang":"de-DE","options":["2026/rzecz-scissors.svg","2026/rzecz-ruler.svg","2026/rzecz-book.svg","2026/rzecz-notebook.svg"],"answer":"2026/rzecz-scissors.svg"}},
+    {"type":"image_choice","conceptKey":"thing.ruler","payload":{"prompt":"das Lineal","speak":"Lineal","lang":"de-DE","options":["2026/rzecz-ruler.svg","2026/rzecz-pen.svg","2026/rzecz-book.svg","2026/rzecz-chair.svg"],"answer":"2026/rzecz-ruler.svg"}},
+    {"type":"translate_ab","conceptKey":"thing.book","payload":{"prompt":"książka","accepted":["Buch","das Buch"],"options":["Buch","Heft","Kugelschreiber","Bleistift"]}},
+    {"type":"translate_ab","conceptKey":"thing.notebook","payload":{"prompt":"zeszyt","accepted":["Heft","das Heft"],"options":["Heft","Kugelschreiber","Bleistift","Schere"]}},
+    {"type":"translate_ab","conceptKey":"thing.pen","payload":{"prompt":"długopis","accepted":["Kugelschreiber","der Kugelschreiber"],"options":["Kugelschreiber","Bleistift","Schere","Lineal"]}},
+    {"type":"translate_ab","conceptKey":"thing.pencil","payload":{"prompt":"ołówek","accepted":["Bleistift","der Bleistift"],"options":["Bleistift","Schere","Lineal","Buch"]}},
+    {"type":"translate_ab","conceptKey":"thing.scissors","payload":{"prompt":"nożyczki","accepted":["Schere","die Schere"],"options":["Schere","Lineal","Buch","Heft"]}},
+    {"type":"translate_ab","conceptKey":"thing.ruler","payload":{"prompt":"linijka","accepted":["Lineal","das Lineal"],"options":["Lineal","Buch","Heft","Kugelschreiber"]}},
+    {"type":"translate_ba","conceptKey":"thing.book","payload":{"prompt":"Buch","accepted":["książka"]}},
+    {"type":"translate_ba","conceptKey":"thing.notebook","payload":{"prompt":"Heft","accepted":["zeszyt"]}},
+    {"type":"translate_ba","conceptKey":"thing.pen","payload":{"prompt":"Kugelschreiber","accepted":["długopis"]}},
+    {"type":"translate_ba","conceptKey":"thing.pencil","payload":{"prompt":"Bleistift","accepted":["ołówek"]}},
+    {"type":"translate_ba","conceptKey":"thing.scissors","payload":{"prompt":"Schere","accepted":["nożyczki"]}},
+    {"type":"translate_ba","conceptKey":"thing.ruler","payload":{"prompt":"Lineal","accepted":["linijka"]}},
+    {"type":"listening","conceptKey":"thing.notebook","points":15,"payload":{"speak":"Heft","lang":"de-DE","accepted":["Heft"]}},
+    {"type":"listening","conceptKey":"thing.pencil","points":15,"payload":{"speak":"Bleistift","lang":"de-DE","accepted":["Bleistift"]}},
+    {"type":"listening","conceptKey":"thing.scissors","points":15,"payload":{"speak":"Schere","lang":"de-DE","accepted":["Schere"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"książka","b":"Buch"},{"a":"zeszyt","b":"Heft"},{"a":"długopis","b":"Kugelschreiber"},{"a":"ołówek","b":"Bleistift"},{"a":"nożyczki","b":"Schere"},{"a":"linijka","b":"Lineal"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"de-DE","pairs":[{"a":"książka","b":"Buch"},{"a":"zeszyt","b":"Heft"},{"a":"długopis","b":"Kugelschreiber"},{"a":"ołówek","b":"Bleistift"},{"a":"linijka","b":"Lineal"}]}},
+    {"type":"fill_blank_choice","conceptKey":"thing.book","payload":{"sentence":"Öffne das {{blank}}!","options":["Buch","Heft","Lineal","Bleistift"],"answer":"Buch","translation":"Otwórz książkę!"}},
+    {"type":"fill_blank_choice","conceptKey":"thing.scissors","payload":{"sentence":"Die {{blank}} schneidet das Papier.","options":["Schere","Lineal","Buch","Heft"],"answer":"Schere","translation":"Nożyczki tną papier."}}
+  ]
+}

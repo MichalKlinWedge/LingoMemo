@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-es-starter",
+  "unit": { "slug": "pierwsze-kroki", "title": "Pierwsze kroki", "icon": "👋", "sortOrder": 1 },
+  "lesson": {
+    "slug": "zwierzeta",
+    "title": "Los animales",
+    "icon": "🐶",
+    "kind": "standard",
+    "sortOrder": 7,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "rodzina",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"animal.dog","tags":["🐶"],"terms":{"pl":[{"text":"pies","pos":"noun"}],"es":[{"text":"perro","pos":"noun","ipa":"/ˈpero/","article":"el"}]}},
+    {"key":"animal.cat","tags":["🐱"],"terms":{"pl":[{"text":"kot","pos":"noun"}],"es":[{"text":"gato","pos":"noun","ipa":"/ˈɡato/","article":"el"}]}},
+    {"key":"animal.horse","tags":["🐴"],"terms":{"pl":[{"text":"koń","pos":"noun"}],"es":[{"text":"caballo","pos":"noun","ipa":"/kaˈβaʎo/","article":"el"}]}},
+    {"key":"animal.bird","tags":["🐦"],"terms":{"pl":[{"text":"ptak","pos":"noun"}],"es":[{"text":"pájaro","pos":"noun","ipa":"/ˈpaxaɾo/","article":"el"}]}},
+    {"key":"animal.fish","tags":["🐟"],"terms":{"pl":[{"text":"ryba","pos":"noun"}],"es":[{"text":"pez","pos":"noun","ipa":"/peθ/","article":"el"}]}},
+    {"key":"animal.cow","tags":["🐄"],"terms":{"pl":[{"text":"krowa","pos":"noun"}],"es":[{"text":"vaca","pos":"noun","ipa":"/ˈbaka/","article":"la"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"animal.dog","payload":{"prompt":"pies","accepted":["perro","el perro"],"options":["perro","gato","caballo","pájaro"]}},
+    {"type":"translate_ab","conceptKey":"animal.cat","payload":{"prompt":"kot","accepted":["gato","el gato"],"options":["gato","caballo","pájaro","pez"]}},
+    {"type":"translate_ab","conceptKey":"animal.horse","payload":{"prompt":"koń","accepted":["caballo","el caballo"],"options":["caballo","pájaro","pez","vaca"]}},
+    {"type":"translate_ab","conceptKey":"animal.bird","payload":{"prompt":"ptak","accepted":["pájaro","el pájaro"],"options":["pájaro","pez","vaca","perro"]}},
+    {"type":"translate_ab","conceptKey":"animal.fish","payload":{"prompt":"ryba","accepted":["pez","el pez"],"options":["pez","vaca","perro","gato"]}},
+    {"type":"translate_ab","conceptKey":"animal.cow","payload":{"prompt":"krowa","accepted":["vaca","la vaca"],"options":["vaca","perro","gato","caballo"]}},
+    {"type":"translate_ba","conceptKey":"animal.dog","payload":{"prompt":"perro","accepted":["pies"]}},
+    {"type":"translate_ba","conceptKey":"animal.cat","payload":{"prompt":"gato","accepted":["kot"]}},
+    {"type":"translate_ba","conceptKey":"animal.horse","payload":{"prompt":"caballo","accepted":["koń"]}},
+    {"type":"translate_ba","conceptKey":"animal.bird","payload":{"prompt":"pájaro","accepted":["ptak"]}},
+    {"type":"translate_ba","conceptKey":"animal.fish","payload":{"prompt":"pez","accepted":["ryba"]}},
+    {"type":"translate_ba","conceptKey":"animal.cow","payload":{"prompt":"vaca","accepted":["krowa"]}},
+    {"type":"listening","conceptKey":"animal.dog","points":15,"payload":{"speak":"perro","lang":"es-ES","accepted":["perro"]}},
+    {"type":"listening","conceptKey":"animal.horse","points":15,"payload":{"speak":"caballo","lang":"es-ES","accepted":["caballo"]}},
+    {"type":"listening","conceptKey":"animal.bird","points":15,"payload":{"speak":"pájaro","lang":"es-ES","accepted":["pájaro"]}},
+    {"type":"listening","conceptKey":"animal.fish","points":15,"payload":{"speak":"pez","lang":"es-ES","accepted":["pez"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz zwierzęta w pary","pairs":[{"a":"pies","b":"perro"},{"a":"kot","b":"gato"},{"a":"koń","b":"caballo"},{"a":"ptak","b":"pájaro"},{"a":"ryba","b":"pez"},{"a":"krowa","b":"vaca"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"es-ES","pairs":[{"a":"pies","b":"perro"},{"a":"kot","b":"gato"},{"a":"koń","b":"caballo"},{"a":"ryba","b":"pez"},{"a":"krowa","b":"vaca"}]}},
+    {"type":"fill_blank_choice","conceptKey":"animal.fish","payload":{"sentence":"El {{blank}} nada en el agua.","options":["pez","gato","caballo","perro"],"answer":"pez","translation":"Ryba pływa w wodzie."}},
+    {"type":"fill_blank_choice","conceptKey":"animal.cat","payload":{"sentence":"El {{blank}} hace miau.","options":["gato","perro","pájaro","pez"],"answer":"gato","translation":"Kot robi miau."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: Pies jest duży.","tokens":["el","perro","es","grande"],"solution":["el","perro","es","grande"]}}
+  ]
+}

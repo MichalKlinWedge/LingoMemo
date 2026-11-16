@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-de-starter",
+  "unit": { "slug": "pierwsze-kroki", "title": "Pierwsze kroki", "icon": "👋", "sortOrder": 1 },
+  "lesson": {
+    "slug": "liczby-do-dziesieciu",
+    "title": "Sechs, sieben, acht",
+    "icon": "🔟",
+    "kind": "standard",
+    "sortOrder": 3,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "liczby-do-pieciu",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"num.6","tags":["6️⃣"],"terms":{"pl":[{"text":"sześć","pos":"noun"}],"de":[{"text":"sechs","pos":"noun","ipa":"/zɛks/"}]}},
+    {"key":"num.7","tags":["7️⃣"],"terms":{"pl":[{"text":"siedem","pos":"noun"}],"de":[{"text":"sieben","pos":"noun","ipa":"/ˈziːbn/"}]}},
+    {"key":"num.8","tags":["8️⃣"],"terms":{"pl":[{"text":"osiem","pos":"noun"}],"de":[{"text":"acht","pos":"noun","ipa":"/axt/"}]}},
+    {"key":"num.9","tags":["9️⃣"],"terms":{"pl":[{"text":"dziewięć","pos":"noun"}],"de":[{"text":"neun","pos":"noun","ipa":"/nɔɪn/"}]}},
+    {"key":"num.10","tags":["🔟"],"terms":{"pl":[{"text":"dziesięć","pos":"noun"}],"de":[{"text":"zehn","pos":"noun","ipa":"/tseːn/","note":"„H” po samogłosce tylko ją wydłuża, samo się nie odzywa."}]}}
+  ],
+  "exercises": [
+    {"type":"image_choice","conceptKey":"num.6","payload":{"prompt":"sechs","speak":"sechs","lang":"de-DE","options":["2026/liczba-6.svg","2026/liczba-9.svg","2026/liczba-2.svg","2026/liczba-10.svg"],"answer":"2026/liczba-6.svg"}},
+    {"type":"image_choice","conceptKey":"num.7","payload":{"prompt":"sieben","speak":"sieben","lang":"de-DE","options":["2026/liczba-7.svg","2026/liczba-1.svg","2026/liczba-8.svg","2026/liczba-4.svg"],"answer":"2026/liczba-7.svg"}},
+    {"type":"image_choice","conceptKey":"num.8","payload":{"prompt":"acht","speak":"acht","lang":"de-DE","options":["2026/liczba-8.svg","2026/liczba-3.svg","2026/liczba-6.svg","2026/liczba-5.svg"],"answer":"2026/liczba-8.svg"}},
+    {"type":"image_choice","conceptKey":"num.9","payload":{"prompt":"neun","speak":"neun","lang":"de-DE","options":["2026/liczba-9.svg","2026/liczba-6.svg","2026/liczba-4.svg","2026/liczba-1.svg"],"answer":"2026/liczba-9.svg"}},
+    {"type":"image_choice","conceptKey":"num.10","payload":{"prompt":"zehn","speak":"zehn","lang":"de-DE","options":["2026/liczba-10.svg","2026/liczba-7.svg","2026/liczba-3.svg","2026/liczba-9.svg"],"answer":"2026/liczba-10.svg"}},
+    {"type":"translate_ab","conceptKey":"num.6","payload":{"prompt":"sześć","accepted":["sechs"],"options":["sechs","sieben","acht","neun"]}},
+    {"type":"translate_ab","conceptKey":"num.7","payload":{"prompt":"siedem","accepted":["sieben"],"options":["sieben","acht","neun","zehn"]}},
+    {"type":"translate_ab","conceptKey":"num.8","payload":{"prompt":"osiem","accepted":["acht"],"options":["acht","neun","zehn","sechs"]}},
+    {"type":"translate_ab","conceptKey":"num.9","payload":{"prompt":"dziewięć","accepted":["neun"],"options":["neun","zehn","sechs","sieben"]}},
+    {"type":"translate_ab","conceptKey":"num.10","payload":{"prompt":"dziesięć","accepted":["zehn"],"options":["zehn","sechs","sieben","acht"]}},
+    {"type":"translate_ba","conceptKey":"num.6","payload":{"prompt":"sechs","accepted":["sześć"]}},
+    {"type":"translate_ba","conceptKey":"num.7","payload":{"prompt":"sieben","accepted":["siedem"]}},
+    {"type":"translate_ba","conceptKey":"num.8","payload":{"prompt":"acht","accepted":["osiem"]}},
+    {"type":"translate_ba","conceptKey":"num.9","payload":{"prompt":"neun","accepted":["dziewięć"]}},
+    {"type":"translate_ba","conceptKey":"num.10","payload":{"prompt":"zehn","accepted":["dziesięć"]}},
+    {"type":"listening","conceptKey":"num.7","points":15,"payload":{"speak":"sieben","lang":"de-DE","accepted":["sieben"]}},
+    {"type":"listening","conceptKey":"num.9","points":15,"payload":{"speak":"neun","lang":"de-DE","accepted":["neun"]}},
+    {"type":"listening","conceptKey":"num.10","points":15,"payload":{"speak":"zehn","lang":"de-DE","accepted":["zehn"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz liczby w pary","pairs":[{"a":"sześć","b":"sechs"},{"a":"siedem","b":"sieben"},{"a":"osiem","b":"acht"},{"a":"dziewięć","b":"neun"},{"a":"dziesięć","b":"zehn"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polską liczbę.","lang":"de-DE","pairs":[{"a":"sześć","b":"sechs"},{"a":"siedem","b":"sieben"},{"a":"osiem","b":"acht"},{"a":"dziewięć","b":"neun"},{"a":"dziesięć","b":"zehn"}]}},
+    {"type":"fill_blank_choice","conceptKey":"num.7","payload":{"sentence":"Sechs, {{blank}}, acht.","options":["sieben","neun","zehn","sechs"],"answer":"sieben","translation":"Sześć, siedem, osiem."}},
+    {"type":"fill_blank_choice","conceptKey":"num.9","payload":{"sentence":"Acht, {{blank}}, zehn.","options":["neun","sieben","sechs","acht"],"answer":"neun","translation":"Osiem, dziewięć, dziesięć."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż liczby od sześciu do dziesięciu.","tokens":["sechs","sieben","acht","neun","zehn"],"solution":["sechs","sieben","acht","neun","zehn"]}}
+  ]
+}

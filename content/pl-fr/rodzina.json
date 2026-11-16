@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-fr-starter",
+  "unit": { "slug": "pierwsze-kroki", "title": "Pierwsze kroki", "icon": "👋", "sortOrder": 1 },
+  "lesson": {
+    "slug": "rodzina",
+    "title": "La famille",
+    "icon": "👨‍👩‍👧",
+    "kind": "standard",
+    "sortOrder": 6,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "w-klasie",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"family.mum","tags":["👩"],"terms":{"pl":[{"text":"mama","pos":"noun"}],"fr":[{"text":"maman","pos":"noun","ipa":"/mamɑ̃/","article":"la"}]}},
+    {"key":"family.dad","tags":["👨"],"terms":{"pl":[{"text":"tata","pos":"noun"}],"fr":[{"text":"papa","pos":"noun","ipa":"/papa/","article":"le"}]}},
+    {"key":"family.brother","tags":["👦"],"terms":{"pl":[{"text":"brat","pos":"noun"}],"fr":[{"text":"frère","pos":"noun","ipa":"/fʁɛʁ/","article":"le"}]}},
+    {"key":"family.sister","tags":["👧"],"terms":{"pl":[{"text":"siostra","pos":"noun"}],"fr":[{"text":"sœur","pos":"noun","ipa":"/sœʁ/","article":"la"}]}},
+    {"key":"family.grandma","tags":["👵"],"terms":{"pl":[{"text":"babcia","pos":"noun"}],"fr":[{"text":"grand-mère","pos":"noun","ipa":"/ɡʁɑ̃mɛʁ/","article":"la"}]}},
+    {"key":"family.grandpa","tags":["👴"],"terms":{"pl":[{"text":"dziadek","pos":"noun"}],"fr":[{"text":"grand-père","pos":"noun","ipa":"/ɡʁɑ̃pɛʁ/","article":"le"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"family.mum","payload":{"prompt":"mama","accepted":["maman","la maman"],"options":["maman","papa","frère","sœur"]}},
+    {"type":"translate_ab","conceptKey":"family.dad","payload":{"prompt":"tata","accepted":["papa","le papa"],"options":["papa","frère","sœur","grand-mère"]}},
+    {"type":"translate_ab","conceptKey":"family.brother","payload":{"prompt":"brat","accepted":["frère","le frère"],"options":["frère","sœur","grand-mère","grand-père"]}},
+    {"type":"translate_ab","conceptKey":"family.sister","payload":{"prompt":"siostra","accepted":["sœur","la sœur"],"options":["sœur","grand-mère","grand-père","maman"]}},
+    {"type":"translate_ab","conceptKey":"family.grandma","payload":{"prompt":"babcia","accepted":["grand-mère","la grand-mère"],"options":["grand-mère","grand-père","maman","papa"]}},
+    {"type":"translate_ab","conceptKey":"family.grandpa","payload":{"prompt":"dziadek","accepted":["grand-père","le grand-père"],"options":["grand-père","maman","papa","frère"]}},
+    {"type":"translate_ba","conceptKey":"family.mum","payload":{"prompt":"maman","accepted":["mama"]}},
+    {"type":"translate_ba","conceptKey":"family.dad","payload":{"prompt":"papa","accepted":["tata"]}},
+    {"type":"translate_ba","conceptKey":"family.brother","payload":{"prompt":"frère","accepted":["brat"]}},
+    {"type":"translate_ba","conceptKey":"family.sister","payload":{"prompt":"sœur","accepted":["siostra"]}},
+    {"type":"translate_ba","conceptKey":"family.grandma","payload":{"prompt":"grand-mère","accepted":["babcia"]}},
+    {"type":"translate_ba","conceptKey":"family.grandpa","payload":{"prompt":"grand-père","accepted":["dziadek"]}},
+    {"type":"listening","conceptKey":"family.dad","points":15,"payload":{"speak":"papa","lang":"fr-FR","accepted":["papa"]}},
+    {"type":"listening","conceptKey":"family.brother","points":15,"payload":{"speak":"frère","lang":"fr-FR","accepted":["frère"]}},
+    {"type":"listening","conceptKey":"family.sister","points":15,"payload":{"speak":"sœur","lang":"fr-FR","accepted":["sœur"]}},
+    {"type":"listening","conceptKey":"family.grandma","points":15,"payload":{"speak":"grand-mère","lang":"fr-FR","accepted":["grand-mère"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"mama","b":"maman"},{"a":"tata","b":"papa"},{"a":"brat","b":"frère"},{"a":"siostra","b":"sœur"},{"a":"babcia","b":"grand-mère"},{"a":"dziadek","b":"grand-père"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"fr-FR","pairs":[{"a":"mama","b":"maman"},{"a":"tata","b":"papa"},{"a":"brat","b":"frère"},{"a":"siostra","b":"sœur"},{"a":"babcia","b":"grand-mère"},{"a":"dziadek","b":"grand-père"}]}},
+    {"type":"fill_blank_choice","conceptKey":"family.mum","payload":{"sentence":"Ma {{blank}} s'appelle Anna.","options":["maman","sœur","grand-mère","papa"],"answer":"maman","translation":"Moja mama ma na imię Anna."}},
+    {"type":"fill_blank_choice","conceptKey":"family.brother","payload":{"sentence":"Mon {{blank}} a huit ans.","options":["frère","sœur","maman","grand-mère"],"answer":"frère","translation":"Mój brat ma osiem lat."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: To jest moja mama.","tokens":["c'est","ma","maman"],"solution":["c'est","ma","maman"]}}
+  ]
+}

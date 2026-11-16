@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-fr-starter",
+  "unit": { "slug": "pierwsze-kroki", "title": "Pierwsze kroki", "icon": "👋", "sortOrder": 1 },
+  "lesson": {
+    "slug": "zwierzeta",
+    "title": "Les animaux",
+    "icon": "🐶",
+    "kind": "standard",
+    "sortOrder": 7,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "rodzina",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"animal.dog","tags":["🐶"],"terms":{"pl":[{"text":"pies","pos":"noun"}],"fr":[{"text":"chien","pos":"noun","ipa":"/ʃjɛ̃/","article":"le"}]}},
+    {"key":"animal.cat","tags":["🐱"],"terms":{"pl":[{"text":"kot","pos":"noun"}],"fr":[{"text":"chat","pos":"noun","ipa":"/ʃa/","article":"le"}]}},
+    {"key":"animal.horse","tags":["🐴"],"terms":{"pl":[{"text":"koń","pos":"noun"}],"fr":[{"text":"cheval","pos":"noun","ipa":"/ʃəval/","article":"le"}]}},
+    {"key":"animal.bird","tags":["🐦"],"terms":{"pl":[{"text":"ptak","pos":"noun"}],"fr":[{"text":"oiseau","pos":"noun","ipa":"/wazo/","article":"l'"}]}},
+    {"key":"animal.fish","tags":["🐟"],"terms":{"pl":[{"text":"ryba","pos":"noun"}],"fr":[{"text":"poisson","pos":"noun","ipa":"/pwasɔ̃/","article":"le"}]}},
+    {"key":"animal.cow","tags":["🐄"],"terms":{"pl":[{"text":"krowa","pos":"noun"}],"fr":[{"text":"vache","pos":"noun","ipa":"/vaʃ/","article":"la"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"animal.dog","payload":{"prompt":"pies","accepted":["chien","le chien"],"options":["chien","chat","cheval","oiseau"]}},
+    {"type":"translate_ab","conceptKey":"animal.cat","payload":{"prompt":"kot","accepted":["chat","le chat"],"options":["chat","cheval","oiseau","poisson"]}},
+    {"type":"translate_ab","conceptKey":"animal.horse","payload":{"prompt":"koń","accepted":["cheval","le cheval"],"options":["cheval","oiseau","poisson","vache"]}},
+    {"type":"translate_ab","conceptKey":"animal.bird","payload":{"prompt":"ptak","accepted":["oiseau","l'oiseau"],"options":["oiseau","poisson","vache","chien"]}},
+    {"type":"translate_ab","conceptKey":"animal.fish","payload":{"prompt":"ryba","accepted":["poisson","le poisson"],"options":["poisson","vache","chien","chat"]}},
+    {"type":"translate_ab","conceptKey":"animal.cow","payload":{"prompt":"krowa","accepted":["vache","la vache"],"options":["vache","chien","chat","cheval"]}},
+    {"type":"translate_ba","conceptKey":"animal.dog","payload":{"prompt":"chien","accepted":["pies"]}},
+    {"type":"translate_ba","conceptKey":"animal.cat","payload":{"prompt":"chat","accepted":["kot"]}},
+    {"type":"translate_ba","conceptKey":"animal.horse","payload":{"prompt":"cheval","accepted":["koń"]}},
+    {"type":"translate_ba","conceptKey":"animal.bird","payload":{"prompt":"oiseau","accepted":["ptak"]}},
+    {"type":"translate_ba","conceptKey":"animal.fish","payload":{"prompt":"poisson","accepted":["ryba"]}},
+    {"type":"translate_ba","conceptKey":"animal.cow","payload":{"prompt":"vache","accepted":["krowa"]}},
+    {"type":"listening","conceptKey":"animal.dog","points":15,"payload":{"speak":"chien","lang":"fr-FR","accepted":["chien"]}},
+    {"type":"listening","conceptKey":"animal.horse","points":15,"payload":{"speak":"cheval","lang":"fr-FR","accepted":["cheval"]}},
+    {"type":"listening","conceptKey":"animal.bird","points":15,"payload":{"speak":"oiseau","lang":"fr-FR","accepted":["oiseau"]}},
+    {"type":"listening","conceptKey":"animal.fish","points":15,"payload":{"speak":"poisson","lang":"fr-FR","accepted":["poisson"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz zwierzęta w pary","pairs":[{"a":"pies","b":"chien"},{"a":"kot","b":"chat"},{"a":"koń","b":"cheval"},{"a":"ptak","b":"oiseau"},{"a":"ryba","b":"poisson"},{"a":"krowa","b":"vache"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"fr-FR","pairs":[{"a":"pies","b":"chien"},{"a":"kot","b":"chat"},{"a":"koń","b":"cheval"},{"a":"ryba","b":"poisson"},{"a":"krowa","b":"vache"}]}},
+    {"type":"fill_blank_choice","conceptKey":"animal.fish","payload":{"sentence":"Le {{blank}} nage dans l'eau.","options":["poisson","chat","cheval","chien"],"answer":"poisson","translation":"Ryba pływa w wodzie."}},
+    {"type":"fill_blank_choice","conceptKey":"animal.cat","payload":{"sentence":"Le {{blank}} fait miaou.","options":["chat","chien","oiseau","poisson"],"answer":"chat","translation":"Kot robi miau."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: Pies jest duży.","tokens":["le","chien","est","grand"],"solution":["le","chien","est","grand"]}}
+  ]
+}

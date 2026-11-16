@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-de-starter",
+  "unit": { "slug": "pierwsze-kroki", "title": "Pierwsze kroki", "icon": "👋", "sortOrder": 1 },
+  "lesson": {
+    "slug": "kolory",
+    "title": "Die Farben",
+    "icon": "🎨",
+    "kind": "standard",
+    "sortOrder": 4,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "liczby-do-dziesieciu",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"color.red","tags":["🔴"],"terms":{"pl":[{"text":"czerwony","pos":"adjective"}],"de":[{"text":"rot","pos":"adjective","ipa":"/ʁoːt/"}]}},
+    {"key":"color.blue","tags":["🔵"],"terms":{"pl":[{"text":"niebieski","pos":"adjective"}],"de":[{"text":"blau","pos":"adjective","ipa":"/blaʊ/"}]}},
+    {"key":"color.green","tags":["🟢"],"terms":{"pl":[{"text":"zielony","pos":"adjective"}],"de":[{"text":"grün","pos":"adjective","ipa":"/ɡʁyːn/"}]}},
+    {"key":"color.yellow","tags":["🟡"],"terms":{"pl":[{"text":"żółty","pos":"adjective"}],"de":[{"text":"gelb","pos":"adjective","ipa":"/ɡɛlp/"}]}},
+    {"key":"color.white","tags":["⚪"],"terms":{"pl":[{"text":"biały","pos":"adjective"}],"de":[{"text":"weiß","pos":"adjective","ipa":"/vaɪs/","note":"„ß” to po prostu ostre „s”."}]}},
+    {"key":"color.black","tags":["⚫"],"terms":{"pl":[{"text":"czarny","pos":"adjective"}],"de":[{"text":"schwarz","pos":"adjective","ipa":"/ʃvaʁts/"}]}}
+  ],
+  "exercises": [
+    {"type":"image_choice","conceptKey":"color.red","payload":{"prompt":"rot","speak":"rot","lang":"de-DE","options":["2026/kolor-red.svg","2026/kolor-blue.svg","2026/kolor-green.svg","2026/kolor-yellow.svg"],"answer":"2026/kolor-red.svg"}},
+    {"type":"image_choice","conceptKey":"color.blue","payload":{"prompt":"blau","speak":"blau","lang":"de-DE","options":["2026/kolor-blue.svg","2026/kolor-green.svg","2026/kolor-black.svg","2026/kolor-red.svg"],"answer":"2026/kolor-blue.svg"}},
+    {"type":"image_choice","conceptKey":"color.green","payload":{"prompt":"grün","speak":"grün","lang":"de-DE","options":["2026/kolor-green.svg","2026/kolor-yellow.svg","2026/kolor-blue.svg","2026/kolor-white.svg"],"answer":"2026/kolor-green.svg"}},
+    {"type":"image_choice","conceptKey":"color.yellow","payload":{"prompt":"gelb","speak":"gelb","lang":"de-DE","options":["2026/kolor-yellow.svg","2026/kolor-red.svg","2026/kolor-white.svg","2026/kolor-green.svg"],"answer":"2026/kolor-yellow.svg"}},
+    {"type":"image_choice","conceptKey":"color.white","payload":{"prompt":"weiß","speak":"weiß","lang":"de-DE","options":["2026/kolor-white.svg","2026/kolor-black.svg","2026/kolor-yellow.svg","2026/kolor-blue.svg"],"answer":"2026/kolor-white.svg"}},
+    {"type":"image_choice","conceptKey":"color.black","payload":{"prompt":"schwarz","speak":"schwarz","lang":"de-DE","options":["2026/kolor-black.svg","2026/kolor-white.svg","2026/kolor-red.svg","2026/kolor-green.svg"],"answer":"2026/kolor-black.svg"}},
+    {"type":"translate_ab","conceptKey":"color.red","payload":{"prompt":"czerwony","accepted":["rot"],"options":["rot","blau","grün","gelb"]}},
+    {"type":"translate_ab","conceptKey":"color.blue","payload":{"prompt":"niebieski","accepted":["blau"],"options":["blau","grün","gelb","weiß"]}},
+    {"type":"translate_ab","conceptKey":"color.green","payload":{"prompt":"zielony","accepted":["grün"],"options":["grün","gelb","weiß","schwarz"]}},
+    {"type":"translate_ab","conceptKey":"color.yellow","payload":{"prompt":"żółty","accepted":["gelb"],"options":["gelb","weiß","schwarz","rot"]}},
+    {"type":"translate_ab","conceptKey":"color.white","payload":{"prompt":"biały","accepted":["weiß"],"options":["weiß","schwarz","rot","blau"]}},
+    {"type":"translate_ab","conceptKey":"color.black","payload":{"prompt":"czarny","accepted":["schwarz"],"options":["schwarz","rot","blau","grün"]}},
+    {"type":"translate_ba","conceptKey":"color.red","payload":{"prompt":"rot","accepted":["czerwony"]}},
+    {"type":"translate_ba","conceptKey":"color.blue","payload":{"prompt":"blau","accepted":["niebieski"]}},
+    {"type":"translate_ba","conceptKey":"color.green","payload":{"prompt":"grün","accepted":["zielony"]}},
+    {"type":"translate_ba","conceptKey":"color.yellow","payload":{"prompt":"gelb","accepted":["żółty"]}},
+    {"type":"translate_ba","conceptKey":"color.white","payload":{"prompt":"weiß","accepted":["biały"]}},
+    {"type":"translate_ba","conceptKey":"color.black","payload":{"prompt":"schwarz","accepted":["czarny"]}},
+    {"type":"listening","conceptKey":"color.yellow","points":15,"payload":{"speak":"gelb","lang":"de-DE","accepted":["gelb"]}},
+    {"type":"listening","conceptKey":"color.white","points":15,"payload":{"speak":"weiß","lang":"de-DE","accepted":["weiß"]}},
+    {"type":"listening","conceptKey":"color.black","points":15,"payload":{"speak":"schwarz","lang":"de-DE","accepted":["schwarz"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz kolory w pary","pairs":[{"a":"czerwony","b":"rot"},{"a":"niebieski","b":"blau"},{"a":"zielony","b":"grün"},{"a":"żółty","b":"gelb"},{"a":"biały","b":"weiß"},{"a":"czarny","b":"schwarz"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polski kolor.","lang":"de-DE","pairs":[{"a":"czerwony","b":"rot"},{"a":"zielony","b":"grün"},{"a":"żółty","b":"gelb"},{"a":"biały","b":"weiß"},{"a":"czarny","b":"schwarz"}]}},
+    {"type":"fill_blank_choice","conceptKey":"color.green","payload":{"sentence":"Das Gras ist {{blank}}.","options":["grün","rot","schwarz","gelb"],"answer":"grün","translation":"Trawa jest zielona."}},
+    {"type":"fill_blank_choice","conceptKey":"color.white","payload":{"sentence":"Der Schnee ist {{blank}}.","options":["weiß","schwarz","grün","blau"],"answer":"weiß","translation":"Śnieg jest biały."}}
+  ]
+}

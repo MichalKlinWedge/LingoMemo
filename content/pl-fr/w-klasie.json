@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-fr-starter",
+  "unit": { "slug": "pierwsze-kroki", "title": "Pierwsze kroki", "icon": "👋", "sortOrder": 1 },
+  "lesson": {
+    "slug": "w-klasie",
+    "title": "En classe",
+    "icon": "🎒",
+    "kind": "standard",
+    "sortOrder": 5,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "kolory",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"thing.book","tags":["📕"],"terms":{"pl":[{"text":"książka","pos":"noun"}],"fr":[{"text":"livre","pos":"noun","ipa":"/livʁ/","article":"le"}]}},
+    {"key":"thing.notebook","tags":["📓"],"terms":{"pl":[{"text":"zeszyt","pos":"noun"}],"fr":[{"text":"cahier","pos":"noun","ipa":"/kaje/","article":"le"}]}},
+    {"key":"thing.pen","tags":["🖊️"],"terms":{"pl":[{"text":"długopis","pos":"noun"}],"fr":[{"text":"stylo","pos":"noun","ipa":"/stilo/","article":"le"}]}},
+    {"key":"thing.pencil","tags":["✏️"],"terms":{"pl":[{"text":"ołówek","pos":"noun"}],"fr":[{"text":"crayon","pos":"noun","ipa":"/kʁɛjɔ̃/","article":"le"}]}},
+    {"key":"thing.scissors","tags":["✂️"],"terms":{"pl":[{"text":"nożyczki","pos":"noun"}],"fr":[{"text":"ciseaux","pos":"noun","ipa":"/sizo/","article":"les"}]}},
+    {"key":"thing.ruler","tags":["📏"],"terms":{"pl":[{"text":"linijka","pos":"noun"}],"fr":[{"text":"règle","pos":"noun","ipa":"/ʁɛɡl/","article":"la"}]}}
+  ],
+  "exercises": [
+    {"type":"image_choice","conceptKey":"thing.book","payload":{"prompt":"le livre","speak":"livre","lang":"fr-FR","options":["2026/rzecz-book.svg","2026/rzecz-scissors.svg","2026/rzecz-ruler.svg","2026/rzecz-pen.svg"],"answer":"2026/rzecz-book.svg"}},
+    {"type":"image_choice","conceptKey":"thing.notebook","payload":{"prompt":"le cahier","speak":"cahier","lang":"fr-FR","options":["2026/rzecz-notebook.svg","2026/rzecz-chair.svg","2026/rzecz-scissors.svg","2026/rzecz-pen.svg"],"answer":"2026/rzecz-notebook.svg"}},
+    {"type":"image_choice","conceptKey":"thing.pen","payload":{"prompt":"le stylo","speak":"stylo","lang":"fr-FR","options":["2026/rzecz-pen.svg","2026/rzecz-book.svg","2026/rzecz-ruler.svg","2026/rzecz-chair.svg"],"answer":"2026/rzecz-pen.svg"}},
+    {"type":"image_choice","conceptKey":"thing.pencil","payload":{"prompt":"le crayon","speak":"crayon","lang":"fr-FR","options":["2026/rzecz-pencil.svg","2026/rzecz-notebook.svg","2026/rzecz-scissors.svg","2026/rzecz-clock.svg"],"answer":"2026/rzecz-pencil.svg"}},
+    {"type":"image_choice","conceptKey":"thing.scissors","payload":{"prompt":"les ciseaux","speak":"ciseaux","lang":"fr-FR","options":["2026/rzecz-scissors.svg","2026/rzecz-ruler.svg","2026/rzecz-book.svg","2026/rzecz-notebook.svg"],"answer":"2026/rzecz-scissors.svg"}},
+    {"type":"image_choice","conceptKey":"thing.ruler","payload":{"prompt":"la règle","speak":"règle","lang":"fr-FR","options":["2026/rzecz-ruler.svg","2026/rzecz-pen.svg","2026/rzecz-book.svg","2026/rzecz-chair.svg"],"answer":"2026/rzecz-ruler.svg"}},
+    {"type":"translate_ab","conceptKey":"thing.book","payload":{"prompt":"książka","accepted":["livre","le livre"],"options":["livre","cahier","stylo","crayon"]}},
+    {"type":"translate_ab","conceptKey":"thing.notebook","payload":{"prompt":"zeszyt","accepted":["cahier","le cahier"],"options":["cahier","stylo","crayon","ciseaux"]}},
+    {"type":"translate_ab","conceptKey":"thing.pen","payload":{"prompt":"długopis","accepted":["stylo","le stylo"],"options":["stylo","crayon","ciseaux","règle"]}},
+    {"type":"translate_ab","conceptKey":"thing.pencil","payload":{"prompt":"ołówek","accepted":["crayon","le crayon"],"options":["crayon","ciseaux","règle","livre"]}},
+    {"type":"translate_ab","conceptKey":"thing.scissors","payload":{"prompt":"nożyczki","accepted":["ciseaux","les ciseaux"],"options":["ciseaux","règle","livre","cahier"]}},
+    {"type":"translate_ab","conceptKey":"thing.ruler","payload":{"prompt":"linijka","accepted":["règle","la règle"],"options":["règle","livre","cahier","stylo"]}},
+    {"type":"translate_ba","conceptKey":"thing.book","payload":{"prompt":"livre","accepted":["książka"]}},
+    {"type":"translate_ba","conceptKey":"thing.notebook","payload":{"prompt":"cahier","accepted":["zeszyt"]}},
+    {"type":"translate_ba","conceptKey":"thing.pen","payload":{"prompt":"stylo","accepted":["długopis"]}},
+    {"type":"translate_ba","conceptKey":"thing.pencil","payload":{"prompt":"crayon","accepted":["ołówek"]}},
+    {"type":"translate_ba","conceptKey":"thing.scissors","payload":{"prompt":"ciseaux","accepted":["nożyczki"]}},
+    {"type":"translate_ba","conceptKey":"thing.ruler","payload":{"prompt":"règle","accepted":["linijka"]}},
+    {"type":"listening","conceptKey":"thing.notebook","points":15,"payload":{"speak":"cahier","lang":"fr-FR","accepted":["cahier"]}},
+    {"type":"listening","conceptKey":"thing.pencil","points":15,"payload":{"speak":"crayon","lang":"fr-FR","accepted":["crayon"]}},
+    {"type":"listening","conceptKey":"thing.scissors","points":15,"payload":{"speak":"ciseaux","lang":"fr-FR","accepted":["ciseaux"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"książka","b":"livre"},{"a":"zeszyt","b":"cahier"},{"a":"długopis","b":"stylo"},{"a":"ołówek","b":"crayon"},{"a":"nożyczki","b":"ciseaux"},{"a":"linijka","b":"règle"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"fr-FR","pairs":[{"a":"książka","b":"livre"},{"a":"zeszyt","b":"cahier"},{"a":"długopis","b":"stylo"},{"a":"ołówek","b":"crayon"},{"a":"linijka","b":"règle"}]}},
+    {"type":"fill_blank_choice","conceptKey":"thing.book","payload":{"sentence":"Ouvre le {{blank}} !","options":["livre","stylo","crayon","cahier"],"answer":"livre","translation":"Otwórz książkę!"}},
+    {"type":"fill_blank_choice","conceptKey":"thing.scissors","payload":{"sentence":"Les {{blank}} coupent le papier.","options":["ciseaux","crayon","stylo","livre"],"answer":"ciseaux","translation":"Nożyczki tną papier."}}
+  ]
+}

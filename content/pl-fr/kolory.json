@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-fr-starter",
+  "unit": { "slug": "pierwsze-kroki", "title": "Pierwsze kroki", "icon": "👋", "sortOrder": 1 },
+  "lesson": {
+    "slug": "kolory",
+    "title": "Les couleurs",
+    "icon": "🎨",
+    "kind": "standard",
+    "sortOrder": 4,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "liczby-do-dziesieciu",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"color.red","tags":["🔴"],"terms":{"pl":[{"text":"czerwony","pos":"adjective"}],"fr":[{"text":"rouge","pos":"adjective","ipa":"/ʁuʒ/"}]}},
+    {"key":"color.blue","tags":["🔵"],"terms":{"pl":[{"text":"niebieski","pos":"adjective"}],"fr":[{"text":"bleu","pos":"adjective","ipa":"/blø/"}]}},
+    {"key":"color.green","tags":["🟢"],"terms":{"pl":[{"text":"zielony","pos":"adjective"}],"fr":[{"text":"vert","pos":"adjective","ipa":"/vɛʁ/","note":"„T” na końcu jest nieme."}]}},
+    {"key":"color.yellow","tags":["🟡"],"terms":{"pl":[{"text":"żółty","pos":"adjective"}],"fr":[{"text":"jaune","pos":"adjective","ipa":"/ʒon/"}]}},
+    {"key":"color.white","tags":["⚪"],"terms":{"pl":[{"text":"biały","pos":"adjective"}],"fr":[{"text":"blanc","pos":"adjective","ipa":"/blɑ̃/"}]}},
+    {"key":"color.black","tags":["⚫"],"terms":{"pl":[{"text":"czarny","pos":"adjective"}],"fr":[{"text":"noir","pos":"adjective","ipa":"/nwaʁ/"}]}}
+  ],
+  "exercises": [
+    {"type":"image_choice","conceptKey":"color.red","payload":{"prompt":"rouge","speak":"rouge","lang":"fr-FR","options":["2026/kolor-red.svg","2026/kolor-blue.svg","2026/kolor-green.svg","2026/kolor-yellow.svg"],"answer":"2026/kolor-red.svg"}},
+    {"type":"image_choice","conceptKey":"color.blue","payload":{"prompt":"bleu","speak":"bleu","lang":"fr-FR","options":["2026/kolor-blue.svg","2026/kolor-green.svg","2026/kolor-black.svg","2026/kolor-red.svg"],"answer":"2026/kolor-blue.svg"}},
+    {"type":"image_choice","conceptKey":"color.green","payload":{"prompt":"vert","speak":"vert","lang":"fr-FR","options":["2026/kolor-green.svg","2026/kolor-yellow.svg","2026/kolor-blue.svg","2026/kolor-white.svg"],"answer":"2026/kolor-green.svg"}},
+    {"type":"image_choice","conceptKey":"color.yellow","payload":{"prompt":"jaune","speak":"jaune","lang":"fr-FR","options":["2026/kolor-yellow.svg","2026/kolor-red.svg","2026/kolor-white.svg","2026/kolor-green.svg"],"answer":"2026/kolor-yellow.svg"}},
+    {"type":"image_choice","conceptKey":"color.white","payload":{"prompt":"blanc","speak":"blanc","lang":"fr-FR","options":["2026/kolor-white.svg","2026/kolor-black.svg","2026/kolor-yellow.svg","2026/kolor-blue.svg"],"answer":"2026/kolor-white.svg"}},
+    {"type":"image_choice","conceptKey":"color.black","payload":{"prompt":"noir","speak":"noir","lang":"fr-FR","options":["2026/kolor-black.svg","2026/kolor-white.svg","2026/kolor-red.svg","2026/kolor-green.svg"],"answer":"2026/kolor-black.svg"}},
+    {"type":"translate_ab","conceptKey":"color.red","payload":{"prompt":"czerwony","accepted":["rouge"],"options":["rouge","bleu","vert","jaune"]}},
+    {"type":"translate_ab","conceptKey":"color.blue","payload":{"prompt":"niebieski","accepted":["bleu"],"options":["bleu","vert","jaune","blanc"]}},
+    {"type":"translate_ab","conceptKey":"color.green","payload":{"prompt":"zielony","accepted":["vert"],"options":["vert","jaune","blanc","noir"]}},
+    {"type":"translate_ab","conceptKey":"color.yellow","payload":{"prompt":"żółty","accepted":["jaune"],"options":["jaune","blanc","noir","rouge"]}},
+    {"type":"translate_ab","conceptKey":"color.white","payload":{"prompt":"biały","accepted":["blanc"],"options":["blanc","noir","rouge","bleu"]}},
+    {"type":"translate_ab","conceptKey":"color.black","payload":{"prompt":"czarny","accepted":["noir"],"options":["noir","rouge","bleu","vert"]}},
+    {"type":"translate_ba","conceptKey":"color.red","payload":{"prompt":"rouge","accepted":["czerwony"]}},
+    {"type":"translate_ba","conceptKey":"color.blue","payload":{"prompt":"bleu","accepted":["niebieski"]}},
+    {"type":"translate_ba","conceptKey":"color.green","payload":{"prompt":"vert","accepted":["zielony"]}},
+    {"type":"translate_ba","conceptKey":"color.yellow","payload":{"prompt":"jaune","accepted":["żółty"]}},
+    {"type":"translate_ba","conceptKey":"color.white","payload":{"prompt":"blanc","accepted":["biały"]}},
+    {"type":"translate_ba","conceptKey":"color.black","payload":{"prompt":"noir","accepted":["czarny"]}},
+    {"type":"listening","conceptKey":"color.yellow","points":15,"payload":{"speak":"jaune","lang":"fr-FR","accepted":["jaune"]}},
+    {"type":"listening","conceptKey":"color.white","points":15,"payload":{"speak":"blanc","lang":"fr-FR","accepted":["blanc"]}},
+    {"type":"listening","conceptKey":"color.black","points":15,"payload":{"speak":"noir","lang":"fr-FR","accepted":["noir"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz kolory w pary","pairs":[{"a":"czerwony","b":"rouge"},{"a":"niebieski","b":"bleu"},{"a":"zielony","b":"vert"},{"a":"żółty","b":"jaune"},{"a":"biały","b":"blanc"},{"a":"czarny","b":"noir"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polski kolor.","lang":"fr-FR","pairs":[{"a":"czerwony","b":"rouge"},{"a":"zielony","b":"vert"},{"a":"żółty","b":"jaune"},{"a":"biały","b":"blanc"},{"a":"czarny","b":"noir"}]}},
+    {"type":"fill_blank_choice","conceptKey":"color.green","payload":{"sentence":"L'herbe est {{blank}}.","options":["verte","rouge","noire","jaune"],"answer":"verte","translation":"Trawa jest zielona."}},
+    {"type":"fill_blank_choice","conceptKey":"color.white","payload":{"sentence":"La neige est {{blank}}.","options":["blanche","noire","verte","bleue"],"answer":"blanche","translation":"Śnieg jest biały."}}
+  ]
+}

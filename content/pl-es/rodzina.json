@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-es-starter",
+  "unit": { "slug": "pierwsze-kroki", "title": "Pierwsze kroki", "icon": "👋", "sortOrder": 1 },
+  "lesson": {
+    "slug": "rodzina",
+    "title": "La familia",
+    "icon": "👨‍👩‍👧",
+    "kind": "standard",
+    "sortOrder": 6,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "w-klasie",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"family.mum","tags":["👩"],"terms":{"pl":[{"text":"mama","pos":"noun"}],"es":[{"text":"mamá","pos":"noun","ipa":"/maˈma/","article":"la"}]}},
+    {"key":"family.dad","tags":["👨"],"terms":{"pl":[{"text":"tata","pos":"noun"}],"es":[{"text":"papá","pos":"noun","ipa":"/paˈpa/","article":"el"}]}},
+    {"key":"family.brother","tags":["👦"],"terms":{"pl":[{"text":"brat","pos":"noun"}],"es":[{"text":"hermano","pos":"noun","ipa":"/eɾˈmano/","article":"el"}]}},
+    {"key":"family.sister","tags":["👧"],"terms":{"pl":[{"text":"siostra","pos":"noun"}],"es":[{"text":"hermana","pos":"noun","ipa":"/eɾˈmana/","article":"la","note":"Różnica z „hermano” to jedna litera na końcu — i cała płeć."}]}},
+    {"key":"family.grandma","tags":["👵"],"terms":{"pl":[{"text":"babcia","pos":"noun"}],"es":[{"text":"abuela","pos":"noun","ipa":"/aˈβwela/","article":"la"}]}},
+    {"key":"family.grandpa","tags":["👴"],"terms":{"pl":[{"text":"dziadek","pos":"noun"}],"es":[{"text":"abuelo","pos":"noun","ipa":"/aˈβwelo/","article":"el"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"family.mum","payload":{"prompt":"mama","accepted":["mamá","la mamá"],"options":["mamá","papá","hermano","hermana"]}},
+    {"type":"translate_ab","conceptKey":"family.dad","payload":{"prompt":"tata","accepted":["papá","el papá"],"options":["papá","hermano","hermana","abuela"]}},
+    {"type":"translate_ab","conceptKey":"family.brother","payload":{"prompt":"brat","accepted":["hermano","el hermano"],"options":["hermano","hermana","abuela","abuelo"]}},
+    {"type":"translate_ab","conceptKey":"family.sister","payload":{"prompt":"siostra","accepted":["hermana","la hermana"],"options":["hermana","abuela","abuelo","mamá"]}},
+    {"type":"translate_ab","conceptKey":"family.grandma","payload":{"prompt":"babcia","accepted":["abuela","la abuela"],"options":["abuela","abuelo","mamá","papá"]}},
+    {"type":"translate_ab","conceptKey":"family.grandpa","payload":{"prompt":"dziadek","accepted":["abuelo","el abuelo"],"options":["abuelo","mamá","papá","hermano"]}},
+    {"type":"translate_ba","conceptKey":"family.mum","payload":{"prompt":"mamá","accepted":["mama"]}},
+    {"type":"translate_ba","conceptKey":"family.dad","payload":{"prompt":"papá","accepted":["tata"]}},
+    {"type":"translate_ba","conceptKey":"family.brother","payload":{"prompt":"hermano","accepted":["brat"]}},
+    {"type":"translate_ba","conceptKey":"family.sister","payload":{"prompt":"hermana","accepted":["siostra"]}},
+    {"type":"translate_ba","conceptKey":"family.grandma","payload":{"prompt":"abuela","accepted":["babcia"]}},
+    {"type":"translate_ba","conceptKey":"family.grandpa","payload":{"prompt":"abuelo","accepted":["dziadek"]}},
+    {"type":"listening","conceptKey":"family.dad","points":15,"payload":{"speak":"papá","lang":"es-ES","accepted":["papá"]}},
+    {"type":"listening","conceptKey":"family.brother","points":15,"payload":{"speak":"hermano","lang":"es-ES","accepted":["hermano"]}},
+    {"type":"listening","conceptKey":"family.sister","points":15,"payload":{"speak":"hermana","lang":"es-ES","accepted":["hermana"]}},
+    {"type":"listening","conceptKey":"family.grandma","points":15,"payload":{"speak":"abuela","lang":"es-ES","accepted":["abuela"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"mama","b":"mamá"},{"a":"tata","b":"papá"},{"a":"brat","b":"hermano"},{"a":"siostra","b":"hermana"},{"a":"babcia","b":"abuela"},{"a":"dziadek","b":"abuelo"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"es-ES","pairs":[{"a":"mama","b":"mamá"},{"a":"tata","b":"papá"},{"a":"brat","b":"hermano"},{"a":"siostra","b":"hermana"},{"a":"babcia","b":"abuela"},{"a":"dziadek","b":"abuelo"}]}},
+    {"type":"fill_blank_choice","conceptKey":"family.mum","payload":{"sentence":"Mi {{blank}} se llama Ana.","options":["mamá","papá","hermano","abuelo"],"answer":"mamá","translation":"Moja mama ma na imię Ana."}},
+    {"type":"fill_blank_choice","conceptKey":"family.brother","payload":{"sentence":"Mi {{blank}} tiene ocho años.","options":["hermano","hermana","mamá","abuela"],"answer":"hermano","translation":"Mój brat ma osiem lat."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: To jest moja mama.","tokens":["esta","es","mi","mamá"],"solution":["esta","es","mi","mamá"]}}
+  ]
+}

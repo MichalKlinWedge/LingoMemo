@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-es-starter",
+  "unit": { "slug": "pierwsze-kroki", "title": "Pierwsze kroki", "icon": "👋", "sortOrder": 1 },
+  "lesson": {
+    "slug": "w-klasie",
+    "title": "En clase",
+    "icon": "🎒",
+    "kind": "standard",
+    "sortOrder": 5,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "kolory",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"thing.book","tags":["📕"],"terms":{"pl":[{"text":"książka","pos":"noun"}],"es":[{"text":"libro","pos":"noun","ipa":"/ˈliβɾo/","article":"el"}]}},
+    {"key":"thing.notebook","tags":["📓"],"terms":{"pl":[{"text":"zeszyt","pos":"noun"}],"es":[{"text":"cuaderno","pos":"noun","ipa":"/kwaˈðeɾno/","article":"el"}]}},
+    {"key":"thing.pen","tags":["🖊️"],"terms":{"pl":[{"text":"długopis","pos":"noun"}],"es":[{"text":"bolígrafo","pos":"noun","ipa":"/boˈliɣɾafo/","article":"el"}]}},
+    {"key":"thing.pencil","tags":["✏️"],"terms":{"pl":[{"text":"ołówek","pos":"noun"}],"es":[{"text":"lápiz","pos":"noun","ipa":"/ˈlapiθ/","article":"el"}]}},
+    {"key":"thing.scissors","tags":["✂️"],"terms":{"pl":[{"text":"nożyczki","pos":"noun"}],"es":[{"text":"tijeras","pos":"noun","ipa":"/tiˈxeɾas/","article":"las"}]}},
+    {"key":"thing.ruler","tags":["📏"],"terms":{"pl":[{"text":"linijka","pos":"noun"}],"es":[{"text":"regla","pos":"noun","ipa":"/ˈreɣla/","article":"la"}]}}
+  ],
+  "exercises": [
+    {"type":"image_choice","conceptKey":"thing.book","payload":{"prompt":"el libro","speak":"libro","lang":"es-ES","options":["2026/rzecz-book.svg","2026/rzecz-scissors.svg","2026/rzecz-ruler.svg","2026/rzecz-pen.svg"],"answer":"2026/rzecz-book.svg"}},
+    {"type":"image_choice","conceptKey":"thing.notebook","payload":{"prompt":"el cuaderno","speak":"cuaderno","lang":"es-ES","options":["2026/rzecz-notebook.svg","2026/rzecz-chair.svg","2026/rzecz-scissors.svg","2026/rzecz-pen.svg"],"answer":"2026/rzecz-notebook.svg"}},
+    {"type":"image_choice","conceptKey":"thing.pen","payload":{"prompt":"el bolígrafo","speak":"bolígrafo","lang":"es-ES","options":["2026/rzecz-pen.svg","2026/rzecz-book.svg","2026/rzecz-ruler.svg","2026/rzecz-chair.svg"],"answer":"2026/rzecz-pen.svg"}},
+    {"type":"image_choice","conceptKey":"thing.pencil","payload":{"prompt":"el lápiz","speak":"lápiz","lang":"es-ES","options":["2026/rzecz-pencil.svg","2026/rzecz-notebook.svg","2026/rzecz-scissors.svg","2026/rzecz-clock.svg"],"answer":"2026/rzecz-pencil.svg"}},
+    {"type":"image_choice","conceptKey":"thing.scissors","payload":{"prompt":"las tijeras","speak":"tijeras","lang":"es-ES","options":["2026/rzecz-scissors.svg","2026/rzecz-ruler.svg","2026/rzecz-book.svg","2026/rzecz-notebook.svg"],"answer":"2026/rzecz-scissors.svg"}},
+    {"type":"image_choice","conceptKey":"thing.ruler","payload":{"prompt":"la regla","speak":"regla","lang":"es-ES","options":["2026/rzecz-ruler.svg","2026/rzecz-pen.svg","2026/rzecz-book.svg","2026/rzecz-chair.svg"],"answer":"2026/rzecz-ruler.svg"}},
+    {"type":"translate_ab","conceptKey":"thing.book","payload":{"prompt":"książka","accepted":["libro","el libro"],"options":["libro","cuaderno","bolígrafo","lápiz"]}},
+    {"type":"translate_ab","conceptKey":"thing.notebook","payload":{"prompt":"zeszyt","accepted":["cuaderno","el cuaderno"],"options":["cuaderno","bolígrafo","lápiz","tijeras"]}},
+    {"type":"translate_ab","conceptKey":"thing.pen","payload":{"prompt":"długopis","accepted":["bolígrafo","el bolígrafo"],"options":["bolígrafo","lápiz","tijeras","regla"]}},
+    {"type":"translate_ab","conceptKey":"thing.pencil","payload":{"prompt":"ołówek","accepted":["lápiz","el lápiz"],"options":["lápiz","tijeras","regla","libro"]}},
+    {"type":"translate_ab","conceptKey":"thing.scissors","payload":{"prompt":"nożyczki","accepted":["tijeras","las tijeras"],"options":["tijeras","regla","libro","cuaderno"]}},
+    {"type":"translate_ab","conceptKey":"thing.ruler","payload":{"prompt":"linijka","accepted":["regla","la regla"],"options":["regla","libro","cuaderno","bolígrafo"]}},
+    {"type":"translate_ba","conceptKey":"thing.book","payload":{"prompt":"libro","accepted":["książka"]}},
+    {"type":"translate_ba","conceptKey":"thing.notebook","payload":{"prompt":"cuaderno","accepted":["zeszyt"]}},
+    {"type":"translate_ba","conceptKey":"thing.pen","payload":{"prompt":"bolígrafo","accepted":["długopis"]}},
+    {"type":"translate_ba","conceptKey":"thing.pencil","payload":{"prompt":"lápiz","accepted":["ołówek"]}},
+    {"type":"translate_ba","conceptKey":"thing.scissors","payload":{"prompt":"tijeras","accepted":["nożyczki"]}},
+    {"type":"translate_ba","conceptKey":"thing.ruler","payload":{"prompt":"regla","accepted":["linijka"]}},
+    {"type":"listening","conceptKey":"thing.notebook","points":15,"payload":{"speak":"cuaderno","lang":"es-ES","accepted":["cuaderno"]}},
+    {"type":"listening","conceptKey":"thing.pencil","points":15,"payload":{"speak":"lápiz","lang":"es-ES","accepted":["lápiz"]}},
+    {"type":"listening","conceptKey":"thing.scissors","points":15,"payload":{"speak":"tijeras","lang":"es-ES","accepted":["tijeras"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"książka","b":"libro"},{"a":"zeszyt","b":"cuaderno"},{"a":"długopis","b":"bolígrafo"},{"a":"ołówek","b":"lápiz"},{"a":"nożyczki","b":"tijeras"},{"a":"linijka","b":"regla"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"es-ES","pairs":[{"a":"książka","b":"libro"},{"a":"zeszyt","b":"cuaderno"},{"a":"długopis","b":"bolígrafo"},{"a":"ołówek","b":"lápiz"},{"a":"linijka","b":"regla"}]}},
+    {"type":"fill_blank_choice","conceptKey":"thing.book","payload":{"sentence":"¡Abre el {{blank}}!","options":["libro","bolígrafo","tijeras","lápiz"],"answer":"libro","translation":"Otwórz książkę!"}},
+    {"type":"fill_blank_choice","conceptKey":"thing.scissors","payload":{"sentence":"Las {{blank}} cortan el papel.","options":["tijeras","lápiz","bolígrafo","libro"],"answer":"tijeras","translation":"Nożyczki tną papier."}}
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-de-starter",
+  "unit": { "slug": "pierwsze-kroki", "title": "Pierwsze kroki", "icon": "👋", "sortOrder": 1 },
+  "lesson": {
+    "slug": "zwierzeta",
+    "title": "Die Tiere",
+    "icon": "🐶",
+    "kind": "standard",
+    "sortOrder": 7,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "rodzina",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"animal.dog","tags":["🐶"],"terms":{"pl":[{"text":"pies","pos":"noun"}],"de":[{"text":"Hund","pos":"noun","ipa":"/hʊnt/","article":"der"}]}},
+    {"key":"animal.cat","tags":["🐱"],"terms":{"pl":[{"text":"kot","pos":"noun"}],"de":[{"text":"Katze","pos":"noun","ipa":"/ˈkatsə/","article":"die"}]}},
+    {"key":"animal.horse","tags":["🐴"],"terms":{"pl":[{"text":"koń","pos":"noun"}],"de":[{"text":"Pferd","pos":"noun","ipa":"/pfeːɐt/","article":"das"}]}},
+    {"key":"animal.bird","tags":["🐦"],"terms":{"pl":[{"text":"ptak","pos":"noun"}],"de":[{"text":"Vogel","pos":"noun","ipa":"/ˈfoːɡl/","article":"der","note":"„V” czyta się jak „f”."}]}},
+    {"key":"animal.fish","tags":["🐟"],"terms":{"pl":[{"text":"ryba","pos":"noun"}],"de":[{"text":"Fisch","pos":"noun","ipa":"/fɪʃ/","article":"der"}]}},
+    {"key":"animal.cow","tags":["🐄"],"terms":{"pl":[{"text":"krowa","pos":"noun"}],"de":[{"text":"Kuh","pos":"noun","ipa":"/kuː/","article":"die"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"animal.dog","payload":{"prompt":"pies","accepted":["Hund","der Hund"],"options":["Hund","Katze","Pferd","Vogel"]}},
+    {"type":"translate_ab","conceptKey":"animal.cat","payload":{"prompt":"kot","accepted":["Katze","die Katze"],"options":["Katze","Pferd","Vogel","Fisch"]}},
+    {"type":"translate_ab","conceptKey":"animal.horse","payload":{"prompt":"koń","accepted":["Pferd","das Pferd"],"options":["Pferd","Vogel","Fisch","Kuh"]}},
+    {"type":"translate_ab","conceptKey":"animal.bird","payload":{"prompt":"ptak","accepted":["Vogel","der Vogel"],"options":["Vogel","Fisch","Kuh","Hund"]}},
+    {"type":"translate_ab","conceptKey":"animal.fish","payload":{"prompt":"ryba","accepted":["Fisch","der Fisch"],"options":["Fisch","Kuh","Hund","Katze"]}},
+    {"type":"translate_ab","conceptKey":"animal.cow","payload":{"prompt":"krowa","accepted":["Kuh","die Kuh"],"options":["Kuh","Hund","Katze","Pferd"]}},
+    {"type":"translate_ba","conceptKey":"animal.dog","payload":{"prompt":"Hund","accepted":["pies"]}},
+    {"type":"translate_ba","conceptKey":"animal.cat","payload":{"prompt":"Katze","accepted":["kot"]}},
+    {"type":"translate_ba","conceptKey":"animal.horse","payload":{"prompt":"Pferd","accepted":["koń"]}},
+    {"type":"translate_ba","conceptKey":"animal.bird","payload":{"prompt":"Vogel","accepted":["ptak"]}},
+    {"type":"translate_ba","conceptKey":"animal.fish","payload":{"prompt":"Fisch","accepted":["ryba"]}},
+    {"type":"translate_ba","conceptKey":"animal.cow","payload":{"prompt":"Kuh","accepted":["krowa"]}},
+    {"type":"listening","conceptKey":"animal.dog","points":15,"payload":{"speak":"Hund","lang":"de-DE","accepted":["Hund"]}},
+    {"type":"listening","conceptKey":"animal.horse","points":15,"payload":{"speak":"Pferd","lang":"de-DE","accepted":["Pferd"]}},
+    {"type":"listening","conceptKey":"animal.bird","points":15,"payload":{"speak":"Vogel","lang":"de-DE","accepted":["Vogel"]}},
+    {"type":"listening","conceptKey":"animal.fish","points":15,"payload":{"speak":"Fisch","lang":"de-DE","accepted":["Fisch"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz zwierzęta w pary","pairs":[{"a":"pies","b":"Hund"},{"a":"kot","b":"Katze"},{"a":"koń","b":"Pferd"},{"a":"ptak","b":"Vogel"},{"a":"ryba","b":"Fisch"},{"a":"krowa","b":"Kuh"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"de-DE","pairs":[{"a":"pies","b":"Hund"},{"a":"kot","b":"Katze"},{"a":"koń","b":"Pferd"},{"a":"ryba","b":"Fisch"},{"a":"krowa","b":"Kuh"}]}},
+    {"type":"fill_blank_choice","conceptKey":"animal.fish","payload":{"sentence":"Der {{blank}} schwimmt im Wasser.","options":["Fisch","Hund","Pferd","Vogel"],"answer":"Fisch","translation":"Ryba pływa w wodzie."}},
+    {"type":"fill_blank_choice","conceptKey":"animal.cat","payload":{"sentence":"Die {{blank}} macht miau.","options":["Katze","Kuh","Hund","Vogel"],"answer":"Katze","translation":"Kot robi miau."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: Pies jest duży.","tokens":["der","Hund","ist","groß"],"solution":["der","Hund","ist","groß"]}}
+  ]
+}
