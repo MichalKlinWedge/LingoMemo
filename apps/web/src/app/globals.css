@@ -27,12 +27,13 @@
   --color-coral-light: #fde6e5;
   --color-sun: #ffc83d;
 
-  /* Skala trudności kwadracików: łatwy → średni → trudny. Żółty i czerwony czyta się jak
-     ostrzeżenie, więc trudność widać bez legendy. Odcienie są przyciemnione względem czystego
+  /* Skala trudności kwadracików jak w sygnalizacji: zielony → żółty → czerwony. Trudność
+     widać bez legendy, bo tę kolejność zna każdy. Odcienie są przyciemnione względem czystego
      żółtego i czerwonego: na kremowym tle (#fffaf2) jasne barwy znikają, a kwadracik ma 1,5 rem.
-     Czerwień jest tu wyjątkiem od zasady „koral tylko na źle" — to inny odcień i inne miejsce
-     niż informacja zwrotna w zadaniu, ale warto o tym pamiętać przy następnych zmianach. */
-  --level-1: #b9a6ff;
+     Zielony i czerwony są tu wyjątkiem od zasady „zieleń i koral tylko na dobrze/źle" — to inne
+     odcienie i inne miejsce niż informacja zwrotna w zadaniu (kwadracik na mapie, nie kafel
+     odpowiedzi), ale warto o tym pamiętać przy następnych zmianach. */
+  --level-1: #2e9e5b;
   --level-2: #e8a200;
   --level-3: #d93025;
   --color-sky: #39b6e8;
