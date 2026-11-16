@@ -50,6 +50,26 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
   const byUnit = (unitId: string) => (lessons ?? []).filter((lesson) => lesson.unit_id === unitId);
   // Średni i trudny. Łatwy ma swój kafelek, a poziom bez ani jednego zadania nie ma po co
   // stawiać kwadracika, który po kliknięciu pokaże pustą lekcję.
+  /**
+   * Dokańd prowadzi kafelek lekcji. Dziecko klika w obrazek, żeby „robić tę lekcję dalej", a nie
+   * żeby wybierać poziom — więc po zaliczeniu łatwego kafelek musi otwierać średni, potem trudny.
+   * Kwadraciki zostają do wybierania poziomu wprost, także do powtarzania zrobionych.
+   */
+  /** Co otworzy kafelek — dla dymka, żeby dziecko nie zgadywało, na jaki poziom wchodzi. */
+  const nextName = (lessonId: string, done: boolean) => {
+    if (!done) return "Poziom łatwy";
+    const next = harderOf(lessonId).find((row) => row.is_unlocked && row.status !== "completed");
+    if (!next) return "Zrobione — możesz powtórzyć poziom łatwy";
+    return next.level === 2 ? "Poziom średni" : "Poziom trudny";
+  };
+
+  const nextHref = (lessonId: string, done: boolean) => {
+    const base = `/lekcja/${lessonId}`;
+    if (!done) return base;
+    const next = harderOf(lessonId).find((row) => row.is_unlocked && row.status !== "completed");
+    return next ? `${base}?poziom=${next.level}` : base;
+  };
+
   const harderOf = (lessonId: string) =>
     (levels ?? []).filter(
       (row) => row.lesson_id === lessonId && (row.level ?? 1) > 1 && (row.exercise_count ?? 0) > 0,
@@ -144,7 +164,13 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
                       {tile}
                     </div>
                   ) : (
-                    <Link href={`/lekcja/${lesson.id}`} className="tile" data-state={state} aria-label={label}>
+                    <Link
+                      href={nextHref(lesson.id, state === "done")}
+                      className="tile"
+                      data-state={state}
+                      aria-label={label}
+                      title={nextName(lesson.id, state === "done")}
+                    >
                       {tile}
                     </Link>
                   )}
