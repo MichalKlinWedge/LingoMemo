@@ -84,6 +84,10 @@ Rekomendacja: **Expo, tylko Android** (jak ExpeditionPlan). PWA zostaje tym, czy
 manifestu nie usuwamy, bo tablet w domu działa na nim dobrze. WebView zostaje wariantem awaryjnym,
 jeśli pomiary z PoC-M2 i PoC-M3 wyjdą tak, że mowa i powiadomienia z przeglądarki wystarczą.
 
+**Decyzja (2026-11-16): Expo.** Wariant WebView odpada bez pomiaru — jego jedyną zaletą było
+oszczędzenie drugiego interfejsu, a kosztem jest to, czego ta aplikacja najbardziej potrzebuje
+(mowa, przypomnienia, zapas na offline). Wpis w `docs/DECYZJE.md`.
+
 iOS: poza planem. Bez konta dewelopera Apple nie ma czym rozdawać aplikacji, a dla jednego iPada
 PWA wystarcza.
 
@@ -113,8 +117,9 @@ Każdy etap kończy się kryterium odbioru sprawdzalnym na fizycznym telefonie, 
 
 ### Etap M0 — szkielet i bramka decyzyjna
 
-`apps/mobile`: Expo (najnowsze SDK), `expo-router`, `expo-secure-store` jako magazyn sesji
-Supabase, dev build na telefonie właściciela. Cztery pomiary, każdy mały i rozstrzygający:
+`apps/mobile`: Expo (SDK 58), `expo-router`, sesja Supabase w `localStorage` z expo-sqlite
+(SecureStore ma limit 2 KB na wartość, a token sesji bywa dłuższy), dev build na telefonie
+właściciela. Trzy pomiary, każdy mały i rozstrzygający:
 
 - **PoC-M1 — czy baza wpuszcza telefon.** Logowanie, `start_lesson_session`, `submit_attempt`
   z `@supabase/supabase-js` w React Native (polyfill URL, odświeżanie tokenu przy powrocie
@@ -129,14 +134,30 @@ Supabase, dev build na telefonie właściciela. Cztery pomiary, każdy mały i r
   (`SCHEDULE_EXACT_ALARM` w `app.json` — w ExpeditionPlan brak tego uprawnienia opóźniał
   powiadomienia o kilkanaście minut) i liczbą zaległych słówek w treści. Pomiar: czy przychodzi
   przy wygaszonym ekranie, po restarcie telefonu i nazajutrz bez otwierania aplikacji.
-- **PoC-M4 — wariant tani.** Ten sam ekran w WebView z adresem produkcyjnym, z mową i jednym
-  powiadomieniem przez most. Pomiar po to, żeby decyzja 3.1 opierała się na dwóch działających
-  ekranach, a nie na przeczuciu.
-
 **Kryterium odbioru:** na fizycznym telefonie dziecko loguje się do APK, robi jedno zadanie
 `translate_ab` ocenione przez bazę, słyszy słówko po angielsku, a nazajutrz dostaje powiadomienie
-o powtórkach. Wybór z 3.1 i 3.2 zapisany w `docs/DECYZJE.md` z pomiarami. **Bez tej bramki Etap M1
+o powtórkach. Wyniki trzech pomiarów dopisane do `docs/DECYZJE.md`. **Bez tej bramki Etap M1
 nie startuje.**
+
+**Stan (2026-11-16):** kod bramki jest, pomiarów nie ma — do zrobienia na telefonie.
+Powstało `apps/mobile` (Expo 58, `expo-router`, EAS z profilami `development`, `preview`
+i `dzieci`), klient Supabase z limitem 15 s, logowanie e-mailem i hasłem oraz trzy ekrany
+pomiarowe: PoC-M1 (`zadanie.tsx` — lekcja z `v_my_lessons`, `start_lesson_session`,
+`get_lesson_exercises`, `submit_attempt`, `finish_lesson_session`, mediana czasu werdyktu wobec
+progu 400 ms; obsługuje cztery typy zadań tekstowych i wyborowych), PoC-M2 (`mowa.tsx` — lista
+głosów, obecność `pl-PL` i `en-GB`, wymowa) i PoC-M3 (`powiadomienia.tsx` — zgoda, dokładne
+alarmy, liczba zaległych słówek w treści, przypomnienie za minutę i codzienne o 17:00).
+`npm run check` przechodzi razem z telefonem, `npx expo-doctor` bez uwag.
+
+`dbErrorMessage` przeniesiony z `apps/web/src/lib` do `packages/core` — tych samych funkcji bazy
+woła przeglądarka i telefon, a komunikat o odmowie nie ma brzmieć w nich inaczej. `sync-env.mjs`
+pisze teraz także `apps/mobile/.env.local` (`EXPO_PUBLIC_*` z tych samych wartości co
+`NEXT_PUBLIC_*`; telefon zawsze dostaje adres z chmury, bo `127.0.0.1` komputera i tak by nie
+zobaczył).
+
+Czego brakuje do pierwszego uruchomienia: `eas init` na koncie właściciela (wpisze
+`extra.eas.projectId` i `updates.url`) oraz dev build `eas build --profile development`.
+Expo Go nie wystarczy — powiadomienia, mowa i SQLite to moduły natywne.
 
 ### Etap M1 — mapa i lekcja
 
@@ -200,23 +221,26 @@ przewidzieć przy projektowaniu (wiszące zapytania przy słabym zasięgu, data 
 
 ## 5. Struktura i polecenia
 
+Stan na bramce M0 (ekrany M1–M3 dołożą `features/` i `components/` z prawdziwymi zadaniami):
+
 ```
 apps/mobile/
-  app.json            # nazwa, pakiet pl.lingomemo.app, uprawnienia, wtyczki, runtimeVersion
+  app.json            # nazwa, pakiet pl.lingomemo.app, SCHEDULE_EXACT_ALARM, wtyczki
   eas.json            # profile: development, preview (właściciel), dzieci
-  AGENTS.md           # reguły pracy z Expo
+  AGENTS.md           # reguły pracy z Expo („nie wierz pamięci modelu”)
+  assets/             # ikona i wariant maskowalny (te same rysunki co PWA)
   src/
-    app/              # ekrany expo-router: index, kurs/[slug], lekcja/[id], nagrody, statystyki
-    features/         # auth, courses, lesson, review, rewards, stats
-    components/ui/    # przycisk, kafel, karta — odpowiedniki klas z globals.css
-    lib/              # supabase.ts (z limitem czasu), speak.ts, notifications.ts, media.ts
+    app/              # ekrany expo-router: index, logowanie, zadanie, mowa, powiadomienia
+    components/ui.tsx # przycisk, kafel, karta, pole — odpowiedniki klas z globals.css
     constants/theme.ts
+    lib/              # supabase.ts (limit 15 s), session.ts, clock.ts
 ```
 
-Polecenia w katalogu głównym: `npm run mobile` (`expo start`), `npm run ota`
-i `npm run ota:dzieci`. Typecheck i lint telefonu wchodzą do `npm run check` same, bo
-`npm run typecheck --workspaces --if-present` obejmie nowy pakiet. Buildu EAS do bramy jakości
-**nie** wnosimy — trwa minuty i wymaga sieci; bramą dla telefonu jest kryterium odbioru etapu.
+Polecenia w katalogu głównym: `npm run mobile` (sync-env + `expo start`), `npm run ota`
+i `npm run ota:dzieci`, `npm run apk` i `npm run apk:dzieci`. Typecheck i lint telefonu wchodzą
+do `npm run check` same, bo `npm run typecheck --workspaces --if-present` obejmuje nowy pakiet.
+Buildu EAS do bramy jakości **nie** wnosimy — trwa minuty i wymaga sieci; bramą dla telefonu jest
+kryterium odbioru etapu.
 
 ---
 

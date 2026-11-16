@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "LingoMemo",
+    "slug": "lingomemo",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/ikona.png",
+    "scheme": "lingomemo",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#fffaf2",
+    "android": {
+      "package": "pl.lingomemo.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/ikona-maskowalna.png",
+        "backgroundColor": "#fffaf2"
+      },
+      "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"]
+    },
+    "plugins": ["expo-router", "expo-notifications"],
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "checkAutomatically": "ON_ERROR_RECOVERY"
+    }
+  }
+}

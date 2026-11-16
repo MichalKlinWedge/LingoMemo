@@ -1031,3 +1031,41 @@ więc znika też z `v_my_courses` dziecka.
 Test `parent_learns.test.sql` pilnuje obu końców tej zmiany: że rodzic po zapisie zaczyna lekcję
 i dostaje zadania, oraz że zapis DZIECKA mu kursu nie otwiera, a tabeli `exercises` nie widzi
 ani przed zapisem, ani po nim.
+
+## Aplikacja na telefon: Expo, nie PWA ani WebView (2026-11-16)
+
+Telefon dostaje osobną aplikację natywną (Expo/React Native, Android) **tylko w trybie ucznia** —
+bez panelu administratora i bez widoku rodzica. Zakres, etapy M0–M4 i kryteria odbioru:
+`docs/PLAN_MOBILE.md`. Rozbicie prac wzorowane na sąsiednim projekcie ExpeditionPlan, gdzie web
+planuje, a telefon działa w trasie.
+
+| Obszar | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Rodzaj aplikacji | Expo / React Native, Android | przewidywalna mowa (głosy systemowe offline), codzienne przypomnienia o powtórkach z dokładnym alarmem, ikona i pełny ekran bez proszenia dziecka o „Dodaj do ekranu głównego”, zapas na naukę offline w v1.x | PWA — Web Speech API jest u nas znaną pułapką, a powiadomienia codzienne na iOS praktycznie nie istnieją; WebView z adresem produkcyjnym — oszczędza drugi interfejs, ale nie daje ani mowy, ani offline, czyli tego, po co w ogóle robimy telefon |
+| System | tylko Android | jest czym rozdawać APK (EAS, kanał `dzieci`); na iPada zostaje PWA | iOS — bez konta dewelopera Apple nie ma dystrybucji |
+| Zakładanie konta | zostaje na webie (link z zaproszeniem, hook `before_user_created`) | druga ścieżka rejestracji w aplikacji to drugie miejsce, w którym można się pomylić co do tokenu | rejestracja w aplikacji, logowanie magic linkiem |
+| Magazyn sesji | `localStorage` z expo-sqlite | SecureStore ma limit 2 KB na wartość, a token sesji Supabase bywa dłuższy — sesja ginęłaby po restarcie | `expo-secure-store` (tak było w pierwszej wersji planu), AsyncStorage (dodatkowa zależność bez zysku) |
+| Limit czasu zapytań | 15 s w `fetch` klienta Supabase | klient Supabase nie ma własnego limitu; przy jednej kresce zasięgu zapytanie wisi minutami, a dziecko patrzy w „Sprawdzam…”. Lekcja P1.1 z ExpeditionPlan | bez limitu (domyślnie), 30 s jak w ExpeditionPlan — tam chodzi o góry, tu o odpowiedź w lekcji |
+| Nauka offline | w MVP jej nie ma | zadania offline wymagają kluczy odpowiedzi na telefonie, a lokalna ocena w `core` to odrzucona „ocena podwójna”; obsługa braku sieci to czytelny komunikat, nie biała strona | outbox z lokalną oceną (jak `packages/sync` w ExpeditionPlan) |
+
+`dbErrorMessage` przeniesiony z `apps/web/src/lib/db-error.ts` do `packages/core` — tych samych
+funkcji bazy woła przeglądarka i telefon, a komunikat o odmowie RLS nie ma brzmieć w nich inaczej.
+Na webie zostaje re-eksport i `dbLoadError` („Odśwież stronę”), bo na telefonie nie ma czego
+odświeżać. `scripts/sync-env.mjs` pisze też `apps/mobile/.env.local`: `EXPO_PUBLIC_*`
+przepisywane z tych samych wartości co `NEXT_PUBLIC_*`, zawsze z chmury — telefon nie zobaczy
+adresu `127.0.0.1` komputera, więc `--local` go nie dotyczy.
+
+### Pułapki znalezione przy bramce M0 (2026-11-16)
+
+- **`expo lint` w SDK 58 ma reguły kompilatora Reacta.** `Date.now()` wywołane w ciele komponentu
+  to „impure function” (wynik zmienia się przy ponownym renderze), a wywołanie w `useEffect`
+  funkcji, która ustawia stan, to „cascading renders”. Stąd `src/lib/clock.ts` (stoper poza
+  komponentem) i efekty, które ustawiają stan w `then`, a przeładowanie danych wyzwalają
+  licznikiem w stanie. Obie reguły są włączone domyślnie i `npm run check` się o nie wywala.
+- **`AndroidImportance` przez `import * as Notifications` przechodzi typecheck, ale nie lint** —
+  reguła `import/namespace` go w przestrzeni nazw nie widzi. Musi być importem nazwanym.
+- **`packages/core` nie ma typów `console`** (ani DOM, ani Node — i dobrze, bo ma być czysty).
+  Log z nieznanego błędu idzie więc przez `globalThis`.
+- **Wersje paczek dobiera `npx expo install`, nie ręczne wpisywanie.** Przepisane z sąsiedniego
+  projektu wyglądały dobrze, ale `npx expo-doctor` wyłapał `react-native-safe-area-context`
+  starszy o jedną wersję pomocniczą niż wymaga SDK; naprawia to `npx expo install --fix`.

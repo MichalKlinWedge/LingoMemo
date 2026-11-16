@@ -14,6 +14,7 @@ npm install              # zależności (npm workspaces, Node >= 22)
 npm run db:start         # lokalna baza Supabase (wymaga uruchomionego Dockera)
 npm run web:local        # aplikacja na lokalnej bazie, http://localhost:3000
 npm run web              # aplikacja na bazie z chmury (wartości z .env.local)
+npm run mobile           # aplikacja na telefon (Expo; wymaga dev buildu, nie Expo Go)
 npm run check            # typecheck + lint + test + build — brama jakości, musi przechodzić
 npm run gen              # typy TypeScript z lokalnej bazy -> packages/db
 npm run gen:icons        # warianty ikony z apps/web/public/ikony/ikona.svg (PNG, favicon.ico)
@@ -52,6 +53,9 @@ Pojedynczy test: `npx vitest run src/__tests__/x.test.ts` wewnątrz pakietu.
 - **Harmonogram powtórek to FSRS-6**, zaimplementowany w plpgsql. Po zmianie wag albo wersji
   `ts-fsrs`: `node scripts/fsrs-fixtures.mjs` i `npm run test:db` — test pgTAP porównuje bazę
   z implementacją referencyjną. Wzorów nie przepisuj z dokumentacji, tylko z `ts-fsrs`.
+- **Telefon to tylko tryb ucznia** (`apps/mobile`, Expo, Android): te same funkcje bazy co web,
+  bez panelu administratora i bez widoku rodzica, a konto powstaje wyłącznie z linku otwartego
+  w przeglądarce. Zakres i etapy: `docs/PLAN_MOBILE.md`; praca z Expo: `apps/mobile/AGENTS.md`.
 - Po każdej migracji: `npm run gen` i `npm run test:db`.
 
 ## Konwencje

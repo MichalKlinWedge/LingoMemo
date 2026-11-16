@@ -1,0 +1,31 @@
+# zależności
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+# wyjątek: src/types/expo-env.d.ts jest pisany ręcznie, więc musi być w repozytorium
+!src/types/expo-env.d.ts
+
+# natywne
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# katalogi natywne generowane przez prebuild
+/ios
+/android
+
+# env
+.env*.local
+
+*.tsbuildinfo
