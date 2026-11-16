@@ -27,12 +27,14 @@
   --color-coral-light: #fde6e5;
   --color-sun: #ffc83d;
 
-  /* Skala trudności: jeden kolor, trzy nasycenia. Trzy różne barwy (fiolet, błękit, bursztyn)
-     wyglądały jak trzy osobne rzeczy, a nie jak łatwy → średni → trudny. Im ciemniej, tym
-     trudniej — to czyta się bez legendy. */
+  /* Skala trudności kwadracików: łatwy → średni → trudny. Żółty i czerwony czyta się jak
+     ostrzeżenie, więc trudność widać bez legendy. Odcienie są przyciemnione względem czystego
+     żółtego i czerwonego: na kremowym tle (#fffaf2) jasne barwy znikają, a kwadracik ma 1,5 rem.
+     Czerwień jest tu wyjątkiem od zasady „koral tylko na źle" — to inny odcień i inne miejsce
+     niż informacja zwrotna w zadaniu, ale warto o tym pamiętać przy następnych zmianach. */
   --level-1: #b9a6ff;
-  --level-2: #7c5cff;
-  --level-3: #3f2a9e;
+  --level-2: #e8a200;
+  --level-3: #d93025;
   --color-sky: #39b6e8;
 
   --font-sans: var(--font-nunito), system-ui, sans-serif;
