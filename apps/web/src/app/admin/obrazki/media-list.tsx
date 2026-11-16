@@ -2,6 +2,8 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 
+import { EXERCISES, plural, WORDS } from "@lingomemo/core";
+
 import { type FormState, Status, SubmitButton } from "@/components/forms";
 
 import { deleteMediaAction } from "./actions";
@@ -22,8 +24,8 @@ function kilobajty(bytes: number): string {
 
 function uzycie(file: MediaFile): string | null {
   const czesci: string[] = [];
-  if (file.concepts > 0) czesci.push(`${file.concepts} słówko/słówka`);
-  if (file.exercises > 0) czesci.push(`${file.exercises} zadanie/zadania`);
+  if (file.concepts > 0) czesci.push(plural(file.concepts, WORDS));
+  if (file.exercises > 0) czesci.push(plural(file.exercises, EXERCISES));
   return czesci.length === 0 ? null : czesci.join(" · ");
 }
 
@@ -49,7 +51,11 @@ function Wiersz({ file, onDelete }: { file: MediaFile; onDelete: () => void }) {
         />
       </td>
       {/* `w-full` na jednej komórce: tabela rozdziela szerokość tak, że pozostałe kolumny biorą
-          tyle, ile im trzeba, a cała reszta zostaje dla ścieżki — to ona bywa długa. */}
+          tyle, ile im trzeba, a cała reszta zostaje dla ścieżki — to ona bywa długa.
+
+          Rozmiar i data stoją pod ścieżką, a nie w osobnej kolumnie: szerokość treści jest na
+          wszystkich stronach ta sama (736 px), a kolumna z nimi zabierała tyle, że przy dłuższym
+          opisie użycia tabela nie mieściła się w karcie. Wysokość wiersza jest tańsza. */}
       <td className="w-full">
         {/* Pole tekstowe, nie napis: ścieżkę trzeba zaznaczyć i skopiować do pliku lekcji.
             `min-h-0` zdejmuje wysokość dla palca — w wierszu tabeli rozpychałaby każdy rząd. */}
@@ -59,11 +65,9 @@ function Wiersz({ file, onDelete }: { file: MediaFile; onDelete: () => void }) {
           value={file.path}
           aria-label={`Ścieżka pliku ${file.path}`}
         />
-      </td>
-      {/* Rozmiar i data w jednej komórce: osobne kolumny zabierały szerokość ścieżce, a ta
-          bywa długa i to ją się tu czyta. */}
-      <td className="hidden whitespace-nowrap text-right text-sm text-zinc-500 sm:table-cell">
-        {kilobajty(file.size)} · {data(file.updatedAt)}
+        <span className="mt-0.5 block whitespace-nowrap px-2 text-sm text-zinc-500">
+          {kilobajty(file.size)} · {data(file.updatedAt)}
+        </span>
       </td>
       {/* Poniżej 640 px kolumna znika: nie mieści się obok ścieżki, a o użyciu i tak mówi
           okno potwierdzenia — czyli dokładnie wtedy, kiedy ta informacja jest potrzebna. */}
@@ -189,22 +193,26 @@ export function MediaList({ files }: { files: MediaFile[] }) {
 
   return (
     <div className="card px-3 py-2">
-      <table className="admin-table">
-        <thead>
-          <tr>
-            <th>Obrazek</th>
-            <th>Ścieżka</th>
-            <th className="hidden text-right sm:table-cell">Plik</th>
-            <th className="hidden sm:table-cell">Użycie</th>
-            <th />
-          </tr>
-        </thead>
-        <tbody>
-          {files.map((file) => (
-            <Wiersz key={file.path} file={file} onDelete={() => setDoKasacji(file)} />
-          ))}
-        </tbody>
-      </table>
+      {/* Poziome przewijanie wewnątrz karty: ścieżka ma zagwarantowaną szerokość, a kolumna
+          użycia bywa długa („3 słówka · 22 zadania") — bez tego przy wąskim oknie przycisk
+          „Usuń" wychodził poza obramowanie karty zamiast zostać w środku. */}
+      <div className="overflow-x-auto">
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>Obrazek</th>
+              <th>Ścieżka</th>
+              <th className="hidden sm:table-cell">Użycie</th>
+              <th />
+            </tr>
+          </thead>
+          <tbody>
+            {files.map((file) => (
+              <Wiersz key={file.path} file={file} onDelete={() => setDoKasacji(file)} />
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {/* Element okna stoi w drzewie na stałe, a wymienia się tylko jego treść: `showModal()`
           i `close()` potrzebują tego samego elementu, a nie nowego przy każdym otwarciu.
