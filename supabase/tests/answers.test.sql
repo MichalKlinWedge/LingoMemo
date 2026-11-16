@@ -160,19 +160,30 @@ select public.admin_add_word((select id from t_lesson), 'food.potato', 'ziemniak
 
 reset role;
 
+-- Ziemniaka wskazujemy IDENTYFIKATOREM, nie kluczem. `food.potato` siedzi także w treści
+-- z `content/pl-en/jedzenie-warzywa.json`, więc na bazie, do której ktoś zaimportował lekcje
+-- kursu, zapytanie po samym kluczu trafiało w dwa wiersze i plik wywalał się na
+-- „more than one row returned by a subquery", a sprzątające DELETE zabierało zadania z cudzej
+-- lekcji. Klucz pojęcia jest unikalny w obrębie KURSU, nie całej bazy.
+create temporary table t_ziemniak as
+select c.id from public.concepts c
+  join public.lesson_items li on li.concept_id = c.id
+ where c.key = 'food.potato' and li.lesson_id = (select id from t_lesson);
+grant select on t_ziemniak to authenticated;
+
 -- Do etapu wchodzi jedno zadanie na słówko (`…_word_on_every_level.sql`), losowane z jego
 -- wariantów. Zostawiamy ziemniakowi tylko to, które ten plik ocenia — inaczej o wyniku testu
 -- decydowałoby losowanie.
 delete from public.exercises e
  using public.concepts c
- where c.id = e.concept_id and c.key = 'food.potato' and e.type <> 'translate_ba';
+ where c.id = e.concept_id and c.id = (select id from t_ziemniak) and e.type <> 'translate_ba';
 
 -- Identyfikator zadania wyciągamy jako rola bazy: `exercises` nie ma polityki SELECT dla
 -- ucznia (w payloadzie są klucze odpowiedzi), więc jego zapytanie zwróciłoby pustkę.
 create temporary table t_potato as
 select e.id from public.exercises e
   join public.concepts c on c.id = e.concept_id
- where c.key = 'food.potato' and e.type = 'translate_ba';
+ where c.id = (select id from t_ziemniak) and e.type = 'translate_ba';
 grant select on t_potato to authenticated;
 
 -- Poziom: sesja wydaje zadania poziomu łatwego, a ten plik sprawdza samo ocenianie odpowiedzi,
@@ -182,7 +193,7 @@ update public.exercises set level = 1 where lesson_id = (select id from t_lesson
 select is(
   (select e.payload -> 'accepted' from public.exercises e
      join public.concepts c on c.id = e.concept_id
-    where c.key = 'food.potato' and e.type = 'translate_ba'),
+    where c.id = (select id from t_ziemniak) and e.type = 'translate_ba'),
   jsonb_build_array('ziemniak', 'kartofel'),
   'tłumaczenie na polski przyjmuje obie formy'
 );
@@ -190,7 +201,7 @@ select is(
 select is(
   (select t.text from public.terms t
      join public.concepts c on c.id = t.concept_id
-    where c.key = 'food.potato' and t.lang = 'pl' and t.is_primary),
+    where c.id = (select id from t_ziemniak) and t.lang = 'pl' and t.is_primary),
   'ziemniak',
   'pierwsza forma zostaje słowem głównym'
 );
@@ -198,7 +209,7 @@ select is(
 select is(
   (select count(*)::integer from public.terms t
      join public.concepts c on c.id = t.concept_id
-    where c.key = 'food.potato' and t.lang = 'pl' and not t.is_primary),
+    where c.id = (select id from t_ziemniak) and t.lang = 'pl' and not t.is_primary),
   1,
   'druga forma ląduje w słowniku jako synonim'
 );
@@ -226,14 +237,14 @@ select set_config('request.jwt.claims', (select claims from t_claims where name 
        set_config('role', 'authenticated', true);
 
 select public.admin_update_word(
-  (select id from public.concepts where key = 'food.potato'), 'ziemniak', 'potato');
+  (select id from t_ziemniak), 'ziemniak', 'potato');
 
 reset role;
 
 select is(
   (select e.payload -> 'accepted' from public.exercises e
      join public.concepts c on c.id = e.concept_id
-    where c.key = 'food.potato' and e.type = 'translate_ba'),
+    where c.id = (select id from t_ziemniak) and e.type = 'translate_ba'),
   jsonb_build_array('ziemniak'),
   'skasowany synonim znika też z zadania'
 );
