@@ -1,8 +1,9 @@
+import { DAYS, plural, POINTS } from '@lingomemo/core';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 
-import { Body, Button, Card, Message, Screen, Title } from '@/components/ui';
+import { Body, Button, Card, Chip, Message, Screen, Title } from '@/components/ui';
 import { color, size } from '@/constants/theme';
 import { type Course, loadMyCourses } from '@/features/courses/load';
 import {
@@ -16,6 +17,7 @@ import {
   requestExactAlarms,
   setReminderHour,
 } from '@/features/reminders/reminders';
+import { type BarData, loadBar } from '@/features/stats/load';
 import { useSession } from '@/lib/session';
 import { isConfigured, supabase } from '@/lib/supabase';
 
@@ -71,6 +73,7 @@ export default function Home() {
 
   return (
     <Screen>
+      <Bar userId={session.user.id} />
       {error !== null && <Message kind="error" text={error} />}
       {courses === null && <Body muted>Wczytuję kursy…</Body>}
       {courses?.length === 0 && (
@@ -90,6 +93,43 @@ export default function Home() {
       <Reminders userId={session.user.id} />
       <Account email={session.user.email ?? null} />
     </Screen>
+  );
+}
+
+/**
+ * Punkty, seria, zaległe powtórki i punkty odblokowania. Na webie stoją w pasku nad każdą stroną,
+ * więc dziecko widzi je zawsze; na telefonie wspólnego nagłówka nie ma, więc stoją tutaj — a ten
+ * ekran wczytuje się na nowo przy każdym pokazaniu, czyli i po każdej lekcji.
+ *
+ * Liczy je baza (`v_my_stats`, `unlock_status`), nie telefon.
+ */
+function Bar({ userId }: { userId: string }) {
+  const [bar, setBar] = useState<BarData | null>(null);
+
+  useFocusEffect(
+    useCallback(() => {
+      let alive = true;
+      void loadBar(userId).then((data) => {
+        if (alive) setBar(data);
+      });
+      return () => {
+        alive = false;
+      };
+    }, [userId]),
+  );
+
+  if (bar === null) return null;
+
+  return (
+    <View style={styles.bar}>
+      <Chip>⭐ {plural(bar.points, POINTS)}</Chip>
+      <Chip>🔥 {plural(bar.streak, DAYS)}</Chip>
+      {bar.due > 0 && <Chip>🔁 {bar.due} do powtórki</Chip>}
+      {/* Bez punktów znacznika nie ma: dziecko przed pierwszym poziomem trudnym nie ma o czym
+          wiedzieć, a pasek ma zostać krótki. Wydaje się je na mapie kursu, dotykając kłódki
+          z kluczykiem. */}
+      {bar.unlocks > 0 && <Chip>🔑 {bar.unlocks} do odblokowania</Chip>}
+    </View>
   );
 }
 
@@ -282,6 +322,7 @@ const styles = StyleSheet.create({
   courseTitle: { color: color.text, fontSize: 22, fontWeight: '700' },
   courseDesc: { color: color.muted, fontSize: 16 },
   arrow: { color: color.brand, fontSize: 28 },
+  bar: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   nav: { flexDirection: 'row', gap: size.gap },
   navItem: { flex: 1 },
   switchRow: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' },

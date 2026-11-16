@@ -78,6 +78,7 @@ export default function LessonScreen() {
       stages={data.stages}
       level={data.level}
       hintsLeft={data.hintsLeft}
+      unlockLeft={data.unlockLeft}
       autoNextMs={data.autoNextMs}
     />
   );

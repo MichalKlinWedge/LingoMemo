@@ -30,6 +30,8 @@ export type Lesson = {
   word_count: number | null;
   stage_count: number | null;
   stages_done: number | null;
+  /** Czy TĘ kłódkę da się otworzyć punktem odblokowania. Liczy to baza (`can_unlock_lesson`). */
+  is_unlockable: boolean | null;
 };
 
 export type Unit = { id: string; title: string; icon: string | null };
@@ -60,6 +62,8 @@ export type CourseMap = {
   /** Gwiazdki pojedynczych etapów: identyfikator lekcji -> (numer etapu -> gwiazdki). */
   stageStars: Record<string, Record<number, number>>;
   gate: Gate | null;
+  /** Ile punktów odblokowania dziecko ma teraz na koncie. */
+  unlockLeft: number;
   /** Ukończone lekcje tego kursu — bez testu powtórkowego, który lekcją do zrobienia nie jest. */
   done: number;
 };
@@ -95,6 +99,7 @@ export async function loadCourseMap(slug: string, userId: string): Promise<Resul
     { data: levels, error: levelsError },
     { data: stages, error: stagesError },
     { data: gate },
+    { data: unlock },
   ] = await Promise.all([
     supabase.from('units').select('id, title, icon, sort_order').eq('course_id', course.id).order('sort_order'),
     supabase.from('v_my_lessons').select('*').order('sort_order'),
@@ -104,6 +109,8 @@ export async function loadCourseMap(slug: string, userId: string): Promise<Resul
     // Bramka zaległych powtórek: przy dziesięciu zaległych słówkach kurs jest zamknięty do
     // zdanego testu. Regułę liczy baza — ekran tylko nazywa to, co z niej wyszło.
     supabase.rpc('review_gate', { p_course: course.id }),
+    // Punkty odblokowania: za jeden z nich dziecko otwiera kłódkę w dziale, w którym już jest.
+    supabase.rpc('unlock_status', { p_user: userId }),
   ]);
 
   // Błąd zapytania o poziomy albo etapy też musi być widoczny: po cichu znikają wtedy
@@ -136,7 +143,21 @@ export async function loadCourseMap(slug: string, userId: string): Promise<Resul
       levels: (levels ?? []) as LevelRow[],
       stageStars,
       gate: bramka,
+      unlockLeft: (unlock as { left?: number } | null)?.left ?? 0,
       done: mine.filter((lesson) => lesson.status === 'completed').length,
     },
   };
+}
+
+/**
+ * Otwarcie zamkniętej lekcji za punkt odblokowania. Bazie podajemy sam identyfikator lekcji:
+ * `unlock_lesson` sprawdza wszystko, na czym zależy — czy lekcja jest zwykła i z działu, w którym
+ * dziecko już jest, czy nie stoi bramka zaległych powtórek i czy punkt w ogóle jest. Ekran nie
+ * decyduje tu o niczym, a kłódka pokazana jako klikalna to zaproszenie, nie zgoda.
+ */
+export async function unlockLesson(lessonId: string): Promise<Result<{ left: number }>> {
+  const { data, error } = await supabase.rpc('unlock_lesson', { p_lesson: lessonId });
+  if (error) return { ok: false, error: dbErrorMessage(error, 'Nie udało się otworzyć lekcji.') };
+
+  return { ok: true, value: { left: (data as { left?: number } | null)?.left ?? 0 } };
 }

@@ -1,11 +1,11 @@
-import { LESSONS, plural, WORDS } from '@lingomemo/core';
+import { LESSONS, plural, UNLOCKS, WORDS } from '@lingomemo/core';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Body, Button, Card, Message, Screen, Title } from '@/components/ui';
+import { Body, Button, Card, Chip, Message, Screen, Title } from '@/components/ui';
 import { color, level as levelColor, size } from '@/constants/theme';
-import { type CourseMap, type Lesson, loadCourseMap } from '@/features/courses/load';
+import { type CourseMap, type Lesson, loadCourseMap, unlockLesson } from '@/features/courses/load';
 import { useSession } from '@/lib/session';
 
 /**
@@ -20,25 +20,28 @@ export default function CourseScreen() {
   const [map, setMap] = useState<CourseMap | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Wczytanie przy każdym wejściu na ekran: po lekcji zmieniają się gwiazdki i zamki.
-  useFocusEffect(
-    useCallback(() => {
-      if (userId === null) return;
-      let alive = true;
-      void loadCourseMap(slug, userId).then((result) => {
-        if (!alive) return;
-        if (result.ok) {
-          setMap(result.value);
-          setError(null);
-        } else {
-          setError(result.error);
-        }
-      });
-      return () => {
-        alive = false;
-      };
-    }, [slug, userId]),
-  );
+  /**
+   * Wczytanie mapy. Ta sama funkcja obsługuje wejście na ekran (po lekcji zmieniają się gwiazdki
+   * i zamki) oraz powrót z okna odblokowania — wydany punkt zamienia kłódkę na kafelek do kliknięcia.
+   */
+  const load = useCallback(() => {
+    if (userId === null) return;
+    let alive = true;
+    void loadCourseMap(slug, userId).then((result) => {
+      if (!alive) return;
+      if (result.ok) {
+        setMap(result.value);
+        setError(null);
+      } else {
+        setError(result.error);
+      }
+    });
+    return () => {
+      alive = false;
+    };
+  }, [slug, userId]);
+
+  useFocusEffect(load);
 
   if (error !== null) {
     return (
@@ -65,6 +68,12 @@ export default function CourseScreen() {
       </Title>
       <Body muted>Ukończone: {plural(map.done, LESSONS)}</Body>
 
+      {/* Stan konta punktów odblokowania. Bez tego dziecko nie wie, że kłódka z kluczykiem jest
+          dla niego — punkt zdobyło kilka lekcji wcześniej, na poziomie trudnym. */}
+      {map.unlockLeft > 0 && (
+        <Chip>🔑 {plural(map.unlockLeft, UNLOCKS)} — dotknij kłódki z kluczykiem</Chip>
+      )}
+
       {/* Zamknięty kurs: jedno wejście, od razu na wierzchu. Kafelków lekcji nie ukrywamy —
           dziecko ma widzieć, co się otworzy, gdy zda test. */}
       {map.gate?.active === true && map.gate.lessonId !== null && <GateCard gate={map.gate} />}
@@ -90,7 +99,13 @@ export default function CourseScreen() {
             )}
             <View style={styles.tiles}>
               {lessons.map((lesson) => (
-                <LessonTile key={lesson.id} lesson={lesson} map={map} />
+                <LessonTile
+                  key={lesson.id}
+                  lesson={lesson}
+                  map={map}
+                  unitLocked={unitLocked}
+                  onUnlocked={load}
+                />
               ))}
             </View>
           </View>
@@ -120,9 +135,26 @@ function GateCard({ gate }: { gate: NonNullable<CourseMap['gate']> }) {
  * poziom — więc po zaliczeniu łatwego kafelek otwiera średni, potem trudny. Kwadraciki zostają
  * do wybierania wprost, także do powtarzania zrobionych.
  */
-function LessonTile({ lesson, map }: { lesson: Lesson; map: CourseMap }) {
+function LessonTile({
+  lesson,
+  map,
+  unitLocked,
+  onUnlocked,
+}: {
+  lesson: Lesson;
+  map: CourseMap;
+  /** Dział czekający na test poprzedniego — wtedy powodem zamka nie jest poprzednia lekcja. */
+  unitLocked: boolean;
+  onUnlocked: () => void;
+}) {
   const router = useRouter();
+  const [asking, setAsking] = useState(false);
   const state = lesson.status === 'completed' ? 'done' : lesson.is_unlocked === true ? 'available' : 'locked';
+
+  // Kłódka do otwarcia punktem — ale tylko wtedy, gdy punkt jest. Bez punktu zostaje zwykły
+  // zamek, którego powód mówi, skąd punkt wziąć; klikalna kłódka bez pokrycia obiecywałaby coś,
+  // czego baza nie da. O tym, czy tę lekcję wolno kupić, decyduje `can_unlock_lesson`.
+  const unlockable = state === 'locked' && lesson.is_unlockable === true && map.unlockLeft > 0;
 
   const harder = map.levels.filter(
     (row) => row.lesson_id === lesson.id && (row.level ?? 1) > 1 && (row.exercise_count ?? 0) > 0,
@@ -134,7 +166,12 @@ function LessonTile({ lesson, map }: { lesson: Lesson; map: CourseMap }) {
   const stageStars = map.stageStars[lesson.id] ?? {};
 
   const open = () => {
-    if (state === 'locked') return;
+    if (state === 'locked') {
+      // Dziecko dotyka kłódki tam, gdzie i tak dotykało, licząc, że lekcja się otworzy —
+      // a dopiero potem dostaje pytanie.
+      if (unlockable) setAsking(true);
+      return;
+    }
     if (state !== 'done') {
       router.push(`/lekcja/${lesson.id}`);
       return;
@@ -143,21 +180,30 @@ function LessonTile({ lesson, map }: { lesson: Lesson; map: CourseMap }) {
     router.push(next ? `/lekcja/${lesson.id}?poziom=${next.level}` : `/lekcja/${lesson.id}`);
   };
 
-  // Zamek bez powodu to dla dziecka ślepa ściana — powód mówimy pod kafelkiem.
+  // Zamek bez powodu to dla dziecka ślepa ściana — powód mówimy pod kafelkiem. Powody są cztery
+  // i każdy prowadzi gdzie indziej: do testu powtórkowego, do poprzedniego działu, do reszty
+  // lekcji w tym dziale albo do lekcji obok. Bramka powtórek zamyka cały kurs, więc stoi przed
+  // pozostałymi. Piąte wyjście — punkt odblokowania — dopisujemy tylko tam, gdzie jest do wzięcia.
   const why =
     map.gate?.active === true
       ? 'Najpierw zdaj test powtórkowy'
-      : lesson.kind === 'test'
-        ? 'Najpierw skończ wszystkie lekcje działu'
-        : 'Najpierw skończ poprzednią lekcję';
+      : unitLocked
+        ? 'Najpierw zdaj test poprzedniego działu'
+        : lesson.kind === 'test'
+          ? 'Najpierw skończ wszystkie lekcje działu'
+          : lesson.is_unlockable === true
+            ? 'Najpierw skończ poprzednią lekcję albo zdobądź punkt odblokowania na poziomie trudnym'
+            : 'Najpierw skończ poprzednią lekcję';
 
   return (
     <View style={styles.box}>
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={`${lesson.title}${state === 'locked' ? ' — zamknięta' : ''}`}
-        accessibilityState={{ disabled: state === 'locked' }}
-        disabled={state === 'locked'}
+        accessibilityLabel={`${lesson.title}${
+          unlockable ? ' — otwórz za punkt odblokowania' : state === 'locked' ? ' — zamknięta' : ''
+        }`}
+        accessibilityState={{ disabled: state === 'locked' && !unlockable }}
+        disabled={state === 'locked' && !unlockable}
         onPress={open}
         style={({ pressed }) => [
           styles.tile,
@@ -167,6 +213,7 @@ function LessonTile({ lesson, map }: { lesson: Lesson; map: CourseMap }) {
         ]}
       >
         <Text style={styles.tileIcon}>{state === 'locked' ? '🔒' : (lesson.icon ?? '📘')}</Text>
+        {unlockable && <Text style={styles.tileKey}>🔑</Text>}
         {state === 'done' && <Text style={styles.tileStars}>{'⭐'.repeat(lesson.stars ?? 0)}</Text>}
       </Pressable>
 
@@ -224,7 +271,86 @@ function LessonTile({ lesson, map }: { lesson: Lesson; map: CourseMap }) {
           );
         })}
       </View>
+
+      {asking && (
+        <UnlockDialog
+          lesson={lesson}
+          left={map.unlockLeft}
+          onClose={() => setAsking(false)}
+          onDone={() => {
+            setAsking(false);
+            onUnlocked();
+          }}
+        />
+      )}
     </View>
+  );
+}
+
+/**
+ * Pytanie przed wydaniem punktu odblokowania. Jest konieczne: punkt zdobywa się na poziomie
+ * trudnym, więc wydanie go przez pomyłkę to kilkanaście zadań do powtórzenia.
+ *
+ * Po otwarciu lekcji pytanie jest nieprawdą — punkt już poszedł — więc okno zamienia się
+ * w potwierdzenie ze stanem konta, a jego zamknięcie wczytuje mapę na nowo.
+ */
+function UnlockDialog({
+  lesson,
+  left,
+  onClose,
+  onDone,
+}: {
+  lesson: Lesson;
+  /** Ile punktów dziecko ma teraz. Zero tu nie trafia: wtedy kłódka zostaje nieklikalna. */
+  left: number;
+  onClose: () => void;
+  onDone: () => void;
+}) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  /** Ile punktów zostało po otwarciu. Dopóki `null`, lekcja jest jeszcze zamknięta. */
+  const [opened, setOpened] = useState<number | null>(null);
+
+  const buy = async () => {
+    setBusy(true);
+    setError(null);
+    const result = await unlockLesson(lesson.id);
+    setBusy(false);
+    if (!result.ok) {
+      setError(result.error);
+      return;
+    }
+    setOpened(result.value.left);
+  };
+
+  return (
+    <Modal visible transparent animationType="fade" onRequestClose={opened === null ? onClose : onDone}>
+      <View style={styles.backdrop}>
+        <View style={styles.dialog}>
+          <Title>{opened === null ? 'Otworzyć tę lekcję?' : 'Lekcja otwarta!'}</Title>
+          {opened === null ? (
+            <>
+              <Body>
+                <Text style={styles.dialogName}>{lesson.title}</Text> otworzy się za jeden punkt
+                odblokowania. Masz {plural(left, UNLOCKS)}.
+              </Body>
+              <Body muted>Punkt zdobywasz za zrobienie lekcji na poziomie trudnym.</Body>
+            </>
+          ) : (
+            <Body>Zostało Ci {plural(opened, UNLOCKS)}.</Body>
+          )}
+          {error !== null && <Message kind="error" text={error} />}
+          {opened === null ? (
+            <>
+              <Button label="Tak, otwórz" busy={busy} onPress={() => void buy()} />
+              <Button kind="quiet" label="Nie teraz" onPress={onClose} />
+            </>
+          ) : (
+            <Button label="Zamknij" onPress={onDone} />
+          )}
+        </View>
+      </View>
+    </Modal>
   );
 }
 
@@ -309,6 +435,7 @@ const styles = StyleSheet.create({
   tileLocked: { backgroundColor: color.background, borderColor: color.line },
   pressed: { opacity: 0.8 },
   tileIcon: { fontSize: 40 },
+  tileKey: { fontSize: 16 },
   tileStars: { fontSize: 14 },
   boxTitle: { color: color.text, fontSize: 17, fontWeight: '700', textAlign: 'center' },
   meta: { alignItems: 'center', flexDirection: 'row', gap: 10 },
@@ -327,4 +454,20 @@ const styles = StyleSheet.create({
   markCol: { alignItems: 'center', gap: 2 },
   markStars: { color: color.sun, fontSize: 9, height: 11 },
   mark: { borderRadius: 4, borderWidth: 2, height: 18, width: 18 },
+  backdrop: {
+    alignItems: 'center',
+    backgroundColor: '#00000080',
+    flex: 1,
+    justifyContent: 'center',
+    padding: size.pad,
+  },
+  dialog: {
+    backgroundColor: color.surface,
+    borderRadius: size.radius,
+    gap: size.gap,
+    maxWidth: 420,
+    padding: size.pad,
+    width: '100%',
+  },
+  dialogName: { fontWeight: '700' },
 });

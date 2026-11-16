@@ -1229,3 +1229,31 @@ Telefon tego błędu nie ma i nie wolno go tam wpuścić. `apps/mobile` nie trzy
 Gdyby kiedyś zamienić wyjście na `router.back()` zostawiające lekcję na stosie albo wejście na
 `router.navigate`, które wraca do istniejącego ekranu zamiast tworzyć nowy — wróci dokładnie to
 samo: dziecko w etapie zobaczy podsumowanie poprzedniego podejścia.
+
+### Telefon: punkty odblokowania i stan konta na ekranie kursów (2026-11-16)
+
+Nagrody za poziomy (średni — podpowiedź, trudny — punkt odblokowania) weszły najpierw na webie,
+a telefon został przy samych gwiazdkach. Punkt dziecko zdobywało w aplikacji i nie dowiadywało
+się o tym, a kłódki na mapie były martwe — reguła siedziała w bazie, tylko nie było czym jej
+dotknąć. Od teraz telefon robi dokładnie to, co strona: podsumowanie mówi o zdobytym punkcie,
+mapa pokazuje kłódkę z kluczykiem tam, gdzie `can_unlock_lesson` na to pozwala, a dotknięcie
+pyta o zgodę przed wydaniem punktu.
+
+Decyzji o tym, co wolno otworzyć, telefon **nie podejmuje**: wysyła `unlock_lesson` z samym
+identyfikatorem lekcji, a kłódka pokazana jako klikalna jest zaproszeniem, nie zgodą. Kluczyk
+dorysowujemy tylko wtedy, gdy punkt naprawdę jest (`unlock_status`) — klikalna kłódka bez pokrycia
+obiecywałaby coś, czego baza nie da, a odmowa po dotknięciu boli bardziej niż zwykły zamek.
+Powód zamka pod kafelkiem dostał brakujące dwa przypadki (zamknięty dział, lekcja do kupienia),
+więc jest ich pięć, tyle samo co na webie.
+
+Punkty, seria i zaległe powtórki stoją **na ekranie kursów**, nie w nagłówku każdego ekranu jak
+`TopBar` na webie. Pasek nad stosem nawigacji w expo-router znaczyłby własny nagłówek dla lekcji,
+logowania i planszy ze słówkami — a w lekcji licznik punktów przeszkadza (dziecko ma patrzeć
+na zadanie) i tak czy tak zmieniłby się dopiero w podsumowaniu. Ekran kursów wczytuje się na nowo
+przy każdym pokazaniu, więc punkty zdobyte w lekcji widać zaraz po powrocie na mapę.
+
+Odrzucone: przeliczanie stanu konta w telefonie z `lesson_level_progress` (druga implementacja
+reguły obok `unlock_points_left`); odblokowanie bez pytania (punkt kosztuje kilkanaście zadań na
+poziomie trudnym); wygaszanie kluczyka na kłódce lekcji, której baza nie pozwoli otworzyć
+(`can_unlock_lesson` już to mówi, a dwa stopnie szarości na jednym kafelku to dla dziecka jeden
+nieczytelny stan).

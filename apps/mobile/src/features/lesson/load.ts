@@ -21,6 +21,8 @@ export type LessonData = {
   stages: number;
   level: number;
   hintsLeft: number;
+  /** Punkty odblokowania sprzed lekcji — po zamknięciu poznajemy po różnicy, czy przybył nowy. */
+  unlockLeft: number;
   autoNextMs: number;
   badgeNames: Record<string, string>;
 };
@@ -73,20 +75,28 @@ export async function loadLesson(
       ? wanted.stage
       : firstOpen;
 
-  const [{ data: exercises, error }, { data: hintsLeft }, { data: autoNextSeconds }, { data: badges }] =
-    await Promise.all([
-      supabase.rpc('get_lesson_exercises', {
-        p_lesson: lessonId,
-        p_stage: stage,
-        p_level: level,
-        p_preview: false,
-      }),
-      supabase.rpc('hints_left'),
-      // Czas automatycznego przejścia dalej jest ustawieniem aplikacji, nie stałą w kodzie:
-      // właściwa wartość wychodzi dopiero z obserwacji dziecka przy lekcji.
-      supabase.rpc('setting_int', { p_key: 'auto_next_seconds', p_default: 6 }),
-      supabase.from('badges').select('code, title, icon'),
-    ]);
+  const [
+    { data: exercises, error },
+    { data: hintsLeft },
+    { data: unlock },
+    { data: autoNextSeconds },
+    { data: badges },
+  ] = await Promise.all([
+    supabase.rpc('get_lesson_exercises', {
+      p_lesson: lessonId,
+      p_stage: stage,
+      p_level: level,
+      p_preview: false,
+    }),
+    supabase.rpc('hints_left'),
+    // Punkty odblokowania sprzed lekcji: za zaliczony poziom trudny przybywa jeden, a różnica
+    // mówi podsumowaniu, czy ma o nim powiedzieć.
+    supabase.rpc('unlock_status', { p_user: userId }),
+    // Czas automatycznego przejścia dalej jest ustawieniem aplikacji, nie stałą w kodzie:
+    // właściwa wartość wychodzi dopiero z obserwacji dziecka przy lekcji.
+    supabase.rpc('setting_int', { p_key: 'auto_next_seconds', p_default: 6 }),
+    supabase.from('badges').select('code, title, icon'),
+  ]);
 
   if (error) return { ok: false, error: dbErrorMessage(error, 'Nie udało się pobrać zadań.') };
 
@@ -102,6 +112,7 @@ export async function loadLesson(
       stages,
       level,
       hintsLeft: hintsLeft ?? 0,
+      unlockLeft: (unlock as { left?: number } | null)?.left ?? 0,
       autoNextMs: (autoNextSeconds ?? 6) * 1000,
       badgeNames: Object.fromEntries(
         (badges ?? []).map((badge) => [badge.code, `${badge.icon ?? '🏅'} ${badge.title}`]),

@@ -1,4 +1,4 @@
-import { HINTS, plural } from '@lingomemo/core';
+import { HINTS, plural, UNLOCKS } from '@lingomemo/core';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -61,6 +61,7 @@ export function LessonRunner({
   stages,
   level,
   hintsLeft,
+  unlockLeft,
   autoNextMs,
 }: {
   lessonId: string;
@@ -75,6 +76,8 @@ export function LessonRunner({
   /** 1 łatwy (lekcja z etapami), 2 średni, 3 trudny — krótkie wejście na ośmiu słówkach. */
   level: number;
   hintsLeft: number;
+  /** Punkty odblokowania sprzed lekcji — po zamknięciu poznajemy po różnicy, czy przybył nowy. */
+  unlockLeft: number;
   autoNextMs: number;
 }) {
   const [index, setIndex] = useState(0);
@@ -82,6 +85,8 @@ export function LessonRunner({
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [hintsWon, setHintsWon] = useState(0);
+  const [unlocks, setUnlocks] = useState(unlockLeft);
+  const [unlocksWon, setUnlocksWon] = useState(0);
   const [error, setError] = useState<string | null>(null);
   // Zadanie, w którego polu dziecko już coś napisało. Trzymamy IDENTYFIKATOR, nie flagę: przy
   // przejściu dalej przestaje pasować do bieżącego zadania, więc nie trzeba go zerować.
@@ -209,8 +214,10 @@ export function LessonRunner({
     setSummary(finished.value.summary);
     setHintsWon(Math.max(finished.value.hintsLeft - hints, 0));
     setHints(finished.value.hintsLeft);
+    setUnlocksWon(Math.max(finished.value.unlockLeft - unlocks, 0));
+    setUnlocks(finished.value.unlockLeft);
     setPhase('done');
-  }, [hints, index, total]);
+  }, [hints, index, total, unlocks]);
 
   if (phase === 'done' && summary !== null) {
     return (
@@ -220,6 +227,7 @@ export function LessonRunner({
         courseSlug={courseSlug}
         badgeNames={badgeNames}
         hintsWon={hintsWon}
+        unlocksWon={unlocksWon}
       />
     );
   }
@@ -514,12 +522,15 @@ function SummaryScreen({
   courseSlug,
   badgeNames,
   hintsWon,
+  unlocksWon,
 }: {
   summary: Summary;
   lessonId: string;
   courseSlug: string;
   badgeNames: Record<string, string>;
   hintsWon: number;
+  /** Ile punktów odblokowania przybyło — jeden za zaliczony poziom trudny, zero poza nim. */
+  unlocksWon: number;
 }) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -553,6 +564,8 @@ function SummaryScreen({
       )}
       {summary.xp > 0 && <Chip>+{summary.xp} punktów za {split ? 'etap' : 'lekcję'}</Chip>}
       {hintsWon > 0 && <Chip>💡 +{plural(hintsWon, HINTS)} na dziś</Chip>}
+      {/* Punkt zostaje do wydania, więc mówimy wprost, na co: dziecko dopiero poznaje tę walutę. */}
+      {unlocksWon > 0 && <Chip>🔑 +{plural(unlocksWon, UNLOCKS)} — otworzysz nim zamkniętą lekcję</Chip>}
       {summary.streak > 1 && <Chip>🔥 {summary.streak} dni z rzędu</Chip>}
       {summary.badges.length > 0 && (
         <Message

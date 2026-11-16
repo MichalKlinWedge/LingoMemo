@@ -142,14 +142,34 @@ export async function submitAnswer(
 }
 
 /**
- * Zamknięcie etapu, a po nim świeża pula podpowiedzi. Pulę czytamy osobnym zapytaniem, bo
- * dokładka za zaliczoną lekcję nie jest niczym przyznawanym w `finish_lesson_session` — liczy
- * ją `hints_left()` na bieżąco z dzisiejszych lekcji.
+ * Ile punktów odblokowania zostało na koncie. Konto bierzemy z zapisanej sesji, a nie z bazy:
+ * `unlock_status` pyta o nie wprost, a przebieg lekcji identyfikatora ucznia nie potrzebuje
+ * do niczego innego.
  */
-export async function finishLesson(sessionId: string): Promise<Result<{ summary: Summary; hintsLeft: number }>> {
+export async function unlockLeft(): Promise<number> {
+  const { data: stored } = await supabase.auth.getSession();
+  const userId = stored.session?.user.id ?? null;
+  if (userId === null) return 0;
+
+  const { data } = await supabase.rpc('unlock_status', { p_user: userId });
+  return (data as { left?: number } | null)?.left ?? 0;
+}
+
+/**
+ * Zamknięcie etapu, a po nim świeża pula podpowiedzi i stan punktów odblokowania. Jedno i drugie
+ * czytamy osobnym zapytaniem, bo nagroda za poziom nie jest niczym przyznawanym
+ * w `finish_lesson_session` — liczą ją `hints_left()` i `unlock_status()` na bieżąco
+ * z `lesson_level_progress` (średni dokłada podpowiedź, trudny daje punkt).
+ */
+export async function finishLesson(
+  sessionId: string,
+): Promise<Result<{ summary: Summary; hintsLeft: number; unlockLeft: number }>> {
   const { data, error } = await supabase.rpc('finish_lesson_session', { p_session: sessionId });
   if (error) return { ok: false, error: dbErrorMessage(error, 'Nie udało się zamknąć lekcji.') };
 
-  const { data: hintsLeft } = await supabase.rpc('hints_left');
-  return { ok: true, value: { summary: data as unknown as Summary, hintsLeft: hintsLeft ?? 0 } };
+  const [{ data: hintsLeft }, unlocks] = await Promise.all([supabase.rpc('hints_left'), unlockLeft()]);
+  return {
+    ok: true,
+    value: { summary: data as unknown as Summary, hintsLeft: hintsLeft ?? 0, unlockLeft: unlocks },
+  };
 }
