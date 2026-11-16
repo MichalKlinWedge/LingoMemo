@@ -70,6 +70,15 @@ create temporary table t_ex as
 create temporary table t_sess (stage integer primary key, id uuid);
 create temporary table t_fin (stage integer primary key, result jsonb);
 
+-- Nauka wymaga zapisu na kurs (`…_course_access_request.sql`), więc dziecko z tego pliku
+-- musi go mieć — bez zapisu lekcja jest zamknięta, zanim zacznie się to, co sprawdzamy.
+insert into public.enrollments (user_id, course_id)
+select (select id from t_user), u.course_id
+  from public.lessons l
+  join public.units u on u.id = l.unit_id
+ where l.id = (select id from t_lesson)
+on conflict do nothing;
+
 grant select on t_user, t_lesson, t_ex to authenticated;
 grant select, insert on t_sess, t_fin to authenticated;
 

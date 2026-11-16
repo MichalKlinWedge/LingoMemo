@@ -839,6 +839,11 @@ isOneToOne: false
 "admin_add_word":
 { Args: { "p_key": string,"p_lesson": string,"p_source": string,"p_tags"?: (string)[],"p_target": string }; Returns: Json
                            },
+"admin_course_requests":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "course_id": string,"display_name": string,"first_at": string,"user_id": string
+            }[]
+                           },
 "admin_delete_course":
 { Args: { "p_course": string }; Returns: Json
                            },
@@ -1020,6 +1025,9 @@ isOneToOne: false
 "is_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },
+"is_enrolled":
+{ Args: { "p_course": string,"p_user": string }; Returns: boolean
+                           },
 "is_lesson_unlocked":
 { Args: { "p_lesson": string,"p_user": string }; Returns: boolean
                            },
@@ -1085,6 +1093,11 @@ isOneToOne: false
               "display_name": string,"user_id": string
             }[]
                            },
+"my_course_requests":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "course_id": string,"first_at": string
+            }[]
+                           },
 "normalize_answer":
 { Args: { "p": string }; Returns: string
                            },
@@ -1105,6 +1118,9 @@ isOneToOne: false
                            },
 "request_child_access":
 { Args: Record<PropertyKey, never>; Returns: undefined
+                           },
+"request_course_access":
+{ Args: { "p_course": string }; Returns: undefined
                            },
 "review_gate":
 { Args: { "p_course": string,"p_user"?: string }; Returns: Json

@@ -39,6 +39,15 @@ create temporary table t_first as
   select l.id from public.lessons l
   where l.unit_id = (select id from t_unit) and l.kind = 'standard' and l.sort_order = 1;
 
+-- Nauka wymaga zapisu na kurs (`…_course_access_request.sql`), więc dziecko z tego pliku
+-- musi go mieć — bez zapisu lekcja jest zamknięta, zanim zacznie się to, co sprawdzamy.
+insert into public.enrollments (user_id, course_id)
+select (select id from t_user), u.course_id
+  from public.lessons l
+  join public.units u on u.id = l.unit_id
+ where l.id = (select id from t_review)
+on conflict do nothing;
+
 grant select on t_user, t_unit, t_review, t_first to authenticated;
 
 select is((select count(*)::integer from t_review), 1, 'dział ma jedną lekcję powtórkową');

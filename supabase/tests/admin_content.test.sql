@@ -70,10 +70,15 @@ select throws_ok(
   'uczeń nie zapisze na kurs kogoś innego'
 );
 
-select lives_ok(
+-- Od `…_course_access_request.sql` zapis zakłada administrator albo zaproszenie. Dziecko
+-- może o kurs poprosić (`request_course_access`), ale nie wpisze się na niego samo — inaczej
+-- cała bramka dostępu byłaby ozdobą.
+select throws_ok(
   format('insert into public.enrollments (user_id, course_id) values (%L, %L)',
          (select id from t_ids where name = 'uczen'), (select course_id from t_ctx)),
-  'uczeń zapisuje na kurs sam siebie'
+  '42501',
+  null,
+  'uczeń nie zapisze na kurs nawet samego siebie'
 );
 
 reset role;

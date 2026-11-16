@@ -4,6 +4,7 @@ import { Suspense } from "react";
 
 import { LESSONS, plural, STARS, WORDS } from "@lingomemo/core";
 
+import { CourseRequest } from "@/app/course-request";
 import { Flag } from "@/components/flag";
 import { CRUMB_HOME } from "@/components/breadcrumbs";
 import { PageHeader } from "@/components/page-header";
@@ -13,7 +14,7 @@ import { dbLoadError } from "@/lib/db-error";
 
 async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params"] }) {
   const { slug } = await params;
-  const { supabase, userId } = await requireUser(`/kurs/${slug}`);
+  const { supabase, userId, isAdmin } = await requireUser(`/kurs/${slug}`);
 
   const { data: course } = await supabase
     .from("courses")
@@ -22,6 +23,47 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
     .maybeSingle();
 
   if (!course) notFound();
+
+  // Bez zapisu kurs jest zamknięty w bazie (`is_lesson_unlocked`), więc mapa pokazałaby same
+  // kłódki i dziecko nie dowiedziałoby się, dlaczego. Zamiast niej — jedno zdanie i prośba.
+  const [{ data: enrollment }, { data: asked }] = await Promise.all([
+    supabase.from("enrollments").select("course_id").eq("user_id", userId).eq("course_id", course.id).maybeSingle(),
+    supabase.rpc("my_course_requests"),
+  ]);
+
+  if (!enrollment) {
+    return (
+      <>
+        <PageHeader
+          crumbs={[CRUMB_HOME]}
+          title={
+            <>
+              <Flag code={course.target_lang} fallback={course.icon ?? "📘"} size={32} /> {course.title}
+            </>
+          }
+          intro="Tego kursu jeszcze nie masz."
+        />
+        <div className="card flex flex-wrap items-center gap-4 p-5">
+          <span className="text-4xl" aria-hidden>
+            🔒
+          </span>
+          <p className="min-w-0 flex-1 text-base text-zinc-600 dark:text-zinc-400">
+            {course.description}
+          </p>
+          {isAdmin ? (
+            <Link href={`/admin/kursy/${slug}`} className="chip">
+              zapisz się w panelu
+            </Link>
+          ) : (
+            <CourseRequest
+              courseId={course.id}
+              alreadyAsked={(asked ?? []).some((row) => row.course_id === course.id)}
+            />
+          )}
+        </div>
+      </>
+    );
+  }
 
   const [
     { data: units, error: unitsError },

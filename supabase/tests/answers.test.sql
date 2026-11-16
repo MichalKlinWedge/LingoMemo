@@ -78,6 +78,15 @@ select id, 'match_pairs', 4,
 create temporary table t_ex as
 select e.type::text as type, e.id from public.exercises e where e.lesson_id = (select id from t_lesson);
 
+-- Nauka wymaga zapisu na kurs (`…_course_access_request.sql`), więc dziecko z tego pliku
+-- musi go mieć — bez zapisu lekcja jest zamknięta, zanim zacznie się to, co sprawdzamy.
+insert into public.enrollments (user_id, course_id)
+select (select id from t_ids where name = 'uczen'), u.course_id
+  from public.lessons l
+  join public.units u on u.id = l.unit_id
+ where l.id = (select id from t_lesson)
+on conflict do nothing;
+
 grant select on t_ids, t_lesson, t_ex to authenticated;
 
 create temporary table t_claims as

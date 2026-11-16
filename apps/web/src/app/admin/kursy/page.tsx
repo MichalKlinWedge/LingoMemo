@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Suspense } from "react";
 
 import { CRUMB_HOME, CRUMB_PANEL } from "@/components/breadcrumbs";
@@ -21,6 +22,7 @@ async function Courses() {
     { data: concepts },
     { data: enrollments },
     { data: started },
+    { data: requests },
   ] = await Promise.all([
     supabase
       .from("courses")
@@ -34,6 +36,8 @@ async function Courses() {
     // Czy w kursie jest ślad nauki. Po tym kosz w wierszu wie, czy obiecywać skasowanie,
     // czy ukrycie — liczy to baza, bo śladów jest kilka rodzajów i leżą w trzech tabelach.
     supabase.rpc("list_courses_started"),
+    // Kto prosi o dostęp. Bez tego trzeba by wejść w każdy kurs po kolei, żeby się dowiedzieć.
+    supabase.rpc("admin_course_requests"),
   ]);
 
   const loadError = error ?? unitsError;
@@ -66,7 +70,31 @@ async function Courses() {
     started: zaczete.has(course.id),
   }));
 
-  return <CourseTable courses={rows} languages={languages ?? []} />;
+  const tytul = new Map((courses ?? []).map((course) => [course.id, course.title]));
+  const slugKursu = new Map((courses ?? []).map((course) => [course.id, course.slug]));
+
+  return (
+    <>
+      {/* Prośby stoją NAD tabelą, bo inaczej trzeba by wejść w każdy kurs, żeby je zobaczyć.
+          Zapisanie dziecka jest w kursie — stąd odnośnik, a nie przycisk w tym miejscu. */}
+      {(requests ?? []).length > 0 && (
+        <section className="msg-warn flex flex-col gap-2">
+          <span className="font-semibold">Prośby o dostęp</span>
+          <ul className="flex flex-col gap-1">
+            {(requests ?? []).map((request) => (
+              <li key={`${request.user_id}-${request.course_id}`}>
+                {request.display_name} prosi o kurs{" "}
+                <Link href={`/admin/kursy/${slugKursu.get(request.course_id) ?? ""}`} className="underline">
+                  {tytul.get(request.course_id) ?? "nieznany"}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+      <CourseTable courses={rows} languages={languages ?? []} />
+    </>
+  );
 }
 
 export default function CoursesPage() {

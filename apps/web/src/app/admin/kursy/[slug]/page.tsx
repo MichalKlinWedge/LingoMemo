@@ -30,6 +30,7 @@ async function Course({ params }: { params: PageProps<"/admin/kursy/[slug]">["pa
     { data: items },
     { data: students, error: studentsError },
     { data: enrolled },
+    { data: requests },
   ] = await Promise.all([
     supabase
       .from("units")
@@ -41,6 +42,7 @@ async function Course({ params }: { params: PageProps<"/admin/kursy/[slug]">["pa
     supabase.from("lesson_items").select("lesson_id, concept_id"),
     supabase.rpc("list_students"),
     supabase.from("enrollments").select("user_id").eq("course_id", course.id),
+    supabase.rpc("admin_course_requests"),
   ]);
 
   const error = unitsError ?? studentsError;
@@ -55,6 +57,7 @@ async function Course({ params }: { params: PageProps<"/admin/kursy/[slug]">["pa
   };
 
   const enrolledIds = new Set((enrolled ?? []).map((row) => row.user_id));
+  const prosza = new Set((requests ?? []).filter((row) => row.course_id === course.id).map((row) => row.user_id));
 
   const unitRows: UnitRow[] = (units ?? []).map((unit) => ({
     ...unit,
@@ -91,6 +94,8 @@ async function Course({ params }: { params: PageProps<"/admin/kursy/[slug]">["pa
                 <span className="text-base text-zinc-600 dark:text-zinc-400">{student.email}</span>
               </span>
               <span className="flex items-center gap-3">
+                {/* Ślad prośby, nie zgłoszenie do odhaczenia: znika sam w chwili zapisu. */}
+                {prosza.has(student.user_id) && <span className="chip">✋ prosi o dostęp</span>}
                 <span className="chip">{enrolledIds.has(student.user_id) ? "zapisany" : "niezapisany"}</span>
                 <EnrollmentButton
                   userId={student.user_id}

@@ -915,3 +915,23 @@ przy okazji odpornymi: plik zostawia w lekcji tylko te zadania, które sam oceni
 (`typo_retry`, `word_order_retry`, `skip_exercise`, `answers`). W `lessons.test.sql`, który
 sprawdza silnik lekcji zadanie po zadaniu, każde zadanie dostaje własne słówko — inaczej nie
 dałoby się w jednym przejściu sprawdzić czterech różnych typów należących do tego samego słówka.
+
+### Prośba o dostęp do kursu (2026-11-16)
+
+Strona główna wypisywała dziecku wszystkie opublikowane kursy, mapa kursu nie pytała o zapis,
+a polityka `enrollments_insert_own` pozwalała zapisać się samemu. Zapis istniał, ale nie znaczył
+nic poza statystykami. Teraz zapis jest warunkiem nauki, a kurs bez zapisu dziecko widzi tylko
+z nazwy — z przyciskiem prośby zamiast strzałki.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Gdzie stoi bramka | `is_lesson_unlocked` | pod nią siedzą `get_lesson_exercises`, `start_lesson_session` i mapa kursu — jedno miejsce zamiast polityk na czterech tabelach | polityka SELECT na `courses` ograniczona do zapisanych (dziecko nie zobaczyłoby nazw, więc nie miałoby o co poprosić, a rodzic straciłby kursy dziecka z `v_my_courses`) |
+| Kto zakłada zapis | administrator albo zaproszenie | o tym, czy czwartoklasista bierze się za włoski, decyduje dorosły; wyzwalacz z zaproszenia jest `security definer`, więc działa dalej | `enrollments_insert_own` (zostawienie go znaczyłoby, że bramka jest ozdobą) |
+| Czym jest prośba | para (dziecko, kurs) z datą, kasowana wyzwalaczem w chwili zapisu | to ten sam wzorzec, co `parent_requests`: ślad przy uczniu, nie kolejka zgłoszeń do odhaczenia | osobny stan „rozpatrzona/odrzucona" (druga maszyna stanów do utrzymania); powiadomienie mailem (nie mamy wysyłki) |
+| Co z dziećmi, które już się uczą | zapisy wsteczne w migracji, z trzech śladów nauki | zapis miał dotąd zbyt małe znaczenie, żeby zakładać, że jest wszędzie tam, gdzie jest nauka — bez tego bramka zamknęłaby kursy robione dzisiaj | ogłoszenie „poproś o dostęp" także tym, którzy kurs już robią |
+| Administrator | te same zasady, zapisuje się w panelu | uczy się na zasadach dziecka (`…_admin_learns_as_child.sql`), więc i jemu kurs bez zapisu jest zamknięty; przycisk prośby zamieniamy mu na odnośnik do panelu | wyjątek dla administratora w bramce (wtedy nie widzi tego, co widzi dziecko) |
+| Gdzie administrator widzi prośby | lista nad tabelą kursów i znacznik przy uczniu w kursie | bez listy trzeba by wejść w każdy kurs po kolei, żeby się dowiedzieć, że ktoś czeka | osobny ekran „prośby" (trzeci ekran, który trzeba znaleźć) |
+
+Testy, które wydawały zadania, musiały dostać zapis w scenariuszu — bez niego lekcja jest
+zamknięta, zanim zacznie się to, co sprawdzają. To nie jest koszt uboczny, tylko dowód, że
+bramka działa: zapomniany zapis widać natychmiast.

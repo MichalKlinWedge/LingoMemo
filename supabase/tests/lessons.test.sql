@@ -86,6 +86,15 @@ select set_config('request.jwt.claims',
          (select json_build_object('sub', u.id, 'role', 'authenticated', 'app_metadata', '{}'::jsonb)::text
             from auth.users u where u.id = (select id from t_user)), true);
 
+-- Nauka wymaga zapisu na kurs (`…_course_access_request.sql`), więc dziecko z tego pliku
+-- musi go mieć — bez zapisu lekcja jest zamknięta, zanim zacznie się to, co sprawdzamy.
+insert into public.enrollments (user_id, course_id)
+select (select id from t_user), u.course_id
+  from public.lessons l
+  join public.units u on u.id = l.unit_id
+ where l.id = (select id from t_lesson where nr = 1)
+on conflict do nothing;
+
 create temporary table t_ex as
   select id, type, sort_order, payload,
          public.exercise_stage(id, (select id from t_lesson where nr = 1)) as stage
