@@ -5,7 +5,7 @@ import { refresh } from "next/cache";
 import type { FormState } from "@/components/forms";
 import { requireAdmin } from "@/lib/auth";
 
-export const BUCKET = "lesson-media";
+import { BUCKET } from "./bucket";
 
 /**
  * Skasowanie pliku z biblioteki. Uprawnienia pilnuje polityka na `storage.objects`

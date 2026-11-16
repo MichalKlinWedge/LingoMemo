@@ -6,7 +6,7 @@ import { Loading, Shell } from "@/components/shell";
 import { requireAdmin } from "@/lib/auth";
 import { dbLoadError } from "@/lib/db-error";
 
-import { BUCKET } from "./actions";
+import { BUCKET } from "./bucket";
 import { MediaList, type MediaFile } from "./media-list";
 import { Upload } from "./upload";
 
