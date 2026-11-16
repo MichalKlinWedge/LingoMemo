@@ -8,8 +8,8 @@
     "android": "expo start --android",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
-    "ota": "npx eas-cli@latest update --branch preview --environment preview --platform android",
-    "ota:dzieci": "npx eas-cli@latest update --branch dzieci --environment preview --platform android",
+    "ota": "node ../../scripts/ota.mjs preview",
+    "ota:dzieci": "node ../../scripts/ota.mjs dzieci",
     "apk": "npx eas-cli@latest build --platform android --profile preview",
     "apk:dzieci": "npx eas-cli@latest build --platform android --profile dzieci"
   },

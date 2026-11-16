@@ -19,6 +19,11 @@ npm run ota:dzieci   # ta sama poprawka do dzieci, z tego samego commita
 Po zbudowaniu EAS podaje link ze stroną instalacyjną — ten link wysyłamy albo otwieramy na
 tablecie. Historia buildów: https://expo.dev/accounts/klin.michal/projects/lingomemo/builds
 
+Komunikat przy poprawce OTA bierze się sam z tematu ostatniego commita, razem z jego numerem —
+nie trzeba go wpisywać, a na pulpicie EAS od razu widać, co poszło na telefon. Własny komunikat
+podaje się skryptowi wprost: `node scripts/ota.mjs preview --message "…"` (przez `npm run ota --`
+to nie przejdzie, bo npm zabiera takie flagi dla siebie).
+
 **Nowego APK wymaga tylko zmiana natywna**: nowy moduł (np. obrazki SVG przez `expo-image`),
 nowe uprawnienie, zmiana w `app.json`. Zmiany w kodzie aplikacji idą przez OTA i dochodzą same.
 
