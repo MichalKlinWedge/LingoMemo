@@ -3,7 +3,7 @@
     "name": "LingoMemo",
     "slug": "lingomemo",
     "version": "0.1.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/ikona.png",
     "scheme": "lingomemo",
     "userInterfaceStyle": "light",
