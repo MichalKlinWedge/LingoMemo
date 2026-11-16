@@ -81,6 +81,13 @@ async function Lesson({
   // Dzienna pula podpowiedzi. Liczy ją baza z użyć, więc o północy w strefie dziecka wraca sama.
   const { data: hintsLeft } = await supabase.rpc("hints_left");
 
+  // Czas automatycznego przejścia do następnego zadania. Ustawienie aplikacji, nie stała
+  // w kodzie: właściwa wartość wychodzi dopiero z obserwacji dziecka przy lekcji.
+  const { data: autoNextSeconds } = await supabase.rpc("setting_int", {
+    p_key: "auto_next_seconds",
+    p_default: 6,
+  });
+
   // Nazwy odznak, żeby na ekranie podsumowania nie wyświetlił się kod w rodzaju `first_lesson`.
   const { data: badges } = await supabase.from("badges").select("code, title, icon");
   const badgeNames = Object.fromEntries(
@@ -115,6 +122,7 @@ async function Lesson({
       level={level}
       hintsLeft={hintsLeft ?? 0}
       preview={preview}
+      autoNextMs={(autoNextSeconds ?? 6) * 1000}
     />
   );
 }

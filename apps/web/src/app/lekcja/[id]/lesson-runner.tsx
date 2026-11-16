@@ -19,13 +19,6 @@ import { askHint, finishLesson, startLesson, submitAnswer, type Summary, type Ve
 
 type Phase = "answering" | "checking" | "feedback" | "done";
 
-/**
- * Ile czekamy po dobrej odpowiedzi, zanim lekcja przejdzie dalej sama.
- *
- * Jedna stała dla licznika i dla paska na przycisku — gdyby były dwie, pasek dojeżdżałby
- * do końca w innym momencie, niż zmienia się ekran, i wyglądałby na zepsuty.
- */
-const AUTO_NEXT_MS = 10_000;
 
 /**
  * Przebieg lekcji. Komponent pilnuje tylko kolejności zadań i tego, co widać na ekranie —
@@ -43,6 +36,7 @@ export function LessonRunner({
   level,
   hintsLeft,
   preview,
+  autoNextMs,
 }: {
   lessonId: string;
   courseSlug: string;
@@ -62,6 +56,12 @@ export function LessonRunner({
   /** Podgląd z panelu: baza wpuszcza administratora także w lekcję zamkniętą
    *  albo nieopublikowaną. Ucząc się normalnie, ma zamki jak dziecko. */
   preview: boolean;
+  /**
+   * Ile czekamy po dobrej odpowiedzi, zanim lekcja przejdzie dalej sama. Z ustawień
+   * aplikacji, bo właściwy czas widać dopiero na dziecku — jedno czyta dłużej, drugie
+   * klika szybciej, niż ekran zdąży się przerysować.
+   */
+  autoNextMs: number;
 }) {
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>("answering");
@@ -446,6 +446,7 @@ export function LessonRunner({
         <Feedback
           verdict={verdict}
           onNext={next}
+          autoNextMs={autoNextMs}
           last={index + 1 >= total}
           // Po ostatnim zadaniu etapu kończy się etap, nie lekcja — „Zakończ lekcję" przy
           // dwunastu zadaniach z czterdziestu to obietnica, której przycisk nie dotrzyma.
@@ -462,12 +463,14 @@ export function LessonRunner({
 function Feedback({
   verdict,
   onNext,
+  autoNextMs,
   last,
   lastLabel = "Zakończ lekcję",
   showAnswer = true,
 }: {
   verdict: Verdict;
   onNext: () => void;
+  autoNextMs: number;
   last: boolean;
   /** Napis na przycisku po ostatnim zadaniu: etap albo cała lekcja. */
   lastLabel?: string;
@@ -476,7 +479,7 @@ function Feedback({
   const shown = showAnswer && typeof verdict.correctAnswer === "string" ? verdict.correctAnswer : null;
 
   /**
-   * Po dobrej odpowiedzi lekcja idzie dalej sama po dziesięciu sekundach.
+   * Po dobrej odpowiedzi lekcja idzie dalej sama po czasie z ustawień aplikacji.
    *
    * Tylko po dobrej: przy błędnej dziecko musi zdążyć przeczytać, jak było poprawnie, a tego
    * nie da się zmierzyć zegarem. Tylko gdy jest następne zadanie: zakończenie etapu albo lekcji
@@ -495,7 +498,7 @@ function Feedback({
     let timer = 0;
     const odlicz = () => {
       window.clearTimeout(timer);
-      timer = window.setTimeout(onNext, AUTO_NEXT_MS);
+      timer = window.setTimeout(onNext, autoNextMs);
     };
     const przestaw = () => {
       setOdliczanie((n) => n + 1);
@@ -515,7 +518,7 @@ function Feedback({
     };
     // `odliczanie` celowo poza zależnościami: przestawienie paska nie ma restartować efektu,
     // bo ten ustawiłby drugi `setTimeout` obok już działającego.
-  }, [auto, onNext]);
+  }, [auto, autoNextMs, onNext]);
 
   return (
     <div
@@ -546,13 +549,13 @@ function Feedback({
       {verdict.correct && verdict.points > 0 && <p style={{ color: "#0f5c37" }}>+{verdict.points} punktów</p>}
       <button type="button" className="btn-primary relative overflow-hidden" onClick={onNext} autoFocus>
         {last ? lastLabel : "Dalej"}
-        {/* Pasek kurczy się przez te dziesięć sekund, żeby przejście nie było zaskoczeniem.
+        {/* Pasek kurczy się przez ten czas, żeby przejście nie było zaskoczeniem.
             `key` przestawia animację na początek, gdy dziecko kliknie cokolwiek. */}
         {auto && (
           <span
             key={odliczanie}
             className="countdown"
-            style={{ animationDuration: `${AUTO_NEXT_MS}ms` }}
+            style={{ animationDuration: `${autoNextMs}ms` }}
             aria-hidden
           />
         )}

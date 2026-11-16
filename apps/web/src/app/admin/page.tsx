@@ -17,6 +17,12 @@ const KAFELKI = [
     text: "Kto się uczy, jak mu idzie i zmiana hasła.",
   },
   { href: "/admin/obrazki", icon: "🖼️", title: "Obrazki", text: "Wgraj obrazki do słówek." },
+  {
+    href: "/admin/ustawienia",
+    icon: "⚙️",
+    title: "Ustawienia",
+    text: "Pokrętła całej aplikacji, np. czas przejścia do następnego zadania.",
+  },
 ];
 
 async function Panel() {

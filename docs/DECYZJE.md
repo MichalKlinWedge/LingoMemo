@@ -816,3 +816,23 @@ Stąd zatrzask: jeśli dziecko dziś dokończyło test powtórkowy i go nie zda�
 zamknięty do czasu zdania. Test `review_gate.test.sql` pilnuje obu końców tej reguły — że oblany
 test nie otwiera kursu, CHOĆ licznik już nie wystarcza, i że zdany otwiera, CHOĆ zaległych zostało
 więcej niż dziesięć (to drugie na drugim dziecku w tym samym kursie, żeby stany się nie mieszały).
+
+### Ustawienia aplikacji w panelu (2026-11-16)
+
+Czas automatycznego przejścia do następnego zadania siedział jako stała w kodzie przeglądarki,
+więc skrócenie go z dziesięciu sekund na sześć wymagało wdrożenia. To akurat ustawienie, którego
+właściwej wartości nie da się wymyślić przy biurku — widać ją dopiero przy dziecku. Stąd osobna
+sekcja „Ustawienia" w panelu i tabela, z której czyta lekcja.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Gdzie mieszka ustawienie | tabela `app_settings`, klucz + `jsonb` | następne pokrętło to wiersz, nie migracja zmieniająca kształt tabeli i wszystkie zapytania | kolumna na ustawienie; tabela na ustawienie; zmienna środowiskowa (zmiana = wdrożenie, czyli to, co usuwamy) |
+| Kto zapisuje | wyłącznie `admin_set_setting` (`security definer`), brak polityki INSERT/UPDATE | tak samo jak w tabelach postępu: zapis przez funkcję, nie przez politykę | polityka UPDATE dla administratora |
+| Kto czyta | każdy zalogowany | przeglądarka dziecka musi znać czas odliczania, a nie ma tu nic wrażliwego | odczyt tylko funkcją |
+| Gdzie sprawdzany jest zakres | w `admin_set_setting` (2–30 s), i drugi raz zodem w akcji panelu | `jsonb` przyjmie wszystko, a pokrętło na zero albo na dziesięć minut psuje lekcję; zod jest po to, żeby dorosły zobaczył komunikat przy polu | sprawdzanie tylko w przeglądarce; `check` na kolumnie (nie wyrazi reguły per klucz) |
+| Wartość domyślna | 6 s, ta sama w `setting_int`, w lekcji i w panelu | brakujący wiersz nie może dawać innego czasu na ekranie dziecka niż w panelu | `null` i „brak odliczania" |
+| Co z brakiem wiersza albo śmieciem w `value` | `setting_int` oddaje wartość domyślną | awaria ustawień nie ma zatrzymywać lekcji w połowie | wyjątek |
+
+Zakres 2–30 s: poniżej dwóch sekund dziecko nie zdąży zobaczyć „Brawo!", powyżej trzydziestu
+to już nie jest automatyczne przejście, tylko zawieszony ekran. Licznik i tak przestawia się
+przy każdym dotknięciu, a po błędnej odpowiedzi nie rusza w ogóle.
