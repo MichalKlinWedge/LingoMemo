@@ -1222,3 +1222,10 @@ renderów, którą lint `react-hooks/set-state-in-effect` słusznie wywala); wy�
 nawigacji w `next.config` (lekarstwo na cały serwis za jeden ekran, w dodatku na ustawieniu
 eksperymentalnym); osobny adres podsumowania w rodzaju `/lekcja/[id]/podsumowanie?sesja=…`
 (stan lekcji trafiłby do adresu, a zakończony etap dałoby się otworzyć z historii przeglądarki).
+
+Telefon tego błędu nie ma i nie wolno go tam wpuścić. `apps/mobile` nie trzyma ekranów
+„na wszelki wypadek”: w lekcję wchodzi się przez `router.push` (nowy ekran, czyli nowy
+`LessonRunner`), a wychodzi przez `router.replace` (ekran lekcji znika ze stosu razem ze stanem).
+Gdyby kiedyś zamienić wyjście na `router.back()` zostawiające lekcję na stosie albo wejście na
+`router.navigate`, które wraca do istniejącego ekranu zamiast tworzyć nowy — wróci dokładnie to
+samo: dziecko w etapie zobaczy podsumowanie poprzedniego podejścia.
