@@ -28,7 +28,8 @@
       "policy": "appVersion"
     },
     "updates": {
-      "checkAutomatically": "ON_ERROR_RECOVERY",
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0,
       "url": "https://u.expo.dev/ebf05bd8-73e6-4ef7-b5d5-188aa171241a"
     },
     "owner": "klin.michal",
