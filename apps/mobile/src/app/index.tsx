@@ -88,7 +88,7 @@ export default function Home() {
 
       <Nav />
       <Reminders userId={session.user.id} />
-      <Diagnostics email={session.user.email ?? null} />
+      <Account email={session.user.email ?? null} />
     </Screen>
   );
 }
@@ -233,23 +233,30 @@ function Welcome() {
 }
 
 /**
- * Ekrany pomiarowe bramki M0 i wylogowanie. Stoją na dole i cicho: to narzędzia dla dorosłego,
- * a nie część nauki. Zniknie stąd, gdy pomiary z telefonu zostaną zapisane w DECYZJE.md.
+ * Konto: kto jest zalogowany i wylogowanie. Stoi na dole i cicho, bo dziecko zagląda tu raz.
+ *
+ * Ekrany pomiarowe bramki M0 (PoC-M1/M2/M3) są schowane za `__DEV__`, czyli widać je wyłącznie
+ * w dev buildzie z Metro. APK dziecka to ta sama paczka kodu co telefon właściciela, więc bez
+ * tego warunku dziecko dostawało na ekranie kursów trzy drogi do narzędzi, które nie są nauką.
  */
-function Diagnostics({ email }: { email: string | null }) {
+function Account({ email }: { email: string | null }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   return (
     <View style={styles.tools}>
       <Pressable accessibilityRole="button" onPress={() => setOpen(!open)} style={styles.toolsHeader}>
-        <Text style={styles.toolsText}>{open ? 'Ukryj narzędzia' : 'Narzędzia i konto'}</Text>
+        <Text style={styles.toolsText}>{open ? 'Ukryj' : 'Konto'}</Text>
       </Pressable>
       {open && (
         <Card>
           <Body muted>Zalogowany: {email ?? '—'}</Body>
-          <Button kind="quiet" label="PoC-M1 — zadanie z bazy" onPress={() => router.push('/zadanie')} />
-          <Button kind="quiet" label="PoC-M2 — mowa" onPress={() => router.push('/mowa')} />
-          <Button kind="quiet" label="PoC-M3 — przypomnienia" onPress={() => router.push('/powiadomienia')} />
+          {__DEV__ && (
+            <>
+              <Button kind="quiet" label="PoC-M1 — zadanie z bazy" onPress={() => router.push('/zadanie')} />
+              <Button kind="quiet" label="PoC-M2 — mowa" onPress={() => router.push('/mowa')} />
+              <Button kind="quiet" label="PoC-M3 — przypomnienia" onPress={() => router.push('/powiadomienia')} />
+            </>
+          )}
           <Button kind="quiet" label="Wyloguj" onPress={() => void supabase.auth.signOut()} />
         </Card>
       )}
