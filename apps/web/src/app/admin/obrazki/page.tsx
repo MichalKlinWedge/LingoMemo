@@ -54,8 +54,14 @@ async function Media() {
     };
   });
 
-  // Najnowsze na górze: po wgraniu paczki obrazków administrator szuka właśnie ich.
-  files.sort((a, b) => (b.updatedAt ?? "").localeCompare(a.updatedAt ?? ""));
+  // Alfabetycznie po ścieżce: nazwy mają wspólne przedrostki (`kolor-`, `liczba-`, `rzecz-`),
+  // więc pokrewne pliki stoją obok siebie i od razu widać, czego brakuje w serii. Świeżo
+  // wgranych szuka się polem filtra, a nie przewijaniem od góry.
+  //
+  // `numeric` układa `liczba-2` przed `liczba-10` — bez tego dziesiątka wchodzi między jedynkę
+  // a dwójkę, bo porównywany jest znak po znaku.
+  const poAlfabecie = new Intl.Collator("pl", { numeric: true });
+  files.sort((a, b) => poAlfabecie.compare(a.path, b.path));
 
   return (
     <>
