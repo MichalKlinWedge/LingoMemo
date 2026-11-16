@@ -710,3 +710,22 @@ słuchu (poziom 3). Średniego nie było ani jednego, więc nie było czym wype�
 Pułapka dla testów: wyzwalacz więzowy odpala się przy zatwierdzeniu transakcji, a każdy test
 pgTAP siedzi w jednej transakcji i kończy się `rollback`. Test, który sprawdza dorobioną treść,
 musi wywołać generator wprost albo zrobić `set constraints all immediate`.
+
+### Gwiazdki etapów nad kwadracikami (2026-11-16)
+
+Przy kafelku lekcji stoi jedna ocena całej lekcji i łatwo ją wziąć za ocenę ostatniego etapu.
+Gwiazdki pojedynczych etapów leżały w `lesson_stage_progress` od migracji z etapami i nic ich
+nie pokazywało — dziecko widziało dwie gwiazdki przy lekcji i nie miało z czego wyczytać,
+w którym etapie zgubiło trzecią.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Co znaczy gwiazdka przy kafelku | ocena CAŁEJ lekcji: średnia z najlepszych wyników wszystkich etapów, zapisywana po zamknięciu ostatniego i tylko w górę | to ona idzie do statystyk i do karty u rodzica, i tylko ona jest porównywalna między lekcjami | ocena ostatniego etapu (dziecko poprawiałoby jeden etap i dostawało trzy gwiazdki za całość) |
+| Czy zostaje obok etapowych | zostaje | odpowiada na inne pytanie: „jak dobrze umiem tę lekcję", a nie „który etap powtórzyć" | zastąpienie jej gwiazdkami etapów |
+| Skąd dane na mapie | zapytanie wprost do `lesson_stage_progress` z filtrem po użytkowniku | tabela ma politykę odczytu dla ucznia, więc nie trzeba migracji ani nowego widoku | nowy widok `v_my_lesson_stages` (migracja za jedno zapytanie); dopisanie tablicy gwiazdek do `v_my_lessons` |
+| Dlaczego filtr po użytkowniku, skoro jest RLS | bo polityka przepuszcza też administratora (`is_admin()`) | bez filtru na mapie administratora zmieszałyby się podejścia różnych dzieci | poleganie na samym RLS (ta sama poprawka poszła do ekranu lekcji, gdzie decydowała o tym, od którego etapu zaczyna się lekcja) |
+| Czym rysujemy gwiazdkę | znak `★` w pudełku o stałej szerokości 0,625 rem | „★" ma w każdym kroju inną szerokość, a od niej zależy, czy rząd mieści się w kafelku; emoji `⭐` w tym rozmiarze jest plamą | emoji `⭐` jak przy kafelku; tekst bez pudełka |
+| Puste gwiazdki na obrys | odrzucone | przy trzech etapach to dziewięć znaczków pod jednym kafelkiem | — |
+| Szerokość kafelka lekcji | 9,5 rem → 11,5 rem | rząd gwiazdek jest szerszy od kwadracika; najgorszy przypadek (trzy etapy po trzy gwiazdki i dwa poziomy) ma 160 px przy 164 px miejsca | ściśnięcie gwiazdek do szerokości kwadracika (8 px na gwiazdkę, czyli kropka) |
+| Wyrównanie rzędu | `align-items: flex-end` w `.marks` | kolumna etapu jest wyższa od kwadracika poziomu, a dolna krawędź ma iść przez cały rząd jedną linią | wyrównanie do środka (kwadraciki poziomów wisiałyby w połowie wysokości etapu) |
+| Czytnik ekranu | jeden `role="img"` z podpisem „Zrobione etapy: 2 z 3; etap 1 — 3 gwiazdki, …", dymek nad każdym etapem | dziewięć osobnych gwiazdek to dziewięć bezużytecznych ogłoszeń | podpis na każdej gwiazdce |

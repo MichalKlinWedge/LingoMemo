@@ -340,7 +340,7 @@ h2 {
      `.card`, tutaj zostaje sam układ. */
   .lesson-box {
     display: flex;
-    width: 9.5rem;
+    width: 11.5rem;
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
@@ -611,12 +611,46 @@ h2 {
     background: var(--level-1);
   }
 
+  /* Etap to kolumna: gwiazdki nad kwadracikiem. Szerokość bierze rząd gwiazdek (1,875 rem),
+     bo jest szerszy od kwadracika — stąd kafelek lekcji ma 11,5 rem, nie 9,5. */
+  .stage-col {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.125rem;
+  }
+
+  /* Miejsce na gwiazdki zostaje także przy etapie bez ani jednej — bez tego kwadraciki
+     sąsiednich lekcji stały na różnej wysokości. Puste gwiazdki na obrys świadomie odpadły:
+     przy trzech etapach to dziewięć znaczków pod jednym kafelkiem, czyli szum. */
+  .stage-stars {
+    display: flex;
+    min-height: 0.75rem;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-sun);
+  }
+
+  /* Gwiazdka w stałym pudełku, a nie zwykły tekst: „★" ma w każdym kroju inną szerokość,
+     a od niej zależy, czy rząd kwadracików mieści się w kafelku. Znak może wyjść poza pudełko
+     (jest wyśrodkowany), szerokość rzędu — nie. */
+  .stage-star {
+    width: 0.625rem;
+    flex: none;
+    font-size: 0.6875rem;
+    line-height: 0.75rem;
+    text-align: center;
+  }
+
   /* Jedna linia kwadracików pod kafelkiem lekcji: etapy poziomu łatwego, a za nimi wejścia
-     na średni i trudny. `nowrap`, bo zawinięty drugi wiersz rozjeżdżał rząd lekcji. */
+     na średni i trudny. `nowrap`, bo zawinięty drugi wiersz rozjeżdżał rząd lekcji.
+     Wyrównanie do dołu, nie do środka: kolumna etapu jest wyższa od kwadracika poziomu
+     (ma nad sobą gwiazdki), a dolna krawędź musi iść przez cały rząd jedną linią. */
   .marks {
     display: flex;
     flex-wrap: nowrap;
-    align-items: center;
+    align-items: flex-end;
     justify-content: center;
     gap: 0.25rem;
     min-height: 1.75rem;

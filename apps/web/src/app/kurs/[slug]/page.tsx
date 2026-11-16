@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
-import { LESSONS, plural, WORDS } from "@lingomemo/core";
+import { LESSONS, plural, STARS, WORDS } from "@lingomemo/core";
 
 import { Flag } from "@/components/flag";
 import { CRUMB_HOME } from "@/components/breadcrumbs";
@@ -13,7 +13,7 @@ import { dbLoadError } from "@/lib/db-error";
 
 async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params"] }) {
   const { slug } = await params;
-  const { supabase } = await requireUser(`/kurs/${slug}`);
+  const { supabase, userId } = await requireUser(`/kurs/${slug}`);
 
   const { data: course } = await supabase
     .from("courses")
@@ -27,18 +27,24 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
     { data: units, error: unitsError },
     { data: lessons, error: lessonsError },
     { data: levels, error: levelsError },
+    { data: stages, error: stagesError },
   ] = await Promise.all([
     supabase.from("units").select("id, title, icon, sort_order").eq("course_id", course.id).order("sort_order"),
     // Widok dokłada do lekcji stan otwarcia i postęp tego ucznia — jedno zapytanie zamiast trzech.
     supabase.from("v_my_lessons").select("*").order("sort_order"),
     // Stan każdego poziomu każdej lekcji: kwadraciki średniego i trudnego pod kafelkiem.
     supabase.from("v_my_lesson_levels").select("*").order("level"),
+    // Gwiazdki pojedynczych etapów — leżą w bazie od migracji z etapami, a pokazuje je dopiero
+    // ten rząd kwadracików. Filtr po użytkowniku musi być tutaj, mimo RLS: uczeń widzi w tej
+    // tabeli tylko swoje wiersze, ale administrator widzi wszystkie, więc bez filtru na jego
+    // mapie zmieszałyby się podejścia różnych dzieci.
+    supabase.from("lesson_stage_progress").select("lesson_id, stage_nr, stars").eq("user_id", userId),
   ]);
 
   // Błąd z zapytania o poziomy też musi być widoczny: po cichu znikają wtedy kwadraciki
   // średniego i trudnego, a strona wygląda na poprawną — tak właśnie wygląda brak migracji
-  // w bazie, do której akurat celuje aplikacja.
-  const error = unitsError ?? lessonsError ?? levelsError;
+  // w bazie, do której akurat celuje aplikacja. To samo dotyczy gwiazdek etapów.
+  const error = unitsError ?? lessonsError ?? levelsError ?? stagesError;
   if (error) return <p className="msg-error">{dbLoadError(error)}</p>;
 
   const byUnit = (unitId: string) => (lessons ?? []).filter((lesson) => lesson.unit_id === unitId);
@@ -47,6 +53,13 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
   const harderOf = (lessonId: string) =>
     (levels ?? []).filter(
       (row) => row.lesson_id === lessonId && (row.level ?? 1) > 1 && (row.exercise_count ?? 0) > 0,
+    );
+  // Gwiazdki etapów jednej lekcji, numer etapu -> liczba gwiazdek.
+  const starsOf = (lessonId: string) =>
+    new Map(
+      (stages ?? [])
+        .filter((row) => row.lesson_id === lessonId)
+        .map((row) => [row.stage_nr, row.stars ?? 0] as const),
     );
   const done = (lessons ?? []).filter((lesson) => lesson.status === "completed").length;
 
@@ -107,8 +120,9 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
               );
 
               // Kolumna szersza niż kafelek (6 rem): na dole stoi rząd kwadracików — do trzech
-              // etapów i dwa poziomy, wszystkie po 1,5 rem — a `.marks` się nie zawija, więc
-              // przy 7 rem wychodziły poza kafelek i wchodziły sąsiadowi w gap.
+              // etapów i dwa poziomy — a `.marks` się nie zawija, więc przy 7 rem wychodziły
+              // poza kafelek i wchodziły sąsiadowi w gap. Etap jest szerszy od swojego
+              // kwadracika, bo nad nim stoją trzy gwiazdki; stąd 11,5 rem, nie 9,5.
               return (
                 <li key={lesson.id} className="card lesson-box">
                   {state === "locked" ? (
@@ -169,7 +183,9 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
                     {/* Jedna linia kwadracików na samym dole kafelka: etapy poziomu łatwego oraz
                         wejścia na średni i trudny. */}
                     <span className="marks">
-                      {etapy > 1 && <Stages done={etapyZrobione} total={etapy} />}
+                      {etapy > 1 && (
+                        <Stages done={etapyZrobione} total={etapy} stars={starsOf(lesson.id)} />
+                      )}
                       {harderOf(lesson.id).map((row) => (
                         <LevelBox key={row.level} lesson={lesson.id} title={lesson.title} row={row} />
                       ))}
@@ -186,12 +202,6 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
   );
 }
 
-/**
- * Postęp w etapach lekcji: jeden kwadracik na etap, zrobione wypełnione.
- *
- * Dla czytnika ekranu to jeden obrazek z podpisem, a nie seria pustych elementów —
- * dziesięć „kwadrat, kwadrat, kwadrat" nie niesie żadnej informacji.
- */
 /** Nazwa poziomu dla czytnika ekranu i dymka. Łatwy ma kafelek, więc tu go nie ma. */
 const LEVEL_NAME: Record<number, string> = { 2: "średni", 3: "trudny" };
 
@@ -242,15 +252,45 @@ function LevelBox({
   );
 }
 
-function Stages({ done, total }: { done: number; total: number }) {
+/**
+ * Postęp w etapach lekcji: jeden kwadracik na etap, zrobione wypełnione, a nad każdym
+ * gwiazdki zdobyte właśnie w tym etapie.
+ *
+ * Gwiazdki etapu i gwiazdka przy kafelku mówią co innego i dlatego są obie: kafelek pokazuje
+ * ocenę całej lekcji (średnia z najlepszych wyników wszystkich etapów, zapisana po zamknięciu
+ * ostatniego), a te nad kwadracikami — który etap wypadł słabo i opłaca się go powtórzyć.
+ * Bez nich dziecko widziało dwie gwiazdki przy lekcji i nie miało z czego wyczytać, gdzie
+ * zgubiło trzecią.
+ *
+ * Dla czytnika ekranu to jeden obrazek z jednym podpisem, a nie seria pustych elementów —
+ * dziesięć „kwadrat, kwadrat, kwadrat" nie niesie żadnej informacji. Dymek nad każdym etapem
+ * powtarza to samo dla kogoś, kto patrzy na drobne gwiazdki i chce mieć pewność, ile ich jest.
+ */
+function Stages({ done, total, stars }: { done: number; total: number; stars: Map<number, number> }) {
   // Zabezpieczenie przed danymi z przyszłości: gdyby lekcja skróciła się po tym, jak dziecko
   // zrobiło etapy, `done` byłoby większe niż `total` i pętla rysowałaby za mało kwadracików.
   const zrobione = Math.min(Math.max(done, 0), total);
+  const numery = Array.from({ length: total }, (_, index) => index + 1);
+  const gwiazdkiEtapu = (nr: number) => Math.min(Math.max(stars.get(nr) ?? 0, 0), 3);
+  const opis = numery.map((nr) => `etap ${nr} — ${plural(gwiazdkiEtapu(nr), STARS)}`).join(", ");
 
   return (
-    <span className="flex gap-1" role="img" aria-label={`Zrobione etapy: ${zrobione} z ${total}`}>
-      {Array.from({ length: total }, (_, index) => (
-        <span key={index} className="stage" data-done={index < zrobione} aria-hidden />
+    <span
+      className="flex gap-1"
+      role="img"
+      aria-label={`Zrobione etapy: ${zrobione} z ${total}; ${opis}`}
+    >
+      {numery.map((nr) => (
+        <span key={nr} className="stage-col" title={`Etap ${nr} — ${plural(gwiazdkiEtapu(nr), STARS)}`}>
+          <span className="stage-stars" aria-hidden>
+            {Array.from({ length: gwiazdkiEtapu(nr) }, (_, index) => (
+              <span key={index} className="stage-star">
+                ★
+              </span>
+            ))}
+          </span>
+          <span className="stage" data-done={nr <= zrobione} aria-hidden />
+        </span>
       ))}
     </span>
   );

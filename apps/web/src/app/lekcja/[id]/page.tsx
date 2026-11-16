@@ -17,7 +17,7 @@ async function Lesson({
 }) {
   const { id } = await params;
   const { etap, poziom } = await searchParams;
-  const { supabase } = await requireUser(`/lekcja/${id}`);
+  const { supabase, userId } = await requireUser(`/lekcja/${id}`);
 
   const { data: lesson } = await supabase
     .from("lessons")
@@ -43,7 +43,14 @@ async function Lesson({
   // zaczynamy od pierwszego niezaliczonego — dziecko wraca tam, gdzie skończyło.
   const [{ data: mapRow }, { data: stageProgress }] = await Promise.all([
     supabase.from("v_my_lessons").select("stage_count").eq("id", id).maybeSingle(),
-    supabase.from("lesson_stage_progress").select("stage_nr, status").eq("lesson_id", id),
+    // Filtr po użytkowniku, mimo RLS: uczeń widzi w tej tabeli tylko swoje wiersze, ale
+    // administrator widzi wszystkie — bez filtru zaczynałby lekcję od etapu, który zrobiło
+    // któreś dziecko.
+    supabase
+      .from("lesson_stage_progress")
+      .select("stage_nr, status")
+      .eq("lesson_id", id)
+      .eq("user_id", userId),
   ]);
 
   // Poziom z adresu: łatwy (bez parametru) to lekcja z etapami, średni i trudny to jedno
