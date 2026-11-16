@@ -1,0 +1,183 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-it-starter",
+  "unit": { "slug": "pierwsze-kroki", "title": "Pierwsze kroki", "icon": "👋", "sortOrder": 1 },
+  "lesson": {
+    "slug": "powitania",
+    "title": "Ciao!",
+    "icon": "👋",
+    "kind": "standard",
+    "sortOrder": 1,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": null,
+    "isPublished": true
+  },
+  "concepts": [
+    { "key": "greet.ciao", "tags": ["👋"], "terms": { "pl": [{ "text": "cześć", "pos": "phrase" }], "it": [{ "text": "ciao", "pos": "phrase", "ipa": "/ˈtʃao/", "note": "Mówi się i na powitanie, i na pożegnanie — do kogoś znajomego." }] } },
+    { "key": "greet.buongiorno", "tags": ["🌞"], "terms": { "pl": [{ "text": "dzień dobry", "pos": "phrase" }], "it": [{ "text": "buongiorno", "pos": "phrase", "ipa": "/bwonˈdʒorno/" }] } },
+    { "key": "greet.buonasera", "tags": ["🌆"], "terms": { "pl": [{ "text": "dobry wieczór", "pos": "phrase" }], "it": [{ "text": "buonasera", "pos": "phrase", "ipa": "/bwonaˈsera/" }] } },
+    { "key": "greet.arrivederci", "tags": ["🙋"], "terms": { "pl": [{ "text": "do widzenia", "pos": "phrase" }], "it": [{ "text": "arrivederci", "pos": "phrase", "ipa": "/arriveˈdertʃi/" }] } },
+    { "key": "greet.grazie", "tags": ["🙏"], "terms": { "pl": [{ "text": "dziękuję", "pos": "phrase" }], "it": [{ "text": "grazie", "pos": "phrase", "ipa": "/ˈɡrattsje/" }] } },
+    { "key": "greet.prego", "tags": ["😊"], "terms": { "pl": [{ "text": "proszę", "pos": "phrase" }], "it": [{ "text": "prego", "pos": "phrase", "ipa": "/ˈprɛɡo/", "note": "Odpowiedź na „grazie”." }] } },
+    { "key": "greet.si", "tags": ["✅"], "terms": { "pl": [{ "text": "tak", "pos": "other" }], "it": [{ "text": "sì", "pos": "other", "ipa": "/si/" }] } },
+    { "key": "greet.no", "tags": ["❌"], "terms": { "pl": [{ "text": "nie", "pos": "other" }], "it": [{ "text": "no", "pos": "other", "ipa": "/nɔ/" }] } }
+  ],
+  "exercises": [
+    {
+      "type": "translate_ab",
+      "conceptKey": "greet.ciao",
+      "payload": { "prompt": "cześć", "accepted": ["ciao"], "options": ["ciao", "grazie", "prego", "no"] }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "greet.ciao",
+      "payload": { "prompt": "ciao", "accepted": ["cześć"] }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "greet.ciao",
+      "points": 15,
+      "payload": { "speak": "ciao", "lang": "it-IT", "accepted": ["ciao"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "greet.buongiorno",
+      "payload": { "prompt": "dzień dobry", "accepted": ["buongiorno"], "options": ["buongiorno", "buonasera", "arrivederci", "ciao"] }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "greet.buongiorno",
+      "payload": { "prompt": "buongiorno", "accepted": ["dzień dobry"] }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "greet.buongiorno",
+      "points": 15,
+      "payload": { "speak": "buongiorno", "lang": "it-IT", "accepted": ["buongiorno"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "greet.buonasera",
+      "payload": { "prompt": "dobry wieczór", "accepted": ["buonasera"], "options": ["buonasera", "buongiorno", "arrivederci", "grazie"] }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "greet.buonasera",
+      "payload": { "prompt": "buonasera", "accepted": ["dobry wieczór"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "greet.arrivederci",
+      "payload": { "prompt": "do widzenia", "accepted": ["arrivederci"], "options": ["arrivederci", "ciao", "buonasera", "prego"] }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "greet.arrivederci",
+      "payload": { "prompt": "arrivederci", "accepted": ["do widzenia"] }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "greet.arrivederci",
+      "points": 15,
+      "payload": { "speak": "arrivederci", "lang": "it-IT", "accepted": ["arrivederci"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "greet.grazie",
+      "payload": { "prompt": "dziękuję", "accepted": ["grazie"], "options": ["grazie", "prego", "sì", "no"] }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "greet.grazie",
+      "payload": { "prompt": "grazie", "accepted": ["dziękuję"] }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "greet.grazie",
+      "points": 15,
+      "payload": { "speak": "grazie", "lang": "it-IT", "accepted": ["grazie"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "greet.prego",
+      "payload": { "prompt": "proszę", "accepted": ["prego"], "options": ["prego", "grazie", "buongiorno", "no"] }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "greet.prego",
+      "payload": { "prompt": "prego", "accepted": ["proszę"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "greet.si",
+      "payload": { "prompt": "tak", "accepted": ["sì", "si"], "options": ["sì", "no", "prego", "ciao"] }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "greet.si",
+      "payload": { "prompt": "sì", "accepted": ["tak"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "greet.no",
+      "payload": { "prompt": "nie", "accepted": ["no"], "options": ["no", "sì", "grazie", "ciao"] }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "greet.no",
+      "payload": { "prompt": "no", "accepted": ["nie"] }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz słówka w pary",
+        "pairs": [
+          { "a": "cześć", "b": "ciao" },
+          { "a": "dzień dobry", "b": "buongiorno" },
+          { "a": "dobry wieczór", "b": "buonasera" },
+          { "a": "do widzenia", "b": "arrivederci" },
+          { "a": "dziękuję", "b": "grazie" },
+          { "a": "proszę", "b": "prego" }
+        ]
+      }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj polskie słowo.",
+        "lang": "it-IT",
+        "pairs": [
+          { "a": "cześć", "b": "ciao" },
+          { "a": "dzień dobry", "b": "buongiorno" },
+          { "a": "do widzenia", "b": "arrivederci" },
+          { "a": "dziękuję", "b": "grazie" },
+          { "a": "proszę", "b": "prego" },
+          { "a": "tak", "b": "sì" }
+        ]
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "greet.prego",
+      "payload": {
+        "sentence": "Grazie! — {{blank}}!",
+        "options": ["Prego", "Grazie", "Arrivederci", "No"],
+        "answer": "Prego",
+        "translation": "Dziękuję! — Proszę!"
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "greet.buonasera",
+      "payload": {
+        "sentence": "{{blank}}, signora!",
+        "options": ["Buonasera", "Buongiorno", "Grazie", "Sì"],
+        "answer": "Buonasera",
+        "translation": "Dobry wieczór, pani!"
+      }
+    }
+  ]
+}

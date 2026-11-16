@@ -1,0 +1,206 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-it-starter",
+  "unit": { "slug": "pierwsze-kroki", "title": "Pierwsze kroki", "icon": "👋", "sortOrder": 1 },
+  "lesson": {
+    "slug": "liczby-do-pieciu",
+    "title": "Uno, due, tre",
+    "icon": "5️⃣",
+    "kind": "standard",
+    "sortOrder": 2,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "powitania",
+    "isPublished": true
+  },
+  "concepts": [
+    { "key": "num.1", "tags": ["1️⃣"], "terms": { "pl": [{ "text": "jeden", "pos": "noun" }], "it": [{ "text": "uno", "pos": "noun", "ipa": "/ˈuno/" }] } },
+    { "key": "num.2", "tags": ["2️⃣"], "terms": { "pl": [{ "text": "dwa", "pos": "noun" }], "it": [{ "text": "due", "pos": "noun", "ipa": "/ˈdue/" }] } },
+    { "key": "num.3", "tags": ["3️⃣"], "terms": { "pl": [{ "text": "trzy", "pos": "noun" }], "it": [{ "text": "tre", "pos": "noun", "ipa": "/tre/" }] } },
+    { "key": "num.4", "tags": ["4️⃣"], "terms": { "pl": [{ "text": "cztery", "pos": "noun" }], "it": [{ "text": "quattro", "pos": "noun", "ipa": "/ˈkwattro/" }] } },
+    { "key": "num.5", "tags": ["5️⃣"], "terms": { "pl": [{ "text": "pięć", "pos": "noun" }], "it": [{ "text": "cinque", "pos": "noun", "ipa": "/ˈtʃinkwe/" }] } }
+  ],
+  "exercises": [
+    {
+      "type": "image_choice",
+      "conceptKey": "num.1",
+      "payload": {
+        "prompt": "uno",
+        "speak": "uno",
+        "lang": "it-IT",
+        "options": ["2026/liczba-1.svg", "2026/liczba-4.svg", "2026/liczba-7.svg", "2026/liczba-10.svg"],
+        "answer": "2026/liczba-1.svg"
+      }
+    },
+    {
+      "type": "image_choice",
+      "conceptKey": "num.2",
+      "payload": {
+        "prompt": "due",
+        "speak": "due",
+        "lang": "it-IT",
+        "options": ["2026/liczba-2.svg", "2026/liczba-5.svg", "2026/liczba-9.svg", "2026/liczba-3.svg"],
+        "answer": "2026/liczba-2.svg"
+      }
+    },
+    {
+      "type": "image_choice",
+      "conceptKey": "num.3",
+      "payload": {
+        "prompt": "tre",
+        "speak": "tre",
+        "lang": "it-IT",
+        "options": ["2026/liczba-3.svg", "2026/liczba-8.svg", "2026/liczba-1.svg", "2026/liczba-6.svg"],
+        "answer": "2026/liczba-3.svg"
+      }
+    },
+    {
+      "type": "image_choice",
+      "conceptKey": "num.4",
+      "payload": {
+        "prompt": "quattro",
+        "speak": "quattro",
+        "lang": "it-IT",
+        "options": ["2026/liczba-4.svg", "2026/liczba-7.svg", "2026/liczba-2.svg", "2026/liczba-9.svg"],
+        "answer": "2026/liczba-4.svg"
+      }
+    },
+    {
+      "type": "image_choice",
+      "conceptKey": "num.5",
+      "payload": {
+        "prompt": "cinque",
+        "speak": "cinque",
+        "lang": "it-IT",
+        "options": ["2026/liczba-5.svg", "2026/liczba-10.svg", "2026/liczba-3.svg", "2026/liczba-8.svg"],
+        "answer": "2026/liczba-5.svg"
+      }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "num.1",
+      "payload": { "prompt": "jeden", "accepted": ["uno"], "options": ["uno", "due", "tre", "cinque"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "num.2",
+      "payload": { "prompt": "dwa", "accepted": ["due"], "options": ["due", "uno", "quattro", "tre"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "num.3",
+      "payload": { "prompt": "trzy", "accepted": ["tre"], "options": ["tre", "due", "cinque", "quattro"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "num.4",
+      "payload": { "prompt": "cztery", "accepted": ["quattro"], "options": ["quattro", "cinque", "uno", "due"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "num.5",
+      "payload": { "prompt": "pięć", "accepted": ["cinque"], "options": ["cinque", "quattro", "tre", "uno"] }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "num.1",
+      "payload": { "prompt": "uno", "accepted": ["jeden"] }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "num.2",
+      "payload": { "prompt": "due", "accepted": ["dwa"] }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "num.3",
+      "payload": { "prompt": "tre", "accepted": ["trzy"] }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "num.4",
+      "payload": { "prompt": "quattro", "accepted": ["cztery"] }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "num.5",
+      "payload": { "prompt": "cinque", "accepted": ["pięć"] }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "num.2",
+      "points": 15,
+      "payload": { "speak": "due", "lang": "it-IT", "accepted": ["due"] }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "num.4",
+      "points": 15,
+      "payload": { "speak": "quattro", "lang": "it-IT", "accepted": ["quattro"] }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "num.5",
+      "points": 15,
+      "payload": { "speak": "cinque", "lang": "it-IT", "accepted": ["cinque"] }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz liczby w pary",
+        "pairs": [
+          { "a": "jeden", "b": "uno" },
+          { "a": "dwa", "b": "due" },
+          { "a": "trzy", "b": "tre" },
+          { "a": "cztery", "b": "quattro" },
+          { "a": "pięć", "b": "cinque" }
+        ]
+      }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj polską liczbę.",
+        "lang": "it-IT",
+        "pairs": [
+          { "a": "jeden", "b": "uno" },
+          { "a": "dwa", "b": "due" },
+          { "a": "trzy", "b": "tre" },
+          { "a": "cztery", "b": "quattro" },
+          { "a": "pięć", "b": "cinque" }
+        ]
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "num.2",
+      "payload": {
+        "sentence": "Uno, {{blank}}, tre.",
+        "options": ["due", "quattro", "cinque", "uno"],
+        "answer": "due",
+        "translation": "Jeden, dwa, trzy."
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "num.4",
+      "payload": {
+        "sentence": "Tre, {{blank}}, cinque.",
+        "options": ["quattro", "due", "uno", "tre"],
+        "answer": "quattro",
+        "translation": "Trzy, cztery, pięć."
+      }
+    },
+    {
+      "type": "sentence_order",
+      "points": 20,
+      "payload": {
+        "prompt": "Ułóż liczby od jednego do pięciu.",
+        "tokens": ["uno", "due", "tre", "quattro", "cinque"],
+        "solution": ["uno", "due", "tre", "quattro", "cinque"]
+      }
+    }
+  ]
+}

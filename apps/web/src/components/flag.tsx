@@ -11,7 +11,7 @@
  */
 
 /** Języki, dla których mamy plik z flagą. Lista jest po to, żeby nie żądać pliku, którego nie ma. */
-const FLAGI = new Set(["en", "de", "es", "pl"]);
+const FLAGI = new Set(["en", "de", "es", "it", "pl"]);
 
 export function Flag({
   code,
