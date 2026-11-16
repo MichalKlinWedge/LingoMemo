@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { HINTS, plural } from "@lingomemo/core";
+import { HINTS, plural, UNLOCKS } from "@lingomemo/core";
 
 import { ChoiceExercise } from "@/components/exercises/choice";
 import { ImageChoiceExercise } from "@/components/exercises/image-choice";
@@ -35,6 +35,7 @@ export function LessonRunner({
   stages,
   level,
   hintsLeft,
+  unlockLeft,
   preview,
   autoNextMs,
 }: {
@@ -53,6 +54,8 @@ export function LessonRunner({
   level: number;
   /** Ile podpowiedzi zostało dziecku na dziś. Pula odnawia się o północy w jego strefie. */
   hintsLeft: number;
+  /** Punkty odblokowania sprzed lekcji — po zamknięciu poznajemy po różnicy, czy przybył nowy. */
+  unlockLeft: number;
   /** Podgląd z panelu: baza wpuszcza administratora także w lekcję zamkniętą
    *  albo nieopublikowaną. Ucząc się normalnie, ma zamki jak dziecko. */
   preview: boolean;
@@ -70,6 +73,8 @@ export function LessonRunner({
   // Ile podpowiedzi dołożyła właśnie zaliczona lekcja. Nie pytamy o to bazy wprost: pula po
   // zamknięciu lekcji minus pula sprzed niego to dokładnie tyle, ile przybyło.
   const [hintsWon, setHintsWon] = useState(0);
+  const [unlocks, setUnlocks] = useState(unlockLeft);
+  const [unlocksWon, setUnlocksWon] = useState(0);
   const [error, setError] = useState<string | null>(null);
   // Zadanie, w którego polu dziecko już coś napisało. Trzymamy IDENTYFIKATOR, nie flagę:
   // przy przejściu dalej wystarczy, że przestaje pasować do bieżącego zadania, więc nie trzeba
@@ -213,8 +218,10 @@ export function LessonRunner({
     setSummary(finished.summary);
     setHintsWon(Math.max(finished.hintsLeft - hints, 0));
     setHints(finished.hintsLeft);
+    setUnlocksWon(Math.max(finished.unlockLeft - unlocks, 0));
+    setUnlocks(finished.unlockLeft);
     setPhase("done");
-  }, [hints, index, total]);
+  }, [hints, index, total, unlocks]);
 
   if (phase === "done" && summary) {
     return (
@@ -224,6 +231,7 @@ export function LessonRunner({
         courseSlug={courseSlug}
         badgeNames={badgeNames}
         hintsWon={hintsWon}
+        unlocksWon={unlocksWon}
       />
     );
   }
@@ -575,6 +583,7 @@ function SummaryScreen({
   courseSlug,
   badgeNames,
   hintsWon,
+  unlocksWon,
 }: {
   summary: Summary;
   lessonId: string;
@@ -582,6 +591,8 @@ function SummaryScreen({
   badgeNames: Record<string, string>;
   /** Ile podpowiedzi przybyło za zaliczenie tej lekcji. Zero przy etapie i przy powtórce. */
   hintsWon: number;
+  /** Ile punktów odblokowania przybyło — jeden za zaliczony poziom trudny, zero poza nim. */
+  unlocksWon: number;
 }) {
   const stars = "⭐".repeat(summary.stars) + "☆".repeat(3 - summary.stars);
   const split = summary.stages > 1;
@@ -612,6 +623,10 @@ function SummaryScreen({
       )}
       {summary.xp > 0 && <p className="chip">+{summary.xp} punktów za {split ? "etap" : "lekcję"}</p>}
       {hintsWon > 0 && <p className="chip">💡 +{plural(hintsWon, HINTS)} na dziś</p>}
+      {/* Punkt zostaje do wydania, więc mówimy wprost, na co: dziecko dopiero poznaje tę walutę. */}
+      {unlocksWon > 0 && (
+        <p className="chip">🔑 +{plural(unlocksWon, UNLOCKS)} — otworzysz nim zamkniętą lekcję</p>
+      )}
       {summary.streak > 1 && <p className="chip">🔥 {summary.streak} dni z rzędu</p>}
       {summary.badges.length > 0 && (
         <p className="msg-ok">

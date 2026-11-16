@@ -23,6 +23,7 @@ export const STARS: PluralForms = ['gwiazdka', 'gwiazdki', 'gwiazdek'];
 export const DAYS: PluralForms = ['dzień', 'dni', 'dni'];
 export const EXERCISES: PluralForms = ['zadanie', 'zadania', 'zadań'];
 export const HINTS: PluralForms = ['podpowiedź', 'podpowiedzi', 'podpowiedzi'];
+export const UNLOCKS: PluralForms = ['punkt odblokowania', 'punkty odblokowania', 'punktów odblokowania'];
 export const ENTRIES: PluralForms = ['zapis', 'zapisy', 'zapisów'];
 
 export const MINUTES: PluralForms = ['minuta', 'minuty', 'minut'];

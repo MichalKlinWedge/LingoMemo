@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
-import { LESSONS, plural, STARS, WORDS } from "@lingomemo/core";
+import { LESSONS, plural, STARS, UNLOCKS, WORDS } from "@lingomemo/core";
 
 import { CourseRequest } from "@/app/course-request";
 import { Flag } from "@/components/flag";
@@ -11,6 +11,8 @@ import { PageHeader } from "@/components/page-header";
 import { Loading, Shell } from "@/components/shell";
 import { requireUser } from "@/lib/auth";
 import { dbLoadError } from "@/lib/db-error";
+
+import { UnlockLesson } from "./unlock-lesson";
 
 async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params"] }) {
   const { slug } = await params;
@@ -71,6 +73,7 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
     { data: levels, error: levelsError },
     { data: stages, error: stagesError },
     { data: gate },
+    { data: punktyRow },
   ] = await Promise.all([
     supabase.from("units").select("id, title, icon, sort_order").eq("course_id", course.id).order("sort_order"),
     // Widok dokłada do lekcji stan otwarcia i postęp tego ucznia — jedno zapytanie zamiast trzech.
@@ -85,6 +88,8 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
     // Bramka zaległych powtórek: przy dziesięciu zaległych słówkach kurs jest zamknięty do
     // zdanego testu powtórkowego. Regułę liczy baza — strona tylko nazywa to, co z niej wyszło.
     supabase.rpc("review_gate", { p_course: course.id }),
+    // Punkty odblokowania: za jeden z nich dziecko otwiera kłódkę w dziale, w którym już jest.
+    supabase.rpc("unlock_status", { p_user: userId }),
   ]);
 
   const bramka = gate as {
@@ -95,6 +100,8 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
     passedToday: boolean;
     triedToday: boolean;
   } | null;
+
+  const punkty = (punktyRow as { left?: number } | null)?.left ?? 0;
 
   // Błąd z zapytania o poziomy też musi być widoczny: po cichu znikają wtedy kwadraciki
   // średniego i trudnego, a strona wygląda na poprawną — tak właśnie wygląda brak migracji
@@ -181,6 +188,14 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
         </section>
       )}
 
+      {/* Stan konta punktów odblokowania. Bez tego dziecko nie wie, że kłódka z kluczykiem jest
+          dla niego — punkt zdobyło kilka lekcji wcześniej, na poziomie trudnym. */}
+      {punkty > 0 && (
+        <p className="chip self-start">
+          🔑 {plural(punkty, UNLOCKS)} — kliknij kłódkę z kluczykiem, żeby otworzyć lekcję
+        </p>
+      )}
+
       {(units ?? []).map((unit) => {
         // Dział zamknięty w całości, czyli czekający na test poprzedniego działu. Poznajemy
         // go po tym, że ani jedna jego lekcja nie jest otwarta — reguła siedzi w bazie
@@ -206,6 +221,21 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
             {byUnit(unit.id).map((lesson) => {
               const state = lesson.status === "completed" ? "done" : lesson.is_unlocked ? "available" : "locked";
               const label = `${lesson.title}${state === "locked" ? " — zamknięta" : ""}`;
+
+              // Zamek bez powodu to dla dziecka ślepa ściana. Powody są cztery i każdy prowadzi
+              // gdzie indziej: do testu powtórkowego, do poprzedniego działu, do reszty lekcji
+              // w tym dziale albo do lekcji obok. Bramka powtórek zamyka cały kurs, więc stoi
+              // przed pozostałymi powodami. Piąte wyjście — punkt odblokowania — dopisujemy
+              // tylko tam, gdzie naprawdę jest do wzięcia (`is_unlockable` liczy to w bazie).
+              const powod = bramka?.active
+                ? "Najpierw zdaj test powtórkowy"
+                : unitLocked
+                  ? "Najpierw zdaj test poprzedniego działu"
+                  : lesson.kind === "test"
+                    ? "Najpierw skończ wszystkie lekcje działu"
+                    : lesson.is_unlockable
+                      ? "Najpierw skończ poprzednią lekcję albo zdobądź punkt odblokowania na poziomie trudnym"
+                      : "Najpierw skończ poprzednią lekcję";
 
               // Etapy zostają na widoku także po zaliczeniu lekcji, wypełnione na kolor.
               // Znikające kwadraciki wyglądały jak usterka: rząd pod jedną lekcją był krótszy
@@ -234,26 +264,23 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
               return (
                 <li key={lesson.id} className="card lesson-box">
                   {state === "locked" ? (
-                    <div
-                      className="tile"
-                      data-state="locked"
-                      aria-label={label}
-                      // Zamek bez powodu to dla dziecka ślepa ściana. Powody są cztery i każdy
-                      // prowadzi gdzie indziej: do testu powtórkowego, do poprzedniego działu,
-                      // do reszty lekcji w tym dziale albo do lekcji obok. Bramka powtórek
-                      // zamyka cały kurs, więc stoi przed pozostałymi powodami.
-                      title={
-                        bramka?.active
-                          ? "Najpierw zdaj test powtórkowy"
-                          : unitLocked
-                            ? "Najpierw zdaj test poprzedniego działu"
-                            : lesson.kind === "test"
-                              ? "Najpierw skończ wszystkie lekcje działu"
-                              : "Najpierw skończ poprzednią lekcję"
-                      }
-                    >
-                      {tile}
-                    </div>
+                    // Kłódka do otwarcia punktem jest przyciskiem, a nie martwym kwadratem —
+                    // ale tylko wtedy, gdy punkt jest. Bez punktu zostaje zwykły zamek, którego
+                    // dymek mówi, skąd punkt wziąć; klikalna kłódka bez pokrycia obiecywałaby
+                    // dziecku coś, czego baza i tak nie zrobi.
+                    lesson.is_unlockable && punkty > 0 ? (
+                      <UnlockLesson
+                        lessonId={lesson.id}
+                        slug={slug}
+                        title={lesson.title}
+                        label={label}
+                        left={punkty}
+                      />
+                    ) : (
+                      <div className="tile" data-state="locked" aria-label={label} title={powod}>
+                        {tile}
+                      </div>
+                    )
                   ) : (
                     <Link
                       href={nextHref(lesson.id, state === "done")}

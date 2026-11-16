@@ -1165,3 +1165,37 @@ Zmienne `EXPO_PUBLIC_SUPABASE_URL` i `EXPO_PUBLIC_SUPABASE_ANON_KEY` są zapisan
 dostępu do danych pilnuje RLS, a ocena odpowiedzi i tak dzieje się w bazie.
 
 Instrukcja instalacji dla rodzica: `docs/TELEFON.md`.
+
+### Co daje każdy poziom lekcji: podpowiedź i punkt odblokowania (2026-11-16)
+
+Poziomy średni i trudny nie dawały nic poza gwiazdkami — postęp kursu liczy się z łatwego,
+a dokładkę do podpowiedzi dawała sama zaliczona lekcja, czyli znowu łatwy. Dziecko, które weszło
+na trudny, dostawało tyle samo co to, które go ominęło. Od teraz każdy poziom ma swoją nagrodę:
+
+| Poziom | Co daje |
+| --- | --- |
+| łatwy | otwiera następną lekcję (bez zmian — to on jest postępem) |
+| średni | jedną podpowiedź do dzisiejszej puli (`hint_bonus`) |
+| trudny | jeden **punkt odblokowania** (`unlock_points_earned`) |
+
+Dzienna pula podpowiedzi zostaje trzy; zmieniło się tylko źródło dokładki — z `lesson_progress`
+na `lesson_level_progress` z `level = 2`. Reguła liczenia jest ta sama: data `completed_at`
+w strefie dziecka, więc dokładka znika o północy, a powtórzone wejście nie daje drugiej
+podpowiedzi.
+
+Punkty odblokowania liczą się **z tego, co w bazie już jest**: zarobione to zaliczone wejścia na
+trudny, wydane to wiersze w `public.lesson_unlocks`, stan konta jest różnicą. Żadnego licznika do
+dopisywania i cofania — skasowana lekcja zabiera i punkt, i odblokowanie, bez rozjazdu z historią.
+
+Za punkt otwiera się **zwykłą lekcję (`kind = 'standard'`) w dziale, w którym dziecko już jest**.
+Punkt nie jest przepustką przez test działu ani przez bramkę zaległych powtórek: test zostaje
+jedyną drogą do następnego działu, a zaległe słówka trzeba powtórzyć, nie wykupić. Pilnuje tego
+`can_unlock_lesson`, a nie przeglądarka — mapa tylko pokazuje kłódkę z kluczykiem tam, gdzie baza
+mówi, że da się ją otworzyć. Kliknięcie kłódki pyta o zgodę, bo punkt kosztuje kilkanaście zadań
+na poziomie trudnym i wydanie go przez pomyłkę byłoby dotkliwe.
+
+Odrzucone: punkty w `points_ledger` (to waluta za zadania, pokazywana w pasku — zmieszanie jej
+z odblokowaniami znaczyłoby, że dziecko kupuje lekcje za zwykłą naukę); kolumna `unlock_points`
+w `profiles` (licznik do zerowania, czyli dokładnie to, czego uniknęliśmy przy podpowiedziach);
+odblokowanie całego działu (to już przeskok przez test); punkt za średni i podpowiedź za trudny
+(nagroda ma rosnąć z trudnością, a odblokowanie jest warte więcej niż jedna podpowiedź).

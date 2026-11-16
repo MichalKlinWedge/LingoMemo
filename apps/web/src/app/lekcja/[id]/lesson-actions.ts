@@ -126,20 +126,28 @@ export async function submitAnswer(
 }
 
 /**
- * Zamknięcie lekcji, a po nim świeża pula podpowiedzi.
+ * Zamknięcie lekcji, a po nim świeża pula podpowiedzi i stan punktów odblokowania.
  *
- * Pulę czytamy osobnym zapytaniem, zamiast dokładać ją do odpowiedzi `finish_lesson_session`:
- * dokładka za lekcję nie jest niczym przyznawanym w tamtej funkcji, tylko liczona na bieżąco
- * z zaliczonych dzisiaj lekcji, więc `hints_left()` po prostu wie o niej od razu. Po to, żeby
- * ekran podsumowania mógł powiedzieć dziecku, że właśnie dostało podpowiedź.
+ * Jedno i drugie czytamy osobnym zapytaniem, zamiast dokładać do odpowiedzi
+ * `finish_lesson_session`: nagroda za poziom nie jest tam niczym przyznawanym, tylko liczoną
+ * na bieżąco z `lesson_level_progress` (średni dokłada podpowiedź, trudny daje punkt), więc
+ * `hints_left()` i `unlock_status()` wiedzą o niej od razu. Po to, żeby ekran podsumowania mógł
+ * powiedzieć dziecku, co właśnie dostało.
  */
 export async function finishLesson(
   sessionId: string,
-): Promise<{ summary: Summary; hintsLeft: number } | { error: string }> {
-  const { supabase } = await requireUser("/");
+): Promise<{ summary: Summary; hintsLeft: number; unlockLeft: number } | { error: string }> {
+  const { supabase, userId } = await requireUser("/");
   const { data, error } = await supabase.rpc("finish_lesson_session", { p_session: sessionId });
   if (error) return { error: dbErrorMessage(error, "Nie udało się zamknąć lekcji.") };
 
-  const { data: hintsLeft } = await supabase.rpc("hints_left");
-  return { summary: data as unknown as Summary, hintsLeft: hintsLeft ?? 0 };
+  const [{ data: hintsLeft }, { data: unlock }] = await Promise.all([
+    supabase.rpc("hints_left"),
+    supabase.rpc("unlock_status", { p_user: userId }),
+  ]);
+  return {
+    summary: data as unknown as Summary,
+    hintsLeft: hintsLeft ?? 0,
+    unlockLeft: (unlock as { left?: number } | null)?.left ?? 0,
+  };
 }

@@ -411,6 +411,38 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"lesson_unlocks": {
+                  Row: {
+                    "created_at": string,"lesson_id": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"lesson_id": string,"user_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"lesson_id"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "lesson_unlocks_lesson_id_fkey"
+      columns: ["lesson_id"]
+isOneToOne: false
+      referencedRelation: "lessons"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "lesson_unlocks_lesson_id_fkey"
+      columns: ["lesson_id"]
+isOneToOne: false
+      referencedRelation: "v_my_lesson_levels"
+      referencedColumns: ["lesson_id"]
+    },{
+      foreignKeyName: "lesson_unlocks_lesson_id_fkey"
+      columns: ["lesson_id"]
+isOneToOne: false
+      referencedRelation: "v_my_lessons"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"lessons": {
                   Row: {
                     "created_at": string,"icon": string | null,"id": string,"is_published": boolean,"kind": Database["public"]['Enums']["lesson_kind"],"pass_threshold": number,"prerequisite_lesson_id": string | null,"review_scope_course_id": string | null,"review_scope_unit_id": string | null,"slug": string,"sort_order": number,"title": string,"unit_id": string,"xp_reward": number
@@ -706,7 +738,7 @@ isOneToOne: false
                   ]
                 },"v_my_lessons": {
                   Row: {
-                    "best_score": number | null,"icon": string | null,"id": string,"is_unlocked": boolean | null,"kind": Database["public"]['Enums']["lesson_kind"],"prerequisite_lesson_id": string | null,"slug": string,"sort_order": number,"stage_count": number | null,"stages_done": number | null,"stars": number | null,"status": string | null,"title": string,"unit_id": string,"word_count": number | null,"xp_reward": number
+                    "best_score": number | null,"icon": string | null,"id": string,"is_unlockable": boolean | null,"is_unlocked": boolean | null,"kind": Database["public"]['Enums']["lesson_kind"],"prerequisite_lesson_id": string | null,"slug": string,"sort_order": number,"stage_count": number | null,"stages_done": number | null,"stars": number | null,"status": string | null,"title": string,"unit_id": string,"word_count": number | null,"xp_reward": number
                   }
                   ComputedFields: never
                   Relationships: [
@@ -911,6 +943,9 @@ isOneToOne: false
                            },
 "bump_streak":
 { Args: { "p_lesson_done": boolean,"p_today": string,"p_user": string }; Returns: number
+                           },
+"can_unlock_lesson":
+{ Args: { "p_lesson": string,"p_user": string }; Returns: boolean
                            },
 "child_exercise":
 { Args: { "p_exercise": string }; Returns: Json
@@ -1184,6 +1219,18 @@ isOneToOne: false
                            },
 "test_limit":
 { Args: Record<PropertyKey, never>; Returns: number
+                           },
+"unlock_lesson":
+{ Args: { "p_lesson": string }; Returns: Json
+                           },
+"unlock_points_earned":
+{ Args: { "p_user": string }; Returns: number
+                           },
+"unlock_points_left":
+{ Args: { "p_user": string }; Returns: number
+                           },
+"unlock_status":
+{ Args: { "p_user": string }; Returns: Json
                            },
 "use_hint":
 { Args: { "p_exercise": string,"p_session": string }; Returns: Json

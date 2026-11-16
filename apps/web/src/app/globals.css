@@ -300,6 +300,16 @@ h2 {
     cursor: not-allowed;
   }
 
+  /* Kłódka, którą da się otworzyć punktem odblokowania. To przycisk, więc palec zamiast
+     przekreślonego kółka, a wyszarzenie słabsze: przy `grayscale(1)` kluczyk na kłódce
+     robił się popielaty i niczego już nie obiecywał. Całkiem bez szarości kafelek wyglądałby
+     na lekcję otwartą. */
+  .tile[data-state="locked"][data-unlockable="true"] {
+    opacity: 0.85;
+    filter: grayscale(0.3);
+    cursor: pointer;
+  }
+
   /* --- tryb nauki: sowa na mapie i plansza ze słówkami ---
      Sowa prowadzi na planszę, na której dziecko słucha słówek lekcji, zanim ją zacznie.
      Okrągła i wielkości palca (56 px, jak każdy przycisk dla dziecka), żeby nie dało się

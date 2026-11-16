@@ -1,8 +1,9 @@
--- Dodatkowa podpowiedź za ukończoną lekcję.
+-- Dodatkowa podpowiedź za poziom średni.
 --
--- Sprawdzamy to, na czym stoi uczciwość dokładki: że liczy się lekcja zaliczona DZISIAJ, że
--- wczorajsza już nie, że powtórzona lekcja nie daje drugiej podpowiedzi, że dokładka naprawdę
--- przedłuża pulę (szóste użycie przechodzi) i że data liczy się w strefie dziecka, a nie serwera.
+-- Sprawdzamy to, na czym stoi uczciwość dokładki: że liczy się wejście na średni zrobione
+-- DZISIAJ, że wczorajsze już nie, że powtórzone nie daje drugiej podpowiedzi, że dokładka
+-- naprawdę przedłuża pulę (czwarte użycie przechodzi) i że data liczy się w strefie dziecka,
+-- a nie serwera.
 
 begin;
 select plan(10);
@@ -87,66 +88,66 @@ create or replace function pg_temp.dzis() returns date language sql as $$
 $$;
 
 -- --- pusty dzień ---
-select is(pg_temp.zostalo(), public.hint_limit(), 'bez zaliczonej lekcji zostaje sama pula dzienna');
+select is(pg_temp.zostalo(), public.hint_limit(), 'bez poziomu średniego zostaje sama pula dzienna');
 
--- --- jedna lekcja zaliczona dzisiaj ---
-insert into public.lesson_progress (user_id, lesson_id, status, best_score, stars, completed_at)
-select (select id from t_ids where name = 'uczen'), lesson_one, 'completed', 1.0, 3, now() from t_ctx;
+-- --- jedno wejście na średni zrobione dzisiaj ---
+insert into public.lesson_level_progress (user_id, lesson_id, level, status, best_score, stars, completed_at)
+select (select id from t_ids where name = 'uczen'), lesson_one, 2, 'completed', 1.0, 3, now() from t_ctx;
 
-select is(pg_temp.zostalo(), public.hint_limit() + 1, 'lekcja zaliczona dzisiaj dokłada jedną podpowiedź');
+select is(pg_temp.zostalo(), public.hint_limit() + 1, 'poziom średni zrobiony dzisiaj dokłada jedną podpowiedź');
 select is(
   (select public.hint_bonus((select id from t_ids where name = 'uczen'))),
   1,
-  'dokładka to jedna podpowiedź za jedną lekcję'
+  'dokładka to jedna podpowiedź za jedno wejście na średni'
 );
 
--- --- druga lekcja tego samego dnia ---
-insert into public.lesson_progress (user_id, lesson_id, status, best_score, stars, completed_at)
-select (select id from t_ids where name = 'uczen'), lesson_two, 'completed', 1.0, 3, now() from t_ctx;
+-- --- drugie wejście tego samego dnia ---
+insert into public.lesson_level_progress (user_id, lesson_id, level, status, best_score, stars, completed_at)
+select (select id from t_ids where name = 'uczen'), lesson_two, 2, 'completed', 1.0, 3, now() from t_ctx;
 
-select is(pg_temp.zostalo(), public.hint_limit() + 2, 'druga lekcja dokłada drugą podpowiedź');
+select is(pg_temp.zostalo(), public.hint_limit() + 2, 'drugie wejście dokłada drugą podpowiedź');
 
--- --- powtórzenie lekcji ---
--- `finish_lesson_session` trzyma `completed_at` na `coalesce`, więc ponowne zaliczenie nie
+-- --- powtórzenie wejścia ---
+-- `finish_lesson_session` trzyma `completed_at` na `coalesce`, więc ponowne przejście nie
 -- rusza daty. Tu robimy to samo ręcznie: zmienia się wynik, data zostaje.
-update public.lesson_progress
+update public.lesson_level_progress
    set last_score = 0.9, attempts_count = attempts_count + 1, updated_at = now()
  where user_id = (select id from t_ids where name = 'uczen')
    and lesson_id = (select lesson_one from t_ctx);
 
-select is(pg_temp.zostalo(), public.hint_limit() + 2, 'powtórzona lekcja nie dokłada kolejnej podpowiedzi');
+select is(pg_temp.zostalo(), public.hint_limit() + 2, 'powtórzone wejście nie dokłada kolejnej podpowiedzi');
 
--- --- wczorajsze zaliczenie ---
-update public.lesson_progress
+-- --- wczorajsze wejście ---
+update public.lesson_level_progress
    set completed_at = now() - interval '2 days'
  where user_id = (select id from t_ids where name = 'uczen')
    and lesson_id = (select lesson_two from t_ctx);
 
-select is(pg_temp.zostalo(), public.hint_limit() + 1, 'lekcja zaliczona wcześniej nie dokłada nic do dzisiejszej puli');
+select is(pg_temp.zostalo(), public.hint_limit() + 1, 'wejście zrobione wcześniej nie dokłada nic do dzisiejszej puli');
 
 -- --- dokładka naprawdę przedłuża pulę ---
 -- Tyle użyć z dzisiaj, ile wynosi pula dzienna: sama pula jest już zjedzona, więc to, co
--- zostaje, może pochodzić wyłącznie z dokładki za lekcję.
+-- zostaje, może pochodzić wyłącznie z dokładki za średni.
 insert into public.hint_uses (user_id, session_id, exercise_id, easier_id, used_on)
 select (select id from t_ids where name = 'uczen'), null, null, null, pg_temp.dzis()
   from generate_series(1, public.hint_limit());
 
-select is(pg_temp.zostalo(), 1, 'po zjedzeniu całej puli zostaje jeszcze ta z lekcji');
+select is(pg_temp.zostalo(), 1, 'po zjedzeniu całej puli zostaje jeszcze ta za średni');
 
 insert into public.hint_uses (user_id, session_id, exercise_id, easier_id, used_on)
 values ((select id from t_ids where name = 'uczen'), null, null, null, pg_temp.dzis());
 
-select is(pg_temp.zostalo(), 0, 'szóste użycie zamyka pulę');
+select is(pg_temp.zostalo(), 0, 'użycie ponad pulę z dokładką zamyka pulę');
 
--- Ujemnej puli nie ma: dwie lekcje mniej niż użyć i dalej zero.
-update public.lesson_progress
+-- Ujemnej puli nie ma: dwa wejścia mniej niż użyć i dalej zero.
+update public.lesson_level_progress
    set completed_at = now() - interval '2 days'
  where user_id = (select id from t_ids where name = 'uczen');
 
 select is(pg_temp.zostalo(), 0, 'pula nie schodzi poniżej zera');
 
 -- --- stan dla rodzica ---
-update public.lesson_progress
+update public.lesson_level_progress
    set completed_at = now()
  where user_id = (select id from t_ids where name = 'uczen')
    and lesson_id = (select lesson_one from t_ctx);

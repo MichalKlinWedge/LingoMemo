@@ -81,6 +81,10 @@ async function Lesson({
   // Dzienna pula podpowiedzi. Liczy ją baza z użyć, więc o północy w strefie dziecka wraca sama.
   const { data: hintsLeft } = await supabase.rpc("hints_left");
 
+  // Punkty odblokowania. Stan sprzed lekcji, żeby podsumowanie wiedziało, czy właśnie przybył
+  // nowy — za poziom trudny.
+  const { data: unlockRow } = await supabase.rpc("unlock_status", { p_user: userId });
+
   // Czas automatycznego przejścia do następnego zadania. Ustawienie aplikacji, nie stała
   // w kodzie: właściwa wartość wychodzi dopiero z obserwacji dziecka przy lekcji.
   const { data: autoNextSeconds } = await supabase.rpc("setting_int", {
@@ -121,6 +125,7 @@ async function Lesson({
       stages={stages}
       level={level}
       hintsLeft={hintsLeft ?? 0}
+      unlockLeft={(unlockRow as { left?: number } | null)?.left ?? 0}
       preview={preview}
       autoNextMs={(autoNextSeconds ?? 6) * 1000}
     />
