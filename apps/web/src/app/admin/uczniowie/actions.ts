@@ -7,26 +7,6 @@ import { requireAdmin } from "@/lib/auth";
 import { dbErrorMessage } from "@/lib/db-error";
 
 /**
- * Poziom trudności dziecka. Zapis idzie przez `set_learner_level`, bo kolumny `profiles.level`
- * nie ma w `grant update` — inaczej dziecko ustawiłoby sobie najłatwiejszy poziom samo.
- */
-export async function setLearnerLevelAction(_prev: FormState, form: FormData): Promise<FormState> {
-  const { supabase } = await requireAdmin("/admin/uczniowie");
-
-  const user = String(form.get("user_id") ?? "");
-  const level = Number.parseInt(String(form.get("level") ?? ""), 10);
-
-  if (!user) return { error: "Brakuje ucznia." };
-  if (![1, 2, 3].includes(level)) return { error: "Poziom to 1, 2 albo 3." };
-
-  const { error } = await supabase.rpc("set_learner_level", { p_user: user, p_level: level });
-  if (error) return { error: dbErrorMessage(error, "Nie udało się zmienić poziomu.") };
-
-  refresh();
-  return { ok: "Poziom zapisany." };
-}
-
-/**
  * Imię i strefa czasowa dziecka. Przez `admin_update_profile`, a nie zwykłym `update`: polityka
  * `profiles_update_own` puszcza tylko własny wiersz, a rozszerzanie jej o administratora otworzyłoby
  * mu od razu wszystkie kolumny z `grant update` na tabeli.

@@ -959,3 +959,18 @@ w `.next`.
 
 Sprawdzone wprost: po wstawieniu z powrotem `export const` do pliku akcji `check:build` kończy się
 kodem 1. Brama łapie dokładnie tę klasę błędów, dla której powstała.
+
+### Koniec panelu „Poziom trudności" na koncie dziecka (2026-11-16)
+
+Domyka wpis „Trzy kwadraciki poziomów przy lekcji" — tam `profiles.level` przestał cokolwiek
+filtrować, a pole zostało w panelu „do osobnej decyzji". To jest ta decyzja: panel znika.
+
+Przełącznik, który niczego nie zmienia, jest gorszy niż jego brak. Dorosły ustawiał dziecku
+poziom 1, widział trzy kwadraciki pod każdą lekcją i miał prawo sądzić, że jedno psuje drugie.
+O trudności decyduje dziecko, klikając kwadracik na mapie kursu — i to jest jedyne miejsce.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Co znika | sekcja na `/admin/uczniowie/[id]` wraz z komponentem i akcją `setLearnerLevelAction` | martwy kod bez jedynego wywołania zostaje w repozytorium tylko po to, żeby mylić | zostawienie panelu z dopiskiem „nieaktywny" |
+| Co zostaje | kolumna `profiles.level`, funkcja `set_learner_level` i jej test pgTAP | usunięcie kolumny to migracja kasująca dane, a sufit poziomu może jeszcze wrócić jako ustawienie rodzica | `drop column` razem z funkcją |
+| Lista uczniów | chip „poziom: N" zostaje | pokazuje stan kolumny, a nie obiecuje, że da się go zmienić | usunięcie chipu przy okazji (osobna zmiana, inny ekran) |

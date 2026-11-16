@@ -10,7 +10,6 @@ import { PageHeader } from "@/components/page-header";
 import { Loading, Shell } from "@/components/shell";
 import { accuracy, Tile, WeekChart } from "@/components/stats-widgets";
 import { HintsPanel } from "../hints-panel";
-import { LevelPanel } from "../level-panel";
 import { ProfilePanel } from "../profile-panel";
 import { requireAdmin } from "@/lib/auth";
 import { dbLoadError } from "@/lib/db-error";
@@ -54,7 +53,7 @@ async function Student({ params }: { params: PageProps<"/admin/uczniowie/[id]">[
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, display_name, level, time_zone")
+    .select("id, display_name, time_zone")
     .eq("id", id)
     .maybeSingle();
   if (!profile) notFound();
@@ -160,8 +159,6 @@ async function Student({ params }: { params: PageProps<"/admin/uczniowie/[id]">[
       />
 
       <ProfilePanel userId={profile.id} displayName={profile.display_name} timeZone={profile.time_zone} />
-
-      <LevelPanel userId={profile.id} level={profile.level} />
 
       <HintsPanel
         userId={profile.id}
