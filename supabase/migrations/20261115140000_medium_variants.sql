@@ -14,6 +14,11 @@
 -- pokazywanie pustego kwadracika z dymkiem „nie ma zadań" (rząd wygląda równo, ale dziecko dalej
 -- nie ma czego zrobić); dopisywanie zadań ręcznie do plików treści (dziesiątki lekcji).
 
+-- Przebieg na końcu tego pliku dorabia zadania w całej bazie, a w chmurze to tysiące wierszy
+-- do przejrzenia. Domyślny limit czasu polecenia ucina go w połowie, więc na czas tej jednej
+-- transakcji go zdejmujemy. `set local` kończy się razem z transakcją.
+set local statement_timeout = 0;
+
 /**
  * Dystraktory do rozsypanki: pojedyncze słowa z tego samego działu, w języku odpowiedzi.
  * Wyciągnięte z `build_sentence_order` — ten sam dobór potrzebny jest teraz w dwóch miejscach.
@@ -209,7 +214,19 @@ declare
 begin
   perform set_config('lingomemo.skip_variants', 'on', true);
 
-  for v_lesson in select l.id from public.lessons l loop
+  -- Tylko lekcje, które nie mają ANI JEDNEGO zadania poziomu 2 — to w nich kwadracik średniego
+  -- w ogóle się nie pokazywał. Uzupełnianie pojedynczych słówek w pozostałych lekcjach
+  -- przeczesywałoby całą bazę (tysiące zadań), a kwadracik i tak już tam jest; nową treść
+  -- uzupełnia wyzwalacz.
+  for v_lesson in
+    select l.id
+      from public.lessons l
+     where exists (select 1 from public.exercises e where e.lesson_id = l.id and e.is_active)
+       and not exists (
+         select 1 from public.exercises e
+          where e.lesson_id = l.id and e.is_active and e.level = 2
+       )
+  loop
     perform public.build_medium_variants(v_lesson);
   end loop;
 end;
