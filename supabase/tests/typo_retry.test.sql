@@ -69,6 +69,12 @@ update public.exercises set level = 1 where lesson_id = (select lesson_id from t
 
 -- Pisanie po polsku, czyli `translate_ba` — `translate_ab` przy kilku słówkach w lekcji
 -- dostaje listę opcji i staje się klikaniem.
+--
+-- Reszta zadań znika z lekcji: od `…_word_on_every_level.sql` do etapu wchodzi JEDNO zadanie
+-- na słówko, losowane z jego wariantów. Zostawiamy więc po jednym — tym, które ten plik ocenia.
+delete from public.exercises
+ where lesson_id = (select lesson_id from t_ctx) and type <> 'translate_ba';
+
 create temporary table t_ex as
   select e.id, e.concept_id, c.key
     from public.exercises e

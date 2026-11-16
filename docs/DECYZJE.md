@@ -885,3 +885,33 @@ w nim leży ani niczego skasować, a obrazek do słówka dało się przypiąć w
 
 Puste pole odpina obrazek od słówka, ale nie kasuje pliku — plik może być używany gdzie indziej,
 a sprzątanie bucketa jest osobną czynnością, robioną w bibliotece.
+
+## Każde słówko na każdym poziomie (2026-11-16)
+
+W panelu przy słówkach lekcji stało „zadań: 1", „2", „4" — i to nie był tylko nierówny widok.
+Słówko bez zadania poziomu łatwego wchodziło do lekcji tylko regułą ratunkową, bez średniego
+wypadało z wejścia na średni, bez trudnego — z trudnego. Dziecko klikało kwadracik „trudny"
+i dostawało osiem słówek z całej lekcji, bo tylko tyle miało tam jakiekolwiek zadanie.
+
+Obowiązują teraz dwie zasady: **każde słówko ma zadanie na każdym z trzech poziomów**, a słówko
+z kilkoma zadaniami jednego poziomu wchodzi do lekcji **raz**, losowo wybranym wariantem.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Skąd biorą się brakujące zadania | dorabia je baza: `build_easy_variants` (wybór z listy), `build_medium_variants` (wpisywanie albo rozsypanka), `build_hard_variants` (ze słuchu) | tak samo jak dotąd dorabiał się sam poziom średni; treść pisana ręcznie nigdy nie będzie kompletna na trzech poziomach dla kilkuset słówek | dopisywanie zadań do plików treści (dziesiątki lekcji, a następny import i tak wraca do stanu wyjściowego) |
+| Źródło treści nowego zadania | słownik (`terms`), nie istniejące zadanie | słówko, które ma w lekcji wyłącznie zadanie ze słuchu, nie ma z czego zrobić wyboru z listy metodą „weź tłumaczenie i zabierz mu kafelki" | przepisywanie istniejącego zadania (nie działa dla słówek z jednym zadaniem nietłumaczeniowym) |
+| Kiedy dorabiamy | wyzwalacz więzowy `exercises_variants`, odroczony do końca transakcji + jednorazowy przebieg po całej bazie | lekcja jest wtedy kompletna; w środku `admin_add_word` generator widziałby słówko z jednym zadaniem i dorabiał czwarte tuż przed tym, jak funkcja wstawi własne | wyzwalacz na polecenie (dorabia za wcześnie), generowanie przy wydawaniu lekcji (zadanie bez wiersza nie ma id, nie ma czego zapisać w próbach) |
+| Język bez głosu | słówko zostaje na dwóch poziomach | bez `languages.tts_lang` nie ma czego odsłuchać, a zmyślone zadanie trudne byłoby kopią średniego z inną etykietą; panel pokazuje wtedy kreskę w kolumnie „Zadań" | sztuczne zadanie trudne dla każdego słówka |
+| Ile zadań słówka wchodzi do lekcji | jedno, losowane z wariantów danego poziomu | lekcja z dwudziestoma słówkami po trzy zadania to sześćdziesiąt zadań pod rząd, a to samo słówko wracało w jednym etapie kilka razy | wszystkie warianty w jednym przejściu (tak było) oraz jeden wariant na etap, reszta w kolejnych etapach (lekcja dalej trwa trzy razy dłużej) |
+| Czym losujemy | `variant_pick`: md5 z pary (zadanie, dziecko, dzisiejsza data w jego strefie) | lekcja pyta o zadania DWA razy — raz renderuje je strona, raz zapisuje migawkę `start_lesson_session`; przy `random()` obie listy byłyby inne i dziecko dostawałoby „To zadanie nie było w tym etapie lekcji". Ziarno z doby daje jeden wynik przez cały dzień, a jutro inny | `random()` przy każdym wywołaniu; ziarno z numeru podejścia (rośnie po KAŻDYM etapie, więc zestaw zmieniałby się w środku lekcji) |
+| Którego poziomu dotyczy reguła „raz" | poziomu łatwego, bo on JEST lekcją | średni i trudny i tak biorą osiem słówek po jednym zadaniu (`pick_level_exercises`), a `lesson_exercises_at_level` odpowiada tam na inne pytanie: ile zadań tego poziomu lekcja ma (z tego bierze się kwadracik na mapie) | jedno na słówko na każdym poziomie (kwadracik na mapie przestałby pokazywać, ile treści naprawdę jest) |
+
+### Co trzeba było poprawić w testach
+
+Reguła „jedno zadanie na słówko" zmienia to, co wydaje etap, więc pięć plików pgTAP przestało
+przechodzić — każdy z nich podstawiał do `submit_attempt` zadanie wybrane po typie, a takie
+zadanie zwykle nie jest już tym, które etap wydał. Poprawka jest wszędzie ta sama i robi testy
+przy okazji odpornymi: plik zostawia w lekcji tylko te zadania, które sam ocenia
+(`typo_retry`, `word_order_retry`, `skip_exercise`, `answers`). W `lessons.test.sql`, który
+sprawdza silnik lekcji zadanie po zadaniu, każde zadanie dostaje własne słówko — inaczej nie
+dałoby się w jednym przejściu sprawdzić czterech różnych typów należących do tego samego słówka.

@@ -67,6 +67,11 @@ reset role;
 
 update public.exercises set level = 1 where lesson_id = (select lesson_id from t_ctx);
 
+-- Do etapu wchodzi jedno zadanie na słówko (`…_word_on_every_level.sql`), więc zostawiamy
+-- w lekcji tylko te, które ten plik ocenia — inaczej losowanie wariantu decydowałoby o teście.
+delete from public.exercises
+ where lesson_id = (select lesson_id from t_ctx) and type <> 'translate_ba';
+
 create temporary table t_ex as
   select e.id, c.key
     from public.exercises e

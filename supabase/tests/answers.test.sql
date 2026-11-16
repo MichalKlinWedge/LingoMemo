@@ -151,6 +151,13 @@ select public.admin_add_word((select id from t_lesson), 'food.potato', 'ziemniak
 
 reset role;
 
+-- Do etapu wchodzi jedno zadanie na słówko (`…_word_on_every_level.sql`), losowane z jego
+-- wariantów. Zostawiamy ziemniakowi tylko to, które ten plik ocenia — inaczej o wyniku testu
+-- decydowałoby losowanie.
+delete from public.exercises e
+ using public.concepts c
+ where c.id = e.concept_id and c.key = 'food.potato' and e.type <> 'translate_ba';
+
 -- Identyfikator zadania wyciągamy jako rola bazy: `exercises` nie ma polityki SELECT dla
 -- ucznia (w payloadzie są klucze odpowiedzi), więc jego zapytanie zwróciłoby pustkę.
 create temporary table t_potato as

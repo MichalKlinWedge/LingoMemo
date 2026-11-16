@@ -42,7 +42,7 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
 
   const [{ data: items, error }, { data: exercises }, { data: languages }] = await Promise.all([
     supabase.from("lesson_items").select("concept_id, sort_order").eq("lesson_id", lesson.id).order("sort_order"),
-    supabase.from("exercises").select("id, concept_id, type").eq("lesson_id", lesson.id),
+    supabase.from("exercises").select("id, concept_id, type, level").eq("lesson_id", lesson.id),
     supabase.from("languages").select("code, name_pl, tts_lang"),
   ]);
 
@@ -70,6 +70,19 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
   };
   const keyOf = (conceptId: string) => (concepts ?? []).find((concept) => concept.id === conceptId);
   const taskCount = (conceptId: string) => (exercises ?? []).filter((item) => item.concept_id === conceptId).length;
+  /**
+   * Zadania słówka w rozbiciu na poziomy. Każde słówko ma mieć po jednym na każdym z trzech —
+   * brakujące dorabia baza, ale kreska w tabeli pokazuje te, dla których nie miała z czego
+   * (na przykład język kursu bez głosu nie da zadania ze słuchu).
+   */
+  const taskLevels = (conceptId: string): [number, number, number] => {
+    const mine = (exercises ?? []).filter((item) => item.concept_id === conceptId);
+    return [1, 2, 3].map((poziom) => mine.filter((item) => item.level === poziom).length) as [
+      number,
+      number,
+      number,
+    ];
+  };
 
   // Zadanie z obrazkiem wskazuje słówko lekcji — bez niego nie wchodzi do powtórek.
   const words = (items ?? []).map((item) => ({
@@ -88,6 +101,7 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
     targetAll: termsOf(item.concept_id, course.target_lang),
     conceptKey: keyOf(item.concept_id)?.key ?? "",
     tasks: taskCount(item.concept_id),
+    levels: taskLevels(item.concept_id),
     imagePath: keyOf(item.concept_id)?.image_path ?? null,
   }));
 

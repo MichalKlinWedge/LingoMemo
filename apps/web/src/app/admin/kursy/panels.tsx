@@ -1001,6 +1001,8 @@ export type WordRow = {
   targetAll: string;
   conceptKey: string;
   tasks: number;
+  /** Ile zadań ma słówko na poziomie łatwym, średnim i trudnym. Każde powinno mieć po jednym. */
+  levels: [number, number, number];
   /** Ścieżka obrazka słówka w buckecie `lesson-media`, pusta gdy słówko go nie ma. */
   imagePath: string | null;
 };
@@ -1132,7 +1134,18 @@ export function WordSection({
                       <td className="font-semibold">{row.source}</td>
                       <td className="font-semibold">{row.target}</td>
                       <td className="hidden font-mono text-sm text-zinc-500 md:table-cell">{row.conceptKey}</td>
-                      <td className="text-right tabular-nums">{row.tasks}</td>
+                      {/* Rozbicie na poziomy, bo liczba sama w sobie niczego nie mówi: słówko
+                          z czterema zadaniami może nie mieć ani jednego trudnego. Kreska w miejscu
+                          poziomu znaczy, że generator nie miał z czego go zrobić. */}
+                      <td className="text-right tabular-nums">
+                        {row.tasks}
+                        <span
+                          className="block text-sm text-zinc-500"
+                          title="Zadania na poziomach: łatwy · średni · trudny"
+                        >
+                          {row.levels.map((ile) => (ile === 0 ? "—" : ile)).join(" · ")}
+                        </span>
+                      </td>
                       <td className="text-right">
                         {/* Osobny przycisk, nie klikalna liczba w kolumnie obok: liczba w kolorze
                             tekstu nie wyglądała na odnośnik i nikt w nią nie klikał. */}

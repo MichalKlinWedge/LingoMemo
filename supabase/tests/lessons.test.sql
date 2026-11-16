@@ -58,6 +58,28 @@ values (
 update public.exercises set level = 1
  where lesson_id = (select id from t_lesson where nr = 1);
 
+-- Od `…_word_on_every_level.sql` do etapu wchodzi JEDNO zadanie na słówko, a pozostałe warianty
+-- czekają na inny dzień. Ten plik ocenia zadanie po zadaniu — każdego typu osobno — więc każde
+-- dostaje tu własne słówko i cała lekcja idzie do etapów jak dotąd. Sam dobór wariantu sprawdza
+-- `word_levels.test.sql`.
+do $rozdziel$
+declare
+  r record;
+  v_concept uuid;
+begin
+  for r in
+    select e.id, c.course_id
+      from public.exercises e
+      join public.concepts c on c.id = e.concept_id
+     where e.lesson_id = (select id from t_lesson where nr = 1)
+  loop
+    insert into public.concepts (course_id, key) values (r.course_id, 'test.osobno.' || r.id)
+    returning id into v_concept;
+    update public.exercises set concept_id = v_concept where id = r.id;
+  end loop;
+end;
+$rozdziel$;
+
 -- `exercise_stage` numeruje zadania poziomu łatwego; tożsamość dziecka ustawiamy już tu, bo
 -- dalsze asercje liczą etapy jego oczami. Rolę zmieniamy niżej.
 select set_config('request.jwt.claims',

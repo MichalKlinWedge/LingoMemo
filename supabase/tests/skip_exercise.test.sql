@@ -63,6 +63,11 @@ reset role;
 -- żeby zadanie z wpisywaniem w ogóle zostało wydane.
 update public.exercises set level = 1 where lesson_id = (select lesson_id from t_ctx);
 
+-- Do etapu wchodzi jedno zadanie na słówko (`…_word_on_every_level.sql`), więc zostawiamy
+-- w lekcji tylko to, które ten plik pomija.
+delete from public.exercises
+ where lesson_id = (select lesson_id from t_ctx) and type <> 'translate_ab';
+
 create temporary table t_ex as
   select e.id, e.type, e.concept_id, e.points
     from public.exercises e where e.lesson_id = (select lesson_id from t_ctx) and e.type = 'translate_ab';
