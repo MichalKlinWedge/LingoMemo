@@ -21,6 +21,13 @@ export const color = {
   sun: '#ffc83d',
 } as const;
 
+/**
+ * Skala trudności kwadracików jak w sygnalizacji: zielony → żółty → czerwony. Trudność widać
+ * bez legendy, bo tę kolejność zna każdy. Odcienie przyciemnione, bo na kremowym tle jasne
+ * barwy znikają.
+ */
+export const level = ['#2e9e5b', '#e8a200', '#d93025'] as const;
+
 /** Dzieci klikają palcem: najmniejszy przycisk 56, kafel odpowiedzi 72, tekst zadania 20. */
 export const size = {
   tap: 56,

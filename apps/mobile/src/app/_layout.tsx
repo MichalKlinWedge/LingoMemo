@@ -27,8 +27,12 @@ export default function Layout() {
           contentStyle: { backgroundColor: color.background },
         }}
       >
-        <Stack.Screen name="index" options={{ title: 'LingoMemo — pomiary M0' }} />
+        <Stack.Screen name="index" options={{ title: 'Twoje kursy' }} />
         <Stack.Screen name="logowanie" options={{ title: 'Logowanie' }} />
+        <Stack.Screen name="kurs/[slug]" options={{ title: 'Kurs' }} />
+        {/* Lekcja ma własny pasek: krzyżyk wyjścia, postęp i liczniki. Drugi nagłówek nad nim
+            zabierałby wysokość ekranu, której przy zadaniu z klawiaturą i tak brakuje. */}
+        <Stack.Screen name="lekcja/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="zadanie" options={{ title: 'PoC-M1 — zadanie z bazy' }} />
         <Stack.Screen name="mowa" options={{ title: 'PoC-M2 — mowa' }} />
         <Stack.Screen name="powiadomienia" options={{ title: 'PoC-M3 — przypomnienia' }} />
