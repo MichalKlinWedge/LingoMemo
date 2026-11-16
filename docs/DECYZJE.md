@@ -867,3 +867,21 @@ przewracają. Sekcja „Statystyki" w panelu liczy to pięcioma widokami.
 Widoki są dostępne dla każdego zalogowanego i to jest celowe: dziecko zobaczy w nich swoje
 własne liczby, rodzic liczby swoich dzieci. Test pgTAP sprawdza właśnie tę własność — gdyby
 `security_invoker` kiedyś z nich zniknęło, dziecko zobaczyłoby w przeglądarce dane wszystkich.
+
+### Biblioteka mediów zamiast wgrywarki (2026-11-16)
+
+Strona „Obrazki" była wgrywarką bez pamięci: wgrywała pliki i pokazywała ścieżki do skopiowania,
+a po odświeżeniu nie było widać nic. Bucket rósł w nieskończoność, nie dało się sprawdzić, co
+w nim leży ani niczego skasować, a obrazek do słówka dało się przypiąć wyłącznie plikiem importu.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Skąd lista plików | `storage.list()` po katalogach, przy każdym wejściu na stronę | Storage jest źródłem prawdy o plikach; własna tabela-rejestr rozjechałaby się przy pierwszym wgraniu spoza panelu | tabela z rejestrem plików obok Storage |
+| Czy wolno kasować użyty plik | wolno, ale z ostrzeżeniem i zgodą w checkboksie | czasem właśnie o to chodzi, że obrazek był zły; zakaz zmuszałby do ręcznego sprzątania treści najpierw | zakaz kasowania użytych; kasowanie kaskadowe (znika plik razem z zadaniem) |
+| Skąd wiadomo, że jest użyty | `media_usage(text[])` — jedno zapytanie na całą listę | przy zapytaniu na plik byłoby ich tyle, ile obrazków w bibliotece | liczenie w aplikacji; brak ostrzeżenia |
+| Co liczy się jako użycie | `concepts.image_path`, `options`, `answer` i `audioPath` w zadaniach | to wszystkie miejsca, w których ścieżka trafia do treści; dystraktor zadania liczy się tak samo jak odpowiedź, bo skasowany zostawi pustą kratkę | tylko obrazek słówka |
+| Kasowanie | Server Action, nie przeglądarka | lista odświeża się sama; polityka na `storage.objects` i tak przepuszcza tylko administratora | kasowanie klientem Supabase z przeglądarki |
+| Obrazek przy słówku | `admin_set_concept_image` + pole w formularzu słówka na stronie lekcji | dotąd jedyną drogą był import, więc poprawiając słówko w panelu nie dało się dołożyć mu obrazka | wybór z galerii w oknie (osobny komponent do utrzymania; ścieżkę i tak widać w bibliotece) |
+
+Puste pole odpina obrazek od słówka, ale nie kasuje pliku — plik może być używany gdzie indziej,
+a sprzątanie bucketa jest osobną czynnością, robioną w bibliotece.

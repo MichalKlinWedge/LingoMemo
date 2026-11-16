@@ -21,6 +21,8 @@ import {
   updateWordAction,
 } from "@/app/admin/kursy/actions";
 import { Flag } from "@/components/flag";
+
+import { WordImage } from "./word-image";
 import { Field, Form, Status, SubmitButton, TitleAndSlug, type FormState } from "@/components/forms";
 
 import { SortableTable, type SortableTableRow } from "./sortable-rows";
@@ -999,6 +1001,8 @@ export type WordRow = {
   targetAll: string;
   conceptKey: string;
   tasks: number;
+  /** Ścieżka obrazka słówka w buckecie `lesson-media`, pusta gdy słówko go nie ma. */
+  imagePath: string | null;
 };
 
 /** Formularze jednego słówka, rozwijane pod jego wierszem. */
@@ -1032,6 +1036,10 @@ function WordForm({
         <Status state={state} />
         <SubmitButton pendingLabel="Zapisuję…">Zapisz słówko</SubmitButton>
       </Form>
+
+      {/* Obrazek osobno: to nie jest poprawianie słowa, tylko wskazanie pliku z biblioteki,
+          więc i akcja, i komunikat są własne. */}
+      <WordImage conceptId={row.conceptId} imagePath={row.imagePath} />
 
       {/* Osobny formularz, nie przycisk w tamtym: to inna akcja, z własnym komunikatem.
           Bez przepisywania nazwy — zdjęcie słówka z lekcji odwraca się jednym dodaniem,

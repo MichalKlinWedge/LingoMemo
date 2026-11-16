@@ -865,6 +865,9 @@ isOneToOne: false
 "admin_set_child":
 { Args: { "p_child": string,"p_linked": boolean,"p_parent": string }; Returns: undefined
                            },
+"admin_set_concept_image":
+{ Args: { "p_concept": string,"p_path": string }; Returns: Json
+                           },
 "admin_set_parent":
 { Args: { "p_is_parent": boolean,"p_user": string }; Returns: undefined
                            },
@@ -888,6 +891,12 @@ isOneToOne: false
                            },
 "bootstrap_admin":
 { Args: { "p_email": string }; Returns: boolean
+                           },
+"build_easy_variants":
+{ Args: { "p_lesson": string }; Returns: number
+                           },
+"build_hard_variants":
+{ Args: { "p_lesson": string }; Returns: number
                            },
 "build_medium_variants":
 { Args: { "p_lesson": string }; Returns: number
@@ -1063,6 +1072,11 @@ isOneToOne: false
               "created_at": string,"display_name": string,"email": string,"is_admin": boolean,"last_active_on": string,"lessons_done": number,"level": number,"streak_days": number,"total_points": number,"user_id": string,"words_seen": number
             }[]
                            },
+"media_usage":
+{ Args: { "p_paths": (string)[] }; Returns: {
+              "concepts": number,"exercises": number,"path": string
+            }[]
+                           },
 "my_child_ids":
 { Args: Record<PropertyKey, never>; Returns: string[]
                            },
@@ -1160,6 +1174,9 @@ isOneToOne: false
                            },
 "validate_exercise_payload":
 { Args: { "p": Json,"t": Database["public"]['Enums']["exercise_type"] }; Returns: boolean
+                           },
+"variant_pick":
+{ Args: { "p_exercise": string }; Returns: string
                            }
           }
           Enums: {

@@ -4,6 +4,8 @@ import { useState } from "react";
 
 import { createClient } from "@/lib/supabase/client";
 
+import { refreshMediaAction } from "./actions";
+
 type Wgrany = { nazwa: string; sciezka: string; adres: string };
 
 /**
@@ -50,6 +52,9 @@ export function Upload() {
 
     setWgrane((było) => [...dodane, ...było]);
     setTrwa(false);
+    // Plik poszedł prosto do Storage, z pominięciem serwera, więc lista biblioteki niżej
+    // nic o nim nie wie — trzeba poprosić serwer o ponowne wyliczenie strony.
+    if (dodane.length > 0) await refreshMediaAction();
   };
 
   return (

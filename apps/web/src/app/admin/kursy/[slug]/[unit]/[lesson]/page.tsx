@@ -50,7 +50,7 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
 
   const conceptIds = (items ?? []).map((item) => item.concept_id);
   const [{ data: concepts }, { data: terms }] = await Promise.all([
-    supabase.from("concepts").select("id, key, tags").in("id", conceptIds),
+    supabase.from("concepts").select("id, key, tags, image_path").in("id", conceptIds),
     supabase.from("terms").select("concept_id, lang, text, is_primary").in("concept_id", conceptIds),
   ]);
 
@@ -88,6 +88,7 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
     targetAll: termsOf(item.concept_id, course.target_lang),
     conceptKey: keyOf(item.concept_id)?.key ?? "",
     tasks: taskCount(item.concept_id),
+    imagePath: keyOf(item.concept_id)?.image_path ?? null,
   }));
 
   return (
