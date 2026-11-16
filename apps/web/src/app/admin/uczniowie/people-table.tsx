@@ -1,11 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { Fragment, useState } from "react";
+import { Fragment, type ReactNode, useState } from "react";
 
 import { PasswordForm } from "@/app/admin/konta/password-form";
 
 import { FamilyPanel, type Osoba } from "./family-panel";
+
+/**
+ * Emoji na żółtym znaczniku: biała sylwetka zamiast kolorowej ikonki.
+ *
+ * `color` na emoji nie działa — czcionka emoji rysuje własne kolory, a bladożółta rączka
+ * na żółtym tle znika. `brightness(0)` gasi ikonkę do czerni, `invert(1)` odwraca ją na biel,
+ * więc zostaje sam kształt — czytelny na każdym tle i w obu motywach.
+ */
+function Znak({ children }: { children: ReactNode }) {
+  return <span style={{ filter: "brightness(0) invert(1)" }}>{children}</span>;
+}
 
 /** Jeden wiersz tabeli. Daty i czas są już sformatowane na serwerze — tu tylko się je rysuje. */
 export type PersonRow = {
@@ -82,19 +93,21 @@ export function PeopleTable({ rows, people }: { rows: PersonRow[]; people: Osoba
                           style={{ background: "var(--color-sun)" }}
                           title="Rodzic czeka na przypisanie dziecka"
                         >
-                          ⏳
+                          <Znak>⏳</Znak>
                         </span>
                       )}
                       {/* Osobny znacznik, bo to inne czekanie: nie na dziecko, tylko na kurs.
-                          Dymek wymienia kursy — bez niego trzeba by rozwijać wiersz. */}
+                          Dymek wymienia kursy, a kliknięcie prowadzi na kartę dziecka — to tam
+                          stoi przycisk zapisu, czyli miejsce, w którym prośbę się przyjmuje. */}
                       {row.asking.length > 0 && (
-                        <span
+                        <Link
+                          href={`/admin/uczniowie/${row.userId}`}
                           className="chip text-sm"
                           style={{ background: "var(--color-sun)" }}
-                          title={`Prosi o dostęp: ${row.asking.join(", ")}`}
+                          title={`Prosi o dostęp: ${row.asking.join(", ")} — kliknij, żeby zapisać`}
                         >
-                          ✋
-                        </span>
+                          <Znak>✋</Znak>
+                        </Link>
                       )}
                     </span>
                   </td>
