@@ -729,3 +729,44 @@ w którym etapie zgubiło trzecią.
 | Szerokość kafelka lekcji | 9,5 rem → 11,5 rem | rząd gwiazdek jest szerszy od kwadracika; najgorszy przypadek (trzy etapy po trzy gwiazdki i dwa poziomy) ma 160 px przy 164 px miejsca | ściśnięcie gwiazdek do szerokości kwadracika (8 px na gwiazdkę, czyli kropka) |
 | Wyrównanie rzędu | `align-items: flex-end` w `.marks` | kolumna etapu jest wyższa od kwadracika poziomu, a dolna krawędź ma iść przez cały rząd jedną linią | wyrównanie do środka (kwadraciki poziomów wisiałyby w połowie wysokości etapu) |
 | Czytnik ekranu | jeden `role="img"` z podpisem „Zrobione etapy: 2 z 3; etap 1 — 3 gwiazdki, …", dymek nad każdym etapem | dziewięć osobnych gwiazdek to dziewięć bezużytecznych ogłoszeń | podpis na każdej gwiazdce |
+
+### Administrator uczy się jak dziecko (2026-11-16)
+
+`is_lesson_unlocked` oddawało administratorowi „otwarte" dla każdej lekcji, a wydawanie zadań
+i start sesji wpuszczały go też do lekcji przed publikacją. Miało to służyć podglądowi z panelu,
+ale działało wszędzie: administrator wchodzący na mapę kursu jak każdy uczeń miał cały kurs
+otwarty — bez warunków wstępnych i bez testów działów. Nie dało się wtedy ani sprawdzić, co
+dziecko naprawdę zobaczy, ani uczyć się razem z nim na tych samych zasadach.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Kiedy obejście działa | tylko gdy przeglądarka poprosi wprost: `p_preview` w `get_lesson_exercises` i `start_lesson_session` | widać w sygnaturze, że funkcja ma dwa tryby, i widać w kodzie strony, który tryb wybiera | obejście po samym `is_admin()` (było); nagłówek albo `set_config` (tryb niewidoczny w wywołaniu) |
+| Kto może o nie poprosić | i tak tylko administrator — `p_preview and public.is_admin()` | parametr przychodzi z przeglądarki, więc nie może sam z siebie niczego otwierać | zaufanie parametrowi |
+| Skąd się bierze | link „Zobacz lekcję oczami dziecka" w panelu, `?podglad=1` | to jedyne wejście, które ma być podglądem; wejście z mapy kursu jest nauką | osobny adres `/podglad/[id]` (drugi raz ten sam ekran do utrzymania) |
+| Co z zamkami w podglądzie | omija zamek lekcji, zamek działu, poziom i brak publikacji | po to jest: zobaczyć etap albo lekcję, której dziecko jeszcze nie otworzyło | omijanie tylko publikacji (nie dałoby się obejrzeć etapu za kłódką) |
+| Jak to widać na ekranie | chip „👀 Podgląd" na pasku lekcji | bez tego administrator nie odróżnia „lekcja jest otwarta" od „wszedłem tylnymi drzwiami" | nic nie pokazywać |
+| Postęp i punkty | zapisują się jak dotąd, na koncie pytającego, także w podglądzie | to jego własne konto, więc niczyjej nauki nie dotyka; podgląd zmienia dostęp, nie księgowanie | kasowanie postępu po podglądzie (nie da się odróżnić, co powstało w podglądzie) |
+
+To zmiana polityki wobec wpisu z 2026-11-15, w którym administrator dostawał otwarte wszystko
+w `is_lesson_unlocked`. Reguła „patrząc na cudzy postęp, administrator widzi kłódkę dziecka"
+zostaje bez zmian — funkcja pyta o postępy tego użytkownika, o którego pyta.
+
+### Kolejność zadań w lekcji (2026-11-16)
+
+Pliki treści są pisane typami: najpierw wszystkie tłumaczenia w jedną stronę, potem w drugą,
+potem dopasowanki, na końcu zdania z luką. `admin_import_lesson` nadaje `sort_order` po kolejności
+w pliku, a poziom łatwy wydawał zadania dokładnie w tej kolejności — więc dziecko dostawało
+czternaście tłumaczeń z rzędu. Przy lekcji podzielonej na etapy bywało, że cały etap był jednym
+typem zadania.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Gdzie mieszamy | w `get_lesson_exercises`, przy wydawaniu | `sort_order` zostaje kolejnością z pliku, czyli tym, co administrator widzi w panelu i co sam ustawiał | przestawienie `sort_order` w tabeli (panel pokazywałby lekcję w rozsypce, a następny import i tak wróciłby do układu typami) |
+| Czym mieszamy | `exercise_order(uuid)` — md5 identyfikatora zadania przerobiony na liczbę | wygląda losowo, nie ma nic wspólnego z typem, a dla danego zadania jest zawsze taka sama | `order by random()` przy każdym wydaniu |
+| Dlaczego nie `random()` | lekcja pyta o zadania dwa razy: raz renderuje je strona, raz zapisuje migawkę `start_lesson_session` | przy losowaniu per wywołanie obie listy byłyby inne, a w lekcji z etapami różniłby się nawet ZBIÓR zadań etapu — czyli błąd „Zadanie należy do innego etapu lekcji", przed którym migawka miała chronić | — |
+| Czy kolejność zależy od dziecka | nie | wtedy `exercise_stage` musiałoby czytać `auth.uid()` i dwa wywołania z różnych kontekstów (podgląd administratora, skrypt) dawałyby inny podział na etapy niż ten, który zobaczyło dziecko | ziarno z identyfikatora dziecka (rodzeństwo dostaje inną kolejność — zysk za mały wobec kosztu) |
+| Przeplatanie typów po równo | odrzucone | sztuczny rytm: dziecko szybko się uczy, że po tłumaczeniu zawsze jest dopasowanka | — |
+| Poziom średni i trudny | zostają na `order by random()` z `pick_level_exercises` | nie mają ani etapów, ani migawki sesji, więc losowanie przy każdym wywołaniu niczego nie rozjeżdża | ujednolicenie z poziomem łatwym |
+
+Prawdziwa losowość przy każdym podejściu wymagałaby, żeby listę zadań wydawała sesja, a nie
+osobne zapytanie strony — czyli przestawienia kolejności wywołań w ekranie lekcji.

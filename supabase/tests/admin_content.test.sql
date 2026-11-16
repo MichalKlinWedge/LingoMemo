@@ -374,6 +374,17 @@ select throws_ok(
 
 reset role;
 
+-- Kurs startowy w lokalnej bazie może mieć ślady nauki z seeda (sesje, postępy, powtórki),
+-- a wtedy `admin_delete_course` nie kasuje go, tylko UKRYWA — i słusznie, bo to osobna gałąź
+-- sprawdzana w `delete_or_hide_course.test.sql`. Tutaj chodzi o kasowanie, więc ślady idą
+-- precz: inaczej wynik zależałby od tego, czy ktoś wcześniej puścił `seed:dev`.
+delete from public.srs_state st using public.concepts c
+ where c.id = st.concept_id and c.course_id = (select course_id from t_ctx);
+delete from public.lesson_progress p using public.lessons l, public.units u
+ where l.id = p.lesson_id and u.id = l.unit_id and u.course_id = (select course_id from t_ctx);
+delete from public.lesson_sessions s using public.lessons l, public.units u
+ where l.id = s.lesson_id and u.id = l.unit_id and u.course_id = (select course_id from t_ctx);
+
 -- Dział idzie zwykłym `delete` pod polityką `units_admin`. Lekcje znikają z nim kaskadą,
 -- ale słówka zostają przy kursie — wisi na nich stan powtórek dziecka.
 select set_config('role', 'authenticated', true),
