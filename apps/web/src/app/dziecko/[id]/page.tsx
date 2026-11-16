@@ -299,20 +299,12 @@ async function Child({ params }: { params: PageProps<"/dziecko/[id]">["params"] 
         )}
       </section>
 
+      {/* Odznaki dziecka: bez punktów i bez odnośnika do „Nagród" — punkty ma w kafelkach wyżej,
+          a „Nagrody" pokazałyby rodzicowi jego własne odznaki, nie jego. */}
+      <BadgeList title="Odznaki dziecka" user={id} />
+
       {/* Co dziecko ostatnio robiło, lekcja po lekcji. Tabele statystyk mówią „ile", a to jest
           jedyne miejsce, w którym widać „co" — i czy wczorajsze podejście zostało dokończone. */}
-      {/* Odznaki PYTAJĄCEGO, nie dziecka — cała reszta strony jest o dziecku, więc mówi to
-          wprost podpis. Rodzic uczący się razem z nim ma swoje nagrody tam, gdzie i tak zagląda
-          po jego postępy; dziecku pokazuje je z tego samego ekranu. */}
-      <BadgeList
-        title="Twoje odznaki"
-        note={
-          <p className="text-base text-zinc-600 dark:text-zinc-400">
-            To Twoje odznaki za własną naukę — postępy dziecka są wyżej.
-          </p>
-        }
-      />
-
       <section className="flex flex-col gap-3">
         <h2 className="card-title">Ostatnie lekcje</h2>
         {(tries ?? []).length === 0 ? (
@@ -369,6 +361,17 @@ async function Child({ params }: { params: PageProps<"/dziecko/[id]">["params"] 
           </ul>
         )}
       </section>
+
+      {/* Odznaki PYTAJĄCEGO na samym końcu: wszystko wyżej jest o dziecku, więc własne nagrody
+          rodzica stoją osobno i z podpisem, żeby nie dało się ich pomylić z odznakami dziecka. */}
+      <BadgeList
+        title="Twoje odznaki"
+        note={
+          <p className="text-base text-zinc-600 dark:text-zinc-400">
+            To Twoje odznaki za własną naukę — odznaki dziecka są wyżej.
+          </p>
+        }
+      />
 
       <p className="text-base text-zinc-600 dark:text-zinc-400">
         {sessions === 0

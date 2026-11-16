@@ -1012,10 +1012,14 @@ karcie — pełna lista, razem z niezdobytymi, zostaje w „Nagrodach". Sekcja j
 tylko dla rodzica: to ta sama strona własnych postępów, a rozgałęzianie jej po roli dodałoby warunek
 bez żadnego zysku.
 
-Sekcja odznak (`app/badge-list.tsx`) stoi w obu miejscach, w których rodzic bywa: w „Twoich
-postępach" i na karcie dziecka. Zawsze pokazuje odznaki ZALOGOWANEGO, nigdy oglądanego dziecka —
-stąd brak parametru „czyje" i podpis „to Twoje odznaki za własną naukę", bo cała reszta tamtej
-strony jest o dziecku.
+Sekcja odznak (`app/badge-list.tsx`) stoi w trzech miejscach: w „Twoich postępach" oraz na karcie
+dziecka dwa razy — raz jego odznaki, raz odznaki rodzica. Decyduje jeden parametr `user`: bez niego
+sekcja dotyczy zalogowanego i dokłada licznik punktów z odnośnikiem do „Nagród", z nim pokazuje
+same odznaki z datami. Punkty dziecka stoją wyżej w kafelkach, a „Nagrody" pokazałyby rodzicowi
+jego własne odznaki, nie dziecka. Na karcie odznaki dziecka idą zaraz po kursach, a odznaki rodzica
+na samym końcu, z podpisem — wszystko pomiędzy jest o dziecku, więc własne nagrody nie mogą stać
+w środku tej listy. Dostępu nie pilnuje komponent, tylko RLS: `user_badges` wydaje rodzicowi
+wiersze wyłącznie przypisanych dzieci.
 
 Prośba o dostęp stoi też przy kursach dziecka, na jego karcie: rodzic czyta, czego uczy się
 dziecko, i w tym samym wierszu widzi albo „uczysz się tego kursu" (odnośnik do mapy), albo
