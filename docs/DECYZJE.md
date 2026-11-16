@@ -1012,6 +1012,13 @@ karcie — pełna lista, razem z niezdobytymi, zostaje w „Nagrodach". Sekcja j
 tylko dla rodzica: to ta sama strona własnych postępów, a rozgałęzianie jej po roli dodałoby warunek
 bez żadnego zysku.
 
+Prośba o dostęp stoi też przy kursach dziecka, na jego karcie: rodzic czyta, czego uczy się
+dziecko, i w tym samym wierszu widzi albo „uczysz się tego kursu" (odnośnik do mapy), albo
+przycisk prośby dla SIEBIE. To zwykłe `request_course_access` — nowej drogi nie ma, bo zapis
+rodzica niczym się nie różni od zapisu dziecka, a decyduje tak samo administrator. Kursu ukrytego
+nie trzeba tam obsługiwać: polityka `courses_read` nie wydaje go nikomu poza administratorem,
+więc znika też z `v_my_courses` dziecka.
+
 Test `parent_learns.test.sql` pilnuje obu końców tej zmiany: że rodzic po zapisie zaczyna lekcję
 i dostaje zadania, oraz że zapis DZIECKA mu kursu nie otwiera, a tabeli `exercises` nie widzi
 ani przed zapisem, ani po nim.

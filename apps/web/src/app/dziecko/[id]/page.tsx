@@ -1,7 +1,9 @@
+import Link from "next/link";
 import { Suspense } from "react";
 
 import { formatDuration, LESSONS, plural, WORDS } from "@lingomemo/core";
 
+import { CourseRequest } from "@/app/course-request";
 import { Flag } from "@/components/flag";
 import { PageHeader } from "@/components/page-header";
 import { Loading, Shell } from "@/components/shell";
@@ -34,13 +36,17 @@ function lessonMark(lesson: { is_unlocked: boolean; status: string }): { icon: s
  * profilem i komunikatem, a nie podejrzeniem czyichś danych — dlatego nie ma tu osobnego
  * sprawdzania uprawnień, które mogłoby się rozjechać z regułą w bazie.
  *
+ * Przy każdym kursie dziecka stoi też stan PYTAJĄCEGO: „uczysz się tego kursu" albo przycisk
+ * prośby o dostęp. Rodzic uczy się na własnym koncie, więc to jego zapis, nie zapis dziecka —
+ * klikniecie zostawia ślad przy jego imieniu, a zapisuje administrator.
+ *
  * Czego tu nie ma: poprawnych odpowiedzi do zadań. Rodzic widzi, co dziecko wpisało i przy
  * którym słówku, ale tabela `exercises` zostaje zamknięta — leżą w niej klucze odpowiedzi
  * do całego kursu.
  */
 async function Child({ params }: { params: PageProps<"/dziecko/[id]">["params"] }) {
   const { id } = await params;
-  const { supabase } = await requireUser(`/dziecko/${id}`);
+  const { supabase, userId, isAdmin } = await requireUser(`/dziecko/${id}`);
 
   const [
     { data: profile, error },
@@ -51,6 +57,8 @@ async function Child({ params }: { params: PageProps<"/dziecko/[id]">["params"] 
     { data: tries },
     { data: lessons },
     { data: units },
+    { data: moje },
+    { data: poproszone },
   ] = await Promise.all([
     supabase.from("profiles").select("id, display_name").eq("id", id).maybeSingle(),
     supabase.from("v_my_stats").select("*").eq("user_id", id).maybeSingle(),
@@ -74,6 +82,10 @@ async function Child({ params }: { params: PageProps<"/dziecko/[id]">["params"] 
     // zalogowanego, czyli dla rodzica — stąd funkcja z parametrem.
     supabase.rpc("child_lessons", { p_child: id }),
     supabase.from("units").select("id, course_id, title, icon, sort_order").order("sort_order"),
+    // Zapisy PYTAJĄCEGO, nie dziecka: rodzic uczy się tych samych kursów co ono, więc przy
+    // każdym kursie dziecka ma zobaczyć, czy sam go ma, czy musi o niego poprosić.
+    supabase.from("enrollments").select("course_id").eq("user_id", userId),
+    supabase.rpc("my_course_requests"),
   ]);
 
   if (error) return <p className="msg-error">{dbLoadError(error)}</p>;
@@ -124,6 +136,9 @@ async function Child({ params }: { params: PageProps<"/dziecko/[id]">["params"] 
       .filter((lekcja): lekcja is string => typeof lekcja === "string"),
   );
 
+  const mamKurs = new Set((moje ?? []).map((row) => row.course_id));
+  const poprosilem = new Set((poproszone ?? []).map((row) => row.course_id));
+
   // Działy kursu razem z lekcjami, w kolejności nauki. Dział bez ani jednej widocznej lekcji
   // pomijamy — sam nagłówek nic rodzicowi nie mówi.
   const dzialyKursu = (course: string) =>
@@ -136,6 +151,31 @@ async function Child({ params }: { params: PageProps<"/dziecko/[id]">["params"] 
         ),
       }))
       .filter((grupa) => grupa.lekcje.length > 0);
+
+  /**
+   * Czym jest dla PYTAJĄCEGO kurs dziecka: własnym kursem, kursem do poproszenia albo niczym,
+   * o co da się poprosić. Administrator nie prosi sam siebie — zapisuje się w panelu kursu.
+   */
+  const dostepDoKursu = (courseId: string | null, slug: string | null) => {
+    if (courseId === null) return null;
+    if (mamKurs.has(courseId)) {
+      return slug === null ? null : (
+        <Link href={`/kurs/${slug}`} className="chip">
+          🎓 uczysz się tego kursu
+        </Link>
+      );
+    }
+    if (isAdmin) {
+      return slug === null ? null : (
+        <Link href={`/admin/kursy/${slug}`} className="chip">
+          zapisz się w panelu
+        </Link>
+      );
+    }
+    // Kursu ukrytego nie ma tu z czego pokazać: polityka `courses_read` nie wydaje go nikomu
+    // poza administratorem, więc i kurs dziecka znika wtedy z `v_my_courses`.
+    return <CourseRequest courseId={courseId} alreadyAsked={poprosilem.has(courseId)} />;
+  };
 
   return (
     <>
@@ -200,6 +240,10 @@ async function Child({ params }: { params: PageProps<"/dziecko/[id]">["params"] 
                         </span>
                       )}
                       <span className="chip">⏱️ {formatDuration(course.seconds_total ?? 0)}</span>
+                      {/* Nauka razem z dzieckiem zaczyna się właśnie tutaj: rodzic widzi kurs
+                          dziecka i w tym samym wierszu prosi o dostęp dla siebie. Zapisuje
+                          administrator — przycisk zostawia tylko ślad przy koncie. */}
+                      {dostepDoKursu(course.course_id, course.course_slug)}
                     </span>
                   </div>
 
