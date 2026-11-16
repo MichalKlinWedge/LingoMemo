@@ -1,14 +1,25 @@
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 
 import { Body, Button, Card, Message, Screen, Title } from '@/components/ui';
 import { color, size } from '@/constants/theme';
 import { type Course, loadMyCourses } from '@/features/courses/load';
+import {
+  disableReminders,
+  enableReminders,
+  exactAlarms,
+  HOURS,
+  reminderHour,
+  remindersOn,
+  refreshReminder,
+  requestExactAlarms,
+  setReminderHour,
+} from '@/features/reminders/reminders';
 import { useSession } from '@/lib/session';
 import { isConfigured, supabase } from '@/lib/supabase';
 
-/** Twoje kursy. Punkty, seria i nagrody są Etapem M3 — tutaj jest droga do nauki. */
+/** Twoje kursy, a pod nimi nagrody, postępy i przypomnienia o powtórkach. */
 export default function Home() {
   const session = useSession();
   const userId = session?.user.id ?? null;
@@ -16,6 +27,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
 
   // Przy powrocie z lekcji lista wczytuje się na nowo — kurs mógł właśnie przybyć gwiazdek.
+  // Przy okazji odświeżamy treść przypomnienia: liczba zaległych słówek mogła się zmienić.
   useFocusEffect(
     useCallback(() => {
       if (userId === null) return;
@@ -29,6 +41,7 @@ export default function Home() {
           setError(result.error);
         }
       });
+      void refreshReminder(userId).catch(() => undefined);
       return () => {
         alive = false;
       };
@@ -73,6 +86,8 @@ export default function Home() {
         <CourseCard key={course.id} course={course} />
       ))}
 
+      <Nav />
+      <Reminders userId={session.user.id} />
       <Diagnostics email={session.user.email ?? null} />
     </Screen>
   );
@@ -93,6 +108,110 @@ function CourseCard({ course }: { course: Course }) {
       </View>
       <Text style={styles.arrow}>→</Text>
     </Pressable>
+  );
+}
+
+/** Nagrody i postępy — osobne ekrany, bo na kursach nie ma dla nich miejsca. */
+function Nav() {
+  const router = useRouter();
+  return (
+    <View style={styles.nav}>
+      <View style={styles.navItem}>
+        <Button kind="quiet" label="🏅 Nagrody" onPress={() => router.push('/nagrody')} />
+      </View>
+      <View style={styles.navItem}>
+        <Button kind="quiet" label="📈 Postępy" onPress={() => router.push('/statystyki')} />
+      </View>
+    </View>
+  );
+}
+
+/**
+ * Przypomnienie o powtórkach: jeden przełącznik i godzina. Stoi na ekranie kursów, a nie
+ * w ustawieniach systemowych, bo wyłączone domyślnie przypomnienie to przypomnienie, którego
+ * nikt nie włączy (lekcja P1.3 z ExpeditionPlan).
+ */
+function Reminders({ userId }: { userId: string }) {
+  const [on, setOn] = useState(remindersOn());
+  const [hour, setHour] = useState(reminderHour());
+  const [exact, setExact] = useState<boolean | null>(null);
+  const [note, setNote] = useState<string | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    void exactAlarms().then((granted) => {
+      if (alive) setExact(granted);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [on]);
+
+  const toggle = async (next: boolean) => {
+    if (!next) {
+      await disableReminders();
+      setOn(false);
+      setNote(null);
+      return;
+    }
+    const result = await enableReminders(userId, hour);
+    setOn(result.on);
+    setNote(
+      result.on
+        ? null
+        : 'Android nie dał zgody na powiadomienia — można ją włączyć w ustawieniach aplikacji.',
+    );
+  };
+
+  return (
+    <Card>
+      <Title>Przypomnienie o powtórkach</Title>
+      <View style={styles.switchRow}>
+        <Body>{on ? `Codziennie o ${hour}:00` : 'Wyłączone'}</Body>
+        <Switch
+          value={on}
+          onValueChange={(next) => void toggle(next)}
+          accessibilityLabel="Codzienne przypomnienie o powtórkach"
+          trackColor={{ true: color.brand, false: color.line }}
+        />
+      </View>
+      {on && (
+        <View style={styles.hours}>
+          {HOURS.map((option) => (
+            <Pressable
+              key={option}
+              accessibilityRole="button"
+              accessibilityState={{ selected: option === hour }}
+              onPress={() => {
+                setHour(option);
+                void setReminderHour(userId, option);
+              }}
+              style={({ pressed }) => [
+                styles.hour,
+                option === hour && styles.hourPicked,
+                pressed && styles.pressed,
+              ]}
+            >
+              <Text style={[styles.hourText, option === hour && styles.hourTextPicked]}>{option}:00</Text>
+            </Pressable>
+          ))}
+        </View>
+      )}
+      {on && exact === false && (
+        <>
+          <Body muted>
+            Android bez zgody na dokładne alarmy może przesunąć przypomnienie nawet o kilkanaście
+            minut.
+          </Body>
+          <Button
+            kind="quiet"
+            label="Włącz dokładne alarmy"
+            onPress={() => void requestExactAlarms(userId).then((granted) => setExact(granted))}
+          />
+        </>
+      )}
+      {note !== null && <Message kind="error" text={note} />}
+    </Card>
   );
 }
 
@@ -156,6 +275,23 @@ const styles = StyleSheet.create({
   courseTitle: { color: color.text, fontSize: 22, fontWeight: '700' },
   courseDesc: { color: color.muted, fontSize: 16 },
   arrow: { color: color.brand, fontSize: 28 },
+  nav: { flexDirection: 'row', gap: size.gap },
+  navItem: { flex: 1 },
+  switchRow: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' },
+  hours: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  hour: {
+    alignItems: 'center',
+    backgroundColor: color.surface,
+    borderColor: color.line,
+    borderRadius: 999,
+    borderWidth: 2,
+    justifyContent: 'center',
+    minHeight: 44,
+    paddingHorizontal: 14,
+  },
+  hourPicked: { backgroundColor: color.brandLight, borderColor: color.brand },
+  hourText: { color: color.text, fontSize: 16, fontWeight: '700' },
+  hourTextPicked: { color: color.brandDark },
   tools: { gap: size.gap, marginTop: 24 },
   toolsHeader: { alignItems: 'center', justifyContent: 'center', minHeight: 44 },
   toolsText: { color: color.muted, fontSize: 16, textDecorationLine: 'underline' },

@@ -171,9 +171,25 @@ function LessonTile({ lesson, map }: { lesson: Lesson; map: CourseMap }) {
       </Pressable>
 
       <Text style={styles.boxTitle}>{lesson.title}</Text>
-      <Text style={styles.words} accessibilityLabel={plural(lesson.word_count ?? 0, WORDS)}>
-        {lesson.word_count ?? 0}
-      </Text>
+      <View style={styles.meta}>
+        <Text style={styles.words} accessibilityLabel={plural(lesson.word_count ?? 0, WORDS)}>
+          {lesson.word_count ?? 0}
+        </Text>
+        {/* Sowa prowadzi na planszę ze słówkami: dziecko najpierw ich słucha, potem wchodzi
+            w lekcję. Przy zamkniętej lekcji sowy nie ma, bo polityki bazy i tak nie wydadzą jej
+            słówek, a przy powtórce — bo powtórka nie ma własnych słówek. */}
+        {state !== 'locked' && lesson.kind !== 'review' && (lesson.word_count ?? 0) > 0 && (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`${lesson.title} — posłuchaj słówek`}
+            hitSlop={10}
+            onPress={() => router.push(`/lekcja/${lesson.id}/nauka`)}
+            style={({ pressed }) => [styles.owl, pressed && styles.pressed]}
+          >
+            <Text style={styles.owlText}>🦉</Text>
+          </Pressable>
+        )}
+      </View>
       {state === 'locked' && <Text style={styles.why}>{why}</Text>}
 
       <View style={styles.marks}>
@@ -295,7 +311,17 @@ const styles = StyleSheet.create({
   tileIcon: { fontSize: 40 },
   tileStars: { fontSize: 14 },
   boxTitle: { color: color.text, fontSize: 17, fontWeight: '700', textAlign: 'center' },
+  meta: { alignItems: 'center', flexDirection: 'row', gap: 10 },
   words: { color: color.muted, fontSize: 15, fontWeight: '700' },
+  owl: {
+    alignItems: 'center',
+    backgroundColor: color.brandLight,
+    borderRadius: 999,
+    height: 34,
+    justifyContent: 'center',
+    width: 34,
+  },
+  owlText: { fontSize: 18 },
   why: { color: color.muted, fontSize: 13, textAlign: 'center' },
   marks: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center', marginTop: 2 },
   markCol: { alignItems: 'center', gap: 2 },

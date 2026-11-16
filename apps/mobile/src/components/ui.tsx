@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { color, size } from '@/constants/theme';
 
@@ -10,8 +11,15 @@ import { color, size } from '@/constants/theme';
  */
 
 export function Screen({ children }: { children: ReactNode }) {
+  // Zapas na dole wielkości paska nawigacji Androida: w trybie edge-to-edge pasek leży NA
+  // treści, więc bez tego ostatni przycisk ekranu zostaje pod przyciskami systemu.
+  const insets = useSafeAreaInsets();
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.screenInner} keyboardShouldPersistTaps="handled">
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={[styles.screenInner, { paddingBottom: 32 + insets.bottom }]}
+      keyboardShouldPersistTaps="handled"
+    >
       {children}
     </ScrollView>
   );
@@ -88,7 +96,7 @@ export function Message({ text, kind }: { text: string; kind: 'error' | 'ok' }) 
 
 const styles = StyleSheet.create({
   screen: { backgroundColor: color.background, flex: 1 },
-  screenInner: { gap: size.gap, padding: size.pad, paddingBottom: 48 },
+  screenInner: { gap: size.gap, padding: size.pad },
   card: {
     backgroundColor: color.surface,
     borderColor: color.line,

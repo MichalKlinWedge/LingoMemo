@@ -48,17 +48,26 @@ export function useSpeak(lang: string) {
    */
   const hasVoice = voices === null || voices.length === 0 || matches(voices, lang);
 
+  /**
+   * `onDone` woła się raz, gdy wypowiedź się skończy — też wtedy, gdy się nie udała albo gdy
+   * nie było czym mówić. Inaczej czytanie listy po kolei stawałoby na pierwszym słowie bez głosu.
+   */
   const speak = useCallback(
-    (text: string) => {
-      if (text.trim() === '') return;
+    (text: string, onDone?: () => void) => {
+      if (text.trim() === '') {
+        onDone?.();
+        return;
+      }
       Speech.stop();
       setSpeaking(true);
-      Speech.speak(text, {
-        language: lang,
-        onDone: () => setSpeaking(false),
-        onStopped: () => setSpeaking(false),
-        onError: () => setSpeaking(false),
-      });
+      let ended = false;
+      const end = () => {
+        if (ended) return;
+        ended = true;
+        setSpeaking(false);
+        onDone?.();
+      };
+      Speech.speak(text, { language: lang, onDone: end, onStopped: end, onError: end });
     },
     [lang],
   );

@@ -2,6 +2,7 @@ import { HINTS, plural } from '@lingomemo/core';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Body, Button, Card, Chip, Message, Title } from '@/components/ui';
 import { color, size } from '@/constants/theme';
@@ -76,6 +77,8 @@ export function LessonRunner({
   /** Rośnie przy każdym dotknięciu ekranu — odkłada automatyczne przejście dalej. */
   const [nudge, setNudge] = useState(0);
 
+  const insets = useSafeAreaInsets();
+  const scrollRef = useRef<React.ComponentRef<typeof ScrollView>>(null);
   const sessionRef = useRef<string | null>(null);
   const keyRef = useRef<string | null>(null);
   const tookRef = useRef<(() => number) | null>(null);
@@ -87,6 +90,12 @@ export function LessonRunner({
   useEffect(() => {
     tookRef.current = stopwatch();
   }, [index]);
+
+  // Po sprawdzeniu odpowiedzi zjeżdżamy na dół: informacja zwrotna i „Dalej" są w treści, więc
+  // przy dłuższym zadaniu (pary, rozsypanka) mogłyby wypaść poza ekran.
+  useEffect(() => {
+    if (phase === 'feedback') scrollRef.current?.scrollToEnd({ animated: true });
+  }, [phase]);
 
   /** Sesja zakładana przy pierwszej odpowiedzi albo przy pierwszej podpowiedzi — nie wcześniej. */
   const ensureSession = useCallback(async (): Promise<string | null> => {
@@ -239,7 +248,13 @@ export function LessonRunner({
         courseSlug={courseSlug}
       />
 
-      <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        ref={scrollRef}
+        // Zapas na dole: pasek nawigacji Androida leży NA treści (edge-to-edge), więc bez
+        // wysokości wcięcia ostatni przycisk zostaje pod przyciskami systemu.
+        contentContainerStyle={[styles.body, { paddingBottom: 24 + insets.bottom }]}
+        keyboardShouldPersistTaps="handled"
+      >
         {exercise.type === 'listening' ? (
           <ListeningExercise
             key={exercise.id}
@@ -344,22 +359,25 @@ export function LessonRunner({
         )}
 
         {error !== null && <Message kind="error" text={error} />}
-      </ScrollView>
 
-      {phase === 'feedback' && verdict !== null && (
-        <Feedback
-          verdict={verdict}
-          onNext={() => void next()}
-          autoNextMs={autoNextMs}
-          nudge={nudge}
-          last={index + 1 >= total}
-          // Po ostatnim zadaniu etapu kończy się etap, nie lekcja.
-          lastLabel={stages > 1 && stage < stages ? 'Zakończ etap' : 'Zakończ lekcję'}
-          // Przy wyborze obrazka poprawną odpowiedzią jest ścieżka do pliku. Dziecku mówi ona
-          // tyle co nic — właściwy obrazek podświetla się na kafelku.
-          showAnswer={exercise.type !== 'image_choice'}
-        />
-      )}
+        {/* Informacja zwrotna stoi W TREŚCI, zaraz pod zadaniem — tam, gdzie chwilę wcześniej
+            było „Nie wiem, pomiń". Przyklejona do dołu ekranu wchodziła pod przyciski systemowe
+            Androida (tryb edge-to-edge), więc „Dalej" dało się dotknąć tylko częściowo. */}
+        {phase === 'feedback' && verdict !== null && (
+          <Feedback
+            verdict={verdict}
+            onNext={() => void next()}
+            autoNextMs={autoNextMs}
+            nudge={nudge}
+            last={index + 1 >= total}
+            // Po ostatnim zadaniu etapu kończy się etap, nie lekcja.
+            lastLabel={stages > 1 && stage < stages ? 'Zakończ etap' : 'Zakończ lekcję'}
+            // Przy wyborze obrazka poprawną odpowiedzią jest ścieżka do pliku. Dziecku mówi ona
+            // tyle co nic — właściwy obrazek podświetla się na kafelku.
+            showAnswer={exercise.type !== 'image_choice'}
+          />
+        )}
+      </ScrollView>
     </View>
   );
 }
@@ -488,12 +506,16 @@ function SummaryScreen({
   hintsWon: number;
 }) {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const stars = '⭐'.repeat(summary.stars) + '☆'.repeat(3 - summary.stars);
   const split = summary.stages > 1;
   const nextStage = summary.passed && !summary.lessonPassed ? summary.stage + 1 : null;
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.summary}>
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={[styles.summary, { paddingBottom: 32 + insets.bottom }]}
+    >
       <Text style={styles.trophy}>{summary.lessonPassed ? '🏆' : summary.passed ? '🎯' : '🌱'}</Text>
       <Title>
         {summary.lessonPassed
@@ -543,8 +565,12 @@ function SummaryScreen({
 
 function Exit({ courseSlug, text }: { courseSlug: string; text: string }) {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.summary}>
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={[styles.summary, { paddingBottom: 32 + insets.bottom }]}
+    >
       <Card>
         <Body>{text}</Body>
         <Button label="Wróć do mapy" onPress={() => router.replace(`/kurs/${courseSlug}`)} />
@@ -571,9 +597,9 @@ const styles = StyleSheet.create({
   body: { gap: size.gap * 1.5, padding: size.pad, paddingBottom: 40 },
   skip: { alignItems: 'center', justifyContent: 'center', minHeight: 44 },
   skipText: { color: color.muted, fontSize: 17, textDecorationLine: 'underline' },
-  feedback: { borderTopWidth: 2, gap: size.gap, padding: size.pad },
-  feedbackOk: { backgroundColor: color.grassLight, borderTopColor: color.grass },
-  feedbackBad: { backgroundColor: color.coralLight, borderTopColor: color.coral },
+  feedback: { borderRadius: size.radius, borderWidth: 2, gap: size.gap, padding: size.pad },
+  feedbackOk: { backgroundColor: color.grassLight, borderColor: color.grass },
+  feedbackBad: { backgroundColor: color.coralLight, borderColor: color.coral },
   feedbackTitle: { fontSize: 24, fontWeight: '700' },
   feedbackLine: { color: color.text, fontSize: size.text },
   strong: { fontWeight: '700' },
