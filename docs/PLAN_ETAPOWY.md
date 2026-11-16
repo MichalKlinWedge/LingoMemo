@@ -187,6 +187,14 @@ dokładnie jak dotąd. Szczegóły i odrzucone warianty w `docs/DECYZJE.md`.
 
 ---
 
+## Aplikacja na telefon (2026-11-16)
+
+Osobny plan w `docs/PLAN_MOBILE.md`: Android przez Expo, **tylko tryb ucznia** (bez panelu
+administratora i bez widoku rodzica), etapy M0–M4 z bramką decyzyjną na początku. Web zostaje
+miejscem, gdzie powstaje treść, zakłada się konta i rodzic patrzy na postępy dziecka.
+
+---
+
 ## Poza planem
 
 Generowanie lekcji przez Claude ze zdjęcia strony z książki. Format importu i model danych są
