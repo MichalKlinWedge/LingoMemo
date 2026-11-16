@@ -1,8 +1,11 @@
--- Podpowiedzi: pięć na dobę, każda zamienia zadanie na łatwiejszą wersję tego samego słówka.
+-- Podpowiedzi: dzienna pula, a każda zamienia zadanie na łatwiejszą wersję tego samego słówka.
 --
 -- Sprawdzamy to, od czego zależy uczciwość tej mechaniki: że zamiennik jest naprawdę łatwiejszy
 -- i dotyczy tego samego słówka, że da się na niego odpowiedzieć (migawka sesji!), że pula spada
--- tylko raz na zadanie, że kończy się po pięciu i że wczorajsze użycia jej nie zjadają.
+-- tylko raz na zadanie, że kończy się razem z pulą i że wczorajsze użycia jej nie zjadają.
+--
+-- Liczb nie wpisujemy tu wprost, tylko pytamy o nie `hint_limit()`: ten test ma pilnować
+-- mechaniki, a nie tego, jaka akurat jest pula — tę zmieniono już raz i zmieni się znowu.
 
 begin;
 select plan(17);
@@ -104,7 +107,7 @@ select set_config('role', 'authenticated', true),
                  'app_metadata', coalesce(u.raw_app_meta_data, '{}'::jsonb))::text
             from auth.users u where u.id = (select id from t_ids where name = 'uczen')), true);
 
-select is(public.hints_left(), 5, 'nowe konto ma pięć podpowiedzi na dziś');
+select is(public.hints_left(), public.hint_limit(), 'nowe konto ma pełną dzienną pulę');
 
 create temporary table t_sesja as
   select public.start_lesson_session((select lesson_id from t_ctx)::uuid, 'podpowiedzi-1') as id;
@@ -143,11 +146,12 @@ select is(
   false,
   'w zadaniu z podpowiedzi nie ma poprawnej odpowiedzi');
 
-select is((select (v ->> 'hintsLeft')::integer from t_hint), 4, 'podpowiedź zabiera jedną z puli');
+select is((select (v ->> 'hintsLeft')::integer from t_hint), public.hint_limit() - 1,
+          'podpowiedź zabiera jedną z puli');
 
 select is(
   (select (public.use_hint((select id from t_sesja), (select id from t_trudne)) ->> 'hintsLeft')::integer),
-  4,
+  public.hint_limit() - 1,
   'druga podpowiedź do tego samego zadania nic nie kosztuje');
 
 -- Na zamiennik musi dać się odpowiedzieć: sesja wydała go zamiast trudnego zadania.
@@ -181,7 +185,8 @@ select set_config('role', 'authenticated', true),
                  'app_metadata', coalesce(u.raw_app_meta_data, '{}'::jsonb))::text
             from auth.users u where u.id = (select id from t_ids where name = 'uczen')), true);
 
-select is(public.hints_left(), 4, 'wczorajsze podpowiedzi nie liczą się do dzisiejszej puli');
+select is(public.hints_left(), public.hint_limit() - 1,
+          'wczorajsze podpowiedzi nie liczą się do dzisiejszej puli');
 
 -- Poziom łatwy: nie ma łatwiejszego zadania, więc podpowiedź upraszcza to, które jest.
 create temporary table t_prostsze as
@@ -235,8 +240,8 @@ select is((select ile from t_reset), 2, 'rodzic oddaje dokładnie dzisiejsze uż
 
 select is(
   (public.hint_status((select id from t_ids where name = 'uczen')) ->> 'left')::integer,
-  5,
-  'po oddaniu dziecko ma znowu pięć podpowiedzi');
+  public.hint_limit(),
+  'po oddaniu dziecko ma znowu pełną pulę');
 
 select * from finish();
 rollback;

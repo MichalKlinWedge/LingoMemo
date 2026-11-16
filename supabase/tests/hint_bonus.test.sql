@@ -87,13 +87,13 @@ create or replace function pg_temp.dzis() returns date language sql as $$
 $$;
 
 -- --- pusty dzień ---
-select is(pg_temp.zostalo(), 5, 'bez zaliczonej lekcji zostaje sama pula dzienna');
+select is(pg_temp.zostalo(), public.hint_limit(), 'bez zaliczonej lekcji zostaje sama pula dzienna');
 
 -- --- jedna lekcja zaliczona dzisiaj ---
 insert into public.lesson_progress (user_id, lesson_id, status, best_score, stars, completed_at)
 select (select id from t_ids where name = 'uczen'), lesson_one, 'completed', 1.0, 3, now() from t_ctx;
 
-select is(pg_temp.zostalo(), 6, 'lekcja zaliczona dzisiaj dokłada jedną podpowiedź');
+select is(pg_temp.zostalo(), public.hint_limit() + 1, 'lekcja zaliczona dzisiaj dokłada jedną podpowiedź');
 select is(
   (select public.hint_bonus((select id from t_ids where name = 'uczen'))),
   1,
@@ -104,7 +104,7 @@ select is(
 insert into public.lesson_progress (user_id, lesson_id, status, best_score, stars, completed_at)
 select (select id from t_ids where name = 'uczen'), lesson_two, 'completed', 1.0, 3, now() from t_ctx;
 
-select is(pg_temp.zostalo(), 7, 'druga lekcja dokłada drugą podpowiedź');
+select is(pg_temp.zostalo(), public.hint_limit() + 2, 'druga lekcja dokłada drugą podpowiedź');
 
 -- --- powtórzenie lekcji ---
 -- `finish_lesson_session` trzyma `completed_at` na `coalesce`, więc ponowne zaliczenie nie
@@ -114,7 +114,7 @@ update public.lesson_progress
  where user_id = (select id from t_ids where name = 'uczen')
    and lesson_id = (select lesson_one from t_ctx);
 
-select is(pg_temp.zostalo(), 7, 'powtórzona lekcja nie dokłada kolejnej podpowiedzi');
+select is(pg_temp.zostalo(), public.hint_limit() + 2, 'powtórzona lekcja nie dokłada kolejnej podpowiedzi');
 
 -- --- wczorajsze zaliczenie ---
 update public.lesson_progress
@@ -122,15 +122,16 @@ update public.lesson_progress
  where user_id = (select id from t_ids where name = 'uczen')
    and lesson_id = (select lesson_two from t_ctx);
 
-select is(pg_temp.zostalo(), 6, 'lekcja zaliczona wcześniej nie dokłada nic do dzisiejszej puli');
+select is(pg_temp.zostalo(), public.hint_limit() + 1, 'lekcja zaliczona wcześniej nie dokłada nic do dzisiejszej puli');
 
 -- --- dokładka naprawdę przedłuża pulę ---
--- Pięć użyć z dzisiaj zjadłoby całą pulę dzienną; z dokładką zostaje jeszcze jedno.
+-- Tyle użyć z dzisiaj, ile wynosi pula dzienna: sama pula jest już zjedzona, więc to, co
+-- zostaje, może pochodzić wyłącznie z dokładki za lekcję.
 insert into public.hint_uses (user_id, session_id, exercise_id, easier_id, used_on)
 select (select id from t_ids where name = 'uczen'), null, null, null, pg_temp.dzis()
-  from generate_series(1, 5);
+  from generate_series(1, public.hint_limit());
 
-select is(pg_temp.zostalo(), 1, 'po pięciu użyciach zostaje jeszcze ta z lekcji');
+select is(pg_temp.zostalo(), 1, 'po zjedzeniu całej puli zostaje jeszcze ta z lekcji');
 
 insert into public.hint_uses (user_id, session_id, exercise_id, easier_id, used_on)
 values ((select id from t_ids where name = 'uczen'), null, null, null, pg_temp.dzis());
