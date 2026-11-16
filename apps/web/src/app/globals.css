@@ -644,6 +644,14 @@ h2 {
     gap: 0.125rem;
   }
 
+  /* Kolumna etapu przy otwartej lekcji jest odnośnikiem (`?etap=N`) i musi na to wyglądać:
+     łapkę daje samo `<a>`, a obrys przy najechaniu mówi, że to się klika — bez niego kwadracik
+     1,5 rem czyta się jak znaczek stanu, a nie jak wejście w etap. */
+  a.stage-col:hover .stage,
+  a.stage-col:focus-visible .stage {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--level-1) 30%, transparent);
+  }
+
   /* Miejsce na gwiazdki zostaje także przy etapie bez ani jednej — bez tego kwadraciki
      sąsiednich lekcji stały na różnej wysokości. Puste gwiazdki na obrys świadomie odpadły:
      przy trzech etapach to dziewięć znaczków pod jednym kafelkiem, czyli szum. */

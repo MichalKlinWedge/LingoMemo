@@ -210,7 +210,14 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
                         wejścia na średni i trudny. */}
                     <span className="marks">
                       {etapy > 1 && (
-                        <Stages done={etapyZrobione} total={etapy} stars={starsOf(lesson.id)} />
+                        <Stages
+                          lesson={lesson.id}
+                          title={lesson.title}
+                          locked={state === "locked"}
+                          done={etapyZrobione}
+                          total={etapy}
+                          stars={starsOf(lesson.id)}
+                        />
                       )}
                       {harderOf(lesson.id).map((row) => (
                         <LevelBox key={row.level} lesson={lesson.id} title={lesson.title} row={row} />
@@ -288,37 +295,87 @@ function LevelBox({
  * Bez nich dziecko widziało dwie gwiazdki przy lekcji i nie miało z czego wyczytać, gdzie
  * zgubiło trzecią.
  *
- * Dla czytnika ekranu to jeden obrazek z jednym podpisem, a nie seria pustych elementów —
- * dziesięć „kwadrat, kwadrat, kwadrat" nie niesie żadnej informacji. Dymek nad każdym etapem
- * powtarza to samo dla kogoś, kto patrzy na drobne gwiazdki i chce mieć pewność, ile ich jest.
+ * Każdy etap jest odnośnikiem do siebie samego (`?etap=N`) — tak samo jak kwadraciki poziomów
+ * obok. Po to właśnie są tu gwiazdki: dziecko widzi, który etap wypadł słabo, i ma go wejść
+ * powtórzyć jednym kliknięciem, a nie przez lekcję od początku. Bazie kolejność etapów nie
+ * przeszkadza (`start_lesson_session` pilnuje tylko zakresu 1..liczba etapów), a lekcję
+ * i tak zamyka dopiero komplet zaliczonych etapów.
+ *
+ * Przy zamkniętej lekcji nie ma dokąd prowadzić, więc rząd jest wtedy jednym obrazkiem
+ * z jednym podpisem — dziesięć „kwadrat, kwadrat, kwadrat" nie niesie żadnej informacji.
+ * Odnośniki niosą swoje podpisy same, bo w `role="img"` czytnik ekranu nie zobaczyłby ich wcale.
  */
-function Stages({ done, total, stars }: { done: number; total: number; stars: Map<number, number> }) {
+function Stages({
+  lesson,
+  title,
+  locked,
+  done,
+  total,
+  stars,
+}: {
+  lesson: string;
+  title: string;
+  locked: boolean;
+  done: number;
+  total: number;
+  stars: Map<number, number>;
+}) {
   // Zabezpieczenie przed danymi z przyszłości: gdyby lekcja skróciła się po tym, jak dziecko
   // zrobiło etapy, `done` byłoby większe niż `total` i pętla rysowałaby za mało kwadracików.
   const zrobione = Math.min(Math.max(done, 0), total);
   const numery = Array.from({ length: total }, (_, index) => index + 1);
   const gwiazdkiEtapu = (nr: number) => Math.min(Math.max(stars.get(nr) ?? 0, 0), 3);
-  const opis = numery.map((nr) => `etap ${nr} — ${plural(gwiazdkiEtapu(nr), STARS)}`).join(", ");
+  const opisEtapu = (nr: number) => `Etap ${nr} z ${total} — ${plural(gwiazdkiEtapu(nr), STARS)}`;
+
+  if (locked) {
+    return (
+      <span
+        className="flex gap-1"
+        role="img"
+        aria-label={`Zrobione etapy: ${zrobione} z ${total}; ${numery
+          .map((nr) => `etap ${nr} — ${plural(gwiazdkiEtapu(nr), STARS)}`)
+          .join(", ")}`}
+      >
+        {numery.map((nr) => (
+          <span key={nr} className="stage-col">
+            <StageMark stars={gwiazdkiEtapu(nr)} done={nr <= zrobione} />
+          </span>
+        ))}
+      </span>
+    );
+  }
 
   return (
-    <span
-      className="flex gap-1"
-      role="img"
-      aria-label={`Zrobione etapy: ${zrobione} z ${total}; ${opis}`}
-    >
+    <span className="flex gap-1">
       {numery.map((nr) => (
-        <span key={nr} className="stage-col" title={`Etap ${nr} — ${plural(gwiazdkiEtapu(nr), STARS)}`}>
-          <span className="stage-stars" aria-hidden>
-            {Array.from({ length: gwiazdkiEtapu(nr) }, (_, index) => (
-              <span key={index} className="stage-star">
-                ★
-              </span>
-            ))}
-          </span>
-          <span className="stage" data-done={nr <= zrobione} aria-hidden />
-        </span>
+        <Link
+          key={nr}
+          href={`/lekcja/${lesson}?etap=${nr}`}
+          className="stage-col"
+          title={opisEtapu(nr)}
+          aria-label={`${title} — ${opisEtapu(nr)}`}
+        >
+          <StageMark stars={gwiazdkiEtapu(nr)} done={nr <= zrobione} />
+        </Link>
       ))}
     </span>
+  );
+}
+
+/** Zawartość kolumny etapu: gwiazdki i kwadracik. Oba tylko do oglądania — podpis dla czytnika
+ *  ekranu siedzi na tym, co je obejmuje (odnośniku albo całym rzędzie). */
+function StageMark({ stars, done }: { stars: number; done: boolean }) {
+  return (
+    <>
+      <span className="stage-stars" aria-hidden>
+        {Array.from({ length: stars }, (_, index) => (
+          <span key={index} className="stage-star">
+            ★
+          </span>
+        ))}
+      </span>
+      <span className="stage" data-done={done} aria-hidden />
+    </>
   );
 }
 
