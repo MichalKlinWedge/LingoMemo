@@ -18,6 +18,12 @@ const KAFELKI = [
   },
   { href: "/admin/obrazki", icon: "🖼️", title: "Obrazki", text: "Wgraj obrazki do słówek." },
   {
+    href: "/admin/statystyki",
+    icon: "📊",
+    title: "Statystyki",
+    text: "Cała aplikacja naraz: kursy, dzieci, celność, trudne słówka.",
+  },
+  {
     href: "/admin/ustawienia",
     icon: "⚙️",
     title: "Ustawienia",

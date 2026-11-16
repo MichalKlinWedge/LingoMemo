@@ -89,6 +89,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "v_my_courses"
       referencedColumns: ["course_id"]
+    },{
+      foreignKeyName: "concepts_course_id_fkey"
+      columns: ["course_id"]
+isOneToOne: false
+      referencedRelation: "v_stats_courses"
+      referencedColumns: ["course_id"]
     }
                   ]
                 },"courses": {
@@ -140,6 +146,12 @@ isOneToOne: false
       columns: ["course_id"]
 isOneToOne: false
       referencedRelation: "v_my_courses"
+      referencedColumns: ["course_id"]
+    },{
+      foreignKeyName: "enrollments_course_id_fkey"
+      columns: ["course_id"]
+isOneToOne: false
+      referencedRelation: "v_stats_courses"
       referencedColumns: ["course_id"]
     }
                   ]
@@ -442,6 +454,12 @@ isOneToOne: false
       referencedRelation: "v_my_courses"
       referencedColumns: ["course_id"]
     },{
+      foreignKeyName: "lessons_review_scope_course_id_fkey"
+      columns: ["review_scope_course_id"]
+isOneToOne: false
+      referencedRelation: "v_stats_courses"
+      referencedColumns: ["course_id"]
+    },{
       foreignKeyName: "lessons_review_scope_unit_id_fkey"
       columns: ["review_scope_unit_id"]
 isOneToOne: false
@@ -533,6 +551,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "v_my_courses"
       referencedColumns: ["course_id"]
+    },{
+      foreignKeyName: "srs_state_course_id_fkey"
+      columns: ["course_id"]
+isOneToOne: false
+      referencedRelation: "v_stats_courses"
+      referencedColumns: ["course_id"]
     }
                   ]
                 },"term_forms": {
@@ -604,6 +628,12 @@ isOneToOne: false
       columns: ["course_id"]
 isOneToOne: false
       referencedRelation: "v_my_courses"
+      referencedColumns: ["course_id"]
+    },{
+      foreignKeyName: "units_course_id_fkey"
+      columns: ["course_id"]
+isOneToOne: false
+      referencedRelation: "v_stats_courses"
       referencedColumns: ["course_id"]
     }
                   ]
@@ -733,6 +763,64 @@ isOneToOne: false
       referencedRelation: "concepts"
       referencedColumns: ["id"]
     }
+                  ]
+                },"v_stats_courses": {
+                  Row: {
+                    "course_id": string,"course_title": string,"learners": number | null,"lessons_done": number | null,"lessons_total": number | null,"target_lang": string,"words": number | null,"words_mastered": number | null,"words_started": number | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                           "course_id"?: string | null,"course_title"?: string | null,"learners"?: never,"lessons_done"?: never,"lessons_total"?: never,"target_lang"?: string | null,"words"?: never,"words_mastered"?: never,"words_started"?: never
+                         }
+                        Update: {
+                           "course_id"?: string | null,"course_title"?: string | null,"learners"?: never,"lessons_done"?: never,"lessons_total"?: never,"target_lang"?: string | null,"words"?: never,"words_mastered"?: never,"words_started"?: never
+                         }
+                        Relationships: [
+                    {
+      foreignKeyName: "courses_target_lang_fkey"
+      columns: ["target_lang"]
+isOneToOne: false
+      referencedRelation: "languages"
+      referencedColumns: ["code"]
+    }
+                  ]
+                },"v_stats_daily": {
+                  Row: {
+                    "answers": number | null,"correct": number | null,"day": string | null,"learners": number | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
+                },"v_stats_exercise_types": {
+                  Row: {
+                    "answers": number | null,"correct": number | null,"exercise_type": Database["public"]['Enums']["exercise_type"]
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
+                },"v_stats_hard_words": {
+                  Row: {
+                    "concept_id": string,"course_title": string | null,"lapses": number | null,"learners": number | null,"source_text": string | null,"target_text": string | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "srs_state_concept_id_fkey"
+      columns: ["concept_id"]
+isOneToOne: false
+      referencedRelation: "concepts"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"v_stats_summary": {
+                  Row: {
+                    "answers": number | null,"answers_correct": number | null,"learners": number | null,"learners_7d": number | null,"lessons_done": number | null,"seconds_total": number | null,"words_due": number | null,"words_mastered": number | null,"words_seen": number | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
                   ]
                 },"v_user_points": {
                   Row: {

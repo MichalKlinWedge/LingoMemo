@@ -848,3 +848,22 @@ trzeci kafelek stał sam w drugim rzędzie, a strzał w ciemno trafiał co trzec
 | Gdzie zapisana reguła | `CLAUDE.md`, przy konwencjach treści | to reguła dla generowanej treści, a nie niezmiennik bazy | — |
 | Czy walidacja ma wymusić cztery | nie, zostaje „od dwóch do czterech" | lekcja może nie mieć czwartego sensownego obrazka, a import ręcznej lekcji nie ma się o to wywracać; przy generowaniu pilnuje tego reguła, nie schemat | `z.array(...).length(4)` w schemacie importu |
 | Skąd czwarty obrazek | z obrazków, które ta lekcja i tak ma w słówkach | są już w buckecie, więc nic nie trzeba dogrywać; przy liczbach dobrany blisko (30 → 40), przy kolorach mylący (brązowy → pomarańczowy) | nowe pliki graficzne |
+
+### Statystyki całej aplikacji w panelu (2026-11-16)
+
+Dorosły miał statystyki jednego dziecka (karta ucznia) i statystyki swojego konta, ale nie miał
+nic, co pokazuje całość: czy w ogóle ktoś się uczy, który kurs stoi, na czym dzieci się
+przewracają. Sekcja „Statystyki" w panelu liczy to pięcioma widokami.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Kto liczy | baza, widoki `v_stats_*` | grupowania po dniach ani sum nie da się poprosić przez PostgREST, a liczenie w przeglądarce znaczy ściągnięcie historii odpowiedzi wszystkich dzieci | liczenie w aplikacji; materializowane widoki (statystyki mają być świeże po lekcji, nie po odświeżeniu) |
+| Jak działa zakres | `security_invoker` — widok pokazuje to, co widzi pytający | polityki RLS już dopuszczają administratora do wszystkiego, a rodzica do jego dzieci; druga ścieżka (`security definer` + `is_admin()`) rozjechałaby się po pierwszej poprawce — ta sama decyzja co przy `v_my_*` | osobne funkcje `admin_stats_*` |
+| Co pokazują słupki kursu | lekcje zaliczone przez wszystkie dzieci razem | to miara przerobionego materiału kursu, a nie postępu jednego dziecka — od tego jest karta ucznia | średni postęp dziecka (kurs z jednym pilnym dzieckiem wyglądałby na skończony) |
+| Celność po typie zadania | osobny widok, lista sortowana od najgorszej | typ z celnością 30% to zwykle błąd w treści zadania, a nie trudny materiał; ta lista jest po to, żeby go znaleźć | celność tylko łącznie |
+| Trudne słówka | suma `lapses` z `srs_state`, nie z odpowiedzi | w `srs_state` pomyłka jest już policzona raz na dziecko i słówko, więc nie trzeba przeliczać historii | liczenie z `attempts` |
+| Czym rysujemy | te same ręczne klocki co u dziecka (`stats-widgets`), słupki poziome | biblioteka wykresów to kilkaset kilobajtów na jedną stronę panelu; poziome słupki, bo podpisy są pełnymi nazwami lekcji i kursów | biblioteka wykresów; pionowe słupki z podpisami bokiem |
+
+Widoki są dostępne dla każdego zalogowanego i to jest celowe: dziecko zobaczy w nich swoje
+własne liczby, rodzic liczby swoich dzieci. Test pgTAP sprawdza właśnie tę własność — gdyby
+`security_invoker` kiedyś z nich zniknęło, dziecko zobaczyłoby w przeglądarce dane wszystkich.
