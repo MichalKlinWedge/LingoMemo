@@ -5,7 +5,7 @@
 -- Sprawdzamy, że powstaje sama, że jest zadaniem na klikanie i że da się ją zaliczyć.
 
 begin;
-select plan(11);
+select plan(12);
 
 create or replace function pg_temp.make_user(p_email text) returns uuid
 language plpgsql as $$
@@ -86,8 +86,16 @@ select is((select level from t_uklad), 1::smallint,
           'rozsypanka to zadanie na klikanie, czyli poziom pierwszy');
 
 select is((select payload -> 'solution' from t_uklad),
-          jsonb_build_array('Open', 'your', 'books.'),
+          jsonb_build_array('Open', 'your', 'books'),
           'rozwiązaniem jest zdanie podzielone na słowa');
+
+-- Kropka na ostatnim klocku zdradzałaby, które słowo idzie na koniec.
+select is(
+  (select count(*)::integer
+     from jsonb_array_elements_text((select payload -> 'tokens' from t_uklad)) tk
+    where tk ~ '[.!?,;:]$'),
+  0,
+  'żaden klocek nie kończy się interpunkcją');
 
 select ok(
   (select jsonb_array_length(payload -> 'tokens') from t_uklad)
@@ -97,7 +105,7 @@ select ok(
 select is(
   (select count(*)::integer
      from jsonb_array_elements_text((select payload -> 'tokens' from t_uklad)) tk
-    where tk not in ('Open', 'your', 'books.')
+    where tk not in ('Open', 'your', 'books')
       and tk not in (select t.text from public.terms t where t.lang = 'en' and t.is_primary)),
   0,
   'dystraktory to słowa z tego samego działu, a nie przypadkowe ciągi znaków');
@@ -136,7 +144,7 @@ select is(
   (select public.submit_attempt(
             (select id from t_sesja),
             (select id from t_uklad),
-            jsonb_build_object('tokens', jsonb_build_array('Open', 'your', 'books.'))) ->> 'correct'),
+            jsonb_build_object('tokens', jsonb_build_array('Open', 'your', 'books'))) ->> 'correct'),
   'true',
   'ułożone zdanie jest zaliczone, choć część klocków została nieużyta');
 
