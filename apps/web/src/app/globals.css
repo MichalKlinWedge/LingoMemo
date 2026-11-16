@@ -114,7 +114,30 @@ h2 {
   animation: pop 0.32s ease-out;
 }
 
-/* Kto prosi o mniej ruchu, dostaje mniej ruchu — także dziecko z nadwrażliwością. */
+/* Pasek odliczania na przycisku „Dalej": po dobrej odpowiedzi lekcja przechodzi dalej sama,
+   a pasek pokazuje, ile zostało. Czas trwania ustawia komponent, żeby nie trzymać tej samej
+   liczby w dwóch miejscach. */
+@keyframes countdown {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+.countdown {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 0.25rem;
+  transform-origin: left;
+  background: rgba(255, 255, 255, 0.75);
+  animation: countdown linear forwards;
+}
+
+/* Kto prosi o mniej ruchu, dostaje mniej ruchu — także dziecko z nadwrażliwością.
+   Paska odliczania to NIE dotyczy: on nie zdobi, tylko mówi, kiedy ekran sam się zmieni.
+   Zatrzymany na pełnej szerokości kłamałby, a przejście i tak nastąpi. */
 @media (prefers-reduced-motion: reduce) {
   .anim-slide-up,
   .anim-pop {
