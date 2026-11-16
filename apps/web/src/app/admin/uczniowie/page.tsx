@@ -98,7 +98,6 @@ async function People() {
       // patrzy się wcale, a pod rozwiniętym wierszem mieszczą się w jednym zdaniu.
       details: [
         `słówek: ${student.words_seen}`,
-        `poziom: ${student.level}`,
         student.last_active_on
           ? `ostatnio uczył się ${new Date(student.last_active_on).toLocaleDateString("pl-PL")}`
           : "jeszcze się nie uczył",
