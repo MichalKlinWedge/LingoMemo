@@ -29,6 +29,22 @@ import { stopwatch } from '@/lib/clock';
 type Phase = 'answering' | 'checking' | 'feedback' | 'done';
 
 /**
+ * Powrót na mapę kursu — `dismissTo`, nie `replace`.
+ *
+ * Mapa leży już na stosie (to z niej wchodzi się w lekcję), więc `replace` nie wracał na nią,
+ * tylko dokładał jej drugi egzemplarz. Po kilku lekcjach systemowy przycisk Wstecz przewijał
+ * kilka identycznych map, zanim doszedł do listy kursów. `dismissTo` zdejmuje ekrany aż do tej
+ * mapy, która tam jest, a gdyby jej nie było — na przykład po wejściu w lekcję prosto
+ * z powiadomienia — zachowa się dokładnie jak `replace`.
+ *
+ * Mapa wczytuje się na nowo przy każdym pokazaniu (`useFocusEffect` w `app/kurs/[slug].tsx`),
+ * więc powrót na istniejący ekran nie pokazuje gwiazdek i zamków sprzed lekcji.
+ */
+function backToMap(router: ReturnType<typeof useRouter>, courseSlug: string) {
+  router.dismissTo(`/kurs/${courseSlug}`);
+}
+
+/**
  * Przebieg lekcji na telefonie. Pilnuje tylko kolejności zadań i tego, co widać na ekranie —
  * o tym, czy odpowiedź jest poprawna i ile jest za nią punktów, decyduje wyłącznie baza.
  * Odpowiednik `apps/web/src/app/lekcja/[id]/lesson-runner.tsx`; reguły są te same, bo to te
@@ -406,7 +422,7 @@ function Progress({
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Przerwij lekcję"
-          onPress={() => router.replace(`/kurs/${courseSlug}`)}
+          onPress={() => backToMap(router, courseSlug)}
           style={styles.close}
         >
           <Text style={styles.closeText}>✕</Text>
@@ -556,7 +572,7 @@ function SummaryScreen({
         <Button
           kind={nextStage === null ? 'primary' : 'quiet'}
           label="Wróć do mapy"
-          onPress={() => router.replace(`/kurs/${courseSlug}`)}
+          onPress={() => backToMap(router, courseSlug)}
         />
       </View>
     </ScrollView>
@@ -573,7 +589,7 @@ function Exit({ courseSlug, text }: { courseSlug: string; text: string }) {
     >
       <Card>
         <Body>{text}</Body>
-        <Button label="Wróć do mapy" onPress={() => router.replace(`/kurs/${courseSlug}`)} />
+        <Button label="Wróć do mapy" onPress={() => backToMap(router, courseSlug)} />
       </Card>
     </ScrollView>
   );
