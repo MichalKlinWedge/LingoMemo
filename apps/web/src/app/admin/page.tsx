@@ -7,16 +7,15 @@ import { Loading, Shell } from "@/components/shell";
 import { requireAdmin } from "@/lib/auth";
 
 const KAFELKI = [
-  { href: "/admin/kursy", icon: "📚", title: "Kursy", text: "Kursy, działy, lekcje i słówka." },
-  { href: "/admin/import", icon: "📥", title: "Import lekcji", text: "Wklej lekcję z pliku JSON." },
-  { href: "/admin/zaproszenia", icon: "✉️", title: "Zaproszenia", text: "Wygeneruj link do założenia konta." },
   {
     href: "/admin/uczniowie",
     icon: "🧒",
     title: "Uczniowie i konta",
     text: "Kto się uczy, jak mu idzie i zmiana hasła.",
   },
-  { href: "/admin/obrazki", icon: "🖼️", title: "Obrazki", text: "Wgraj obrazki do słówek." },
+  { href: "/admin/zaproszenia", icon: "✉️", title: "Zaproszenia", text: "Wygeneruj link do założenia konta." },
+  { href: "/admin/kursy", icon: "📚", title: "Kursy", text: "Kursy, działy, lekcje i słówka." },
+  { href: "/admin/import", icon: "📥", title: "Import lekcji", text: "Wklej lekcję z pliku JSON." },
   {
     href: "/admin/statystyki",
     icon: "📊",
@@ -28,6 +27,12 @@ const KAFELKI = [
     icon: "⚙️",
     title: "Ustawienia",
     text: "Pokrętła całej aplikacji, np. czas przejścia do następnego zadania.",
+  },
+  {
+    href: "/admin/obrazki",
+    icon: "🖼️",
+    title: "Obrazki",
+    text: "Wgraj obrazek i skopiuj jego ścieżkę do pliku lekcji.",
   },
 ];
 
