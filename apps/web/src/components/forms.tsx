@@ -129,15 +129,22 @@ export function SubmitButton({
   children,
   pendingLabel = "Chwileczkę…",
   variant = "primary",
+  disabled = false,
 }: {
   children: ReactNode;
   pendingLabel?: string;
   /** „danger" to czerwony przycisk kasujący. Występuje wyłącznie w panelu administratora. */
   variant?: "primary" | "danger";
+  /** Blokada do czasu, aż formularz jest gotowy do wysłania — np. brak zaznaczonej zgody. */
+  disabled?: boolean;
 }) {
   const { pending } = useFormStatus();
   return (
-    <button type="submit" className={variant === "danger" ? "btn-danger" : "btn-primary"} disabled={pending}>
+    <button
+      type="submit"
+      className={variant === "danger" ? "btn-danger" : "btn-primary"}
+      disabled={pending || disabled}
+    >
       {pending ? pendingLabel : children}
     </button>
   );

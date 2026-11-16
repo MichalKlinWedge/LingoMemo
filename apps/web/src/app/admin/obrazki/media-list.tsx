@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 
 import { type FormState, Status, SubmitButton } from "@/components/forms";
 
@@ -27,59 +27,158 @@ function uzycie(file: MediaFile): string | null {
   return czesci.length === 0 ? null : czesci.join(" · ");
 }
 
-/**
- * Jeden plik biblioteki. Kasowanie przez Server Action, nie przez przeglądarkę: dzięki temu
- * lista odświeża się sama, a nie dopiero po ręcznym przeładowaniu strony.
- */
-function Plik({ file }: { file: MediaFile }) {
-  const [state, action] = useActionState<FormState, FormData>(deleteMediaAction, {});
+function data(iso: string | null): string {
+  return iso ? new Date(iso).toLocaleDateString("pl-PL") : "—";
+}
+
+/** Jeden plik jako wiersz tabeli. Kasowanie nie dzieje się tutaj — wiersz tylko o nie prosi. */
+function Wiersz({ file, onDelete }: { file: MediaFile; onDelete: () => void }) {
   const w_uzyciu = uzycie(file);
 
   return (
-    <li className="card flex flex-col gap-3 p-4">
-      {/* Zwykły <img>: pliki wgrywa administrator w trakcie działania aplikacji, więc nie ma
-          ich czym zoptymalizować przy budowaniu. */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={file.url}
-        alt=""
-        style={{ width: "100%", aspectRatio: "1 / 1", objectFit: "contain", background: "var(--color-zinc-100)" }}
-        className="rounded-xl"
-      />
-
-      {/* Pole tekstowe, nie napis: ścieżkę trzeba zaznaczyć i skopiować do pliku lekcji. */}
-      <input className="field font-mono text-sm" readOnly value={file.path} aria-label={`Ścieżka pliku ${file.path}`} />
-
-      <span className="text-sm text-zinc-600 dark:text-zinc-400">
-        {kilobajty(file.size)}
-        {file.updatedAt ? ` · ${new Date(file.updatedAt).toLocaleDateString("pl-PL")}` : ""}
-      </span>
-
-      <span className={w_uzyciu ? "chip" : "text-sm text-zinc-500"}>
-        {w_uzyciu ? `W użyciu: ${w_uzyciu}` : "Nieużywany"}
-      </span>
-
-      <form action={action} className="flex flex-col gap-2">
-        <input type="hidden" name="path" value={file.path} />
-        <input type="hidden" name="used" value={w_uzyciu ? "1" : "0"} />
-        {w_uzyciu && (
-          <label className="flex items-start gap-2 text-sm">
-            <input type="checkbox" name="confirm" className="mt-1 h-5 w-5" />
-            <span>
-              Wiem, że zniknie z miejsc, w których jest użyty — dziecko zobaczy tam puste miejsce.
-            </span>
-          </label>
+    <tr>
+      <td>
+        {/* Zwykły <img>: pliki wgrywa administrator w trakcie działania aplikacji, więc nie ma
+            ich czym zoptymalizować przy budowaniu. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={file.url}
+          alt=""
+          className="rounded-lg"
+          style={{ width: "3rem", height: "3rem", objectFit: "contain", background: "var(--color-zinc-100)" }}
+        />
+      </td>
+      {/* `w-full` na jednej komórce: tabela rozdziela szerokość tak, że pozostałe kolumny biorą
+          tyle, ile im trzeba, a cała reszta zostaje dla ścieżki — to ona bywa długa. */}
+      <td className="w-full">
+        {/* Pole tekstowe, nie napis: ścieżkę trzeba zaznaczyć i skopiować do pliku lekcji.
+            `min-h-0` zdejmuje wysokość dla palca — w wierszu tabeli rozpychałaby każdy rząd. */}
+        <input
+          className="field min-h-0 min-w-0 px-2 py-1 font-mono text-sm sm:min-w-64"
+          readOnly
+          value={file.path}
+          aria-label={`Ścieżka pliku ${file.path}`}
+        />
+      </td>
+      {/* Rozmiar i data w jednej komórce: osobne kolumny zabierały szerokość ścieżce, a ta
+          bywa długa i to ją się tu czyta. */}
+      <td className="hidden whitespace-nowrap text-right text-sm text-zinc-500 sm:table-cell">
+        {kilobajty(file.size)} · {data(file.updatedAt)}
+      </td>
+      {/* Poniżej 640 px kolumna znika: nie mieści się obok ścieżki, a o użyciu i tak mówi
+          okno potwierdzenia — czyli dokładnie wtedy, kiedy ta informacja jest potrzebna. */}
+      <td className="hidden whitespace-nowrap sm:table-cell">
+        {w_uzyciu ? (
+          <span className="chip text-sm">{w_uzyciu}</span>
+        ) : (
+          <span className="text-sm text-zinc-500">Nieużywany</span>
         )}
-        <Status state={state} />
-        <SubmitButton pendingLabel="Kasuję…" variant="danger">
-          Usuń
-        </SubmitButton>
-      </form>
-    </li>
+      </td>
+      <td className="text-right">
+        {/* Poniżej 640 px zostaje sama ikona — podpis powtarza się w każdym wierszu i zabiera
+            szerokość, której brakuje ścieżce. Nazwę dla czytnika ekranu niesie `aria-label`. */}
+        <button type="button" className="btn-row" onClick={onDelete} aria-label={`Usuń ${file.path}`}>
+          <span aria-hidden>🗑️</span>
+          <span className="hidden sm:inline">Usuń</span>
+        </button>
+      </td>
+    </tr>
   );
 }
 
+/**
+ * Treść okna potwierdzenia dla jednego pliku. Montuje się od nowa przy każdym otwarciu
+ * (klucz na ścieżce), więc nie pamięta wyniku poprzedniego kasowania.
+ *
+ * Plik w użyciu wymaga dodatkowo zaznaczonej zgody. Samo okno zatrzymuje pomyłkę („kliknąłem
+ * nie ten wiersz"), ale nie mówi, że obrazek zniknie dziecku sprzed oczu w lekcji — a to jest
+ * inna decyzja, warta osobnego ruchu. Serwer sprawdza zgodę po swojemu, niezależnie od tego pola.
+ */
+function Potwierdzenie({ file, onClose }: { file: MediaFile; onClose: () => void }) {
+  const [state, action] = useActionState<FormState, FormData>(deleteMediaAction, {});
+  const [zgoda, setZgoda] = useState(false);
+  const w_uzyciu = uzycie(file);
+
+  // Udane skasowanie zamyka okno samo: wiersza już nie ma, nie ma czego potwierdzać.
+  useEffect(() => {
+    if (state.ok) onClose();
+  }, [state.ok, onClose]);
+
+  return (
+    <form action={action} className="flex flex-col gap-4">
+      <h2 className="card-title">Skasować obrazek?</h2>
+
+      <div className="flex items-center gap-3">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={file.url}
+          alt=""
+          className="rounded-lg"
+          style={{ width: "4rem", height: "4rem", objectFit: "contain", background: "var(--color-zinc-100)" }}
+        />
+        <span className="break-all font-mono text-sm">{file.path}</span>
+      </div>
+
+      <input type="hidden" name="path" value={file.path} />
+      <input type="hidden" name="used" value={w_uzyciu ? "1" : "0"} />
+
+      {w_uzyciu ? (
+        <>
+          <p className="msg-warn">
+            Plik jest w użyciu: {w_uzyciu}. Skasowanie nie rusza tych wierszy — dziecko zobaczy tam puste miejsce.
+          </p>
+          <label className="flex items-start gap-2 text-sm">
+            <input
+              type="checkbox"
+              name="confirm"
+              className="mt-1 h-5 w-5"
+              checked={zgoda}
+              onChange={(event) => setZgoda(event.target.checked)}
+            />
+            <span>Wiem, że zniknie z miejsc, w których jest użyty.</span>
+          </label>
+        </>
+      ) : (
+        <p className="text-zinc-600 dark:text-zinc-400">
+          Nie wskazuje go żadne słówko ani zadanie. Kasowania nie da się cofnąć.
+        </p>
+      )}
+
+      <Status state={state} />
+
+      <div className="flex flex-wrap justify-end gap-3">
+        <button type="button" className="btn-secondary" onClick={onClose}>
+          Anuluj
+        </button>
+        <SubmitButton pendingLabel="Kasuję…" variant="danger" disabled={w_uzyciu !== null && !zgoda}>
+          Usuń
+        </SubmitButton>
+      </div>
+    </form>
+  );
+}
+
+/**
+ * Biblioteka jako tabela.
+ *
+ * Wcześniej każdy plik był kartą z podglądem na całą szerokość i czerwonym przyciskiem pod
+ * spodem — przy pięćdziesięciu plikach sprawdzenie, czy obrazek o danej nazwie już jest,
+ * kosztowało kilka ekranów przewijania. Teraz jeden wiersz na plik, podgląd jako miniatura.
+ *
+ * Kasowanie pyta w oknie, nie od razu: czerwony przycisk stał w siatce tuż obok sąsiednich
+ * i pomyłka o jeden kafel kosztowała plik.
+ */
 export function MediaList({ files }: { files: MediaFile[] }) {
+  const [doKasacji, setDoKasacji] = useState<MediaFile | null>(null);
+  const okno = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const element = okno.current;
+    if (!element) return;
+    if (doKasacji && !element.open) element.showModal();
+    else if (!doKasacji && element.open) element.close();
+  }, [doKasacji]);
+
   if (files.length === 0) {
     return (
       <p className="text-zinc-600 dark:text-zinc-400">
@@ -89,10 +188,30 @@ export function MediaList({ files }: { files: MediaFile[] }) {
   }
 
   return (
-    <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {files.map((file) => (
-        <Plik key={file.path} file={file} />
-      ))}
-    </ul>
+    <div className="card px-3 py-2">
+      <table className="admin-table">
+        <thead>
+          <tr>
+            <th>Obrazek</th>
+            <th>Ścieżka</th>
+            <th className="hidden text-right sm:table-cell">Plik</th>
+            <th className="hidden sm:table-cell">Użycie</th>
+            <th />
+          </tr>
+        </thead>
+        <tbody>
+          {files.map((file) => (
+            <Wiersz key={file.path} file={file} onDelete={() => setDoKasacji(file)} />
+          ))}
+        </tbody>
+      </table>
+
+      {/* Element okna stoi w drzewie na stałe, a wymienia się tylko jego treść: `showModal()`
+          i `close()` potrzebują tego samego elementu, a nie nowego przy każdym otwarciu.
+          `onClose` łapie też zamknięcie klawiszem Escape, którego żaden przycisk nie obsługuje. */}
+      <dialog ref={okno} className="modal" aria-label="Potwierdzenie skasowania" onClose={() => setDoKasacji(null)}>
+        {doKasacji && <Potwierdzenie key={doKasacji.path} file={doKasacji} onClose={() => setDoKasacji(null)} />}
+      </dialog>
+    </div>
   );
 }

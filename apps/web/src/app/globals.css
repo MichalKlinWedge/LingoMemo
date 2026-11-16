@@ -803,6 +803,26 @@ h2 {
     background: var(--color-zinc-100);
   }
 
+  /* Okno potwierdzenia. Natywny <dialog> z `showModal()` daje pułapkę na fokus, zamykanie
+     Escape i tło blokujące kliknięcia za darmo — własna nakładka z <div> musiałaby odtworzyć
+     wszystkie trzy rzeczy i zwykle odtwarza dwie. */
+  .modal {
+    /* Preflight Tailwinda zeruje marginesy wszystkiemu, a środkowanie okna modalnego stoi
+       właśnie na `margin: auto` — bez tego okno lądowałoby w lewym górnym rogu. */
+    margin: auto;
+    width: min(30rem, calc(100vw - 2rem));
+    padding: 1.5rem;
+    border-radius: 1.5rem;
+    border: 2px solid var(--line);
+    background: var(--surface);
+    color: var(--foreground);
+    box-shadow: var(--shadow);
+  }
+
+  .modal::backdrop {
+    background: rgb(0 0 0 / 0.5);
+  }
+
   @media (prefers-color-scheme: dark) {
     .btn-row:hover {
       background: var(--color-zinc-800);
