@@ -28,13 +28,23 @@ async function People() {
   // Trzy źródła, bo każde wie co innego: `list_students` postępy, `list_accounts` konto,
   // `v_my_stats` czas nauki. Widok ma `security_invoker`, a polityki `*_read` dopuszczają
   // administratora, więc to samo zapytanie, które dziecku zwraca jeden wiersz, tu zwraca wszystkie.
-  const [{ data: students, error }, { data: accounts, error: accountsError }, { data: stats }, { data: parents }] =
-    await Promise.all([
-      supabase.rpc("list_students"),
-      supabase.rpc("list_accounts"),
-      supabase.from("v_my_stats").select("user_id, seconds_total, seconds_week, words_mastered"),
-      supabase.rpc("admin_parents"),
-    ]);
+  const [
+    { data: students, error },
+    { data: accounts, error: accountsError },
+    { data: stats },
+    { data: parents },
+    { data: requests },
+    { data: courses },
+  ] = await Promise.all([
+    supabase.rpc("list_students"),
+    supabase.rpc("list_accounts"),
+    supabase.from("v_my_stats").select("user_id, seconds_total, seconds_week, words_mastered"),
+    supabase.rpc("admin_parents"),
+    // Prośby o dostęp do kursu. Rodzic czeka na dziecko, dziecko czeka na kurs — jedno i drugie
+    // jest „ktoś czeka na decyzję", więc stoi w tej samej tabeli, w tej samej kolumnie.
+    supabase.rpc("admin_course_requests"),
+    supabase.from("courses").select("id, title"),
+  ]);
 
   const problem = error ?? accountsError;
   if (problem) return <p className="msg-error">{dbLoadError(problem)}</p>;
@@ -49,6 +59,14 @@ async function People() {
   const requestOf = new Map(
     (parents ?? []).filter((row) => row.requested_at).map((row) => [row.user_id, row.requested_at as string]),
   );
+  // Kursy, o które prosi dziecko. Tytuł zamiast identyfikatora, bo to on ma stanąć w dymku
+  // i w rozwiniętym wierszu — nazwa kursu jest całą treścią tej informacji.
+  const tytulKursu = new Map((courses ?? []).map((course) => [course.id, course.title]));
+  const prosiOKursy = new Map<string, string[]>();
+  for (const request of requests ?? []) {
+    const tytul = `${tytulKursu.get(request.course_id) ?? "nieznany kurs"} (od ${data(request.first_at)})`;
+    prosiOKursy.set(request.user_id, [...(prosiOKursy.get(request.user_id) ?? []), tytul]);
+  }
   const osoby: Osoba[] = (students ?? []).map((row) => ({
     userId: row.user_id,
     displayName: row.display_name,
@@ -59,6 +77,7 @@ async function People() {
     const account = accountOf.get(student.user_id);
     const extra = timeOf.get(student.user_id);
     const prosi = requestOf.get(student.user_id) ?? null;
+    const kursy = prosiOKursy.get(student.user_id) ?? [];
 
     return {
       userId: student.user_id,
@@ -69,6 +88,7 @@ async function People() {
       isParent: childrenOf.has(student.user_id),
       childIds: childrenOf.get(student.user_id) ?? [],
       waiting: prosi !== null,
+      asking: kursy,
       self: student.user_id === userId,
       points: student.total_points,
       lessons: student.lessons_done,
@@ -86,6 +106,7 @@ async function People() {
         `ostatnie logowanie ${data(account?.last_sign_in_at ?? null)}`,
         ...(account?.password_changed_at ? [`hasło zmieniane ${data(account.password_changed_at)}`] : []),
         ...(prosi ? [`prosi o przypisanie dziecka od ${data(prosi)}`] : []),
+        ...(kursy.length > 0 ? [`prosi o dostęp: ${kursy.join(", ")}`] : []),
       ].join(" · "),
     };
   });

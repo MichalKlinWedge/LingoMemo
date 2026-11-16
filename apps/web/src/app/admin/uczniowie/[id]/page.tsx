@@ -66,8 +66,14 @@ async function Student({ params }: { params: PageProps<"/admin/uczniowie/[id]">[
     | { limit: number; bonus: number; usedToday: number; left: number; today: string }
     | null;
 
-  const [{ data: stats, error }, { data: daily }, { data: courses }, { data: offer }, { data: weak }] =
-    await Promise.all([
+  const [
+    { data: stats, error },
+    { data: daily },
+    { data: courses },
+    { data: offer },
+    { data: weak },
+    { data: requests },
+  ] = await Promise.all([
       supabase.from("v_my_stats").select("*").eq("user_id", id).maybeSingle(),
       supabase.from("v_my_daily").select("day, answers, correct").eq("user_id", id),
       supabase.from("v_my_courses").select("*").eq("user_id", id).order("course_title"),
@@ -81,7 +87,14 @@ async function Student({ params }: { params: PageProps<"/admin/uczniowie/[id]">[
         .gt("lapses", 0)
         .order("lapses", { ascending: false })
         .limit(8),
+      // O które kursy dziecko poprosiło. Zapisuje się je właśnie tutaj, więc tu ma być widać,
+      // że czeka — inaczej administrator musiałby trafić akurat na stronę kursu.
+      supabase.rpc("admin_course_requests"),
     ]);
+
+  const prosiOKurs = new Set(
+    (requests ?? []).filter((row) => row.user_id === id).map((row) => row.course_id),
+  );
 
   if (error) return <p className="msg-error">{dbLoadError(error)}</p>;
 
@@ -210,6 +223,8 @@ async function Student({ params }: { params: PageProps<"/admin/uczniowie/[id]">[
                     </span>
                   </span>
                   <span className="flex flex-wrap items-center gap-2">
+                    {/* Ślad prośby: znika sam w chwili zapisu, więc nie ma czego odhaczać. */}
+                    {prosiOKurs.has(course.id) && <span className="chip">✋ prosi o dostęp</span>}
                     {!course.is_published && <span className="chip">kurs ukryty</span>}
                     {mine && <span className="chip">⏱️ {formatDuration(mine.seconds_total ?? 0)}</span>}
                     <EnrollmentButton userId={profile.id} courseId={course.id} enrolled={mine !== undefined} />

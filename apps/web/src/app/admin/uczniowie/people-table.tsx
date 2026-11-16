@@ -18,6 +18,8 @@ export type PersonRow = {
   childIds: string[];
   /** Rodzic czeka na przypisanie dziecka. */
   waiting: boolean;
+  /** Kursy, o dostęp do których poprosił uczeń — gotowe opisy z datą. */
+  asking: string[];
   self: boolean;
   points: number;
   lessons: number;
@@ -81,6 +83,17 @@ export function PeopleTable({ rows, people }: { rows: PersonRow[]; people: Osoba
                           title="Rodzic czeka na przypisanie dziecka"
                         >
                           ⏳
+                        </span>
+                      )}
+                      {/* Osobny znacznik, bo to inne czekanie: nie na dziecko, tylko na kurs.
+                          Dymek wymienia kursy — bez niego trzeba by rozwijać wiersz. */}
+                      {row.asking.length > 0 && (
+                        <span
+                          className="chip text-sm"
+                          style={{ background: "var(--color-sun)" }}
+                          title={`Prosi o dostęp: ${row.asking.join(", ")}`}
+                        >
+                          ✋
                         </span>
                       )}
                     </span>
