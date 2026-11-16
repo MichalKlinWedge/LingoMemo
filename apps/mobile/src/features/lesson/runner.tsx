@@ -17,7 +17,11 @@ import {
   type Verdict,
 } from '@/features/lesson/api';
 import { ChoiceExercise } from '@/features/lesson/exercises/choice';
+import { ImageChoiceExercise } from '@/features/lesson/exercises/image-choice';
+import { ListenMatchExercise } from '@/features/lesson/exercises/listen-match';
 import { ListeningExercise } from '@/features/lesson/exercises/listening';
+import { MatchPairsExercise } from '@/features/lesson/exercises/match-pairs';
+import { SentenceOrderExercise } from '@/features/lesson/exercises/sentence-order';
 import { TypingExercise } from '@/features/lesson/exercises/typing';
 import { stopwatch } from '@/lib/clock';
 
@@ -245,6 +249,45 @@ export function LessonRunner({
             onSkip={() => void next()}
             onDraft={(has) => setDraftOf(has ? exercise.id : null)}
           />
+        ) : exercise.type === 'listen_match' ? (
+          <ListenMatchExercise
+            key={exercise.id}
+            exercise={exercise}
+            locked={locked}
+            onAnswer={(answer) => void handleAnswer(answer)}
+            onSkip={() => void next()}
+          />
+        ) : exercise.type === 'match_pairs' ? (
+          <MatchPairsExercise
+            key={exercise.id}
+            exercise={exercise}
+            locked={locked}
+            onAnswer={(answer) => void handleAnswer(answer)}
+            onSkip={() => void next()}
+          />
+        ) : exercise.type === 'image_choice' ? (
+          <ImageChoiceExercise
+            key={exercise.id}
+            exercise={exercise}
+            locked={locked}
+            onAnswer={(answer) => void handleAnswer(answer)}
+            onSkip={() => void next()}
+            targetLang={targetLang}
+            result={phase === 'feedback' && verdict !== null ? (verdict.correct ? 'correct' : 'wrong') : null}
+            correctAnswer={
+              phase === 'feedback' && verdict !== null && typeof verdict.correctAnswer === 'string'
+                ? verdict.correctAnswer
+                : null
+            }
+          />
+        ) : exercise.type === 'sentence_order' ? (
+          <SentenceOrderExercise
+            key={exercise.id}
+            exercise={exercise}
+            locked={locked}
+            onAnswer={(answer) => void handleAnswer(answer)}
+            onSkip={() => void next()}
+          />
         ) : exercise.type === 'fill_blank_choice' || (exercise.type === 'translate_ab' && hasOptions) ? (
           <ChoiceExercise
             key={exercise.id}
@@ -312,6 +355,9 @@ export function LessonRunner({
           last={index + 1 >= total}
           // Po ostatnim zadaniu etapu kończy się etap, nie lekcja.
           lastLabel={stages > 1 && stage < stages ? 'Zakończ etap' : 'Zakończ lekcję'}
+          // Przy wyborze obrazka poprawną odpowiedzią jest ścieżka do pliku. Dziecku mówi ona
+          // tyle co nic — właściwy obrazek podświetla się na kafelku.
+          showAnswer={exercise.type !== 'image_choice'}
         />
       )}
     </View>
@@ -380,6 +426,7 @@ function Feedback({
   nudge,
   last,
   lastLabel,
+  showAnswer,
 }: {
   verdict: Verdict;
   onNext: () => void;
@@ -387,9 +434,10 @@ function Feedback({
   nudge: number;
   last: boolean;
   lastLabel: string;
+  showAnswer: boolean;
 }) {
   const auto = verdict.correct && !last;
-  const shown = typeof verdict.correctAnswer === 'string' ? verdict.correctAnswer : null;
+  const shown = showAnswer && typeof verdict.correctAnswer === 'string' ? verdict.correctAnswer : null;
 
   useEffect(() => {
     if (!auto) return;
