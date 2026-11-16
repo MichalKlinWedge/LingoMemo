@@ -1,0 +1,183 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-es-starter",
+  "unit": { "slug": "pierwsze-kroki", "title": "Pierwsze kroki", "icon": "👋", "sortOrder": 1 },
+  "lesson": {
+    "slug": "powitania",
+    "title": "¡Hola!",
+    "icon": "👋",
+    "kind": "standard",
+    "sortOrder": 1,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": null,
+    "isPublished": true
+  },
+  "concepts": [
+    { "key": "greet.hola", "tags": ["👋"], "terms": { "pl": [{ "text": "cześć", "pos": "phrase" }], "es": [{ "text": "hola", "pos": "phrase", "ipa": "/ˈola/", "note": "„H” na początku jest nieme — mówimy „ola”." }] } },
+    { "key": "greet.buenos-dias", "tags": ["🌞"], "terms": { "pl": [{ "text": "dzień dobry", "pos": "phrase" }], "es": [{ "text": "buenos días", "pos": "phrase", "ipa": "/ˈbwenos ˈdias/" }] } },
+    { "key": "greet.buenas-noches", "tags": ["🌙"], "terms": { "pl": [{ "text": "dobranoc", "pos": "phrase" }], "es": [{ "text": "buenas noches", "pos": "phrase", "ipa": "/ˈbwenas ˈnotʃes/" }] } },
+    { "key": "greet.adios", "tags": ["🙋"], "terms": { "pl": [{ "text": "do widzenia", "pos": "phrase" }], "es": [{ "text": "adiós", "pos": "phrase", "ipa": "/aˈðjos/" }] } },
+    { "key": "greet.gracias", "tags": ["🙏"], "terms": { "pl": [{ "text": "dziękuję", "pos": "phrase" }], "es": [{ "text": "gracias", "pos": "phrase", "ipa": "/ˈɡɾaθjas/" }] } },
+    { "key": "greet.de-nada", "tags": ["😊"], "terms": { "pl": [{ "text": "nie ma za co", "pos": "phrase" }], "es": [{ "text": "de nada", "pos": "phrase", "ipa": "/de ˈnaða/", "note": "Odpowiedź na „gracias”." }] } },
+    { "key": "greet.si", "tags": ["✅"], "terms": { "pl": [{ "text": "tak", "pos": "other" }], "es": [{ "text": "sí", "pos": "other", "ipa": "/si/" }] } },
+    { "key": "greet.no", "tags": ["❌"], "terms": { "pl": [{ "text": "nie", "pos": "other" }], "es": [{ "text": "no", "pos": "other", "ipa": "/no/" }] } }
+  ],
+  "exercises": [
+    {
+      "type": "translate_ab",
+      "conceptKey": "greet.hola",
+      "payload": { "prompt": "cześć", "accepted": ["hola"], "options": ["hola", "gracias", "de nada", "no"] }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "greet.hola",
+      "payload": { "prompt": "hola", "accepted": ["cześć"] }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "greet.hola",
+      "points": 15,
+      "payload": { "speak": "hola", "lang": "es-ES", "accepted": ["hola"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "greet.buenos-dias",
+      "payload": { "prompt": "dzień dobry", "accepted": ["buenos días"], "options": ["buenos días", "buenas noches", "adiós", "hola"] }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "greet.buenos-dias",
+      "payload": { "prompt": "buenos días", "accepted": ["dzień dobry"] }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "greet.buenos-dias",
+      "points": 15,
+      "payload": { "speak": "buenos días", "lang": "es-ES", "accepted": ["buenos días"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "greet.buenas-noches",
+      "payload": { "prompt": "dobranoc", "accepted": ["buenas noches"], "options": ["buenas noches", "buenos días", "adiós", "gracias"] }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "greet.buenas-noches",
+      "payload": { "prompt": "buenas noches", "accepted": ["dobranoc"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "greet.adios",
+      "payload": { "prompt": "do widzenia", "accepted": ["adiós"], "options": ["adiós", "hola", "buenas noches", "de nada"] }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "greet.adios",
+      "payload": { "prompt": "adiós", "accepted": ["do widzenia"] }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "greet.adios",
+      "points": 15,
+      "payload": { "speak": "adiós", "lang": "es-ES", "accepted": ["adiós"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "greet.gracias",
+      "payload": { "prompt": "dziękuję", "accepted": ["gracias"], "options": ["gracias", "de nada", "sí", "no"] }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "greet.gracias",
+      "payload": { "prompt": "gracias", "accepted": ["dziękuję"] }
+    },
+    {
+      "type": "listening",
+      "conceptKey": "greet.gracias",
+      "points": 15,
+      "payload": { "speak": "gracias", "lang": "es-ES", "accepted": ["gracias"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "greet.de-nada",
+      "payload": { "prompt": "nie ma za co", "accepted": ["de nada"], "options": ["de nada", "gracias", "buenos días", "no"] }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "greet.de-nada",
+      "payload": { "prompt": "de nada", "accepted": ["nie ma za co"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "greet.si",
+      "payload": { "prompt": "tak", "accepted": ["sí", "si"], "options": ["sí", "no", "de nada", "hola"] }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "greet.si",
+      "payload": { "prompt": "sí", "accepted": ["tak"] }
+    },
+    {
+      "type": "translate_ab",
+      "conceptKey": "greet.no",
+      "payload": { "prompt": "nie", "accepted": ["no"], "options": ["no", "sí", "gracias", "hola"] }
+    },
+    {
+      "type": "translate_ba",
+      "conceptKey": "greet.no",
+      "payload": { "prompt": "no", "accepted": ["nie"] }
+    },
+    {
+      "type": "match_pairs",
+      "points": 20,
+      "payload": {
+        "instruction": "Połącz słówka w pary",
+        "pairs": [
+          { "a": "cześć", "b": "hola" },
+          { "a": "dzień dobry", "b": "buenos días" },
+          { "a": "dobranoc", "b": "buenas noches" },
+          { "a": "do widzenia", "b": "adiós" },
+          { "a": "dziękuję", "b": "gracias" },
+          { "a": "nie ma za co", "b": "de nada" }
+        ]
+      }
+    },
+    {
+      "type": "listen_match",
+      "points": 20,
+      "payload": {
+        "instruction": "Posłuchaj i dopasuj polskie słowo.",
+        "lang": "es-ES",
+        "pairs": [
+          { "a": "cześć", "b": "hola" },
+          { "a": "dzień dobry", "b": "buenos días" },
+          { "a": "do widzenia", "b": "adiós" },
+          { "a": "dziękuję", "b": "gracias" },
+          { "a": "nie ma za co", "b": "de nada" },
+          { "a": "tak", "b": "sí" }
+        ]
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "greet.de-nada",
+      "payload": {
+        "sentence": "¡Gracias! — ¡{{blank}}!",
+        "options": ["De nada", "Gracias", "Adiós", "No"],
+        "answer": "De nada",
+        "translation": "Dziękuję! — Nie ma za co!"
+      }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "greet.buenas-noches",
+      "payload": {
+        "sentence": "¡{{blank}}, mamá!",
+        "options": ["Buenas noches", "Buenos días", "Gracias", "Sí"],
+        "answer": "Buenas noches",
+        "translation": "Dobranoc, mamo!"
+      }
+    }
+  ]
+}
