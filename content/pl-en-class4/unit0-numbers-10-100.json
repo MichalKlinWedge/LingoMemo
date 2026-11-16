@@ -171,7 +171,7 @@
         "prompt": "thirty",
         "speak": "thirty",
         "lang": "en-GB",
-        "options": ["2026/liczba-30.svg", "2026/liczba-13.svg", "2026/liczba-3.svg"],
+        "options": ["2026/liczba-30.svg", "2026/liczba-13.svg", "2026/liczba-3.svg", "2026/liczba-40.svg"],
         "answer": "2026/liczba-30.svg"
       }
     },
@@ -182,7 +182,7 @@
         "prompt": "fifty",
         "speak": "fifty",
         "lang": "en-GB",
-        "options": ["2026/liczba-50.svg", "2026/liczba-15.svg", "2026/liczba-5.svg"],
+        "options": ["2026/liczba-50.svg", "2026/liczba-15.svg", "2026/liczba-5.svg", "2026/liczba-60.svg"],
         "answer": "2026/liczba-50.svg"
       }
     },
@@ -193,7 +193,7 @@
         "prompt": "seventy",
         "speak": "seventy",
         "lang": "en-GB",
-        "options": ["2026/liczba-70.svg", "2026/liczba-17.svg", "2026/liczba-7.svg"],
+        "options": ["2026/liczba-70.svg", "2026/liczba-17.svg", "2026/liczba-7.svg", "2026/liczba-80.svg"],
         "answer": "2026/liczba-70.svg"
       }
     },
@@ -204,7 +204,7 @@
         "prompt": "a hundred",
         "speak": "a hundred",
         "lang": "en-GB",
-        "options": ["2026/liczba-100.svg", "2026/liczba-10.svg", "2026/liczba-90.svg"],
+        "options": ["2026/liczba-100.svg", "2026/liczba-10.svg", "2026/liczba-90.svg", "2026/liczba-1.svg"],
         "answer": "2026/liczba-100.svg"
       }
     }

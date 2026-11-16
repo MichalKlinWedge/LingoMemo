@@ -836,3 +836,15 @@ sekcja „Ustawienia" w panelu i tabela, z której czyta lekcja.
 Zakres 2–30 s: poniżej dwóch sekund dziecko nie zdąży zobaczyć „Brawo!", powyżej trzydziestu
 to już nie jest automatyczne przejście, tylko zawieszony ekran. Licznik i tak przestawia się
 przy każdym dotknięciu, a po błędnej odpowiedzi nie rusza w ogóle.
+
+### Wybór obrazka zawsze na cztery kafelki (2026-11-16)
+
+Zadania „Wskaż obrazek" w treści miały po trzy obrazki. Siatka odpowiedzi ma dwie kolumny, więc
+trzeci kafelek stał sam w drugim rzędzie, a strzał w ciemno trafiał co trzeci raz.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Ile obrazków | cztery | pełne dwa rzędy po dwa i o jedną czwartą mniejsza szansa trafienia na oślep | pięć i więcej (nie mieści się na telefonie bez przewijania, czyli bez zgadywania w ciemno) |
+| Gdzie zapisana reguła | `CLAUDE.md`, przy konwencjach treści | to reguła dla generowanej treści, a nie niezmiennik bazy | — |
+| Czy walidacja ma wymusić cztery | nie, zostaje „od dwóch do czterech" | lekcja może nie mieć czwartego sensownego obrazka, a import ręcznej lekcji nie ma się o to wywracać; przy generowaniu pilnuje tego reguła, nie schemat | `z.array(...).length(4)` w schemacie importu |
+| Skąd czwarty obrazek | z obrazków, które ta lekcja i tak ma w słówkach | są już w buckecie, więc nic nie trzeba dogrywać; przy liczbach dobrany blisko (30 → 40), przy kolorach mylący (brązowy → pomarańczowy) | nowe pliki graficzne |

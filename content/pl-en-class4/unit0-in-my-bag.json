@@ -221,7 +221,7 @@
         "prompt": "scissors",
         "speak": "scissors",
         "lang": "en-GB",
-        "options": ["2026/rzecz-scissors.svg", "2026/rzecz-ruler.svg", "2026/rzecz-pen.svg"],
+        "options": ["2026/rzecz-scissors.svg", "2026/rzecz-ruler.svg", "2026/rzecz-pen.svg", "2026/rzecz-pencil.svg"],
         "answer": "2026/rzecz-scissors.svg"
       }
     },
@@ -232,7 +232,7 @@
         "prompt": "clock",
         "speak": "clock",
         "lang": "en-GB",
-        "options": ["2026/rzecz-clock.svg", "2026/rzecz-board.svg", "2026/rzecz-bin.svg"],
+        "options": ["2026/rzecz-clock.svg", "2026/rzecz-board.svg", "2026/rzecz-bin.svg", "2026/rzecz-desk.svg"],
         "answer": "2026/rzecz-clock.svg"
       }
     },
@@ -243,7 +243,7 @@
         "prompt": "ruler",
         "speak": "ruler",
         "lang": "en-GB",
-        "options": ["2026/rzecz-ruler.svg", "2026/rzecz-pencil.svg", "2026/rzecz-notebook.svg"],
+        "options": ["2026/rzecz-ruler.svg", "2026/rzecz-pencil.svg", "2026/rzecz-notebook.svg", "2026/rzecz-pen.svg"],
         "answer": "2026/rzecz-ruler.svg"
       }
     },
@@ -254,7 +254,7 @@
         "prompt": "rubber",
         "speak": "rubber",
         "lang": "en-GB",
-        "options": ["2026/rzecz-rubber.svg", "2026/rzecz-book.svg", "2026/rzecz-chair.svg"],
+        "options": ["2026/rzecz-rubber.svg", "2026/rzecz-book.svg", "2026/rzecz-chair.svg", "2026/rzecz-pencil-sharpener.svg"],
         "answer": "2026/rzecz-rubber.svg"
       }
     },
@@ -265,7 +265,7 @@
         "prompt": "pencil case",
         "speak": "pencil case",
         "lang": "en-GB",
-        "options": ["2026/rzecz-pencil-case.svg", "2026/rzecz-bin.svg", "2026/rzecz-desk.svg"],
+        "options": ["2026/rzecz-pencil-case.svg", "2026/rzecz-bin.svg", "2026/rzecz-desk.svg", "2026/rzecz-book.svg"],
         "answer": "2026/rzecz-pencil-case.svg"
       }
     },
@@ -276,7 +276,7 @@
         "prompt": "notebook",
         "speak": "notebook",
         "lang": "en-GB",
-        "options": ["2026/rzecz-notebook.svg", "2026/rzecz-book.svg", "2026/rzecz-board.svg"],
+        "options": ["2026/rzecz-notebook.svg", "2026/rzecz-book.svg", "2026/rzecz-board.svg", "2026/rzecz-pencil-case.svg"],
         "answer": "2026/rzecz-notebook.svg"
       }
     },
@@ -287,7 +287,7 @@
         "prompt": "pencil sharpener",
         "speak": "pencil sharpener",
         "lang": "en-GB",
-        "options": ["2026/rzecz-pencil-sharpener.svg", "2026/rzecz-clock.svg", "2026/rzecz-sandwich.svg"],
+        "options": ["2026/rzecz-pencil-sharpener.svg", "2026/rzecz-clock.svg", "2026/rzecz-sandwich.svg", "2026/rzecz-rubber.svg"],
         "answer": "2026/rzecz-pencil-sharpener.svg"
       }
     }

@@ -138,7 +138,7 @@
         "prompt": "apple",
         "speak": "apple",
         "lang": "en-GB",
-        "options": ["2026/jablko.png", "2026/gruszka.png", "2026/banan.png"],
+        "options": ["2026/jablko.png", "2026/gruszka.png", "2026/banan.png", "2026/truskawka.png"],
         "answer": "2026/jablko.png"
       }
     },

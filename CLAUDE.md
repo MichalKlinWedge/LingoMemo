@@ -63,6 +63,10 @@ Pojedynczy test: `npx vitest run src/__tests__/x.test.ts` wewnątrz pakietu.
 - **Interfejs dla dziecka**: najmniejszy przycisk 56 px, kafel odpowiedzi 72 px, tekst 20 px.
   Gotowe klasy z `globals.css` (`.btn-primary`, `.btn-answer`, `.tile`, `.card`, `.field`,
   `.chip`, `.msg-error`, `.msg-ok`) — nie restyluj ich doraźnie w komponencie.
+- **Wybór obrazka (`image_choice`) dostaje w treści cztery obrazki.** Siatka ma dwie kolumny,
+  więc trzy zostawiają dziurę w drugim rzędzie, a strzał w ciemno trafia co trzeci raz zamiast
+  co czwarty. Walidacja przepuszcza od dwóch do czterech (lekcja może nie mieć czym uzupełnić),
+  ale generowana treść ma zawsze cztery.
 - Jedna szerokość treści dla wszystkich stron — `<Shell>`. Strona nie dobiera sobie własnej.
 - Nawigacja zawsze jako `<Link>`, nigdy `router.push` z `<button>`.
 - Autoryzacja w **każdej** stronie i akcji przez `requireUser()` — Server Actions omijają matcher

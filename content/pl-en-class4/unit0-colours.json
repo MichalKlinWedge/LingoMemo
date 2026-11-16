@@ -236,7 +236,7 @@
         "prompt": "blue",
         "speak": "blue",
         "lang": "en-GB",
-        "options": ["2026/kolor-blue.svg", "2026/kolor-green.svg", "2026/kolor-purple.svg"],
+        "options": ["2026/kolor-blue.svg", "2026/kolor-green.svg", "2026/kolor-purple.svg", "2026/kolor-grey.svg"],
         "answer": "2026/kolor-blue.svg"
       }
     },
@@ -247,7 +247,7 @@
         "prompt": "yellow",
         "speak": "yellow",
         "lang": "en-GB",
-        "options": ["2026/kolor-yellow.svg", "2026/kolor-orange.svg", "2026/kolor-white.svg"],
+        "options": ["2026/kolor-yellow.svg", "2026/kolor-orange.svg", "2026/kolor-white.svg", "2026/kolor-pink.svg"],
         "answer": "2026/kolor-yellow.svg"
       }
     },
@@ -258,7 +258,7 @@
         "prompt": "brown",
         "speak": "brown",
         "lang": "en-GB",
-        "options": ["2026/kolor-brown.svg", "2026/kolor-grey.svg", "2026/kolor-black.svg"],
+        "options": ["2026/kolor-brown.svg", "2026/kolor-grey.svg", "2026/kolor-black.svg", "2026/kolor-orange.svg"],
         "answer": "2026/kolor-brown.svg"
       }
     },
@@ -269,7 +269,7 @@
         "prompt": "pink",
         "speak": "pink",
         "lang": "en-GB",
-        "options": ["2026/kolor-pink.svg", "2026/kolor-purple.svg", "2026/kolor-red.svg"],
+        "options": ["2026/kolor-pink.svg", "2026/kolor-purple.svg", "2026/kolor-red.svg", "2026/kolor-orange.svg"],
         "answer": "2026/kolor-pink.svg"
       }
     },
