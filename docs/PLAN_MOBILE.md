@@ -233,11 +233,13 @@ wariancie) oraz `image_choice` (dwie kolumny, zastępnik „brak pliku” przy o
 udało się wczytać, i podświetlenie właściwego kafelka po błędzie). Obrazki idą ze ścieżek
 w buckecie `lesson-media` (`lib/media.ts`, tak samo jak na webie).
 
-Dwie rzeczy celowo inaczej niż w pierwotnym opisie etapu: obrazki rysuje wbudowany `Image`
-z React Native, nie `expo-image` (nowy moduł natywny wymagałby przebudowania aplikacji na
-telefonie, a pamięć podręczna przyda się dopiero przy nauce bez sieci), a przy dopasowywaniu par
-nie ma głośników — tak samo jak na webie przy wąskim ekranie, gdzie zabierałyby prawej kolumnie
-zbyt wiele miejsca.
+Przy dopasowywaniu par nie ma głośników — tak samo jak na webie przy wąskim ekranie, gdzie
+zabierałyby prawej kolumnie zbyt wiele miejsca.
+
+**Poprawka z telefonu (2026-11-16):** kafelki wyboru obrazka były puste. Obrazki lekcji są w SVG,
+a wbudowany `Image` z React Native tego formatu nie rysuje — stąd `expo-image` (ma dekoder SVG
+i pamięć podręczną na dysku) i nowy dev build, bo to moduł natywny. Pierwsza wersja etapu celowo
+unikała nowych modułów; przy tej treści nie było czego unikać. Szczegóły w `docs/DECYZJE.md`.
 
 ### Etap M3 — powtórki, test działu, nagrody, statystyki
 

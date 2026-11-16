@@ -1128,3 +1128,20 @@ czyli nowy APK) przypomnienie planuje się od nowa przy każdym wejściu na ekra
 zaliczonej lekcji, czyli dokładnie wtedy, gdy liczba zaległych mogła się zmienić. Dziecko, które
 nie otwiera aplikacji, dostanie liczbę z ostatniego wejścia — a to i tak więcej, niż dałoby
 przypomnienie bez liczby. Zadanie w tle wraca w Etapie M4, razem z pierwszym APK dla dzieci.
+
+### Telefon: obrazki przez `expo-image` — zmiana decyzji z tego samego dnia (2026-11-16)
+
+Zastępuje „Telefon: obrazki wbudowanym `Image`, nie `expo-image`" wyżej. Powód jest prosty:
+**obrazki lekcji są w SVG** (`2026/liczba-6.svg` i podobne — tak je wgrywa panel), a wbudowany
+`Image` z React Native nie rysuje SVG wcale. Na telefonie kafelki wyboru obrazka były puste,
+choć na webie te same pliki wyświetlały się bez zarzutu.
+
+`expo-image` ma w sobie dekoder SVG dla Androida (`com.caverock:androidsvg-aar`), więc rysuje je
+tak jak przeglądarka, a przy okazji dochodzi pamięć podręczna na dysku. Kosztem jest nowy moduł
+natywny, czyli nowy dev build teraz i nowy APK przy wydaniu — dokładnie to, czego poprzednia
+decyzja chciała uniknąć. Reguła „nowy moduł natywny to nowy APK" zostaje; to przypadek, w którym
+treść nie daje wyboru.
+
+Wniosek na przyszłość: **format treści sprawdza się na początku etapu, nie po pokazaniu
+aplikacji**. Jedno zapytanie o `payload` zadania `image_choice` w bazie powiedziałoby to samo,
+co dziecko z pustymi kafelkami w ręku.
