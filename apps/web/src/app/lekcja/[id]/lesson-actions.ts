@@ -20,6 +20,12 @@ export type Verdict = {
    * nie policzyło: dziecko poprawia i wysyła jeszcze raz.
    */
   retry?: boolean;
+  /**
+   * Po co poprawka: `typo` to pomyłka o literę, `order` to te same litery w złej kolejności
+   * (przestawione wyrazy w zdaniu albo zamienione litery w słowie). Ekran mówi co innego
+   * w każdym z tych dwóch przypadków — „zajrzyj w litery" nic nie da, gdy litery są dobre.
+   */
+  reason?: "typo" | "order";
   /** Dziecko kliknęło „Nie wiem" zamiast odpowiadać. Dla bazy to błąd, dla ekranu inny napis. */
   skipped?: boolean;
   grade: number;

@@ -82,6 +82,9 @@ export function LessonRunner({
   // Prośba o poprawienie literówki. Trzymamy identyfikator zadania, nie flagę — przy przejściu
   // dalej przestaje pasować do bieżącego zadania i znika sam, bez zerowania w efekcie.
   const [fixAsked, setFixAsked] = useState<string | null>(null);
+  // Po co poprawka: literówka czy przestawiona kolejność. Dwa różne komunikaty, bo dziecko
+  // szukające literówki w zdaniu, które ma wszystkie słowa dobre, nie znajdzie niczego.
+  const [fixReason, setFixReason] = useState<"typo" | "order">("typo");
 
   const { play, enabled: soundOn, toggle: toggleSound } = useFeedbackSound();
 
@@ -141,6 +144,7 @@ export function LessonRunner({
       // literówkę, a nie pisze od nowa. Dźwięku nie ma: nic jeszcze nie jest ani dobre, ani złe.
       if (result.verdict.retry) {
         setFixAsked(exercise.id);
+        setFixReason(result.verdict.reason === "order" ? "order" : "typo");
         setPhase("answering");
         return;
       }
@@ -403,7 +407,9 @@ export function LessonRunner({
           wtedy poprawianie byłoby przepisywaniem. */}
       {fixAsked === exercise.id && phase === "answering" && (
         <p className="msg-warn" role="status">
-          Prawie! Zajrzyj w litery i popraw — sprawdzimy jeszcze raz.
+          {fixReason === "order"
+            ? "Prawie! Wszystkie słowa są dobre, tylko w innej kolejności — poukładaj je i wyślij jeszcze raz."
+            : "Prawie! Zajrzyj w litery i popraw — sprawdzimy jeszcze raz."}
         </p>
       )}
 
