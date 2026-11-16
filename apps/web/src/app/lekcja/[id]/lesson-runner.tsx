@@ -20,6 +20,14 @@ import { askHint, finishLesson, startLesson, submitAnswer, type Summary, type Ve
 type Phase = "answering" | "checking" | "feedback" | "done";
 
 /**
+ * Ile czekamy po dobrej odpowiedzi, zanim lekcja przejdzie dalej sama.
+ *
+ * Jedna stała dla licznika i dla paska na przycisku — gdyby były dwie, pasek dojeżdżałby
+ * do końca w innym momencie, niż zmienia się ekran, i wyglądałby na zepsuty.
+ */
+const AUTO_NEXT_MS = 10_000;
+
+/**
  * Przebieg lekcji. Komponent pilnuje tylko kolejności zadań i tego, co widać na ekranie —
  * o tym, czy odpowiedź jest poprawna i ile jest za nią punktów, decyduje wyłącznie baza.
  */
@@ -142,7 +150,7 @@ export function LessonRunner({
       play(result.verdict.correct ? "correct" : "wrong");
       setPhase("feedback");
     },
-    [exercise, hinted, lessonId, level, phase, play, stage],
+    [exercise, hinted, lessonId, level, phase, play, preview, stage],
   );
 
   /**
@@ -302,6 +310,10 @@ export function LessonRunner({
         )}
         {/* Trudniejsze wejście wygląda jak lekcja, więc musi powiedzieć, że to inny kwadracik. */}
         {level > 1 && <span className="chip">{level === 2 ? "Poziom średni" : "Poziom trudny"}</span>}
+        {/* Podgląd z panelu wygląda dokładnie jak lekcja dziecka — a przecież omija zamki.
+            Bez tego napisu administrator nie odróżniłby „lekcja jest otwarta" od „wszedłem
+            tylnymi drzwiami". */}
+        {preview && <span className="chip">👀 Podgląd</span>}
         <span className="chip" aria-label={`Podpowiedzi na dziś: ${hints}`} title="Podpowiedzi na dziś">
           💡 {hints}
         </span>
@@ -468,6 +480,8 @@ function Feedback({
    * głośnikiem albo ogląda odpowiedzi, nie ma zniknąć ekranu sprzed nosa w połowie.
    */
   const auto = verdict.correct && !last;
+  /** Rośnie przy każdym przestawieniu licznika. Jako `key` paska wymusza animację od nowa. */
+  const [odliczanie, setOdliczanie] = useState(0);
 
   useEffect(() => {
     if (!auto) return;
@@ -475,20 +489,26 @@ function Feedback({
     let timer = 0;
     const odlicz = () => {
       window.clearTimeout(timer);
-      timer = window.setTimeout(onNext, 10_000);
+      timer = window.setTimeout(onNext, AUTO_NEXT_MS);
+    };
+    const przestaw = () => {
+      setOdliczanie((n) => n + 1);
+      odlicz();
     };
 
     odlicz();
     // Faza przechwytywania: licznik ma się przestawić także wtedy, gdy kliknięcie zatrzyma
     // się na przycisku i nie dojdzie do okna.
-    window.addEventListener("pointerdown", odlicz, true);
-    window.addEventListener("keydown", odlicz, true);
+    window.addEventListener("pointerdown", przestaw, true);
+    window.addEventListener("keydown", przestaw, true);
 
     return () => {
       window.clearTimeout(timer);
-      window.removeEventListener("pointerdown", odlicz, true);
-      window.removeEventListener("keydown", odlicz, true);
+      window.removeEventListener("pointerdown", przestaw, true);
+      window.removeEventListener("keydown", przestaw, true);
     };
+    // `odliczanie` celowo poza zależnościami: przestawienie paska nie ma restartować efektu,
+    // bo ten ustawiłby drugi `setTimeout` obok już działającego.
   }, [auto, onNext]);
 
   return (
@@ -518,8 +538,18 @@ function Feedback({
         </p>
       )}
       {verdict.correct && verdict.points > 0 && <p style={{ color: "#0f5c37" }}>+{verdict.points} punktów</p>}
-      <button type="button" className="btn-primary" onClick={onNext} autoFocus>
+      <button type="button" className="btn-primary relative overflow-hidden" onClick={onNext} autoFocus>
         {last ? lastLabel : "Dalej"}
+        {/* Pasek kurczy się przez te dziesięć sekund, żeby przejście nie było zaskoczeniem.
+            `key` przestawia animację na początek, gdy dziecko kliknie cokolwiek. */}
+        {auto && (
+          <span
+            key={odliczanie}
+            className="countdown"
+            style={{ animationDuration: `${AUTO_NEXT_MS}ms` }}
+            aria-hidden
+          />
+        )}
       </button>
     </div>
   );

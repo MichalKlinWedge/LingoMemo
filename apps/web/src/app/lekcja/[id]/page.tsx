@@ -16,7 +16,11 @@ async function Lesson({
   searchParams: PageProps<"/lekcja/[id]">["searchParams"];
 }) {
   const { id } = await params;
-  const { etap, poziom } = await searchParams;
+  const { etap, poziom, podglad } = await searchParams;
+  // Podgląd z panelu („Zobacz lekcję oczami dziecka"). Tylko on omija zamki i brak publikacji,
+  // i tylko administratorowi — sprawdza to baza. Wejście w lekcję z mapy kursu podgląd ma
+  // wyłączony, więc administrator uczy się na tych samych zasadach co dziecko.
+  const preview = (Array.isArray(podglad) ? podglad[0] : podglad) === "1";
   const { supabase, userId } = await requireUser(`/lekcja/${id}`);
 
   const { data: lesson } = await supabase
@@ -71,6 +75,7 @@ async function Lesson({
     p_lesson: id,
     p_stage: stage,
     p_level: level,
+    p_preview: preview,
   });
 
   // Dzienna pula podpowiedzi. Liczy ją baza z użyć, więc o północy w strefie dziecka wraca sama.
@@ -109,6 +114,7 @@ async function Lesson({
       stages={stages}
       level={level}
       hintsLeft={hintsLeft ?? 0}
+      preview={preview}
     />
   );
 }

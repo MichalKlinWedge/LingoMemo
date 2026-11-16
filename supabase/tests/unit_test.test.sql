@@ -5,7 +5,7 @@
 -- nie dotyczy administratora oglądającego kurs oczami dziecka.
 
 begin;
-select plan(15);
+select plan(16);
 
 create or replace function pg_temp.make_user(p_email text) returns uuid
 language plpgsql as $$
@@ -165,8 +165,15 @@ select set_config('role', 'authenticated', true),
                  'app_metadata', coalesce(u.raw_app_meta_data, '{}'::jsonb))::text
             from auth.users u where u.id = (select id from t_ids where name = 'admin')), true);
 
+-- Administrator uczy się jak dziecko: test działu jest zamknięty także dla niego, dopóki
+-- nie zrobi lekcji. Do panelu zostaje podgląd (`p_preview`), który pyta o to wprost.
 select is(public.is_lesson_unlocked((select id from t_test where dzial = 2), (select id from t_ids where name = 'admin')),
-          true, 'administrator wchodzi w test działu bez zaliczania lekcji');
+          false, 'administrator ucząc się ma test działu zamknięty tak samo jak dziecko');
+
+select lives_ok(
+  format('select public.get_lesson_exercises(%L, 1, 1::smallint, true)', (select id from t_test where dzial = 2)),
+  'podgląd z panelu wpuszcza administratora w zamknięty test działu'
+);
 
 reset role;
 

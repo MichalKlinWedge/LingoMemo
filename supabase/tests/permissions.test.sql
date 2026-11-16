@@ -8,7 +8,7 @@
 -- cofnięta przy wyjściu z niej.
 
 begin;
-select plan(22);
+select plan(24);
 
 create or replace function pg_temp.make_user(p_email text) returns uuid
 language plpgsql as $$
@@ -198,17 +198,24 @@ select ok(
   'administrator widzi także lekcje zamknięte dla ucznia'
 );
 
--- Podgląd „oczami dziecka": warunek wstępny jest dla dziecka, nie dla osoby układającej lekcję,
--- więc ta sama lekcja, która uczniowi pokazała kłódkę, administratorowi ma się otworzyć.
+-- Nauka administratora idzie na tych samych zasadach co nauka dziecka: warunek wstępny
+-- obowiązuje też jego. Obejście jest jedno i trzeba o nie poprosić wprost — `p_preview`,
+-- czyli podgląd z panelu.
 select is(
   public.is_lesson_unlocked((select id from t_lessons where nr = 2), (select id from t_ids where name = 'admin')),
-  true,
-  'administrator ma otwartą lekcję z warunkiem wstępnym'
+  false,
+  'administrator ucząc się ma tę samą kłódkę co dziecko'
+);
+
+select throws_ok(
+  'select public.get_lesson_exercises((select id from t_lessons where nr = 2))',
+  'Ta lekcja jest jeszcze zamknięta',
+  'bez podglądu zamknięta lekcja nie wydaje zadań także administratorowi'
 );
 
 select lives_ok(
-  'select public.get_lesson_exercises((select id from t_lessons where nr = 2))',
-  'administrator podejrzy zadania z lekcji zamkniętej dla ucznia'
+  'select public.get_lesson_exercises((select id from t_lessons where nr = 2), 1, 1::smallint, true)',
+  'z podglądem administrator obejrzy zadania z lekcji zamkniętej dla ucznia'
 );
 
 -- Pytanie o cudzy postęp dalej mówi o tamtym dziecku: claim administratora nie może odemknąć
@@ -221,14 +228,20 @@ select is(
 
 -- Podgląd roboczy: inaczej trzeba by opublikować lekcję, żeby ją sprawdzić, czyli pokazać
 -- dzieciom coś niesprawdzonego.
+select throws_ok(
+  'select public.get_lesson_exercises((select id from t_draft))',
+  'Nie ma takiej lekcji',
+  'bez podglądu lekcja przed publikacją nie istnieje nawet dla administratora'
+);
+
 select ok(
-  (select count(*) from public.get_lesson_exercises((select id from t_draft))) > 0,
-  'administrator podejrzy lekcję przed publikacją'
+  (select count(*) from public.get_lesson_exercises((select id from t_draft), 1, 1::smallint, true)) > 0,
+  'z podglądem administrator obejrzy lekcję przed publikacją'
 );
 
 select lives_ok(
-  'select public.start_lesson_session((select id from t_draft), ''podglad'')',
-  'administrator zacznie lekcję przed publikacją'
+  'select public.start_lesson_session((select id from t_draft), ''podglad'', 1, 1::smallint, true)',
+  'z podglądem administrator zacznie lekcję przed publikacją'
 );
 
 select set_config('role', 'postgres', true), set_config('request.jwt.claims', '', true);

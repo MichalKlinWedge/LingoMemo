@@ -49,6 +49,8 @@ export async function startLesson(
   idempotencyKey: string,
   stage: number,
   level: number,
+  /** Podgląd z panelu: omija zamki i brak publikacji, ale tylko administratorowi. */
+  preview = false,
 ): Promise<{ sessionId: string } | { error: string }> {
   const { supabase } = await requireUser(`/lekcja/${lessonId}`);
   const { data, error } = await supabase.rpc("start_lesson_session", {
@@ -56,6 +58,7 @@ export async function startLesson(
     p_idempotency_key: idempotencyKey,
     p_stage: stage,
     p_level: level,
+    p_preview: preview,
   });
   if (error) return { error: dbErrorMessage(error, "Nie udało się zacząć lekcji.") };
   return { sessionId: data as string };

@@ -131,7 +131,10 @@ async function Lesson({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit
         speakLabel={nameOf(course.target_lang)}
       />
 
-      <Link href={`/lekcja/${lesson.id}`} className="btn-secondary self-start">
+      {/* `podglad=1` to jedyne wejście, które omija zamki i brak publikacji — i tylko dla
+          administratora, bo sprawdza to baza. Bez tego parametru administrator uczy się
+          na tych samych zasadach co dziecko, więc zobaczyłby tu zamkniętą lekcję. */}
+      <Link href={`/lekcja/${lesson.id}?podglad=1`} className="btn-secondary self-start">
         Zobacz lekcję oczami dziecka
       </Link>
     </>
