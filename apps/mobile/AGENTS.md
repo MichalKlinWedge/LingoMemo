@@ -41,7 +41,31 @@ npm run typecheck && npm run lint   # przed uznaniem zadania za zrobione
   w `src/constants/theme.ts`, nie wpisywane wprost w komponentach.
 - Interfejs, komunikaty i komentarze po polsku; identyfikatory po angielsku.
 
-## Czego jeszcze nie ma
+## Projekt EAS
 
-`app.json` nie ma `extra.eas.projectId` ani `updates.url` — wpisze je `eas init` przy pierwszym
-buildzie na koncie właściciela. Do tego czasu `npm run ota` nie ma gdzie wysyłać aktualizacji.
+Projekt jest połączony z kontem właściciela: **@klin.michal/lingomemo**
+(`extra.eas.projectId` i `updates.url` w `app.json`). Build dla siebie i dla dzieci:
+
+```bash
+npx eas-cli@latest build --platform android --profile development   # dev build (do pracy z expo start)
+npm run apk           # APK „preview" dla właściciela
+npm run apk:dzieci    # APK dla dzieci
+npm run ota           # aktualizacja JS na kanał właściciela
+npm run ota:dzieci    # ta sama zmiana do dzieci — tylko ze sprawdzonego commita
+```
+
+**Dev build wczytuje kod z komputera**: po instalacji uruchamiamy `npm run mobile` w katalogu
+głównym i telefon musi widzieć ten komputer (to samo Wi-Fi; inaczej `npx expo start --tunnel`).
+Dlatego dev buildowi nie są potrzebne zmienne z chmury — `.env.local` czyta Metro na komputerze.
+
+**APK „preview" i „dzieci" to inna sprawa**: zmienne wchodzą do paczki przy budowaniu, a
+`.env.local` nie jedzie do EAS (jest w `.gitignore`). Przed pierwszym takim buildem trzeba wpisać
+je po stronie EAS, raz na środowisko:
+
+```bash
+npx eas-cli@latest env:create --environment preview --name EXPO_PUBLIC_SUPABASE_URL --value <adres>
+npx eas-cli@latest env:create --environment preview --name EXPO_PUBLIC_SUPABASE_ANON_KEY --value <klucz>
+```
+
+Bez nich aplikacja wstanie i powie „Brak adresu bazy" — klucz publishable może być w APK,
+dostępu pilnuje RLS.
