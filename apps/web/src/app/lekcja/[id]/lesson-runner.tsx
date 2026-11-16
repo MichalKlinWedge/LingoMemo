@@ -104,6 +104,35 @@ export function LessonRunner({
     startedAt.current = Date.now();
   }, [index]);
 
+  /**
+   * Wyjście z lekcji kasuje przebieg, żeby kolejne wejście zaczynało etap od zera.
+   *
+   * Next nie odmontowuje strony, z której dziecko wychodzi — chowa ją (`<Activity>`), żeby
+   * powrót był natychmiastowy, i pokazuje ten sam komponent z całym stanem sprzed wyjścia.
+   * Dziecko wchodzące w ten sam etap drugi raz widziało więc od razu podsumowanie poprzedniego
+   * podejścia zamiast pierwszego zadania. Klucz na komponencie tego nie łapie, bo wraca
+   * dokładnie ten sam komponent, a nie nowy — łapie to sprzątanie efektu, które wykonuje się
+   * przy chowaniu ekranu (i przy odmontowaniu, gdzie jest już tylko bez znaczenia).
+   */
+  useEffect(() => {
+    return () => {
+      setIndex(0);
+      setPhase("answering");
+      setVerdict(null);
+      setSummary(null);
+      setHintsWon(0);
+      setUnlocksWon(0);
+      setError(null);
+      setDraftOf(null);
+      setSwapped({});
+      setFixAsked(null);
+      // Nowy przebieg to nowa sesja w bazie: stary klucz idempotencji wróciłby do zamkniętej.
+      sessionRef.current = null;
+      keyRef.current = null;
+      startedAt.current = Date.now();
+    };
+  }, []);
+
   const exercise = swapped[index] ?? exercises[index];
   const total = exercises.length;
   const hinted = swapped[index] !== undefined;

@@ -1199,3 +1199,26 @@ z odblokowaniami znaczyłoby, że dziecko kupuje lekcje za zwykłą naukę); kol
 w `profiles` (licznik do zerowania, czyli dokładnie to, czego uniknęliśmy przy podpowiedziach);
 odblokowanie całego działu (to już przeskok przez test); punkt za średni i podpowiedź za trudny
 (nagroda ma rosnąć z trudnością, a odblokowanie jest warte więcej niż jedna podpowiedź).
+
+## Wejście w etap zaczyna go od nowa (2026-11-16)
+
+Dziecko, które weszło w etap drugi raz, widziało od razu podsumowanie poprzedniego podejścia
+(„Jeszcze trochę, dobrze 5 z 8”) zamiast pierwszego zadania. Nic nie psuło się w bazie: sesja
+była zamknięta prawidłowo, a twarde odświeżenie strony pokazywało lekcję od początku.
+
+Powód jest po stronie nawigacji. Next nie odmontowuje strony, z której się wychodzi — chowa ją
+w `<Activity>`, żeby powrót był natychmiastowy — i przy ponownym wejściu pokazuje **ten sam**
+komponent z całym stanem sprzed wyjścia. `LessonRunner` trzyma w stanie numer zadania, fazę
+i podsumowanie, więc wracał z ekranem końcowym. Klucz `key={level-stage}` tego nie łapie:
+komponent nie jest nowy, tylko odsłonięty.
+
+Przebieg kasujemy w **sprzątaniu efektu**, które wykonuje się dokładnie przy chowaniu ekranu
+(i przy odmontowaniu, gdzie jest już bez znaczenia): numer zadania na zero, faza na „odpowiadaj”,
+podsumowanie i werdykt na `null`, a do tego `sessionRef` i klucz idempotencji — nowe podejście
+ma założyć nową sesję, a nie wrócić do zamkniętej.
+
+Odrzucone: zerowanie w ciele efektu przy pokazaniu ekranu (działa tak samo, ale to kaskada
+renderów, którą lint `react-hooks/set-state-in-effect` słusznie wywala); wyłączenie pamięci
+nawigacji w `next.config` (lekarstwo na cały serwis za jeden ekran, w dodatku na ustawieniu
+eksperymentalnym); osobny adres podsumowania w rodzaju `/lekcja/[id]/podsumowanie?sesja=…`
+(stan lekcji trafiłby do adresu, a zakończony etap dałoby się otworzyć z historii przeglądarki).
