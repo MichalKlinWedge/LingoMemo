@@ -14,14 +14,33 @@
         "foregroundImage": "./assets/ikona-maskowalna.png",
         "backgroundColor": "#fffaf2"
       },
-      "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"]
+      "permissions": [
+        "android.permission.SCHEDULE_EXACT_ALARM",
+        "android.permission.SCHEDULE_EXACT_ALARM"
+      ]
     },
-    "plugins": ["expo-router", "expo-notifications"],
+    "plugins": [
+      "expo-router",
+      "expo-notifications"
+    ],
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
-      "checkAutomatically": "ON_ERROR_RECOVERY"
-    }
+      "checkAutomatically": "ON_ERROR_RECOVERY",
+      "url": "https://u.expo.dev/ebf05bd8-73e6-4ef7-b5d5-188aa171241a"
+    },
+    "owner": "klin.michal",
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "ebf05bd8-73e6-4ef7-b5d5-188aa171241a"
+      }
+    },
+    "ios": {}
   }
 }
