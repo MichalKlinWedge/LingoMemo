@@ -58,7 +58,7 @@ z niego `apps/web/.env.local`, bo Next czyta zmienne tylko z katalogu swojej apl
 ## Kontrola jakości
 
 ```
-npm run check     # typecheck + lint + testy jednostkowe
+npm run check     # typecheck + lint + testy jednostkowe + build produkcyjny
 npm run test:db   # testy uprawnień RLS na lokalnej bazie
 ```
 

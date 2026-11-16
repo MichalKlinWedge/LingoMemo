@@ -935,3 +935,27 @@ z nazwy — z przyciskiem prośby zamiast strzałki.
 Testy, które wydawały zadania, musiały dostać zapis w scenariuszu — bez niego lekcja jest
 zamknięta, zanim zacznie się to, co sprawdzają. To nie jest koszt uboczny, tylko dowód, że
 bramka działa: zapomniany zapis widać natychmiast.
+
+
+## Build w bramie jakości (2026-11-16)
+
+Trzy wdrożenia pod rząd padły na Vercelu, a `npm run check` był przez cały czas zielony. Winna
+była jedna linia: `export const BUCKET = "lesson-media"` w pliku z `"use server"`, gdzie wolno
+eksportować wyłącznie funkcje asynchroniczne. Turbopack nie wyrzuca wtedy samej stałej — przestaje
+się kompilować cały moduł, więc razem z nią znikają akcje, które w nim zostały, i jeden błąd
+rozchodzi się na sześć w plikach, które niczego nie zmieniały.
+
+Ani typecheck, ani lint tej reguły nie znają. To nie przeoczenie konfiguracji: `"use server"` jest
+kontraktem bundlera, nie systemu typów — o tym, że eksport staje się punktem wejścia RPC, wie
+dopiero ten, kto dzieli kod na warstwę serwera i klienta. Dlatego `check` kończy się teraz
+produkcyjnym buildem. Koszt: ~15 s do przebiegu (całość ~23 s), bo Turbopack korzysta z cache
+w `.next`.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Gdzie wstawić build | ostatni krok `check`, jako `check:build` | szybkie kroki padają pierwsze — przy błędzie typu nie czeka się na build | przed testami (najdłuższy krok na początku) |
+| Katalog wyniku | ten sam `.next`, co serwer deweloperski | Next przepisuje commitowany `next-env.d.ts` na katalog ostatniego buildu, więc osobny `.next-check` powodowałby ciągłe zmiany w pliku i typecheck zależny od tego, co uruchomiono wcześniej | `distDir` z zmiennej środowiskowej (sprawdzone i wycofane właśnie z tego powodu) |
+| Zakres | tylko `apps/web` | pozostałe pakiety są source-only, nie mają czego budować | `--workspaces --if-present` (ta sama praca, dłuższa komenda) |
+
+Sprawdzone wprost: po wstawieniu z powrotem `export const` do pliku akcji `check:build` kończy się
+kodem 1. Brama łapie dokładnie tę klasę błędów, dla której powstała.

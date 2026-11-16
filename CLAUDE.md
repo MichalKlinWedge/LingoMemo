@@ -14,7 +14,7 @@ npm install              # zależności (npm workspaces, Node >= 22)
 npm run db:start         # lokalna baza Supabase (wymaga uruchomionego Dockera)
 npm run web:local        # aplikacja na lokalnej bazie, http://localhost:3000
 npm run web              # aplikacja na bazie z chmury (wartości z .env.local)
-npm run check            # typecheck + lint + test — brama jakości, musi przechodzić
+npm run check            # typecheck + lint + test + build — brama jakości, musi przechodzić
 npm run gen              # typy TypeScript z lokalnej bazy -> packages/db
 npm run gen:icons        # warianty ikony z apps/web/public/ikony/ikona.svg (PNG, favicon.ico)
 npm run gen:og           # miniatura linku do komunikatora (wymaga internetu — font)
@@ -74,4 +74,8 @@ Pojedynczy test: `npx vitest run src/__tests__/x.test.ts` wewnątrz pakietu.
 - Błędy z bazy przepuszczaj przez `dbErrorMessage` / `dbLoadError`, nie pokazuj surowych.
 - **Commity**: jedna linia po polsku, wzorzec `Obszar: co się zmieniło`, np.
   `Lekcje: zadanie ze słuchu`, `Baza: polityki RLS dla postępów`. Bez prefiksów `feat:`/`fix:`.
+- **Brama jakości kończy się produkcyjnym buildem** (`check:build`), bo części błędów nie widzi ani
+  typecheck, ani lint — najdotkliwszy to `export const` w pliku z `"use server"` (wolno tam
+  eksportować wyłącznie funkcje asynchroniczne). Build dzieli katalog `.next` z serwerem
+  deweloperskim, więc `npm run web:local` po `check` warto przeładować w przeglądarce.
 - Przed uznaniem zadania za zrobione: `npm run check`, a po zmianach w bazie także `npm run test:db`.
