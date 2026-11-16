@@ -69,6 +69,11 @@ select lesson_id, 'translate_ab', 100,
        10
   from t_ctx;
 
+-- Warianty dorabiają się wyzwalaczem więzowym, czyli przy zatwierdzeniu transakcji — a test
+-- cały siedzi w jednej transakcji i nigdy nie commituje. `set constraints all immediate`
+-- wymusza ich odpalenie teraz, bez zmiany tego, jak zachowują się w aplikacji.
+set constraints all immediate;
+
 create temporary table t_uklad as
   select id, payload, level from public.exercises
    where lesson_id = (select lesson_id from t_ctx) and type = 'sentence_order';

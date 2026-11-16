@@ -692,3 +692,21 @@ poza aplikacją. Teraz prośba zgłasza się sama.
 **Pułapka:** test `invitations.test.sql` liczy wszystkie zaproszenia w bazie (`count(*) = 1`),
 więc wywraca się po ręcznym klikaniu w panelu na lokalnej bazie. To nie jest błąd kodu —
 `npm run test:db` zakłada bazę świeżo po `npm run db:reset`.
+
+### Średni poziom dorabiany do treści (2026-11-16)
+
+Kwadracik średniego poziomu znikał przy całych lekcjach — na przykład przy „Classroom language",
+gdzie wszystkie tłumaczenia mają gotowe kafelki (poziom 1), a jedyne zadania z pisaniem to trzy ze
+słuchu (poziom 3). Średniego nie było ani jednego, więc nie było czym wypełnić wejścia.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Co to znaczy „średni" dla danego słówka | jedno słowo → wpisanie go; zdanie → ułożenie z klocków z dystraktorami | obie formy już są w aplikacji; brakowało ich w treści | jeden uniwersalny typ zadania na średni poziom |
+| Kiedy dorabiamy | gdy słówko nie ma ŻADNEGO zadania poziomu 2 | nie dokładamy drugiego tego samego; lekcje z własnym średnim zostają nietknięte | dorabianie do każdego słówka |
+| Rozsypanka dorobiona na średni | poziom ustawiony wprost na 2 | rozsypanka sama z siebie jest klikaniem, ale ta ma w klockach słowa niepasujące, więc wymaga przeczytania zdania | przeniesienie wszystkich rozsypanek z dystraktorami na poziom średni (lekcje, gdzie rozsypanka była jedynym łatwym zadaniem słówka, straciłyby poziom łatwy) |
+| Kiedy odpala się generator | wyzwalacz WIĘZOWY `deferrable initially deferred`, czyli przy zatwierdzeniu transakcji | wyzwalacz na polecenie odpalał się w środku `admin_add_word`: po pierwszym `insert` słówko miało tylko wybór z kafelków, więc generator dorabiał czwarte zadanie chwilę przed tym, jak funkcja wstawiła własne tłumaczenie na polski — czyli ten właśnie średni | wyzwalacz na polecenie; wołanie generatora z `import_lesson` i `admin_add_word` (trzy funkcje do przepisania) |
+| Pusty kwadracik zamiast dorabiania | odrzucone | rząd wygląda równo, ale dziecko dalej nie ma czego zrobić | — |
+
+Pułapka dla testów: wyzwalacz więzowy odpala się przy zatwierdzeniu transakcji, a każdy test
+pgTAP siedzi w jednej transakcji i kończy się `rollback`. Test, który sprawdza dorobioną treść,
+musi wywołać generator wprost albo zrobić `set constraints all immediate`.
