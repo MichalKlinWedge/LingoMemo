@@ -58,9 +58,16 @@ npx eas-cli@latest env:list --environment preview
   pokazuje się sam, gdy ich nie ma): bez nich system przesuwa przypomnienie nawet
   o kilkanaście minut.
 - **Głos** — zadania ze słuchu i głośniki przy słówkach czytają głosem systemowym Androida.
-  Jeśli milczą, w ustawieniach systemu (Dostępność → Zamiana tekstu na mowę) trzeba pobrać głos
-  dla angielskiego i polskiego. Bez głosu aplikacja **pomija** zadanie ze słuchu i nie liczy go
-  jako błędu.
+  W ustawieniach systemu (Dostępność → Zamiana tekstu na mowę → silnik Google → Zainstaluj dane
+  głosowe) trzeba pobrać głos **dla polskiego i dla każdego uczonego języka**: angielskiego,
+  włoskiego, francuskiego — tego, w którym dziecko ma kurs. Bez głosu aplikacja **pomija**
+  zadanie ze słuchu i nie liczy go jako błędu.
+
+  Brakujący głos nie zawsze objawia się ciszą. Gdy Android dostaje `it-IT`, a danych włoskich nie
+  ma, nie zgłasza błędu — zostaje przy swoim domyślnym głosie i czyta włoskie słowa po angielsku.
+  Tak samo dla pozostałych języków. Jeśli więc kurs brzmi jak angielski, zacznij od sprawdzenia,
+  czy głos tego języka jest pobrany; w samej aplikacji ani w bazie nie ma czego przestawiać,
+  bo znacznik języka (`languages.tts_lang`, np. `it-IT`) idzie z bazy razem z zadaniem.
 
 ## Czego nie ma na tablecie
 
