@@ -8,6 +8,7 @@
  * używają go tylko skrypty z `tools/`.
  *
  *   node scripts/sync-env.mjs           — wartości z .env.local (projekt w chmurze)
+ *   node scripts/sync-env.mjs --mobile  — tylko plik telefonu (nie rusza weba)
  *   node scripts/sync-env.mjs --local   — web na lokalnym Supabase (`npm run db:start`);
  *                                         telefon i tak dostaje adres z chmury
  *
@@ -61,7 +62,15 @@ const targets = [
   { file: 'apps/mobile/.env.local', prefix: 'EXPO_PUBLIC_', server: [], derived: MOBILE_DERIVED, local: false },
 ];
 
+/**
+ * `--mobile` pisze TYLKO plik telefonu. Bez tego `npm run mobile` przepisywałby po drodze
+ * `apps/web/.env.local` na wartości z chmury i działający obok `npm run web:local` po cichu
+ * przestawiałby się na bazę w chmurze.
+ */
+const onlyMobile = process.argv.includes('--mobile');
+
 for (const { file, prefix, server, derived, local: useLocal } of targets) {
+  if (onlyMobile && !file.includes('apps/mobile')) continue;
   if (!existsSync(`${root}${file.slice(0, file.lastIndexOf('/'))}`)) continue;
   const from = useLocal ? source : cloud;
   const vars = Object.fromEntries(Object.entries(from).filter(([key]) => key.startsWith(prefix) || server.includes(key)));
