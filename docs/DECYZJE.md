@@ -1257,3 +1257,21 @@ reguły obok `unlock_points_left`); odblokowanie bez pytania (punkt kosztuje kil
 poziomie trudnym); wygaszanie kluczyka na kłódce lekcji, której baza nie pozwoli otworzyć
 (`can_unlock_lesson` już to mówi, a dwa stopnie szarości na jednym kafelku to dla dziecka jeden
 nieczytelny stan).
+
+### Telefon: nowa wersja z przyciskiem, nie z zaskoczenia (2026-11-16)
+
+Aplikacja sprawdza aktualizacje przy starcie (`checkAutomatically: ON_LOAD`), ale pobrana wersja
+wchodzi do użycia dopiero przy następnym uruchomieniu — taki jest EAS Update. Na tablecie znaczyło
+to „zamknij z listy ostatnich i otwórz dwa razy": instrukcja, której nikt nie zgadnie i nikt nie
+zapamięta, a wysłana poprawka wisiała niewykorzystana.
+
+Od teraz ekran kursów pokazuje kartę „Nowa wersja gotowa" z przyciskiem „Uruchom teraz"
+(`isUpdatePending` z `useUpdates`), a pod „Konto" jest sprawdzenie na żądanie — przydaje się, gdy
+poprawka wyszła przy już włączonej aplikacji, bo sprawdzenie przy starcie samo się nie powtórzy.
+
+Odrzucone: `reloadAsync()` od razu po pobraniu (aplikacja, która nagle startuje od nowa, wygląda
+na zepsutą, a w lekcji zabrałaby niedokończone podejście — dlatego karta stoi tylko na ekranie
+kursów, gdzie restart nic nie kosztuje); własny licznik wersji w bazie i porównywanie go w kodzie
+(`expo-updates` już wie, co pobrał, a druga prawda o wersji to drugie miejsce do pomyłki);
+`checkAutomatically: ON_ERROR_RECOVERY` z ręcznym sprawdzaniem (pierwszy APK dla dzieci miał tak
+przez pomyłkę — aktualizacja nie przyszłaby nigdy, dopóki aplikacja się nie wywali).

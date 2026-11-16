@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 
 import { Body, Button, Card, Chip, Message, Screen, Title } from '@/components/ui';
+import { UpdateBanner, UpdateCheck } from '@/components/update';
 import { color, size } from '@/constants/theme';
 import { type Course, loadMyCourses } from '@/features/courses/load';
 import {
@@ -73,6 +74,7 @@ export default function Home() {
 
   return (
     <Screen>
+      <UpdateBanner />
       <Bar userId={session.user.id} />
       {error !== null && <Message kind="error" text={error} />}
       {courses === null && <Body muted>Wczytuję kursy…</Body>}
@@ -290,6 +292,7 @@ function Account({ email }: { email: string | null }) {
       {open && (
         <Card>
           <Body muted>Zalogowany: {email ?? '—'}</Body>
+          <UpdateCheck />
           {__DEV__ && (
             <>
               <Button kind="quiet" label="PoC-M1 — zadanie z bazy" onPress={() => router.push('/zadanie')} />

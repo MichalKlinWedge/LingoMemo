@@ -24,6 +24,12 @@ nie trzeba go wpisywać, a na pulpicie EAS od razu widać, co poszło na telefon
 podaje się skryptowi wprost: `node scripts/ota.mjs preview --message "…"` (przez `npm run ota --`
 to nie przejdzie, bo npm zabiera takie flagi dla siebie).
 
+Na tablecie poprawka **nie wchodzi od razu**: aplikacja pobiera ją przy starcie, a używa od
+następnego uruchomienia. Dlatego na górze ekranu kursów pojawia się karta **„Nowa wersja gotowa"**
+z przyciskiem „Uruchom teraz" — jedno dotknięcie zamiast zamykania aplikacji z listy ostatnich
+i otwierania jej dwa razy. Gdy poprawka wyszła przy włączonej aplikacji, sprawdzenie na żądanie
+jest pod „Konto" → **„Sprawdź aktualizację"**.
+
 **Nowego APK wymaga tylko zmiana natywna**: nowy moduł (np. obrazki SVG przez `expo-image`),
 nowe uprawnienie, zmiana w `app.json`. Zmiany w kodzie aplikacji idą przez OTA i dochodzą same.
 
