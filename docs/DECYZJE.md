@@ -730,6 +730,15 @@ w którym etapie zgubiło trzecią.
 | Wyrównanie rzędu | `align-items: flex-end` w `.marks` | kolumna etapu jest wyższa od kwadracika poziomu, a dolna krawędź ma iść przez cały rząd jedną linią | wyrównanie do środka (kwadraciki poziomów wisiałyby w połowie wysokości etapu) |
 | Czytnik ekranu | jeden `role="img"` z podpisem „Zrobione etapy: 2 z 3; etap 1 — 3 gwiazdki, …", dymek nad każdym etapem | dziewięć osobnych gwiazdek to dziewięć bezużytecznych ogłoszeń | podpis na każdej gwiazdce |
 
+Dopisane tego samego dnia: gwiazdki dostały też kwadraciki poziomu średniego i trudnego
+(`v_my_lesson_levels` wydaje `stars`, więc bez nowego zapytania), a sam kwadracik etapu stał się
+odnośnikiem do tego etapu (`?etap=N`) — wcześniej kursor nie zmieniał się w łapkę, bo nie było
+czego kliknąć, choć poziomy obok już były odnośnikami. Wspólna kolumna „gwiazdki nad
+kwadracikiem" nazywa się `.mark-col` i obsługuje jedno i drugie; kafelek lekcji urósł do 12 rem
+(najgorszy przypadek: pięć kwadracików po trzy gwiazdki, 166 px przy 172 px miejsca).
+Gwiazdki poziomu pokazujemy także przy wejściu zaczętym, a niezaliczonym — baza zapisuje
+najlepszy wynik z podejść, więc „dwie gwiazdki nad kwadracikiem w połowie" to prawda, nie usterka.
+
 ### Administrator uczy się jak dziecko (2026-11-16)
 
 `is_lesson_unlocked` oddawało administratorowi „otwarte" dla każdej lekcji, a wydawanie zadań
@@ -770,3 +779,40 @@ typem zadania.
 
 Prawdziwa losowość przy każdym podejściu wymagałaby, żeby listę zadań wydawała sesja, a nie
 osobne zapytanie strony — czyli przestawienia kolejności wywołań w ekranie lekcji.
+
+## Bramka zaległych powtórek (2026-11-16)
+
+Powtórki dotąd nikogo nie pilnowały. Dziecko widziało na stronie „🔁 14", wchodziło w nową lekcję
+i uczyło się dalej, a kolejka zaległych rosła — czyli działo się dokładnie to, przed czym FSRS ma
+chronić: nowe słówka dochodziły, stare wypadały z głowy.
+
+Od teraz kurs ma bramkę: dziesięć zaległych słówek zamyka wszystkie lekcje kursu (razem
+z powtórkami i testami działów), a otwarty zostaje jeden kafelek — „Test powtórkowy" ułożony
+z zaległych słówek. Zdany test, próg lekcji jak wszędzie (80%), otwiera kurs do końca dnia.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Gdzie liczymy zaległe | w całym kursie | licznik, który dziecko i rodzic widzą, jest dla kursu; przy liczeniu per dział dziecko z sześcioma zaległymi w jednym dziale i siedmioma w drugim nie byłoby blokowane nigdzie, a zapomniało trzynaście słówek | per dział oraz globalnie dla konta (dwa kursy blokowałyby się wzajemnie) |
+| Co znaczy „zaległe" | `due_on <= dziś` i słówko ma aktywne zadanie | słówko bez zadania nie weszłoby do testu, więc liczone podnosiłoby próg, którego nie da się zbić — bramka byłaby ścianą bez drzwi | samo `due_on <= dziś` (jak w `v_my_stats.words_due`) |
+| Co zdejmuje blokadę | zdany test powtórkowy, do końca dnia w strefie dziecka | po dłuższej przerwie zaległych bywa czterdzieści, a test obejmuje dwanaście; gdyby blokada patrzyła tylko na licznik, dziecko dostawałoby test za testem i nie doszłoby do lekcji ani razu | zerowanie całej kolejki po zdanym teście (słówka, których w teście nie było, dostałyby termin wzięty z powietrza — FSRS przestaje wtedy cokolwiek znaczyć) |
+| Raz podjęty test trzeba zdać | dokończony i oblany test zamyka kurs do czasu zdania, już niezależnie od licznika | patrz pułapka niżej: licznik spada po oblanym teście tak samo jak po zdanym | sama reguła licznikowa (dwanaście pustych odpowiedzi otwierało kurs) |
+| Wyjątek od zatrzasku | brak zaległych słówek z zadaniem puszcza bramkę | dziecko, które oblało test obejmujący całą kolejkę, zostałoby z zamkniętym kursem i pustym testem | zatrzask bez wyjątku |
+| Porzucona sesja testu | nie zatrzaskuje (liczy się tylko dokończona) | zerwane połączenie i zamknięta karta to nie oblany test | każde wejście w test |
+| Czym jest test powtórkowy | zwykłą lekcją `kind = 'review'` z nową kolumną `review_scope_course_id` | cały silnik (sesja, próby, punkty, postęp) wisi na `lessons.id`, a `kind = 'review'` ma już dobór zadań ze stanu powtórek, wymuszony poziom łatwy i pustą migawkę zadań | nowa wartość `review_test` w `lesson_kind` (osobna migracja na sam enum i gałąź w dwóch największych funkcjach bazy, bez żadnego zysku) |
+| Gdzie wisi | w pierwszym dziale kursu, a na mapie osobno nad działami | `lessons.unit_id` jest wymagane, a pierwszy dział nigdy nie jest zamknięty testem poprzedniego; między kafelkami działu wyglądałby na jego lekcję | osobny „dział techniczny" na kurs (pusty nagłówek na mapie dziecka) |
+| Ile słówek w teście | najwyżej `review_limit` (12), najdłużej zaległe pierwsze | tyle, co zwykła powtórka — test ma być jednym podejściem, a nie odrabianiem czterdziestu słówek pod rząd; kolejność po terminie, bo inaczej przy równym priorytecie wchodziłyby stale te same słówka (decyduje wtedy identyfikator zadania) | `test_limit` (15) oraz cała kolejka naraz |
+| Kto zakłada test | wyzwalacz `lesson_items_review_test` przy pierwszym słówku kursu + dosyp dla kursów, które już mają słówka | tak samo jak test działu: kurs bez testu nie może być stanem domyślnym, bo wtedy reguła nie dotyczy niczego | zakładanie ręcznie w panelu |
+| Powtórka działu | zostaje bez zmian: bierze wszystko, co dziecko w dziale widziało, i nie ma progu | jest ćwiczeniem do woli, a nie bramką; blokadę zdejmuje wyłącznie test kursu | podniesienie powtórki działu do roli bramki (dziecko musiałoby trafić w ten dział, w którym uzbierały się zaległości) |
+
+### Pułapka: oblany test też obniża licznik zaległych
+
+Pierwsza wersja reguły brzmiała „bramka stoi, dopóki zaległych jest dziesięć albo więcej, a zdany
+test ją zdejmuje do końca dnia" — i test pgTAP od razu pokazał, że to nie trzyma się kupy. BŁĘDNA
+odpowiedź też przesuwa termin słówka: FSRS wyznacza po wpadce krótki odstęp, ale liczony w dniach,
+więc najbliższy termin wypada jutro. Po oblanym teście licznik spadał dokładnie tak samo jak po
+zdanym, czyli dwanaście odpowiedzi „nie wiem" otwierało kurs.
+
+Stąd zatrzask: jeśli dziecko dziś dokończyło test powtórkowy i go nie zdało, kurs zostaje
+zamknięty do czasu zdania. Test `review_gate.test.sql` pilnuje obu końców tej reguły — że oblany
+test nie otwiera kursu, CHOĆ licznik już nie wystarcza, i że zdany otwiera, CHOĆ zaległych zostało
+więcej niż dziesięć (to drugie na drugim dziecku w tym samym kursie, żeby stany się nie mieszały).

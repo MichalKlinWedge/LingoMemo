@@ -142,7 +142,7 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
               // Kolumna szersza niż kafelek (6 rem): na dole stoi rząd kwadracików — do trzech
               // etapów i dwa poziomy — a `.marks` się nie zawija, więc przy 7 rem wychodziły
               // poza kafelek i wchodziły sąsiadowi w gap. Etap jest szerszy od swojego
-              // kwadracika, bo nad nim stoją trzy gwiazdki; stąd 11,5 rem, nie 9,5.
+              // kwadracika, bo nad każdym stoją trzy gwiazdki; stąd 12 rem, nie 9,5.
               return (
                 <li key={lesson.id} className="card lesson-box">
                   {state === "locked" ? (
@@ -249,7 +249,7 @@ function LevelBox({
 }: {
   lesson: string;
   title: string;
-  row: { level: number | null; status: string | null; is_unlocked: boolean | null };
+  row: { level: number | null; status: string | null; is_unlocked: boolean | null; stars: number | null };
 }) {
   const level = row.level ?? 2;
   const name = LEVEL_NAME[level] ?? "trudniejszy";
@@ -258,30 +258,42 @@ function LevelBox({
   // progu lekcji, nie samego dojścia do końca.
   const state = row.status === "completed" ? "done" : row.status === "in_progress" ? "tried" : "new";
   const done = state === "done";
+  // Gwiazdki także przy wejściu zaczętym, a niezaliczonym: baza zapisuje je z każdego podejścia
+  // (najlepsze z dotychczasowych), więc „dwie gwiazdki, a kwadracik w połowie" to prawda o tym
+  // wejściu, nie sprzeczność.
+  const gwiazdki = row.stars ?? 0;
   const label = `${title} — poziom ${name}`;
 
   if (!row.is_unlocked) {
     return (
       <span
-        className="level-box"
-        data-level={level}
-        data-locked="true"
+        className="mark-col"
         role="img"
         aria-label={`${label} — zamknięty`}
         title="Najpierw przejdź tę lekcję na poziomie łatwym"
-      />
+      >
+        <MarkStars count={0} />
+        <span className="level-box" data-level={level} data-locked="true" aria-hidden />
+      </span>
     );
   }
+
+  const opis = done
+    ? `${label} — zrobiony, ${plural(gwiazdki, STARS)}`
+    : state === "tried"
+      ? `${label} — zaczęty, jeszcze nie zaliczony, ${plural(gwiazdki, STARS)}`
+      : label;
 
   return (
     <Link
       href={`/lekcja/${lesson}?poziom=${level}`}
-      className="level-box"
-      data-level={level}
-      data-state={state}
-      aria-label={done ? `${label} — zrobiony` : state === "tried" ? `${label} — zaczęty` : label}
-      title={state === "tried" ? `${label} — jeszcze nie zaliczony` : label}
-    />
+      className="mark-col"
+      aria-label={opis}
+      title={state === "new" ? label : `${label} — ${plural(gwiazdki, STARS)}`}
+    >
+      <MarkStars count={gwiazdki} />
+      <span className="level-box" data-level={level} data-state={state} aria-hidden />
+    </Link>
   );
 }
 
@@ -330,15 +342,16 @@ function Stages({
   if (locked) {
     return (
       <span
-        className="flex gap-1"
+        className="stages"
         role="img"
         aria-label={`Zrobione etapy: ${zrobione} z ${total}; ${numery
           .map((nr) => `etap ${nr} — ${plural(gwiazdkiEtapu(nr), STARS)}`)
           .join(", ")}`}
       >
         {numery.map((nr) => (
-          <span key={nr} className="stage-col">
-            <StageMark stars={gwiazdkiEtapu(nr)} done={nr <= zrobione} />
+          <span key={nr} className="mark-col">
+            <MarkStars count={gwiazdkiEtapu(nr)} />
+            <span className="stage" data-done={nr <= zrobione} aria-hidden />
           </span>
         ))}
       </span>
@@ -346,36 +359,34 @@ function Stages({
   }
 
   return (
-    <span className="flex gap-1">
+    <span className="stages">
       {numery.map((nr) => (
         <Link
           key={nr}
           href={`/lekcja/${lesson}?etap=${nr}`}
-          className="stage-col"
+          className="mark-col"
           title={opisEtapu(nr)}
           aria-label={`${title} — ${opisEtapu(nr)}`}
         >
-          <StageMark stars={gwiazdkiEtapu(nr)} done={nr <= zrobione} />
+          <MarkStars count={gwiazdkiEtapu(nr)} />
+          <span className="stage" data-done={nr <= zrobione} aria-hidden />
         </Link>
       ))}
     </span>
   );
 }
 
-/** Zawartość kolumny etapu: gwiazdki i kwadracik. Oba tylko do oglądania — podpis dla czytnika
+/** Gwiazdki nad kwadracikiem — etapu albo poziomu. Zawsze `aria-hidden`: podpis dla czytnika
  *  ekranu siedzi na tym, co je obejmuje (odnośniku albo całym rzędzie). */
-function StageMark({ stars, done }: { stars: number; done: boolean }) {
+function MarkStars({ count }: { count: number }) {
   return (
-    <>
-      <span className="stage-stars" aria-hidden>
-        {Array.from({ length: stars }, (_, index) => (
-          <span key={index} className="stage-star">
-            ★
-          </span>
-        ))}
-      </span>
-      <span className="stage" data-done={done} aria-hidden />
-    </>
+    <span className="mark-stars" aria-hidden>
+      {Array.from({ length: Math.min(Math.max(count, 0), 3) }, (_, index) => (
+        <span key={index} className="mark-star">
+          ★
+        </span>
+      ))}
+    </span>
   );
 }
 

@@ -363,7 +363,7 @@ h2 {
      `.card`, tutaj zostaje sam układ. */
   .lesson-box {
     display: flex;
-    width: 11.5rem;
+    width: 12rem;
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
@@ -634,9 +634,9 @@ h2 {
     background: var(--level-1);
   }
 
-  /* Etap to kolumna: gwiazdki nad kwadracikiem. Szerokość bierze rząd gwiazdek (1,875 rem),
-     bo jest szerszy od kwadracika — stąd kafelek lekcji ma 11,5 rem, nie 9,5. */
-  .stage-col {
+  /* Etap i poziom to kolumny: gwiazdki nad kwadracikiem. Szerokość bierze rząd gwiazdek
+     (1,875 rem), bo jest szerszy od kwadracika — stąd kafelek lekcji ma 12 rem, nie 9,5. */
+  .mark-col {
     display: flex;
     flex: none;
     flex-direction: column;
@@ -644,18 +644,25 @@ h2 {
     gap: 0.125rem;
   }
 
-  /* Kolumna etapu przy otwartej lekcji jest odnośnikiem (`?etap=N`) i musi na to wyglądać:
-     łapkę daje samo `<a>`, a obrys przy najechaniu mówi, że to się klika — bez niego kwadracik
-     1,5 rem czyta się jak znaczek stanu, a nie jak wejście w etap. */
-  a.stage-col:hover .stage,
-  a.stage-col:focus-visible .stage {
+  /* Kolumna przy otwartej lekcji jest odnośnikiem (`?etap=N`, `?poziom=N`) i musi na to
+     wyglądać: łapkę daje samo `<a>`, a obrys przy najechaniu mówi, że to się klika — bez niego
+     kwadracik 1,5 rem czyta się jak znaczek stanu, a nie jak wejście w etap albo poziom. */
+  a.mark-col:hover .stage,
+  a.mark-col:focus-visible .stage {
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--level-1) 30%, transparent);
   }
 
-  /* Miejsce na gwiazdki zostaje także przy etapie bez ani jednej — bez tego kwadraciki
+  /* Poziom świeci swoim kolorem (`--level-color` stoi na samym kwadraciku), żeby obrys nie
+     mówił „łatwy" nad kwadracikiem trudnego. */
+  a.mark-col:hover .level-box,
+  a.mark-col:focus-visible .level-box {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--level-color) 30%, transparent);
+  }
+
+  /* Miejsce na gwiazdki zostaje także nad kwadracikiem bez ani jednej — bez tego kwadraciki
      sąsiednich lekcji stały na różnej wysokości. Puste gwiazdki na obrys świadomie odpadły:
-     przy trzech etapach to dziewięć znaczków pod jednym kafelkiem, czyli szum. */
-  .stage-stars {
+     przy trzech etapach i dwóch poziomach to piętnaście znaczków pod kafelkiem, czyli szum. */
+  .mark-stars {
     display: flex;
     min-height: 0.75rem;
     align-items: center;
@@ -666,7 +673,7 @@ h2 {
   /* Gwiazdka w stałym pudełku, a nie zwykły tekst: „★" ma w każdym kroju inną szerokość,
      a od niej zależy, czy rząd kwadracików mieści się w kafelku. Znak może wyjść poza pudełko
      (jest wyśrodkowany), szerokość rzędu — nie. */
-  .stage-star {
+  .mark-star {
     width: 0.625rem;
     flex: none;
     font-size: 0.6875rem;
@@ -722,8 +729,14 @@ h2 {
     opacity: 0.35;
   }
 
-  /* Odstęp między etapami a kwadracikami poziomów — inaczej czyta się to jak jeden ciąg. */
-  .marks > :not(.level-box) + .level-box {
+  /* Etapy jednej lekcji trzymają się razem, a odstęp za nimi oddziela je od poziomów —
+     inaczej cały rząd czyta się jak jeden ciąg kwadracików. */
+  .stages {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .marks > .stages + .mark-col {
     margin-left: 0.375rem;
   }
 
