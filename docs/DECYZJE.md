@@ -1091,3 +1091,15 @@ Wzorzec na dane ekranu bez `setState` w efekcie: wynik wczytania trzymamy razem 
 czego dotyczy (`{ key, data }`), a świeżość liczymy przy renderze. Zerowanie stanu po zmianie
 parametrów (`setData(null)` w efekcie) odbija linter Reacta jako kaskadę renderów — i ma rację,
 bo to drugi render na każde wejście w lekcję.
+
+### Telefon: obrazki wbudowanym `Image`, nie `expo-image` (2026-11-16)
+
+Wybór obrazka na telefonie rysuje `Image` z React Native. `expo-image` daje lepszą pamięć
+podręczną na dysku, ale jest modułem natywnym: dołożenie go **po** zrobieniu dev buildu znaczy,
+że aplikacja na telefonie przestaje działać do kolejnej przebudowy (kilkanaście minut na EAS za
+każdym razem). Pamięć podręczna przyda się dopiero przy nauce bez sieci, a to osobna decyzja
+(PLAN_MOBILE 3.2) — wtedy razem z nią wraca też `expo-audio` do nagrań z pola `audio_path`.
+
+Reguła ogólna, która z tego wychodzi: **nowy moduł natywny to nowy APK**, więc w trakcie etapu
+dokładamy tylko to, co da się zrobić na tym, co już jest w aplikacji. Tak samo dzieli pracę
+ExpeditionPlan (oznaczenia OTA i APK w `ANALIZA_TELEFON.md`).

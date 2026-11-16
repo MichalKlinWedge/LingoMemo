@@ -155,9 +155,15 @@ pisze teraz także `apps/mobile/.env.local` (`EXPO_PUBLIC_*` z tych samych warto
 `NEXT_PUBLIC_*`; telefon zawsze dostaje adres z chmury, bo `127.0.0.1` komputera i tak by nie
 zobaczył).
 
-Czego brakuje do pierwszego uruchomienia: `eas init` na koncie właściciela (wpisze
-`extra.eas.projectId` i `updates.url`) oraz dev build `eas build --profile development`.
-Expo Go nie wystarczy — powiadomienia, mowa i SQLite to moduły natywne.
+**Dev build (2026-11-16):** projekt jest połączony z kontem właściciela
+(**@klin.michal/lingomemo**, `extra.eas.projectId` i `updates.url` w `app.json`), a pierwszy
+development build Androida przeszedł na EAS — do instalacji z linku w historii buildów projektu.
+Keystore wygenerował EAS. Po instalacji aplikacja wczytuje kod z komputera: `npm run mobile`
+w katalogu głównym, telefon w tej samej sieci (albo `npx expo start --tunnel`). Expo Go nie
+wystarczy — powiadomienia, mowa i SQLite to moduły natywne.
+
+Dev build NIE potrzebuje zmiennych po stronie EAS (Metro czyta `.env.local` z komputera), ale
+APK `preview` i `dzieci` już tak — `apps/mobile/AGENTS.md` ma polecenia `eas env:create`.
 
 ### Etap M1 — mapa i lekcja
 
@@ -218,6 +224,20 @@ do jednego pliku `constants/theme.ts` — nie rozsypujemy go po komponentach.
 
 **Kryterium odbioru:** lekcja „Zwierzęta domowe” z kompletem dziewięciu typów przechodzi na
 telefonie bez przewijania w poziomie, a wybór obrazka ma zawsze cztery kafelki w dwóch kolumnach.
+
+**Stan (2026-11-16):** kod kompletu dziewięciu typów jest; na ekranie telefonu nic z tego jeszcze
+nie było. Doszły cztery typy: `match_pairs` i `listen_match` (wspólny stan łączenia par
+przepisany z weba — zaczyna dowolna kolumna, kafelki ze słuchem pokazują numer, nie napis),
+`sentence_order` (klocki na dotknięcia, bez przeciągania, z klockami niepasującymi w łatwym
+wariancie) oraz `image_choice` (dwie kolumny, zastępnik „brak pliku” przy obrazku, którego nie
+udało się wczytać, i podświetlenie właściwego kafelka po błędzie). Obrazki idą ze ścieżek
+w buckecie `lesson-media` (`lib/media.ts`, tak samo jak na webie).
+
+Dwie rzeczy celowo inaczej niż w pierwotnym opisie etapu: obrazki rysuje wbudowany `Image`
+z React Native, nie `expo-image` (nowy moduł natywny wymagałby przebudowania aplikacji na
+telefonie, a pamięć podręczna przyda się dopiero przy nauce bez sieci), a przy dopasowywaniu par
+nie ma głośników — tak samo jak na webie przy wąskim ekranie, gdzie zabierałyby prawej kolumnie
+zbyt wiele miejsca.
 
 ### Etap M3 — powtórki, test działu, nagrody, statystyki
 
