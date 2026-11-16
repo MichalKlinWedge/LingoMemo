@@ -1069,3 +1069,25 @@ adresu `127.0.0.1` komputera, więc `--local` go nie dotyczy.
 - **Wersje paczek dobiera `npx expo install`, nie ręczne wpisywanie.** Przepisane z sąsiedniego
   projektu wyglądały dobrze, ale `npx expo-doctor` wyłapał `react-native-safe-area-context`
   starszy o jedną wersję pomocniczą niż wymaga SDK; naprawia to `npx expo install --fix`.
+
+## Telefon, Etap M1: co przenosimy wprost, a co inaczej niż na webie (2026-11-16)
+
+Mapa kursu i przebieg lekcji na telefonie wołają te same funkcje bazy co web, więc reguły
+(co otwarte, ile gwiazdek, kiedy bramka) nie są przepisane — przychodzą z bazy. Różnice dotyczą
+tylko tego, czego telefon nie ma albo ma inaczej.
+
+| Rzecz | Na webie | Na telefonie | Dlaczego |
+|---|---|---|---|
+| Wywołania bazy | Server Actions (`lesson-actions.ts`) | wprost z aplikacji (`features/lesson/api.ts`) | nie ma serwera aplikacji i nie jest potrzebny: praw pilnuje RLS, a klucze odpowiedzi wycina `get_lesson_exercises` |
+| Odświeżanie danych | nowy render strony po powrocie | `useFocusEffect` wczytuje mapę przy każdym wejściu na ekran | po lekcji zmieniają się gwiazdki i zamki; ekran, który został w pamięci, pokazywałby stan sprzed lekcji |
+| Automatyczne przejście po dobrej odpowiedzi | licznik odkładany przy każdym kliknięciu i klawiszu | licznik odkładany przy każdym dotknięciu ekranu (`onStartShouldSetResponderCapture`, bez przechwytywania dotknięcia) | dziecko, które słucha słówka głośnikiem, nie ma stracić ekranu sprzed nosa |
+| Kwadraciki etapów i poziomów | małe, mysz trafia | te same rozmiary, ale `hitSlop` powiększa pole dotyku do progu dla palca | rząd kilku kwadracików nie zmieści się w 56 px na sztukę, a pole dotyku może być większe niż rysunek |
+| Dźwięk reakcji i animacje | Web Audio + CSS | nie ma w M1 | to osobna zależność natywna; brak dźwięku nie psuje nauki, brak oceny z bazy — psuje |
+| Nagranie z `audio_path` | odtwarzane jako zapas, gdy nie ma głosu | nie ma w M1 (potrzebny `expo-audio`) | pole jest zapasem, a seed i panel liczą na syntezator; bez głosu zadanie ze słuchu jest pomijane bez zapisania próby, jak na webie |
+| Flaga kursu | obrazek flagi | ikona kursu (emoji) | obrazki flag to pliki weba; ikona jest w danych kursu i wystarcza |
+| Podgląd z panelu (`?podglad=1`) | jest, tylko dla administratora | nie ma | telefon jest tylko dla ucznia, więc `p_preview` zawsze `false` |
+
+Wzorzec na dane ekranu bez `setState` w efekcie: wynik wczytania trzymamy razem z kluczem tego,
+czego dotyczy (`{ key, data }`), a świeżość liczymy przy renderze. Zerowanie stanu po zmianie
+parametrów (`setData(null)` w efekcie) odbija linter Reacta jako kaskadę renderów — i ma rację,
+bo to drugi render na każde wejście w lekcję.

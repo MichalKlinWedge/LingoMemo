@@ -174,6 +174,36 @@ na webie jest tylko bramką na interfejs.
 **Kryterium odbioru:** dziecko przechodzi lekcję demo na telefonie od mapy do podsumowania;
 gwiazdki, punkty i stan powtórek zgadzają się z tym, co o tej samej lekcji pokazuje web.
 
+**Stan (2026-11-16):** kod jest, przejścia lekcji na telefonie jeszcze nie było (brak dev buildu).
+Powstało:
+
+- **Kursy** (`app/index.tsx`): kursy, na które uczeń jest zapisany; wejście w kurs. Kursu bez
+  zapisu nie pokazujemy wcale — w bazie jest zamknięty, a o dopisanie prosi się na webie.
+- **Mapa kursu** (`app/kurs/[slug].tsx`): działy, kafelki lekcji z ikoną, gwiazdkami i liczbą
+  słówek, kwadraciki etapów (z gwiazdkami etapu) oraz wejścia na poziom średni i trudny, karta
+  bramki zaległych powtórek, powody zamknięcia pod kafelkiem. Dotknięcie kafelka otwiera „to,
+  co dalej": po zaliczeniu łatwego — średni, potem trudny.
+- **Lekcja** (`features/lesson/`): `api.ts` (te same RPC co w webowych Server Actions),
+  `load.ts` (dane przed pierwszym zadaniem, wybór etapu i poziomu z adresu), `runner.tsx`
+  (pasek postępu, etap i poziom, licznik podpowiedzi, podpowiedź, „Nie wiem, pomiń", jedna
+  szansa na poprawienie literówki z rozróżnieniem `typo`/`order`, informacja zwrotna
+  z automatycznym przejściem dalej odkładanym przy każdym dotknięciu ekranu, podsumowanie
+  etapu i lekcji z gwiazdkami, punktami, serią i odznakami).
+- **Cztery typy zadań**: `translate_ab`, `translate_ba` i `inflection` jako pisanie,
+  `fill_blank_choice` (oraz `translate_ab` z opcjami) jako wybór, `listening` ze słuchu.
+  Mowa przez `expo-speech` (`lib/speak.ts`): brak głosu dla języka kursu pomija zadanie
+  ze słuchu BEZ zapisania próby — tak samo jak web.
+
+Sprawdzone: `npm run check` zielone, bundle Metro się składa, a składnia wszystkich zapytań
+i sygnatury RPC — na lokalnej bazie (widoki `v_my_lessons` i `v_my_lesson_levels`, zagnieżdżone
+`lessons → units!unit_id → courses!inner`, `get_lesson_exercises`, `review_gate`, `hints_left`,
+`setting_int`). Niesprawdzone: cokolwiek na ekranie telefonu.
+
+Czego w M1 nie ma: dźwięków reakcji i animacji (web ma je z Web Audio; na telefonie to osobna
+zależność), flag języków jako obrazków (zostaje ikona kursu), nagrań z pola `audio_path`
+(potrzebny `expo-audio`) oraz planszy ze słówkami („sowa" przy kafelku) — ta jest w M3 razem
+z trybem nauki.
+
 ### Etap M2 — pozostałe typy zadań, dotyk i obrazki
 
 `inflection`, `match_pairs`, `sentence_order`, `listen_match`, `image_choice`. Obrazki z bucketu
