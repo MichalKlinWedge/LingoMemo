@@ -38,6 +38,27 @@ export function UpdateBanner() {
 }
 
 /**
+ * Która wersja tu właściwie chodzi — jeden wiersz w sekcji „Konto”.
+ *
+ * Bez tego odpowiedź na „tablet ma starą wersję” trzeba było zgadywać po tym, czego brakuje na
+ * ekranie. Numer poprawki jest ten sam co na pulpicie EAS, a `kod z pliku APK` mówi wprost, że
+ * urządzenie nie wzięło jeszcze żadnej aktualizacji — tak wygląda telefon zaraz po instalacji,
+ * zanim raz się go nie zamknie i nie otworzy.
+ */
+export function UpdateInfo() {
+  const { channel, createdAt, isEmbeddedLaunch, runtimeVersion, updateId } = useUpdates().currentlyRunning;
+  const skad = isEmbeddedLaunch ? 'kod z pliku APK' : `poprawka ${updateId?.slice(0, 8) ?? '—'}`;
+  const kiedy = createdAt === undefined ? '' : ` z ${createdAt.toLocaleString('pl-PL')}`;
+
+  return (
+    <Body muted>
+      Wersja {runtimeVersion ?? '—'} · kanał {channel ?? 'brak'} · {skad}
+      {kiedy}
+    </Body>
+  );
+}
+
+/**
  * Sprawdzenie aktualizacji na żądanie — dla dorosłego, w sekcji „Konto”. Przydaje się wtedy, gdy
  * poprawka wyszła przy włączonej aplikacji: sprawdzenie przy starcie już było i samo się nie
  * powtórzy, dopóki aplikacja nie wstanie od nowa.

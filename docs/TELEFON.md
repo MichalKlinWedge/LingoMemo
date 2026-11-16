@@ -30,6 +30,11 @@ z przyciskiem „Uruchom teraz" — jedno dotknięcie zamiast zamykania aplikacj
 i otwierania jej dwa razy. Gdy poprawka wyszła przy włączonej aplikacji, sprawdzenie na żądanie
 jest pod „Konto" → **„Sprawdź aktualizację"**.
 
+Pod „Konto" stoi też wiersz z tym, co na tym urządzeniu naprawdę chodzi: wersja, kanał i numer
+poprawki (ten sam co na pulpicie EAS) albo `kod z pliku APK`, jeśli urządzenie nie wzięło jeszcze
+żadnej aktualizacji. Tym zaczynaj, gdy „na tablecie jest stara wersja": świeżo zainstalowany APK
+zawsze startuje swoim kodem, nawet gdy nowsza poprawka czeka już pobrana.
+
 **Nowego APK wymaga tylko zmiana natywna**: nowy moduł (np. obrazki SVG przez `expo-image`),
 nowe uprawnienie, zmiana w `app.json`. Zmiany w kodzie aplikacji idą przez OTA i dochodzą same.
 

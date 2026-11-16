@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 
 import { Body, Button, Card, Chip, Message, Screen, Title } from '@/components/ui';
-import { UpdateBanner, UpdateCheck } from '@/components/update';
+import { UpdateBanner, UpdateCheck, UpdateInfo } from '@/components/update';
 import { color, size } from '@/constants/theme';
 import { type Course, loadMyCourses } from '@/features/courses/load';
 import {
@@ -292,6 +292,7 @@ function Account({ email }: { email: string | null }) {
       {open && (
         <Card>
           <Body muted>Zalogowany: {email ?? '—'}</Body>
+          <UpdateInfo />
           <UpdateCheck />
           {__DEV__ && (
             <>
