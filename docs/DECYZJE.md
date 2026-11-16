@@ -1145,3 +1145,23 @@ treść nie daje wyboru.
 Wniosek na przyszłość: **format treści sprawdza się na początku etapu, nie po pokazaniu
 aplikacji**. Jedno zapytanie o `payload` zadania `image_choice` w bazie powiedziałoby to samo,
 co dziecko z pustymi kafelkami w ręku.
+
+### Telefon: APK dla dziecka — obrót ekranu i sprawdzanie aktualizacji (2026-11-16)
+
+Pierwszy APK na kanale `dzieci` wymusił dwie poprawki w `app.json`, obie natywne (czyli możliwe
+tylko przy nowym APK, nie przez OTA):
+
+- **`orientation: "default"` zamiast `"portrait"`.** Dziecko uczy się na tablecie, a tablet często
+  leży poziomo w podstawce. Zablokowany pion znaczył obrócony interfejs; układy są elastyczne
+  i przewijane, więc poziomo działają.
+- **`updates.checkAutomatically: "ON_LOAD"` zamiast `"ON_ERROR_RECOVERY"`.** Przy wartości
+  z szablonu aplikacja szuka aktualizacji dopiero po awarii, a my nie mamy (jeszcze) własnego
+  sprawdzania w kodzie — czyli `npm run ota:dzieci` nigdy by do tabletu nie dotarł. Zauważone
+  przed wysłaniem pliku dziecku; build z poprzednią wartością został anulowany.
+
+Zmienne `EXPO_PUBLIC_SUPABASE_URL` i `EXPO_PUBLIC_SUPABASE_ANON_KEY` są zapisane po stronie EAS
+(środowisko `preview`, widoczność `plaintext`), bo `.env.local` nie jedzie do chmury, a profile
+`preview` i `dzieci` wskazują to środowisko w `eas.json`. Klucz publishable może być w APK —
+dostępu do danych pilnuje RLS, a ocena odpowiedzi i tak dzieje się w bazie.
+
+Instrukcja instalacji dla rodzica: `docs/TELEFON.md`.

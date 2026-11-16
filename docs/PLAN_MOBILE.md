@@ -287,6 +287,13 @@ w Play Protect — wszystkie trzy pułapki opisane w `ZNAJOMI.md` są prawdziwe.
 **Kryterium odbioru:** dziecko instaluje APK z linku, loguje się kontem z zaproszenia i robi lekcję;
 następna poprawka dochodzi do niego jako OTA, bez ponownej instalacji.
 
+**Stan (2026-11-16):** zaczęty wcześniej niż planowano, bo dziecko ma uczyć się na tablecie już
+teraz. Jest: profil `dzieci` z własnym kanałem, zmienne bazy po stronie EAS (środowisko
+`preview`), `orientation: "default"` (tablet leży poziomo), `checkAutomatically: "ON_LOAD"`
+(inaczej OTA nigdy by nie doszło) i instrukcja `docs/TELEFON.md`. Nie ma jeszcze: własnego
+znacznika „jest nowa wersja" w aplikacji, obsługi wygaśnięcia sesji i zadania w tle do
+przypomnień.
+
 ### Po M4
 
 Dokument `docs/ANALIZA_TELEFON.md` na wzór ExpeditionPlan: co działa, braki P1/P2/P3, każdy z
