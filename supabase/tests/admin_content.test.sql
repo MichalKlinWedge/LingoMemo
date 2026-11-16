@@ -56,7 +56,7 @@ select set_config('role', 'authenticated', true),
             from auth.users u where u.id = (select id from t_ids where name = 'uczen')), true);
 
 select throws_ok(
-  format('select public.admin_add_word(%L, ''food.apple'', ''jabłko'', ''apple'')', (select id from t_lesson)),
+  format('select public.admin_add_word(%L, ''test.apple'', ''jabłko'', ''apple'')', (select id from t_lesson)),
   '42501',
   null,
   'uczeń nie doda słówka'
@@ -98,21 +98,21 @@ select throws_ok(
 );
 
 select throws_ok(
-  format('select public.admin_add_word(%L, ''food.apple'', ''jabłko'', ''  '')', (select id from t_lesson)),
+  format('select public.admin_add_word(%L, ''test.apple'', ''jabłko'', ''  '')', (select id from t_lesson)),
   '22023',
   null,
   'puste słowo w drugim języku nie przechodzi'
 );
 
 select throws_ok(
-  'select public.admin_add_word(''00000000-0000-0000-0000-000000000009''::uuid, ''food.apple'', ''jabłko'', ''apple'')',
+  'select public.admin_add_word(''00000000-0000-0000-0000-000000000009''::uuid, ''test.apple'', ''jabłko'', ''apple'')',
   '22023',
   null,
   'nie da się dodać słówka do nieistniejącej lekcji'
 );
 
 select is(
-  (select (public.admin_add_word((select id from t_lesson), 'food.apple', 'jabłko', 'apple') ->> 'exercises')::integer),
+  (select (public.admin_add_word((select id from t_lesson), 'test.apple', 'jabłko', 'apple') ->> 'exercises')::integer),
   3,
   'słówko wchodzi razem z trzema zadaniami'
 );
@@ -135,7 +135,7 @@ reset role;
 select is(
   (select count(*)::integer from public.terms t
      join public.concepts c on c.id = t.concept_id
-    where c.key = 'food.apple' and t.text in ('jabłko', 'apple')),
+    where c.key = 'test.apple' and t.text in ('jabłko', 'apple')),
   2,
   'powstały terminy w obu językach kursu'
 );
@@ -166,7 +166,7 @@ select set_config('role', 'authenticated', true),
          (select json_build_object('sub', u.id, 'role', 'authenticated',
                  'app_metadata', coalesce(u.raw_app_meta_data, '{}'::jsonb))::text
             from auth.users u where u.id = (select id from t_ids where name = 'admin')), true);
-select public.admin_add_word((select id from t_lesson), 'food.apple', 'jabłuszko', 'apple');
+select public.admin_add_word((select id from t_lesson), 'test.apple', 'jabłuszko', 'apple');
 reset role;
 
 select is(
@@ -184,16 +184,20 @@ select set_config('role', 'authenticated', true),
          (select json_build_object('sub', u.id, 'role', 'authenticated',
                  'app_metadata', coalesce(u.raw_app_meta_data, '{}'::jsonb))::text
             from auth.users u where u.id = (select id from t_ids where name = 'admin')), true);
-select public.admin_add_word((select id from t_lesson), 'food.pear', 'gruszka', 'pear');
+select public.admin_add_word((select id from t_lesson), 'test.pear', 'gruszka', 'pear');
 reset role;
 
+-- Klucze z przedrostkiem `test.`, a nie `food.`: ten plik dokłada słówka do PRAWDZIWEGO kursu
+-- `pl-en-starter`, a klucz pojęcia jest unikalny w obrębie kursu. Przy `food.apple` test
+-- trafiałby w pojęcie z `content/pl-en/jedzenie-owoce.json` — dzielił z nim zadania, a poprawka
+-- słówka przepisywałaby zadania cudzej lekcji i psuła licznik `updated`.
 create temporary table t_concepts as
-select key, id from public.concepts where key in ('food.apple', 'food.pear');
+select key, id from public.concepts where key in ('test.apple', 'test.pear');
 grant select on t_concepts to authenticated;
 
 insert into public.exercises (lesson_id, type, sort_order, concept_id, payload, points)
 values (
-  (select id from t_lesson), 'fill_blank_choice', 99, (select id from t_concepts where key = 'food.apple'),
+  (select id from t_lesson), 'fill_blank_choice', 99, (select id from t_concepts where key = 'test.apple'),
   jsonb_build_object(
     'sentence', 'I eat an {{blank}} every day.',
     'options', jsonb_build_array('apple', 'pear', 'plum'),
@@ -208,7 +212,7 @@ select set_config('role', 'authenticated', true),
             from auth.users u where u.id = (select id from t_ids where name = 'uczen')), true);
 
 select throws_ok(
-  format('select public.admin_update_word(%L, ''jabłko'', ''apples'')', (select id from t_concepts where key = 'food.apple')),
+  format('select public.admin_update_word(%L, ''jabłko'', ''apples'')', (select id from t_concepts where key = 'test.apple')),
   '42501',
   null,
   'uczeń nie poprawi słówka'
@@ -223,7 +227,7 @@ select set_config('role', 'authenticated', true),
             from auth.users u where u.id = (select id from t_ids where name = 'admin')), true);
 
 select is(
-  (select public.admin_update_word((select id from t_concepts where key = 'food.apple'), 'jabłko', 'apples', array['🍎'])),
+  (select public.admin_update_word((select id from t_concepts where key = 'test.apple'), 'jabłko', 'apples', array['🍎'])),
   jsonb_build_object('updated', 3, 'skipped', 1),
   'poprawka przepisuje trzy zadania z automatu i zostawia jedno ułożone ręcznie'
 );
@@ -232,21 +236,21 @@ reset role;
 
 select is(
   (select array_agg(t.text order by t.lang) from public.terms t
-    where t.concept_id = (select id from t_concepts where key = 'food.apple') and t.is_primary),
+    where t.concept_id = (select id from t_concepts where key = 'test.apple') and t.is_primary),
   array['apples', 'jabłko'],
   'słowo główne poprawione w obu językach kursu'
 );
 
 select is(
   (select e.payload from public.exercises e
-    where e.concept_id = (select id from t_concepts where key = 'food.apple') and e.type = 'translate_ab'),
+    where e.concept_id = (select id from t_concepts where key = 'test.apple') and e.type = 'translate_ab'),
   jsonb_build_object('prompt', 'jabłko', 'accepted', jsonb_build_array('apples')),
   'zadanie z polskiego na angielski ma nową treść'
 );
 
 select is(
   (select e.payload ->> 'speak' from public.exercises e
-    where e.concept_id = (select id from t_concepts where key = 'food.apple') and e.type = 'listening'),
+    where e.concept_id = (select id from t_concepts where key = 'test.apple') and e.type = 'listening'),
   'apples',
   'zadanie ze słuchu czyta nowe słowo'
 );
@@ -255,7 +259,7 @@ select is(
 -- a przepisywanie cudzych list popsułoby te ułożone ręcznie przy imporcie.
 select is(
   (select e.payload -> 'options' from public.exercises e
-    where e.concept_id = (select id from t_concepts where key = 'food.pear') and e.type = 'translate_ab'),
+    where e.concept_id = (select id from t_concepts where key = 'test.pear') and e.type = 'translate_ab'),
   jsonb_build_array('apple', 'pear'),
   'lista wyboru w zadaniu innego słówka zostaje nietknięta'
 );
@@ -287,7 +291,7 @@ select lives_ok(
              'prompt', 'apple',
              'options', jsonb_build_array('2026/jablko.png', '2026/gruszka.png'),
              'answer', '2026/jablko.png'), 10)$sql$,
-    (select id from t_lesson), (select id from t_concepts where key = 'food.apple')),
+    (select id from t_lesson), (select id from t_concepts where key = 'test.apple')),
   'administrator dodaje zadanie z obrazkiem zwykłym insertem'
 );
 

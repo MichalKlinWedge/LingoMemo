@@ -57,22 +57,26 @@ select set_config('role', 'authenticated', true),
             from auth.users u where u.id = (select id from t_ids where name = 'admin')), true);
 
 -- „jabłko" tylko w lekcji 1, „gruszka" w obu, „banan" w lekcji 1 i już przerabiany przez dziecko.
-select public.admin_add_word((select lesson1 from t_ctx), 'food.apple', 'jabłko', 'apple');
-select public.admin_add_word((select lesson1 from t_ctx), 'food.pear', 'gruszka', 'pear');
-select public.admin_add_word((select lesson2 from t_ctx), 'food.pear', 'gruszka', 'pear');
-select public.admin_add_word((select lesson1 from t_ctx), 'food.banana', 'banan', 'banana');
+select public.admin_add_word((select lesson1 from t_ctx), 'test.apple', 'jabłko', 'apple');
+select public.admin_add_word((select lesson1 from t_ctx), 'test.pear', 'gruszka', 'pear');
+select public.admin_add_word((select lesson2 from t_ctx), 'test.pear', 'gruszka', 'pear');
+select public.admin_add_word((select lesson1 from t_ctx), 'test.banana', 'banan', 'banana');
 
 reset role;
 
+-- Klucze z przedrostkiem `test.`, a nie `food.`: asercje niżej liczą pojęcia po samym kluczu,
+-- a `food.apple` siedzi też w treści `pl-en-starter` z `content/pl-en/jedzenie-owoce.json`.
+-- Klucz pojęcia jest unikalny w obrębie KURSU, nie całej bazy — więc własny kurs nie wystarczy,
+-- żeby liczenie po kluczu dawało to, co ten plik zakłada.
 create temporary table t_concepts as
-select key, id from public.concepts where key in ('food.apple', 'food.pear', 'food.banana');
+select key, id from public.concepts where key in ('test.apple', 'test.pear', 'test.banana');
 grant select on t_concepts to authenticated;
 
 -- Dziecko przerobiło już banana — stan powtórek ma zostać.
 insert into public.srs_state (user_id, concept_id, course_id)
 values (
   (select id from t_ids where name = 'uczen'),
-  (select id from t_concepts where key = 'food.banana'),
+  (select id from t_concepts where key = 'test.banana'),
   (select course_id from t_ctx)
 );
 
@@ -85,7 +89,7 @@ select set_config('role', 'authenticated', true),
 
 select throws_ok(
   format('select public.admin_remove_word(%L, %L)',
-         (select lesson1 from t_ctx), (select id from t_concepts where key = 'food.apple')),
+         (select lesson1 from t_ctx), (select id from t_concepts where key = 'test.apple')),
   '42501',
   null,
   'uczeń nie usunie słówka z lekcji'
@@ -102,7 +106,7 @@ select set_config('role', 'authenticated', true),
 
 select throws_ok(
   format('select public.admin_remove_word(%L, %L)',
-         (select lesson2 from t_ctx), (select id from t_concepts where key = 'food.apple')),
+         (select lesson2 from t_ctx), (select id from t_concepts where key = 'test.apple')),
   '22023',
   null,
   'nie da się usunąć słówka z lekcji, w której go nie ma'
@@ -110,22 +114,22 @@ select throws_ok(
 
 -- 1. Słówko nietknięte i nigdzie indziej nieużywane: znika z kursu.
 select is(
-  (select public.admin_remove_word((select lesson1 from t_ctx), (select id from t_concepts where key = 'food.apple'))),
-  jsonb_build_object('key', 'food.apple', 'exercises', 3, 'removed', 'course'),
+  (select public.admin_remove_word((select lesson1 from t_ctx), (select id from t_concepts where key = 'test.apple'))),
+  jsonb_build_object('key', 'test.apple', 'exercises', 3, 'removed', 'course'),
   'słówko, którego nikt nie widział, znika razem z zadaniami i terminami'
 );
 
 -- 2. Słówko używane w drugiej lekcji: schodzi tylko z tej jednej.
 select is(
-  (select public.admin_remove_word((select lesson1 from t_ctx), (select id from t_concepts where key = 'food.pear'))),
-  jsonb_build_object('key', 'food.pear', 'exercises', 3, 'removed', 'lesson'),
+  (select public.admin_remove_word((select lesson1 from t_ctx), (select id from t_concepts where key = 'test.pear'))),
+  jsonb_build_object('key', 'test.pear', 'exercises', 3, 'removed', 'lesson'),
   'słówko z drugiej lekcji zostaje przy kursie'
 );
 
 -- 3. Słówko ze stanem powtórek: zostaje, choć nigdzie już nie występuje.
 select is(
-  (select public.admin_remove_word((select lesson1 from t_ctx), (select id from t_concepts where key = 'food.banana'))),
-  jsonb_build_object('key', 'food.banana', 'exercises', 3, 'removed', 'lesson'),
+  (select public.admin_remove_word((select lesson1 from t_ctx), (select id from t_concepts where key = 'test.banana'))),
+  jsonb_build_object('key', 'test.banana', 'exercises', 3, 'removed', 'lesson'),
   'słówko, które dziecko już przerabiało, zostaje mimo zdjęcia z lekcji'
 );
 
@@ -133,27 +137,27 @@ reset role;
 
 -- --- co zostało ---
 select is(
-  (select count(*)::integer from public.concepts c where c.key = 'food.apple'),
+  (select count(*)::integer from public.concepts c where c.key = 'test.apple'),
   0,
   'pojęcie nietkniętego słówka zniknęło'
 );
 
 select is(
   (select count(*)::integer from public.terms t
-     join public.concepts c on c.id = t.concept_id where c.key = 'food.apple'),
+     join public.concepts c on c.id = t.concept_id where c.key = 'test.apple'),
   0,
   'razem z pojęciem znikają jego terminy'
 );
 
 select is(
-  (select count(*)::integer from public.concepts c where c.key in ('food.pear', 'food.banana')),
+  (select count(*)::integer from public.concepts c where c.key in ('test.pear', 'test.banana')),
   2,
   'gruszka i banan zostają przy kursie'
 );
 
 select is(
   (select count(*)::integer from public.srs_state s
-    where s.concept_id = (select id from t_concepts where key = 'food.banana')),
+    where s.concept_id = (select id from t_concepts where key = 'test.banana')),
   1,
   'stan powtórek dziecka zostaje nietknięty'
 );
