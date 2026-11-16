@@ -1,7 +1,7 @@
-import { Image } from 'expo-image';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { canShowPictures, Picture } from '@/components/picture';
 import { color, size } from '@/constants/theme';
 import { mediaUrl } from '@/lib/media';
 
@@ -16,9 +16,9 @@ import { type ExerciseProps, list, str } from './types';
  * („Obrazek 2”), nie nazwą pliku: nazwa zwykle zdradza odpowiedź, a czytnik ekranu przeczytałby
  * ją dziecku na głos.
  *
- * `Image` z `expo-image`, nie wbudowany: obrazki lekcji są w SVG (tak je wgrywa panel), a tego
- * formatu wbudowany `Image` nie rysuje wcale — kafelki były puste. Przy okazji dochodzi pamięć
- * podręczna na dysku, więc drugi raz obrazek nie leci z sieci.
+ * Obrazki rysuje `Picture` (czyli `expo-image`), bo treść jest w SVG — wbudowany `Image` tego
+ * formatu nie rysuje wcale i kafelki były puste. Aplikacja bez tego modułu mówi to wprost,
+ * zamiast pokazywać cztery dziury.
  */
 export function ImageChoiceExercise({
   exercise,
@@ -81,17 +81,17 @@ export function ImageChoiceExercise({
                 pressed && styles.pressed,
               ]}
             >
-              {broken.includes(option) || url === null ? (
+              {broken.includes(option) || url === null || !canShowPictures ? (
                 <View style={styles.missing}>
                   <Text style={styles.missingIcon}>🖼</Text>
-                  <Text style={styles.missingText}>brak pliku</Text>
+                  <Text style={styles.missingText}>
+                    {canShowPictures ? 'brak pliku' : 'zaktualizuj aplikację'}
+                  </Text>
                 </View>
               ) : (
-                <Image
-                  source={{ uri: url }}
+                <Picture
+                  uri={url}
                   style={styles.image}
-                  contentFit="contain"
-                  cachePolicy="disk"
                   onError={() => setBroken((was) => (was.includes(option) ? was : [...was, option]))}
                 />
               )}
