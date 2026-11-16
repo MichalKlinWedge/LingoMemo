@@ -1,13 +1,14 @@
 import Link from "next/link";
 
-import { DAYS, plural, POINTS } from "@lingomemo/core";
+import { DAYS, plural, POINTS, UNLOCKS } from "@lingomemo/core";
 
 import { signOut } from "@/app/auth-actions";
 import { Logo } from "@/components/logo";
 import { getUser } from "@/lib/auth";
 
 /**
- * Pasek u góry każdej strony: imię, punkty, seria i wyjście. Dziecko widzi swój stan zawsze,
+ * Pasek u góry każdej strony: imię, punkty, seria, punkty odblokowania i wyjście. Dziecko widzi
+ * swój stan zawsze,
  * a nie tylko na stronie głównej — po to, żeby punkty zdobyte w lekcji od razu było widać.
  * Dla niezalogowanego (logowanie, zaproszenie) nie renderuje się nic.
  */
@@ -17,10 +18,15 @@ export async function TopBar() {
 
   const { supabase, userId, isAdmin } = session;
 
-  const [{ data: profile }, { data: stats }] = await Promise.all([
+  const [{ data: profile }, { data: stats }, { data: unlock }] = await Promise.all([
     supabase.from("profiles").select("display_name").eq("id", userId).maybeSingle(),
     supabase.from("v_my_stats").select("total_points, streak_days, words_due").eq("user_id", userId).maybeSingle(),
+    // Punkty odblokowania. W pasku, a nie tylko na mapie kursu: zdobywa się je w lekcji
+    // (poziom trudny), a wydaje piętro wyżej — dziecko musi je widzieć także po drodze.
+    supabase.rpc("unlock_status", { p_user: userId }),
   ]);
+
+  const doOdblokowania = (unlock as { left?: number } | null)?.left ?? 0;
 
   return (
     <header className="app-bar">
@@ -41,6 +47,19 @@ export async function TopBar() {
           {(stats?.words_due ?? 0) > 0 && (
             <Link href="/statystyki" className="chip">
               🔁 {stats?.words_due} do powtórki
+            </Link>
+          )}
+          {/* Bez punktów znacznika nie ma: dziecko przed pierwszym poziomem trudnym nie ma
+              o czym wiedzieć, a pasek ma być krótki. Kliknięcie prowadzi na listę kursów,
+              czyli do map z kłódkami — tam się te punkty wydaje. */}
+          {doOdblokowania > 0 && (
+            <Link
+              href="/"
+              className="chip"
+              aria-label={`${plural(doOdblokowania, UNLOCKS)} — otwórz nimi zamkniętą lekcję`}
+              title="Kliknij kłódkę z kluczykiem na mapie kursu, żeby otworzyć lekcję"
+            >
+              <span aria-hidden>🔑 {doOdblokowania} do odblokowania</span>
             </Link>
           )}
         </nav>
