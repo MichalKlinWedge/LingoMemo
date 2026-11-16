@@ -9,13 +9,13 @@ import { requireUser } from "@/lib/auth";
 import { dbLoadError } from "@/lib/db-error";
 
 /**
- * Strona główna rodzica: jego dzieci zamiast kursów.
+ * Dzieci rodzica — nad jego własnymi kursami.
  *
- * Rodzic nie robi lekcji, więc kafelek kursu prowadziłby go do mapy lekcji, której nie ma po co
- * otwierać. Identyfikatory dzieci wydaje `my_children` — tabela powiązań jest niewidoczna dla
- * PostgREST, a polityki i tak przepuszczą rodzicowi tylko te konta.
+ * Identyfikatory wydaje `my_children`: tabela powiązań jest niewidoczna dla PostgREST, a
+ * polityki i tak przepuszczą rodzicowi tylko te konta. Osobny komponent, bo dane bierze z
+ * dwóch zapytań po kolei (dzieci, potem ich statystyki) — lista kursów nie ma na co czekać.
  */
-async function ParentHome() {
+async function Children() {
   const { supabase } = await requireUser("/");
 
   const { data: children, error } = await supabase.rpc("my_children");
@@ -29,8 +29,8 @@ async function ParentHome() {
   const statsOf = new Map((stats ?? []).map((row) => [row.user_id, row]));
 
   return (
-    <>
-      <PageHeader title="Twoje dzieci" intro="Kliknij imię, żeby zobaczyć postępy." />
+    <section className="flex flex-col gap-4">
+      <h2 className="card-title">Twoje dzieci</h2>
       {error && <p className="msg-error">{dbLoadError(error)}</p>}
       {/* Prośba poszła sama przy logowaniu (`request_child_access`), więc nie każemy rodzicowi
           szukać innej drogi — mówimy, że już czeka. */}
@@ -64,22 +64,20 @@ async function ParentHome() {
           );
         })}
       </ul>
-    </>
+    </section>
   );
 }
 
 async function Home() {
-  // Imię, punkty i seria są w pasku u góry (`TopBar`) — tu zostaje sama lista kursów.
+  // Imię, punkty i seria są w pasku u góry (`TopBar`) — tu zostaje lista kursów, a rodzicowi
+  // dodatkowo lista jego dzieci.
   const { supabase, userId, isParent, isAdmin } = await requireUser("/");
-
-  // Rodzic-administrator (jedno konto obsługujące oba) dostaje panel i kursy jak dotąd;
-  // rozdzielanie tego na dwa widoki komplikowałoby stronę dla jednego przypadku.
-  if (isParent && !isAdmin) return <ParentHome />;
 
   const [{ data: courses, error }, { data: enrolled }, { data: asked }] = await Promise.all([
     supabase.from("courses").select("id, slug, title, description, icon, target_lang").order("sort_order"),
     // Filtr po użytkowniku mimo RLS: uczeń widzi w tej tabeli tylko swoje zapisy, ale
-    // administrator widzi wszystkie — bez filtru miałby u siebie kursy cudzych dzieci.
+    // administrator widzi wszystkie, a rodzic także zapisy swoich dzieci — bez filtru miałby
+    // u siebie kursy, których sam się nie uczy.
     supabase.from("enrollments").select("course_id").eq("user_id", userId),
     supabase.rpc("my_course_requests"),
   ]);
@@ -93,8 +91,13 @@ async function Home() {
 
   return (
     <>
-      <PageHeader title="Twoje kursy" />
+      {/* Rodzic uczy się jak dziecko — swoich kursów, na swoim koncie. Dlatego ma na stronie
+          jedno i drugie: dzieci, po które tu przychodzi, i kursy, na które go zapisano.
+          Rodzic-administrator (jedno konto obsługujące oba) widzi dokładnie to samo. */}
+      <PageHeader title={isParent ? "Twoje dzieci i kursy" : "Twoje kursy"} />
+      {isParent && <Children />}
       {error && <p className="msg-error">{dbLoadError(error)}</p>}
+      {isParent && <h2 className="card-title">Twoje kursy</h2>}
       <ul className="flex flex-col gap-4">
         {moje.map((course) => (
           <li key={course.id}>

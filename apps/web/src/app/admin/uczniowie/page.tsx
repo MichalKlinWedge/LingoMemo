@@ -83,7 +83,8 @@ async function People() {
       userId: student.user_id,
       displayName: student.display_name,
       email: student.email,
-      // Jedna rola na wiersz: rodzic nie uczy się, więc „uczeń" przy nim byłby mylący.
+      // Jedna rola na wiersz, ta mocniejsza: rodzic też robi lekcje (punkty i czas nauki
+      // ma w tym samym wierszu), ale o koncie najwięcej mówi to, że widzi cudze postępy.
       role: student.is_admin ? "administrator" : childrenOf.has(student.user_id) ? "rodzic" : "uczeń",
       isParent: childrenOf.has(student.user_id),
       childIds: childrenOf.get(student.user_id) ?? [],

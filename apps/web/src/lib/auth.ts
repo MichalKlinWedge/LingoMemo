@@ -17,8 +17,9 @@ export async function getUser() {
     userId: data.claims.sub,
     email: data.claims.email as string | undefined,
     isAdmin: app?.is_admin === true,
-    // Rodzic nie uczy się — widzi listę swoich dzieci zamiast kafelków kursów. Którego
-    // dziecka dotyczy strona, rozstrzyga i tak baza (`my_child_ids`), nie ten claim.
+    // Rodzic widzi na stronie głównej swoje dzieci, a pod nimi swoje kursy — uczy się na tych
+    // samych zasadach co dziecko. Którego dziecka dotyczy strona, rozstrzyga i tak baza
+    // (`my_child_ids`), nie ten claim.
     isParent: app?.is_parent === true,
   };
 }
