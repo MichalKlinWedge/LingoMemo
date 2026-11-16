@@ -1124,7 +1124,21 @@ export function WordSection({
                       <td className="font-semibold">{row.source}</td>
                       <td className="font-semibold">{row.target}</td>
                       <td className="hidden font-mono text-sm text-zinc-500 md:table-cell">{row.conceptKey}</td>
-                      <td className="text-right tabular-nums">{row.tasks}</td>
+                      {/* Liczba zadań prowadzi do ich listy: dotąd mówiła, że coś jest, ale nie
+                          dawała jak tego zobaczyć ani poprawić. */}
+                      <td className="text-right tabular-nums">
+                        {row.tasks > 0 ? (
+                          <Link
+                            href={`/admin/zadania/${lessonId}/${row.conceptId}`}
+                            className="back-link justify-end"
+                            title="Zobacz i popraw zadania tego słówka"
+                          >
+                            {row.tasks}
+                          </Link>
+                        ) : (
+                          row.tasks
+                        )}
+                      </td>
                       <td className="text-right">
                         <button
                           type="button"
