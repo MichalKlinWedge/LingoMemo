@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-starter",
+  "unit": { "slug": "jedzenie", "title": "Jedzenie", "icon": "🍎", "sortOrder": 3 },
+  "lesson": {
+    "slug": "napoje",
+    "title": "Napoje",
+    "icon": "🥤",
+    "kind": "standard",
+    "sortOrder": 3,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "warzywa",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"drink.water","tags":["💧"],"terms":{"pl":[{"text":"woda","pos":"noun"}],"en":[{"text":"water","pos":"noun","ipa":"/ˈwɔːtə/"}]}},
+    {"key":"drink.milk","tags":["🥛"],"terms":{"pl":[{"text":"mleko","pos":"noun"}],"en":[{"text":"milk","pos":"noun","ipa":"/mɪlk/"}]}},
+    {"key":"drink.juice","tags":["🧃"],"terms":{"pl":[{"text":"sok","pos":"noun"}],"en":[{"text":"juice","pos":"noun","ipa":"/dʒuːs/"}]}},
+    {"key":"drink.tea","tags":["🍵"],"terms":{"pl":[{"text":"herbata","pos":"noun"}],"en":[{"text":"tea","pos":"noun","ipa":"/tiː/"}]}},
+    {"key":"drink.cocoa","tags":["🍫"],"terms":{"pl":[{"text":"kakao","pos":"noun"}],"en":[{"text":"cocoa","pos":"noun","ipa":"/ˈkəʊkəʊ/"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"drink.water","payload":{"prompt":"woda","accepted":["water"],"options":["water","milk","juice","tea"]}},
+    {"type":"translate_ab","conceptKey":"drink.milk","payload":{"prompt":"mleko","accepted":["milk"],"options":["milk","juice","tea","cocoa"]}},
+    {"type":"translate_ab","conceptKey":"drink.juice","payload":{"prompt":"sok","accepted":["juice"],"options":["juice","tea","cocoa","water"]}},
+    {"type":"translate_ab","conceptKey":"drink.tea","payload":{"prompt":"herbata","accepted":["tea"],"options":["tea","cocoa","water","milk"]}},
+    {"type":"translate_ab","conceptKey":"drink.cocoa","payload":{"prompt":"kakao","accepted":["cocoa"],"options":["cocoa","water","milk","juice"]}},
+    {"type":"translate_ba","conceptKey":"drink.water","payload":{"prompt":"water","accepted":["woda"]}},
+    {"type":"translate_ba","conceptKey":"drink.milk","payload":{"prompt":"milk","accepted":["mleko"]}},
+    {"type":"translate_ba","conceptKey":"drink.juice","payload":{"prompt":"juice","accepted":["sok"]}},
+    {"type":"translate_ba","conceptKey":"drink.tea","payload":{"prompt":"tea","accepted":["herbata"]}},
+    {"type":"translate_ba","conceptKey":"drink.cocoa","payload":{"prompt":"cocoa","accepted":["kakao"]}},
+    {"type":"listening","conceptKey":"drink.water","points":15,"payload":{"speak":"water","lang":"en-GB","accepted":["water"]}},
+    {"type":"listening","conceptKey":"drink.juice","points":15,"payload":{"speak":"juice","lang":"en-GB","accepted":["juice"]}},
+    {"type":"listening","conceptKey":"drink.tea","points":15,"payload":{"speak":"tea","lang":"en-GB","accepted":["tea"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"woda","b":"water"},{"a":"mleko","b":"milk"},{"a":"sok","b":"juice"},{"a":"herbata","b":"tea"},{"a":"kakao","b":"cocoa"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"en-GB","pairs":[{"a":"woda","b":"water"},{"a":"mleko","b":"milk"},{"a":"sok","b":"juice"},{"a":"herbata","b":"tea"},{"a":"kakao","b":"cocoa"}]}},
+    {"type":"fill_blank_choice","conceptKey":"drink.water","payload":{"sentence":"I drink {{blank}}.","options":["water","milk","juice","tea"],"answer":"water","translation":"Piję wodę."}},
+    {"type":"fill_blank_choice","conceptKey":"drink.milk","payload":{"sentence":"The cat likes {{blank}}.","options":["milk","juice","tea","water"],"answer":"milk","translation":"Kot lubi mleko."}}
+  ]
+}

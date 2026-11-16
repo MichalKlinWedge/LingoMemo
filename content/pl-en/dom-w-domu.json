@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-starter",
+  "unit": { "slug": "dom", "title": "Dom", "icon": "🏠", "sortOrder": 8 },
+  "lesson": {
+    "slug": "w-domu",
+    "title": "W domu",
+    "icon": "🛏️",
+    "kind": "standard",
+    "sortOrder": 2,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "pokoje",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"home.door","tags":["🚪"],"terms":{"pl":[{"text":"drzwi","pos":"noun"}],"en":[{"text":"door","pos":"noun","ipa":"/dɔː/"}]}},
+    {"key":"home.window","tags":["🪟"],"terms":{"pl":[{"text":"okno","pos":"noun"}],"en":[{"text":"window","pos":"noun","ipa":"/ˈwɪndəʊ/"}]}},
+    {"key":"home.table","tags":["🪑"],"terms":{"pl":[{"text":"stół","pos":"noun"}],"en":[{"text":"table","pos":"noun","ipa":"/ˈteɪbl/"}]}},
+    {"key":"home.bed","tags":["🛏️"],"terms":{"pl":[{"text":"łóżko","pos":"noun"}],"en":[{"text":"bed","pos":"noun","ipa":"/bed/"}]}},
+    {"key":"home.lamp","tags":["💡"],"terms":{"pl":[{"text":"lampa","pos":"noun"}],"en":[{"text":"lamp","pos":"noun","ipa":"/læmp/"}]}},
+    {"key":"home.key","tags":["🔑"],"terms":{"pl":[{"text":"klucz","pos":"noun"}],"en":[{"text":"key","pos":"noun","ipa":"/kiː/"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"home.door","payload":{"prompt":"drzwi","accepted":["door"],"options":["door","window","table","bed"]}},
+    {"type":"translate_ab","conceptKey":"home.window","payload":{"prompt":"okno","accepted":["window"],"options":["window","table","bed","lamp"]}},
+    {"type":"translate_ab","conceptKey":"home.table","payload":{"prompt":"stół","accepted":["table"],"options":["table","bed","lamp","key"]}},
+    {"type":"translate_ab","conceptKey":"home.bed","payload":{"prompt":"łóżko","accepted":["bed"],"options":["bed","lamp","key","door"]}},
+    {"type":"translate_ab","conceptKey":"home.lamp","payload":{"prompt":"lampa","accepted":["lamp"],"options":["lamp","key","door","window"]}},
+    {"type":"translate_ab","conceptKey":"home.key","payload":{"prompt":"klucz","accepted":["key"],"options":["key","door","window","table"]}},
+    {"type":"translate_ba","conceptKey":"home.door","payload":{"prompt":"door","accepted":["drzwi"]}},
+    {"type":"translate_ba","conceptKey":"home.window","payload":{"prompt":"window","accepted":["okno"]}},
+    {"type":"translate_ba","conceptKey":"home.table","payload":{"prompt":"table","accepted":["stół"]}},
+    {"type":"translate_ba","conceptKey":"home.bed","payload":{"prompt":"bed","accepted":["łóżko"]}},
+    {"type":"translate_ba","conceptKey":"home.lamp","payload":{"prompt":"lamp","accepted":["lampa"]}},
+    {"type":"translate_ba","conceptKey":"home.key","payload":{"prompt":"key","accepted":["klucz"]}},
+    {"type":"listening","conceptKey":"home.window","points":15,"payload":{"speak":"window","lang":"en-GB","accepted":["window"]}},
+    {"type":"listening","conceptKey":"home.table","points":15,"payload":{"speak":"table","lang":"en-GB","accepted":["table"]}},
+    {"type":"listening","conceptKey":"home.key","points":15,"payload":{"speak":"key","lang":"en-GB","accepted":["key"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"drzwi","b":"door"},{"a":"okno","b":"window"},{"a":"stół","b":"table"},{"a":"łóżko","b":"bed"},{"a":"lampa","b":"lamp"},{"a":"klucz","b":"key"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"en-GB","pairs":[{"a":"drzwi","b":"door"},{"a":"okno","b":"window"},{"a":"stół","b":"table"},{"a":"łóżko","b":"bed"},{"a":"lampa","b":"lamp"}]}},
+    {"type":"fill_blank_choice","conceptKey":"home.door","payload":{"sentence":"Open the {{blank}}, please.","options":["door","bed","lamp","key"],"answer":"door","translation":"Otwórz drzwi, proszę."}},
+    {"type":"fill_blank_choice","conceptKey":"home.bed","payload":{"sentence":"The cat sleeps on my {{blank}}.","options":["bed","table","window","door"],"answer":"bed","translation":"Kot śpi na moim łóżku."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: To jest mój dom.","tokens":["this","is","my","house"],"solution":["this","is","my","house"]}}
+  ]
+}

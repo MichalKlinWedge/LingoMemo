@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-starter",
+  "unit": { "slug": "rodzina", "title": "Rodzina", "icon": "👨‍👩‍👧", "sortOrder": 5 },
+  "lesson": {
+    "slug": "dziadkowie",
+    "title": "Babcia i dziadek",
+    "icon": "👵",
+    "kind": "standard",
+    "sortOrder": 2,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "rodzice-i-rodzenstwo",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"family.grandma","tags":["👵"],"terms":{"pl":[{"text":"babcia","pos":"noun"}],"en":[{"text":"grandma","pos":"noun","ipa":"/ˈɡrænmɑː/"}]}},
+    {"key":"family.grandpa","tags":["👴"],"terms":{"pl":[{"text":"dziadek","pos":"noun"}],"en":[{"text":"grandpa","pos":"noun","ipa":"/ˈɡrænpɑː/"}]}},
+    {"key":"family.aunt","tags":["👩‍🦰"],"terms":{"pl":[{"text":"ciocia","pos":"noun"}],"en":[{"text":"aunt","pos":"noun","ipa":"/ɑːnt/"}]}},
+    {"key":"family.uncle","tags":["🧔"],"terms":{"pl":[{"text":"wujek","pos":"noun"}],"en":[{"text":"uncle","pos":"noun","ipa":"/ˈʌŋkl/"}]}},
+    {"key":"family.cousin","tags":["🧒"],"terms":{"pl":[{"text":"kuzyn","pos":"noun"}],"en":[{"text":"cousin","pos":"noun","ipa":"/ˈkʌzn/"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"family.grandma","payload":{"prompt":"babcia","accepted":["grandma"],"options":["grandma","grandpa","aunt","uncle"]}},
+    {"type":"translate_ab","conceptKey":"family.grandpa","payload":{"prompt":"dziadek","accepted":["grandpa"],"options":["grandpa","aunt","uncle","cousin"]}},
+    {"type":"translate_ab","conceptKey":"family.aunt","payload":{"prompt":"ciocia","accepted":["aunt"],"options":["aunt","uncle","cousin","grandma"]}},
+    {"type":"translate_ab","conceptKey":"family.uncle","payload":{"prompt":"wujek","accepted":["uncle"],"options":["uncle","cousin","grandma","grandpa"]}},
+    {"type":"translate_ab","conceptKey":"family.cousin","payload":{"prompt":"kuzyn","accepted":["cousin"],"options":["cousin","grandma","grandpa","aunt"]}},
+    {"type":"translate_ba","conceptKey":"family.grandma","payload":{"prompt":"grandma","accepted":["babcia"]}},
+    {"type":"translate_ba","conceptKey":"family.grandpa","payload":{"prompt":"grandpa","accepted":["dziadek"]}},
+    {"type":"translate_ba","conceptKey":"family.aunt","payload":{"prompt":"aunt","accepted":["ciocia"]}},
+    {"type":"translate_ba","conceptKey":"family.uncle","payload":{"prompt":"uncle","accepted":["wujek"]}},
+    {"type":"translate_ba","conceptKey":"family.cousin","payload":{"prompt":"cousin","accepted":["kuzyn"]}},
+    {"type":"listening","conceptKey":"family.aunt","points":15,"payload":{"speak":"aunt","lang":"en-GB","accepted":["aunt"]}},
+    {"type":"listening","conceptKey":"family.uncle","points":15,"payload":{"speak":"uncle","lang":"en-GB","accepted":["uncle"]}},
+    {"type":"listening","conceptKey":"family.cousin","points":15,"payload":{"speak":"cousin","lang":"en-GB","accepted":["cousin"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"babcia","b":"grandma"},{"a":"dziadek","b":"grandpa"},{"a":"ciocia","b":"aunt"},{"a":"wujek","b":"uncle"},{"a":"kuzyn","b":"cousin"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"en-GB","pairs":[{"a":"babcia","b":"grandma"},{"a":"dziadek","b":"grandpa"},{"a":"ciocia","b":"aunt"},{"a":"wujek","b":"uncle"},{"a":"kuzyn","b":"cousin"}]}},
+    {"type":"fill_blank_choice","conceptKey":"family.grandma","payload":{"sentence":"My {{blank}} has a cat.","options":["grandma","grandpa","uncle","cousin"],"answer":"grandma","translation":"Moja babcia ma kota."}},
+    {"type":"fill_blank_choice","conceptKey":"family.uncle","payload":{"sentence":"My {{blank}} has a dog.","options":["uncle","aunt","grandma","cousin"],"answer":"uncle","translation":"Mój wujek ma psa."}}
+  ]
+}

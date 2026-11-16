@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-starter",
+  "unit": { "slug": "rodzina", "title": "Rodzina", "icon": "👨‍👩‍👧", "sortOrder": 5 },
+  "lesson": {
+    "slug": "rodzice-i-rodzenstwo",
+    "title": "Mama i tata",
+    "icon": "👩",
+    "kind": "standard",
+    "sortOrder": 1,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "liczby/do-dziesieciu",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"family.mum","tags":["👩"],"terms":{"pl":[{"text":"mama","pos":"noun"}],"en":[{"text":"mum","pos":"noun","ipa":"/mʌm/"}]}},
+    {"key":"family.dad","tags":["👨"],"terms":{"pl":[{"text":"tata","pos":"noun"}],"en":[{"text":"dad","pos":"noun","ipa":"/dæd/"}]}},
+    {"key":"family.brother","tags":["👦"],"terms":{"pl":[{"text":"brat","pos":"noun"}],"en":[{"text":"brother","pos":"noun","ipa":"/ˈbrʌðə/"}]}},
+    {"key":"family.sister","tags":["👧"],"terms":{"pl":[{"text":"siostra","pos":"noun"}],"en":[{"text":"sister","pos":"noun","ipa":"/ˈsɪstə/"}]}},
+    {"key":"family.baby","tags":["👶"],"terms":{"pl":[{"text":"niemowlę","pos":"noun"}],"en":[{"text":"baby","pos":"noun","ipa":"/ˈbeɪbi/"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"family.mum","payload":{"prompt":"mama","accepted":["mum"],"options":["mum","dad","brother","sister"]}},
+    {"type":"translate_ab","conceptKey":"family.dad","payload":{"prompt":"tata","accepted":["dad"],"options":["dad","brother","sister","baby"]}},
+    {"type":"translate_ab","conceptKey":"family.brother","payload":{"prompt":"brat","accepted":["brother"],"options":["brother","sister","baby","mum"]}},
+    {"type":"translate_ab","conceptKey":"family.sister","payload":{"prompt":"siostra","accepted":["sister"],"options":["sister","baby","mum","dad"]}},
+    {"type":"translate_ab","conceptKey":"family.baby","payload":{"prompt":"niemowlę","accepted":["baby"],"options":["baby","mum","dad","brother"]}},
+    {"type":"translate_ba","conceptKey":"family.mum","payload":{"prompt":"mum","accepted":["mama"]}},
+    {"type":"translate_ba","conceptKey":"family.dad","payload":{"prompt":"dad","accepted":["tata"]}},
+    {"type":"translate_ba","conceptKey":"family.brother","payload":{"prompt":"brother","accepted":["brat"]}},
+    {"type":"translate_ba","conceptKey":"family.sister","payload":{"prompt":"sister","accepted":["siostra"]}},
+    {"type":"translate_ba","conceptKey":"family.baby","payload":{"prompt":"baby","accepted":["niemowlę"]}},
+    {"type":"listening","conceptKey":"family.brother","points":15,"payload":{"speak":"brother","lang":"en-GB","accepted":["brother"]}},
+    {"type":"listening","conceptKey":"family.sister","points":15,"payload":{"speak":"sister","lang":"en-GB","accepted":["sister"]}},
+    {"type":"listening","conceptKey":"family.baby","points":15,"payload":{"speak":"baby","lang":"en-GB","accepted":["baby"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"mama","b":"mum"},{"a":"tata","b":"dad"},{"a":"brat","b":"brother"},{"a":"siostra","b":"sister"},{"a":"niemowlę","b":"baby"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"en-GB","pairs":[{"a":"mama","b":"mum"},{"a":"tata","b":"dad"},{"a":"brat","b":"brother"},{"a":"siostra","b":"sister"},{"a":"niemowlę","b":"baby"}]}},
+    {"type":"fill_blank_choice","conceptKey":"family.mum","payload":{"sentence":"My {{blank}} is Anna.","options":["mum","dad","brother","baby"],"answer":"mum","translation":"Moja mama to Anna."}},
+    {"type":"fill_blank_choice","conceptKey":"family.brother","payload":{"sentence":"My {{blank}} is eight.","options":["brother","sister","mum","baby"],"answer":"brother","translation":"Mój brat ma osiem lat."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: To jest moja mama.","tokens":["this","is","my","mum"],"solution":["this","is","my","mum"]}}
+  ]
+}

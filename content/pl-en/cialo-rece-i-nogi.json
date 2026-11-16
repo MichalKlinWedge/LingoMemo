@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-starter",
+  "unit": { "slug": "cialo", "title": "Ciało", "icon": "🧍", "sortOrder": 7 },
+  "lesson": {
+    "slug": "rece-i-nogi",
+    "title": "Ręce i nogi",
+    "icon": "✋",
+    "kind": "standard",
+    "sortOrder": 2,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "twarz",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"body.head","tags":["🗣️"],"terms":{"pl":[{"text":"głowa","pos":"noun"}],"en":[{"text":"head","pos":"noun","ipa":"/hed/"}]}},
+    {"key":"body.hand","tags":["✋"],"terms":{"pl":[{"text":"ręka","pos":"noun"}],"en":[{"text":"hand","pos":"noun","ipa":"/hænd/"}]}},
+    {"key":"body.arm","tags":["💪"],"terms":{"pl":[{"text":"ramię","pos":"noun"}],"en":[{"text":"arm","pos":"noun","ipa":"/ɑːm/"}]}},
+    {"key":"body.leg","tags":["🦵"],"terms":{"pl":[{"text":"noga","pos":"noun"}],"en":[{"text":"leg","pos":"noun","ipa":"/leɡ/"}]}},
+    {"key":"body.foot","tags":["🦶"],"terms":{"pl":[{"text":"stopa","pos":"noun"}],"en":[{"text":"foot","pos":"noun","ipa":"/fʊt/"}]}},
+    {"key":"body.finger","tags":["👆"],"terms":{"pl":[{"text":"palec","pos":"noun"}],"en":[{"text":"finger","pos":"noun","ipa":"/ˈfɪŋɡə/"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"body.head","payload":{"prompt":"głowa","accepted":["head"],"options":["head","hand","arm","leg"]}},
+    {"type":"translate_ab","conceptKey":"body.hand","payload":{"prompt":"ręka","accepted":["hand"],"options":["hand","arm","leg","foot"]}},
+    {"type":"translate_ab","conceptKey":"body.arm","payload":{"prompt":"ramię","accepted":["arm"],"options":["arm","leg","foot","finger"]}},
+    {"type":"translate_ab","conceptKey":"body.leg","payload":{"prompt":"noga","accepted":["leg"],"options":["leg","foot","finger","head"]}},
+    {"type":"translate_ab","conceptKey":"body.foot","payload":{"prompt":"stopa","accepted":["foot"],"options":["foot","finger","head","hand"]}},
+    {"type":"translate_ab","conceptKey":"body.finger","payload":{"prompt":"palec","accepted":["finger"],"options":["finger","head","hand","arm"]}},
+    {"type":"translate_ba","conceptKey":"body.head","payload":{"prompt":"head","accepted":["głowa"]}},
+    {"type":"translate_ba","conceptKey":"body.hand","payload":{"prompt":"hand","accepted":["ręka"]}},
+    {"type":"translate_ba","conceptKey":"body.arm","payload":{"prompt":"arm","accepted":["ramię"]}},
+    {"type":"translate_ba","conceptKey":"body.leg","payload":{"prompt":"leg","accepted":["noga"]}},
+    {"type":"translate_ba","conceptKey":"body.foot","payload":{"prompt":"foot","accepted":["stopa"]}},
+    {"type":"translate_ba","conceptKey":"body.finger","payload":{"prompt":"finger","accepted":["palec"]}},
+    {"type":"listening","conceptKey":"body.head","points":15,"payload":{"speak":"head","lang":"en-GB","accepted":["head"]}},
+    {"type":"listening","conceptKey":"body.hand","points":15,"payload":{"speak":"hand","lang":"en-GB","accepted":["hand"]}},
+    {"type":"listening","conceptKey":"body.foot","points":15,"payload":{"speak":"foot","lang":"en-GB","accepted":["foot"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"głowa","b":"head"},{"a":"ręka","b":"hand"},{"a":"ramię","b":"arm"},{"a":"noga","b":"leg"},{"a":"stopa","b":"foot"},{"a":"palec","b":"finger"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"en-GB","pairs":[{"a":"głowa","b":"head"},{"a":"ręka","b":"hand"},{"a":"ramię","b":"arm"},{"a":"noga","b":"leg"},{"a":"stopa","b":"foot"}]}},
+    {"type":"fill_blank_choice","conceptKey":"body.hand","payload":{"sentence":"I write with my {{blank}}.","options":["hand","leg","head","foot"],"answer":"hand","translation":"Piszę ręką."}},
+    {"type":"fill_blank_choice","conceptKey":"body.leg","payload":{"sentence":"The horse has a long {{blank}}.","options":["leg","arm","head","finger"],"answer":"leg","translation":"Koń ma długą nogę."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: Mam dwie ręce.","tokens":["I","have","two","hands"],"solution":["I","have","two","hands"]}}
+  ]
+}

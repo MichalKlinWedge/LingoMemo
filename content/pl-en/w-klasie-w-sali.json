@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-starter",
+  "unit": { "slug": "w-klasie", "title": "W klasie", "icon": "🎒", "sortOrder": 6 },
+  "lesson": {
+    "slug": "w-sali",
+    "title": "W sali",
+    "icon": "🪑",
+    "kind": "standard",
+    "sortOrder": 2,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "przybory",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"room.desk","tags":["🪵"],"terms":{"pl":[{"text":"ławka","pos":"noun"}],"en":[{"text":"desk","pos":"noun","ipa":"/desk/"}]}},
+    {"key":"room.chair","tags":["🪑"],"terms":{"pl":[{"text":"krzesło","pos":"noun"}],"en":[{"text":"chair","pos":"noun","ipa":"/tʃeə/"}]}},
+    {"key":"room.board","tags":["📋"],"terms":{"pl":[{"text":"tablica","pos":"noun"}],"en":[{"text":"board","pos":"noun","ipa":"/bɔːd/"}]}},
+    {"key":"room.clock","tags":["🕐"],"terms":{"pl":[{"text":"zegar","pos":"noun"}],"en":[{"text":"clock","pos":"noun","ipa":"/klɒk/"}]}},
+    {"key":"room.bin","tags":["🗑️"],"terms":{"pl":[{"text":"kosz","pos":"noun"}],"en":[{"text":"bin","pos":"noun","ipa":"/bɪn/"}]}},
+    {"key":"thing.pencil-case","tags":["👝"],"terms":{"pl":[{"text":"piórnik","pos":"noun"}],"en":[{"text":"pencil case","pos":"noun","ipa":"/ˈpensl keɪs/"}]}}
+  ],
+  "exercises": [
+    {"type":"image_choice","conceptKey":"room.desk","payload":{"prompt":"desk","speak":"desk","lang":"en-GB","options":["2026/rzecz-desk.svg","2026/rzecz-chair.svg","2026/rzecz-bin.svg","2026/rzecz-board.svg"],"answer":"2026/rzecz-desk.svg"}},
+    {"type":"image_choice","conceptKey":"room.chair","payload":{"prompt":"chair","speak":"chair","lang":"en-GB","options":["2026/rzecz-chair.svg","2026/rzecz-desk.svg","2026/rzecz-clock.svg","2026/rzecz-bin.svg"],"answer":"2026/rzecz-chair.svg"}},
+    {"type":"image_choice","conceptKey":"room.board","payload":{"prompt":"board","speak":"board","lang":"en-GB","options":["2026/rzecz-board.svg","2026/rzecz-clock.svg","2026/rzecz-desk.svg","2026/rzecz-pencil-case.svg"],"answer":"2026/rzecz-board.svg"}},
+    {"type":"image_choice","conceptKey":"room.clock","payload":{"prompt":"clock","speak":"clock","lang":"en-GB","options":["2026/rzecz-clock.svg","2026/rzecz-board.svg","2026/rzecz-bin.svg","2026/rzecz-chair.svg"],"answer":"2026/rzecz-clock.svg"}},
+    {"type":"image_choice","conceptKey":"room.bin","payload":{"prompt":"bin","speak":"bin","lang":"en-GB","options":["2026/rzecz-bin.svg","2026/rzecz-pencil-case.svg","2026/rzecz-chair.svg","2026/rzecz-clock.svg"],"answer":"2026/rzecz-bin.svg"}},
+    {"type":"image_choice","conceptKey":"thing.pencil-case","payload":{"prompt":"pencil case","speak":"pencil case","lang":"en-GB","options":["2026/rzecz-pencil-case.svg","2026/rzecz-bin.svg","2026/rzecz-board.svg","2026/rzecz-desk.svg"],"answer":"2026/rzecz-pencil-case.svg"}},
+    {"type":"translate_ab","conceptKey":"room.desk","payload":{"prompt":"ławka","accepted":["desk"],"options":["desk","chair","board","clock"]}},
+    {"type":"translate_ab","conceptKey":"room.chair","payload":{"prompt":"krzesło","accepted":["chair"],"options":["chair","board","clock","bin"]}},
+    {"type":"translate_ab","conceptKey":"room.board","payload":{"prompt":"tablica","accepted":["board"],"options":["board","clock","bin","pencil case"]}},
+    {"type":"translate_ab","conceptKey":"room.clock","payload":{"prompt":"zegar","accepted":["clock"],"options":["clock","bin","pencil case","desk"]}},
+    {"type":"translate_ab","conceptKey":"room.bin","payload":{"prompt":"kosz","accepted":["bin"],"options":["bin","pencil case","desk","chair"]}},
+    {"type":"translate_ab","conceptKey":"thing.pencil-case","payload":{"prompt":"piórnik","accepted":["pencil case"],"options":["pencil case","desk","chair","board"]}},
+    {"type":"translate_ba","conceptKey":"room.desk","payload":{"prompt":"desk","accepted":["ławka"]}},
+    {"type":"translate_ba","conceptKey":"room.chair","payload":{"prompt":"chair","accepted":["krzesło"]}},
+    {"type":"translate_ba","conceptKey":"room.board","payload":{"prompt":"board","accepted":["tablica"]}},
+    {"type":"translate_ba","conceptKey":"room.clock","payload":{"prompt":"clock","accepted":["zegar"]}},
+    {"type":"translate_ba","conceptKey":"room.bin","payload":{"prompt":"bin","accepted":["kosz"]}},
+    {"type":"translate_ba","conceptKey":"thing.pencil-case","payload":{"prompt":"pencil case","accepted":["piórnik"]}},
+    {"type":"listening","conceptKey":"room.desk","points":15,"payload":{"speak":"desk","lang":"en-GB","accepted":["desk"]}},
+    {"type":"listening","conceptKey":"room.board","points":15,"payload":{"speak":"board","lang":"en-GB","accepted":["board"]}},
+    {"type":"listening","conceptKey":"room.bin","points":15,"payload":{"speak":"bin","lang":"en-GB","accepted":["bin"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"ławka","b":"desk"},{"a":"krzesło","b":"chair"},{"a":"tablica","b":"board"},{"a":"zegar","b":"clock"},{"a":"kosz","b":"bin"},{"a":"piórnik","b":"pencil case"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"en-GB","pairs":[{"a":"ławka","b":"desk"},{"a":"krzesło","b":"chair"},{"a":"tablica","b":"board"},{"a":"zegar","b":"clock"},{"a":"kosz","b":"bin"}]}},
+    {"type":"fill_blank_choice","conceptKey":"room.board","payload":{"sentence":"Look at the {{blank}}!","options":["board","bin","chair","desk"],"answer":"board","translation":"Spójrz na tablicę!"}},
+    {"type":"fill_blank_choice","conceptKey":"room.chair","payload":{"sentence":"Sit on the {{blank}}.","options":["chair","clock","board","bin"],"answer":"chair","translation":"Usiądź na krześle."}}
+  ]
+}

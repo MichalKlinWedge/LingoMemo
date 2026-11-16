@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-starter",
+  "unit": { "slug": "dom", "title": "Dom", "icon": "🏠", "sortOrder": 8 },
+  "lesson": {
+    "slug": "pokoje",
+    "title": "Pokoje",
+    "icon": "🚪",
+    "kind": "standard",
+    "sortOrder": 1,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "cialo/rece-i-nogi",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"home.house","tags":["🏠"],"terms":{"pl":[{"text":"dom","pos":"noun"}],"en":[{"text":"house","pos":"noun","ipa":"/haʊs/"}]}},
+    {"key":"home.room","tags":["🛋️"],"terms":{"pl":[{"text":"pokój","pos":"noun"}],"en":[{"text":"room","pos":"noun","ipa":"/ruːm/"}]}},
+    {"key":"home.kitchen","tags":["🍳"],"terms":{"pl":[{"text":"kuchnia","pos":"noun"}],"en":[{"text":"kitchen","pos":"noun","ipa":"/ˈkɪtʃɪn/"}]}},
+    {"key":"home.bedroom","tags":["🛏️"],"terms":{"pl":[{"text":"sypialnia","pos":"noun"}],"en":[{"text":"bedroom","pos":"noun","ipa":"/ˈbedruːm/"}]}},
+    {"key":"home.bathroom","tags":["🛁"],"terms":{"pl":[{"text":"łazienka","pos":"noun"}],"en":[{"text":"bathroom","pos":"noun","ipa":"/ˈbɑːθruːm/"}]}},
+    {"key":"home.garden","tags":["🌳"],"terms":{"pl":[{"text":"ogród","pos":"noun"}],"en":[{"text":"garden","pos":"noun","ipa":"/ˈɡɑːdn/"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"home.house","payload":{"prompt":"dom","accepted":["house"],"options":["house","room","kitchen","bedroom"]}},
+    {"type":"translate_ab","conceptKey":"home.room","payload":{"prompt":"pokój","accepted":["room"],"options":["room","kitchen","bedroom","bathroom"]}},
+    {"type":"translate_ab","conceptKey":"home.kitchen","payload":{"prompt":"kuchnia","accepted":["kitchen"],"options":["kitchen","bedroom","bathroom","garden"]}},
+    {"type":"translate_ab","conceptKey":"home.bedroom","payload":{"prompt":"sypialnia","accepted":["bedroom"],"options":["bedroom","bathroom","garden","house"]}},
+    {"type":"translate_ab","conceptKey":"home.bathroom","payload":{"prompt":"łazienka","accepted":["bathroom"],"options":["bathroom","garden","house","room"]}},
+    {"type":"translate_ab","conceptKey":"home.garden","payload":{"prompt":"ogród","accepted":["garden"],"options":["garden","house","room","kitchen"]}},
+    {"type":"translate_ba","conceptKey":"home.house","payload":{"prompt":"house","accepted":["dom"]}},
+    {"type":"translate_ba","conceptKey":"home.room","payload":{"prompt":"room","accepted":["pokój"]}},
+    {"type":"translate_ba","conceptKey":"home.kitchen","payload":{"prompt":"kitchen","accepted":["kuchnia"]}},
+    {"type":"translate_ba","conceptKey":"home.bedroom","payload":{"prompt":"bedroom","accepted":["sypialnia"]}},
+    {"type":"translate_ba","conceptKey":"home.bathroom","payload":{"prompt":"bathroom","accepted":["łazienka"]}},
+    {"type":"translate_ba","conceptKey":"home.garden","payload":{"prompt":"garden","accepted":["ogród"]}},
+    {"type":"listening","conceptKey":"home.house","points":15,"payload":{"speak":"house","lang":"en-GB","accepted":["house"]}},
+    {"type":"listening","conceptKey":"home.kitchen","points":15,"payload":{"speak":"kitchen","lang":"en-GB","accepted":["kitchen"]}},
+    {"type":"listening","conceptKey":"home.garden","points":15,"payload":{"speak":"garden","lang":"en-GB","accepted":["garden"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"dom","b":"house"},{"a":"pokój","b":"room"},{"a":"kuchnia","b":"kitchen"},{"a":"sypialnia","b":"bedroom"},{"a":"łazienka","b":"bathroom"},{"a":"ogród","b":"garden"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"en-GB","pairs":[{"a":"dom","b":"house"},{"a":"pokój","b":"room"},{"a":"kuchnia","b":"kitchen"},{"a":"sypialnia","b":"bedroom"},{"a":"ogród","b":"garden"}]}},
+    {"type":"fill_blank_choice","conceptKey":"home.kitchen","payload":{"sentence":"Mum is in the {{blank}}.","options":["kitchen","garden","bathroom","bedroom"],"answer":"kitchen","translation":"Mama jest w kuchni."}},
+    {"type":"fill_blank_choice","conceptKey":"home.garden","payload":{"sentence":"The dog is in the {{blank}}.","options":["garden","kitchen","bedroom","house"],"answer":"garden","translation":"Pies jest w ogrodzie."}}
+  ]
+}

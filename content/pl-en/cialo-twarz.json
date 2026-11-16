@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-en-starter",
+  "unit": { "slug": "cialo", "title": "Ciało", "icon": "🧍", "sortOrder": 7 },
+  "lesson": {
+    "slug": "twarz",
+    "title": "Twarz",
+    "icon": "🙂",
+    "kind": "standard",
+    "sortOrder": 1,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "w-klasie/w-sali",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"body.eye","tags":["👁️"],"terms":{"pl":[{"text":"oko","pos":"noun"}],"en":[{"text":"eye","pos":"noun","ipa":"/aɪ/"}]}},
+    {"key":"body.ear","tags":["👂"],"terms":{"pl":[{"text":"ucho","pos":"noun"}],"en":[{"text":"ear","pos":"noun","ipa":"/ɪə/"}]}},
+    {"key":"body.nose","tags":["👃"],"terms":{"pl":[{"text":"nos","pos":"noun"}],"en":[{"text":"nose","pos":"noun","ipa":"/nəʊz/"}]}},
+    {"key":"body.mouth","tags":["👄"],"terms":{"pl":[{"text":"usta","pos":"noun"}],"en":[{"text":"mouth","pos":"noun","ipa":"/maʊθ/"}]}},
+    {"key":"body.hair","tags":["💇"],"terms":{"pl":[{"text":"włosy","pos":"noun"}],"en":[{"text":"hair","pos":"noun","ipa":"/heə/"}]}},
+    {"key":"body.tooth","tags":["🦷"],"terms":{"pl":[{"text":"ząb","pos":"noun"}],"en":[{"text":"tooth","pos":"noun","ipa":"/tuːθ/"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"body.eye","payload":{"prompt":"oko","accepted":["eye"],"options":["eye","ear","nose","mouth"]}},
+    {"type":"translate_ab","conceptKey":"body.ear","payload":{"prompt":"ucho","accepted":["ear"],"options":["ear","nose","mouth","hair"]}},
+    {"type":"translate_ab","conceptKey":"body.nose","payload":{"prompt":"nos","accepted":["nose"],"options":["nose","mouth","hair","tooth"]}},
+    {"type":"translate_ab","conceptKey":"body.mouth","payload":{"prompt":"usta","accepted":["mouth"],"options":["mouth","hair","tooth","eye"]}},
+    {"type":"translate_ab","conceptKey":"body.hair","payload":{"prompt":"włosy","accepted":["hair"],"options":["hair","tooth","eye","ear"]}},
+    {"type":"translate_ab","conceptKey":"body.tooth","payload":{"prompt":"ząb","accepted":["tooth"],"options":["tooth","eye","ear","nose"]}},
+    {"type":"translate_ba","conceptKey":"body.eye","payload":{"prompt":"eye","accepted":["oko"]}},
+    {"type":"translate_ba","conceptKey":"body.ear","payload":{"prompt":"ear","accepted":["ucho"]}},
+    {"type":"translate_ba","conceptKey":"body.nose","payload":{"prompt":"nose","accepted":["nos"]}},
+    {"type":"translate_ba","conceptKey":"body.mouth","payload":{"prompt":"mouth","accepted":["usta"]}},
+    {"type":"translate_ba","conceptKey":"body.hair","payload":{"prompt":"hair","accepted":["włosy"]}},
+    {"type":"translate_ba","conceptKey":"body.tooth","payload":{"prompt":"tooth","accepted":["ząb"]}},
+    {"type":"listening","conceptKey":"body.eye","points":15,"payload":{"speak":"eye","lang":"en-GB","accepted":["eye"]}},
+    {"type":"listening","conceptKey":"body.nose","points":15,"payload":{"speak":"nose","lang":"en-GB","accepted":["nose"]}},
+    {"type":"listening","conceptKey":"body.mouth","points":15,"payload":{"speak":"mouth","lang":"en-GB","accepted":["mouth"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"oko","b":"eye"},{"a":"ucho","b":"ear"},{"a":"nos","b":"nose"},{"a":"usta","b":"mouth"},{"a":"włosy","b":"hair"},{"a":"ząb","b":"tooth"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"en-GB","pairs":[{"a":"oko","b":"eye"},{"a":"ucho","b":"ear"},{"a":"nos","b":"nose"},{"a":"usta","b":"mouth"},{"a":"włosy","b":"hair"}]}},
+    {"type":"fill_blank_choice","conceptKey":"body.nose","payload":{"sentence":"The elephant has a big {{blank}}.","options":["nose","eye","tooth","hair"],"answer":"nose","translation":"Słoń ma duży nos."}},
+    {"type":"fill_blank_choice","conceptKey":"body.ear","payload":{"sentence":"I hear with my {{blank}}.","options":["ear","eye","nose","mouth"],"answer":"ear","translation":"Słyszę uchem."}}
+  ]
+}
