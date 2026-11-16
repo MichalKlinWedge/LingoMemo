@@ -174,6 +174,13 @@ security definer
 set search_path = ''
 as $fn$
 begin
+  -- Hamulec na czas masowego dorabiania (przebieg na dole tego pliku): pętla i tak przechodzi
+  -- po wszystkich lekcjach, a wyzwalacz działa na wiersz, więc przy kilkuset wstawieniach
+  -- przeczesywałby te same lekcje kilkaset razy. Flaga jest lokalna dla transakcji.
+  if coalesce(current_setting('lingomemo.skip_variants', true), '') = 'on' then
+    return null;
+  end if;
+
   perform public.build_sentence_order(new.lesson_id);
   perform public.build_medium_variants(new.lesson_id);
   return null;
@@ -193,20 +200,17 @@ revoke execute on function public.build_medium_variants(uuid) from anon, public;
 
 -- Treść, która jest już w bazie.
 --
--- Wyzwalacz na czas przebiegu jest wyłączony. Działa na wiersz, więc przy kilkuset dorobionych
--- zadaniach odpalałby się kilkaset razy, a każde odpalenie przeczesuje całą lekcję — push do
--- bazy w chmurze przestawał się kończyć. Pętla niżej i tak obsługuje wszystkie lekcje, więc
--- wyzwalacz nie miałby tu nic do dorobienia.
-alter table public.exercises disable trigger exercises_variants;
-
+-- Hamulec zamiast `alter table ... disable trigger`: wyłączenie wyzwalacza bierze blokadę
+-- wyłączną na `exercises` na całą transakcję, czyli zatrzymuje każdego, kto w tej chwili
+-- robi lekcję — a przy tysiącu zadań w bazie w chmurze to minuty, nie sekundy.
 do $backfill$
 declare
   v_lesson uuid;
 begin
+  perform set_config('lingomemo.skip_variants', 'on', true);
+
   for v_lesson in select l.id from public.lessons l loop
     perform public.build_medium_variants(v_lesson);
   end loop;
 end;
 $backfill$;
-
-alter table public.exercises enable trigger exercises_variants;
