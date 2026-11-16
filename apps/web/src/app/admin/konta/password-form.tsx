@@ -40,8 +40,10 @@ export function PasswordForm({ userId, displayName, self }: { userId: string; di
   const pole = useId();
 
   return (
-    <details className="w-full">
-      <summary className="back-link cursor-pointer list-none font-semibold">Zmień hasło</summary>
+    // Bez rozwijanki: formularz siedzi w rozwiniętym wierszu tabeli kont, a druga warstwa
+    // klikania kazałaby otwierać dwie rzeczy, żeby zmienić jedno hasło.
+    <section className="w-full">
+      <h3 className="font-semibold">Zmień hasło</h3>
       <form action={action} className="mt-3 flex flex-col gap-3">
         <input type="hidden" name="user_id" value={userId} />
         <label className="flex flex-col gap-2" htmlFor={pole}>
@@ -74,6 +76,6 @@ export function PasswordForm({ userId, displayName, self }: { userId: string; di
         </p>
         <Status state={state} />
       </form>
-    </details>
+    </section>
   );
 }

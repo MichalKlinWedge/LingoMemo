@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Suspense } from "react";
 
 import { formatDuration } from "@lingomemo/core";
@@ -9,8 +8,8 @@ import { Loading, Shell } from "@/components/shell";
 import { requireAdmin } from "@/lib/auth";
 import { dbLoadError } from "@/lib/db-error";
 
-import { PasswordForm } from "../konta/password-form";
-import { FamilyPanel, type Osoba } from "./family-panel";
+import { type Osoba } from "./family-panel";
+import { PeopleTable, type PersonRow } from "./people-table";
 
 /** Data po polsku albo „nigdy" — `last_sign_in_at` jest puste do pierwszego logowania. */
 const data = (value: string | null): string => (value ? new Date(value).toLocaleDateString("pl-PL") : "nigdy");
@@ -56,73 +55,42 @@ async function People() {
     isAdmin: row.is_admin,
   }));
 
-  return (
-    <ul className="flex flex-col gap-3">
-      {(students ?? []).map((student) => {
-        const account = accountOf.get(student.user_id);
-        const extra = timeOf.get(student.user_id);
-        const self = student.user_id === userId;
+  const rows: PersonRow[] = (students ?? []).map((student) => {
+    const account = accountOf.get(student.user_id);
+    const extra = timeOf.get(student.user_id);
+    const prosi = requestOf.get(student.user_id) ?? null;
 
-        return (
-          <li key={student.user_id} className="card flex flex-col gap-3 p-4">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <span className="flex min-w-0 flex-col">
-                {/* Imię prowadzi do karty dziecka — tam jest wykres, słabe słówka i poziom. */}
-                <Link href={`/admin/uczniowie/${student.user_id}`} className="font-semibold hover:text-brand">
-                  {student.display_name}
-                  {self && " · to Ty"}
-                </Link>
-                <span className="text-base text-zinc-600 dark:text-zinc-400">{student.email}</span>
-              </span>
+    return {
+      userId: student.user_id,
+      displayName: student.display_name,
+      email: student.email,
+      // Jedna rola na wiersz: rodzic nie uczy się, więc „uczeń" przy nim byłby mylący.
+      role: student.is_admin ? "administrator" : childrenOf.has(student.user_id) ? "rodzic" : "uczeń",
+      isParent: childrenOf.has(student.user_id),
+      childIds: childrenOf.get(student.user_id) ?? [],
+      waiting: prosi !== null,
+      self: student.user_id === userId,
+      points: student.total_points,
+      lessons: student.lessons_done,
+      streak: student.streak_days,
+      time: formatDuration(extra?.seconds_total ?? 0),
+      // Daty składamy tutaj: w tabeli zajęłyby cztery kolumny, z których na co dzień nie
+      // patrzy się wcale, a pod rozwiniętym wierszem mieszczą się w jednym zdaniu.
+      details: [
+        `słówek: ${student.words_seen}`,
+        `poziom: ${student.level}`,
+        student.last_active_on
+          ? `ostatnio uczył się ${new Date(student.last_active_on).toLocaleDateString("pl-PL")}`
+          : "jeszcze się nie uczył",
+        `konto od ${data(account?.created_at ?? null)}`,
+        `ostatnie logowanie ${data(account?.last_sign_in_at ?? null)}`,
+        ...(account?.password_changed_at ? [`hasło zmieniane ${data(account.password_changed_at)}`] : []),
+        ...(prosi ? [`prosi o przypisanie dziecka od ${data(prosi)}`] : []),
+      ].join(" · "),
+    };
+  });
 
-              <span className="flex flex-wrap items-center gap-2 text-base">
-                {/* Jedna rola na chip: rodzic nie uczy się, więc „uczeń" przy nim byłby mylący. */}
-                <span className="chip">
-                  {student.is_admin ? "administrator" : childrenOf.has(student.user_id) ? "rodzic" : "uczeń"}
-                </span>
-                <span className="chip">⭐ {student.total_points}</span>
-                <span className="chip">📘 {student.lessons_done}</span>
-                <span className="chip">🧠 {student.words_seen}</span>
-                <span className="chip">🔥 {student.streak_days}</span>
-                <span className="chip">🎚️ poziom {student.level}</span>
-                <span className="chip">⏱️ {formatDuration(extra?.seconds_total ?? 0)}</span>
-                {requestOf.has(student.user_id) && (
-                  <span
-                    className="chip"
-                    style={{ background: "var(--color-sun)" }}
-                    title={`Prosi od ${data(requestOf.get(student.user_id) ?? null)}`}
-                  >
-                    ⏳ czeka na dziecko
-                  </span>
-                )}
-              </span>
-            </div>
-
-            <p className="text-sm text-zinc-500">
-              {student.last_active_on
-                ? `ostatnio uczył się ${new Date(student.last_active_on).toLocaleDateString("pl-PL")}`
-                : "jeszcze się nie uczył"}
-              {" · "}konto od {data(account?.created_at ?? null)}
-              {" · "}ostatnie logowanie {data(account?.last_sign_in_at ?? null)}
-              {account?.password_changed_at && ` · hasło zmieniane ${data(account.password_changed_at)}`}
-              {requestOf.has(student.user_id) &&
-                ` · prosi o przypisanie dziecka od ${data(requestOf.get(student.user_id) ?? null)}`}
-            </p>
-
-            <div className="flex flex-col gap-3">
-              <FamilyPanel
-                userId={student.user_id}
-                isParent={childrenOf.has(student.user_id)}
-                childIds={childrenOf.get(student.user_id) ?? []}
-                people={osoby}
-              />
-              <PasswordForm userId={student.user_id} displayName={student.display_name} self={self} />
-            </div>
-          </li>
-        );
-      })}
-    </ul>
-  );
+  return <PeopleTable rows={rows} people={osoby} />;
 }
 
 export default function PeoplePage() {

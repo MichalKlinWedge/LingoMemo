@@ -74,12 +74,12 @@ export function FamilyPanel({
   const kandydaci = people.filter((osoba) => osoba.userId !== userId && !osoba.isAdmin);
 
   return (
-    <details>
-      <summary className="back-link cursor-pointer list-none font-semibold">
-        {isParent ? `Dzieci (${przypisane.size})` : "Rola rodzica"}
-      </summary>
+    // Bez własnej rozwijanki: cała sekcja siedzi już w rozwiniętym wierszu tabeli, a druga
+    // warstwa klikania kazałaby otwierać dwie rzeczy, żeby zmienić jedną.
+    <section>
+      <h3 className="mb-2 font-semibold">{isParent ? `Dzieci (${przypisane.size})` : "Rola rodzica"}</h3>
 
-      <div className="mt-3 flex flex-col gap-3">
+      <div className="flex flex-col gap-3">
         <RoleButton userId={userId} isParent={isParent} />
 
         {isParent && (
@@ -105,6 +105,6 @@ export function FamilyPanel({
           </>
         )}
       </div>
-    </details>
+    </section>
   );
 }
