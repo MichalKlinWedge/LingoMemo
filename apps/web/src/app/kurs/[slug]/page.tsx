@@ -28,6 +28,7 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
     { data: lessons, error: lessonsError },
     { data: levels, error: levelsError },
     { data: stages, error: stagesError },
+    { data: gate },
   ] = await Promise.all([
     supabase.from("units").select("id, title, icon, sort_order").eq("course_id", course.id).order("sort_order"),
     // Widok dokłada do lekcji stan otwarcia i postęp tego ucznia — jedno zapytanie zamiast trzech.
@@ -39,7 +40,19 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
     // tabeli tylko swoje wiersze, ale administrator widzi wszystkie, więc bez filtru na jego
     // mapie zmieszałyby się podejścia różnych dzieci.
     supabase.from("lesson_stage_progress").select("lesson_id, stage_nr, stars").eq("user_id", userId),
+    // Bramka zaległych powtórek: przy dziesięciu zaległych słówkach kurs jest zamknięty do
+    // zdanego testu powtórkowego. Regułę liczy baza — strona tylko nazywa to, co z niej wyszło.
+    supabase.rpc("review_gate", { p_course: course.id }),
   ]);
+
+  const bramka = gate as {
+    active: boolean;
+    due: number;
+    limit: number;
+    lessonId: string | null;
+    passedToday: boolean;
+    triedToday: boolean;
+  } | null;
 
   // Błąd z zapytania o poziomy też musi być widoczny: po cichu znikają wtedy kwadraciki
   // średniego i trudnego, a strona wygląda na poprawną — tak właśnie wygląda brak migracji
@@ -47,7 +60,11 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
   const error = unitsError ?? lessonsError ?? levelsError ?? stagesError;
   if (error) return <p className="msg-error">{dbLoadError(error)}</p>;
 
-  const byUnit = (unitId: string) => (lessons ?? []).filter((lesson) => lesson.unit_id === unitId);
+  // Test powtórkowy dotyczy całego kursu, a nie działu, w którym technicznie wisi — więc nie
+  // stoi między kafelkami działu, tylko osobno nad mapą.
+  const testPowtorkowy = bramka?.lessonId ?? null;
+  const byUnit = (unitId: string) =>
+    (lessons ?? []).filter((lesson) => lesson.unit_id === unitId && lesson.id !== testPowtorkowy);
   // Średni i trudny. Łatwy ma swój kafelek, a poziom bez ani jednego zadania nie ma po co
   // stawiać kwadracika, który po kliknięciu pokaże pustą lekcję.
   /**
@@ -81,7 +98,16 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
         .filter((row) => row.lesson_id === lessonId)
         .map((row) => [row.stage_nr, row.stars ?? 0] as const),
     );
-  const done = (lessons ?? []).filter((lesson) => lesson.status === "completed").length;
+  // Ukończone lekcje TEGO kursu: widok wydaje lekcje wszystkich kursów, a test powtórkowy
+  // lekcją do ukończenia nie jest — zdany podnosiłby licznik przy każdym wejściu na mapę.
+  const dzialyKursu = new Set((units ?? []).map((unit) => unit.id));
+  const done = (lessons ?? []).filter(
+    (lesson) =>
+      lesson.status === "completed" &&
+      lesson.id !== testPowtorkowy &&
+      lesson.unit_id !== null &&
+      dzialyKursu.has(lesson.unit_id),
+  ).length;
 
   return (
     <>
@@ -94,6 +120,24 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
         }
         intro={`Ukończone: ${plural(done, LESSONS)}`}
       />
+
+      {/* Zamknięty kurs: jedno wejście, od razu na wierzchu. Kafelków lekcji nie ukrywamy —
+          dziecko ma widzieć, co się otworzy, gdy zda test. */}
+      {bramka?.active && bramka.lessonId && (
+        <section className="card flex flex-col gap-3 p-5">
+          <h2 className="card-title">
+            <span aria-hidden>🔁 </span>Test powtórkowy
+          </h2>
+          <p className="text-base text-zinc-600 dark:text-zinc-400">
+            {bramka.triedToday
+              ? `Ten test jeszcze nie jest zdany — spróbuj jeszcze raz. ${plural(bramka.due, WORDS)} czeka na powtórzenie.`
+              : `Uzbierało się ${plural(bramka.due, WORDS)} do powtórzenia, więc lekcje chwilę poczekają. Przypomnij sobie te słówka, a potem uczysz się dalej.`}
+          </p>
+          <Link href={`/lekcja/${bramka.lessonId}`} className="btn-primary self-start">
+            Zrób test powtórkowy
+          </Link>
+        </section>
+      )}
 
       {(units ?? []).map((unit) => {
         // Dział zamknięty w całości, czyli czekający na test poprzedniego działu. Poznajemy
@@ -111,7 +155,9 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
           </h2>
           {unitLocked && (
             <p className="text-base text-zinc-600 dark:text-zinc-400">
-              Ten dział otworzy się po zdanym teście poprzedniego działu.
+              {bramka?.active
+                ? "Ten dział otworzy się po zdanym teście powtórkowym."
+                : "Ten dział otworzy się po zdanym teście poprzedniego działu."}
             </p>
           )}
           <ul className="flex flex-wrap gap-4">
@@ -150,15 +196,18 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
                       className="tile"
                       data-state="locked"
                       aria-label={label}
-                      // Zamek bez powodu to dla dziecka ślepa ściana. Powody są trzy i każdy
-                      // prowadzi gdzie indziej: do poprzedniego działu, do reszty lekcji
-                      // w tym dziale albo do lekcji obok.
+                      // Zamek bez powodu to dla dziecka ślepa ściana. Powody są cztery i każdy
+                      // prowadzi gdzie indziej: do testu powtórkowego, do poprzedniego działu,
+                      // do reszty lekcji w tym dziale albo do lekcji obok. Bramka powtórek
+                      // zamyka cały kurs, więc stoi przed pozostałymi powodami.
                       title={
-                        unitLocked
-                          ? "Najpierw zdaj test poprzedniego działu"
-                          : lesson.kind === "test"
-                            ? "Najpierw skończ wszystkie lekcje działu"
-                            : "Najpierw skończ poprzednią lekcję"
+                        bramka?.active
+                          ? "Najpierw zdaj test powtórkowy"
+                          : unitLocked
+                            ? "Najpierw zdaj test poprzedniego działu"
+                            : lesson.kind === "test"
+                              ? "Najpierw skończ wszystkie lekcje działu"
+                              : "Najpierw skończ poprzednią lekcję"
                       }
                     >
                       {tile}

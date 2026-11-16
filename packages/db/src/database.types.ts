@@ -5,7 +5,21 @@ export type Database = {
   
   "public": {
           Tables: {
-            "attempts": {
+            "app_settings": {
+                  Row: {
+                    "key": string,"updated_at": string,"updated_by": string | null,"value": NonNullable<Json>
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "key": string,"updated_at"?: string,"updated_by"?: string | null,"value": NonNullable<Json>
+                  }
+                  Update: {
+                    "key"?: string,"updated_at"?: string,"updated_by"?: string | null,"value"?: NonNullable<Json>
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"attempts": {
                   Row: {
                     "concept_id": string | null,"created_at": string,"exercise_id": string | null,"exercise_type": Database["public"]['Enums']["exercise_type"],"hint_used": boolean,"id": number,"is_correct": boolean,"near_miss": boolean,"raw_answer": NonNullable<Json>,"response_ms": number | null,"session_id": string,"user_id": string
                   }
@@ -387,14 +401,14 @@ isOneToOne: false
                   ]
                 },"lessons": {
                   Row: {
-                    "created_at": string,"icon": string | null,"id": string,"is_published": boolean,"kind": Database["public"]['Enums']["lesson_kind"],"pass_threshold": number,"prerequisite_lesson_id": string | null,"review_scope_unit_id": string | null,"slug": string,"sort_order": number,"title": string,"unit_id": string,"xp_reward": number
+                    "created_at": string,"icon": string | null,"id": string,"is_published": boolean,"kind": Database["public"]['Enums']["lesson_kind"],"pass_threshold": number,"prerequisite_lesson_id": string | null,"review_scope_course_id": string | null,"review_scope_unit_id": string | null,"slug": string,"sort_order": number,"title": string,"unit_id": string,"xp_reward": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"icon"?: string | null,"id"?: string,"is_published"?: boolean,"kind"?: Database["public"]['Enums']["lesson_kind"],"pass_threshold"?: number,"prerequisite_lesson_id"?: string | null,"review_scope_unit_id"?: string | null,"slug": string,"sort_order": number,"title": string,"unit_id": string,"xp_reward"?: number
+                    "created_at"?: string,"icon"?: string | null,"id"?: string,"is_published"?: boolean,"kind"?: Database["public"]['Enums']["lesson_kind"],"pass_threshold"?: number,"prerequisite_lesson_id"?: string | null,"review_scope_course_id"?: string | null,"review_scope_unit_id"?: string | null,"slug": string,"sort_order": number,"title": string,"unit_id": string,"xp_reward"?: number
                   }
                   Update: {
-                    "created_at"?: string,"icon"?: string | null,"id"?: string,"is_published"?: boolean,"kind"?: Database["public"]['Enums']["lesson_kind"],"pass_threshold"?: number,"prerequisite_lesson_id"?: string | null,"review_scope_unit_id"?: string | null,"slug"?: string,"sort_order"?: number,"title"?: string,"unit_id"?: string,"xp_reward"?: number
+                    "created_at"?: string,"icon"?: string | null,"id"?: string,"is_published"?: boolean,"kind"?: Database["public"]['Enums']["lesson_kind"],"pass_threshold"?: number,"prerequisite_lesson_id"?: string | null,"review_scope_course_id"?: string | null,"review_scope_unit_id"?: string | null,"slug"?: string,"sort_order"?: number,"title"?: string,"unit_id"?: string,"xp_reward"?: number
                   }
                   Relationships: [
                     {
@@ -415,6 +429,18 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "v_my_lessons"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "lessons_review_scope_course_id_fkey"
+      columns: ["review_scope_course_id"]
+isOneToOne: false
+      referencedRelation: "courses"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "lessons_review_scope_course_id_fkey"
+      columns: ["review_scope_course_id"]
+isOneToOne: false
+      referencedRelation: "v_my_courses"
+      referencedColumns: ["course_id"]
     },{
       foreignKeyName: "lessons_review_scope_unit_id_fkey"
       columns: ["review_scope_unit_id"]
@@ -754,6 +780,9 @@ isOneToOne: false
 "admin_set_parent":
 { Args: { "p_is_parent": boolean,"p_user": string }; Returns: undefined
                            },
+"admin_set_setting":
+{ Args: { "p_key": string,"p_value": Json }; Returns: Json
+                           },
 "admin_update_profile":
 { Args: { "p_display_name": string,"p_time_zone"?: string,"p_user": string }; Returns: undefined
                            },
@@ -763,11 +792,17 @@ isOneToOne: false
 "award_badges":
 { Args: { "p_user": string }; Returns: (string)[]
                            },
+"bare_token":
+{ Args: { "p_token": string }; Returns: string
+                           },
 "before_user_created":
 { Args: { "event": Json }; Returns: Json
                            },
 "bootstrap_admin":
 { Args: { "p_email": string }; Returns: boolean
+                           },
+"build_medium_variants":
+{ Args: { "p_lesson": string }; Returns: number
                            },
 "build_sentence_order":
 { Args: { "p_lesson": string }; Returns: number
@@ -783,6 +818,9 @@ isOneToOne: false
               "best_score": number,"course_id": string,"icon": string,"is_unlocked": boolean,"kind": Database["public"]['Enums']["lesson_kind"],"lesson_id": string,"slug": string,"sort_order": number,"stage_count": number,"stages_done": number,"stars": number,"status": string,"title": string,"unit_id": string,"word_count": number
             }[]
                            },
+"course_due_words":
+{ Args: { "p_course": string,"p_user": string }; Returns: number
+                           },
 "course_started":
 { Args: { "p_course": string }; Returns: boolean
                            },
@@ -797,6 +835,9 @@ isOneToOne: false
                            },
 "exercise_allowed_in_lesson":
 { Args: { "p_exercise": string,"p_lesson": string }; Returns: boolean
+                           },
+"exercise_order":
+{ Args: { "p_exercise": string }; Returns: number
                            },
 "exercise_stage":
 { Args: { "p_exercise": string,"p_lesson": string }; Returns: number
@@ -855,7 +896,7 @@ isOneToOne: false
 { Args: Record<PropertyKey, never>; Returns: number
                            },
 "get_lesson_exercises":
-{ Args: { "p_lesson": string,"p_level"?: number,"p_stage"?: number }; Returns: {
+{ Args: { "p_lesson": string,"p_level"?: number,"p_preview"?: boolean,"p_stage"?: number }; Returns: {
               "concept_id": string,"id": string,"payload": Json,"points": number,"sort_order": number,"type": Database["public"]['Enums']["exercise_type"]
             }[]
                            },
@@ -963,11 +1004,35 @@ isOneToOne: false
 "request_child_access":
 { Args: Record<PropertyKey, never>; Returns: undefined
                            },
+"review_gate":
+{ Args: { "p_course": string,"p_user"?: string }; Returns: Json
+                           },
+"review_gate_lesson":
+{ Args: { "p_course": string }; Returns: string
+                           },
+"review_gate_limit":
+{ Args: Record<PropertyKey, never>; Returns: number
+                           },
+"review_gate_on":
+{ Args: { "p_course": string,"p_user": string }; Returns: boolean
+                           },
+"review_gate_passed_today":
+{ Args: { "p_course": string,"p_user": string }; Returns: boolean
+                           },
+"review_gate_tried_today":
+{ Args: { "p_course": string,"p_user": string }; Returns: boolean
+                           },
 "review_limit":
 { Args: Record<PropertyKey, never>; Returns: number
                            },
 "revoke_invite":
 { Args: { "p_id": string }; Returns: undefined
+                           },
+"same_letters":
+{ Args: { "a": string,"b": string }; Returns: boolean
+                           },
+"sentence_distractors":
+{ Args: { "p_lang": string,"p_unit": string,"p_words": (string)[] }; Returns: (string)[]
                            },
 "session_seconds":
 { Args: { "p_finished": string,"p_started": string }; Returns: number
@@ -977,6 +1042,9 @@ isOneToOne: false
                            },
 "set_user_password":
 { Args: { "p_password": string,"p_user": string }; Returns: undefined
+                           },
+"setting_int":
+{ Args: { "p_default": number,"p_key": string }; Returns: number
                            },
 "simpler_payload":
 { Args: { "p_exercise": string }; Returns: Json
@@ -991,7 +1059,7 @@ isOneToOne: false
 { Args: Record<PropertyKey, never>; Returns: number
                            },
 "start_lesson_session":
-{ Args: { "p_idempotency_key": string,"p_lesson": string,"p_level"?: number,"p_stage"?: number }; Returns: string
+{ Args: { "p_idempotency_key": string,"p_lesson": string,"p_level"?: number,"p_preview"?: boolean,"p_stage"?: number }; Returns: string
                            },
 "submit_attempt":
 { Args: { "p_answer": Json,"p_exercise": string,"p_hint_used"?: boolean,"p_response_ms"?: number,"p_session": string }; Returns: Json

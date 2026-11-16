@@ -16,6 +16,9 @@ const CRUMB_HOME = { href: "/", label: "Twoje dzieci" };
  * nietknięta, do której dziecko jeszcze nie może wejść, to co innego niż taka, którą po prostu
  * omija — a bez tego rozróżnienia rodzic pyta „czemu tego nie zrobił".
  */
+/** Stan bramki zaległych powtórek dla jednego kursu — tyle, ile potrzebuje ta strona. */
+type GateInfo = { active: boolean; due: number; triedToday: boolean; lessonId: string | null };
+
 function lessonMark(lesson: { is_unlocked: boolean; status: string }): { icon: string; label: string } {
   if (lesson.status === "completed") return { icon: "✅", label: "zaliczona" };
   if (lesson.status === "in_progress") return { icon: "▶️", label: "zaczęta" };
@@ -97,12 +100,41 @@ async function Child({ params }: { params: PageProps<"/dziecko/[id]">["params"] 
   const lessonTitle = (lesson: string) =>
     (lessonRows ?? []).find((row) => row.id === lesson)?.title ?? "lekcja już niedostępna";
 
+  // Dlaczego przy całym kursie bywają same kłódki: przy dziesięciu zaległych słówkach lekcje
+  // czekają na zdany test powtórkowy. Bez tego rodzic widzi zamki i nie wie, co się stało —
+  // a odpowiedź nie wynika z żadnej innej liczby na tej stronie.
+  const bramki = new Map(
+    await Promise.all(
+      (courses ?? [])
+        .map((course) => course.course_id)
+        .filter((kurs): kurs is string => kurs !== null)
+        .map(async (kurs) => {
+          const { data } = await supabase.rpc("review_gate", { p_course: kurs, p_user: id });
+          return [kurs, data as GateInfo | null] as const;
+        }),
+    ),
+  );
+
+  // Test powtórkowy wisi technicznie w pierwszym dziale kursu, ale lekcją tego działu nie jest —
+  // na liście dziecka stałby w środku działu jako „jeszcze zamknięta" i mylił. Jego stan mówi
+  // chip przy kursie.
+  const testyPowtorkowe = new Set(
+    [...bramki.values()]
+      .map((stan) => stan?.lessonId)
+      .filter((lekcja): lekcja is string => typeof lekcja === "string"),
+  );
+
   // Działy kursu razem z lekcjami, w kolejności nauki. Dział bez ani jednej widocznej lekcji
   // pomijamy — sam nagłówek nic rodzicowi nie mówi.
   const dzialyKursu = (course: string) =>
     (units ?? [])
       .filter((unit) => unit.course_id === course)
-      .map((unit) => ({ unit, lekcje: (lessons ?? []).filter((row) => row.unit_id === unit.id) }))
+      .map((unit) => ({
+        unit,
+        lekcje: (lessons ?? []).filter(
+          (row) => row.unit_id === unit.id && !testyPowtorkowe.has(row.lesson_id),
+        ),
+      }))
       .filter((grupa) => grupa.lekcje.length > 0);
 
   return (
@@ -145,6 +177,7 @@ async function Child({ params }: { params: PageProps<"/dziecko/[id]">["params"] 
             {(courses ?? []).map((course) => {
               const dzialy = dzialyKursu(course.course_id);
               const ile = dzialy.reduce((suma, grupa) => suma + grupa.lekcje.length, 0);
+              const bramka = bramki.get(course.course_id ?? "");
 
               return (
                 <li key={course.course_id} className="card flex flex-col gap-3 p-4">
@@ -160,7 +193,14 @@ async function Child({ params }: { params: PageProps<"/dziecko/[id]">["params"] 
                         </span>
                       </span>
                     </span>
-                    <span className="chip">⏱️ {formatDuration(course.seconds_total ?? 0)}</span>
+                    <span className="flex flex-wrap items-center gap-2">
+                      {bramka?.active && (
+                        <span className="chip">
+                          🔁 {bramka.triedToday ? "test powtórkowy do poprawy" : "czeka test powtórkowy"}
+                        </span>
+                      )}
+                      <span className="chip">⏱️ {formatDuration(course.seconds_total ?? 0)}</span>
+                    </span>
                   </div>
 
                   {/* Rozwijane, bo kurs potrafi mieć kilkadziesiąt lekcji, a dwa kursy rozłożone
