@@ -1,72 +1,13 @@
 import Link from "next/link";
 import { Suspense } from "react";
 
+import { ChildrenList } from "@/app/children-list";
 import { CourseRequest } from "@/app/course-request";
 import { Flag } from "@/components/flag";
 import { PageHeader } from "@/components/page-header";
 import { Loading, Shell } from "@/components/shell";
 import { requireUser } from "@/lib/auth";
 import { dbLoadError } from "@/lib/db-error";
-
-/**
- * Dzieci rodzica — nad jego własnymi kursami.
- *
- * Identyfikatory wydaje `my_children`: tabela powiązań jest niewidoczna dla PostgREST, a
- * polityki i tak przepuszczą rodzicowi tylko te konta. Osobny komponent, bo dane bierze z
- * dwóch zapytań po kolei (dzieci, potem ich statystyki) — lista kursów nie ma na co czekać.
- */
-async function Children() {
-  const { supabase } = await requireUser("/");
-
-  const { data: children, error } = await supabase.rpc("my_children");
-  const ids = (children ?? []).map((row) => row.user_id);
-
-  const { data: stats } = await supabase
-    .from("v_my_stats")
-    .select("user_id, total_points, lessons_done, streak_days, words_due, last_active_on")
-    .in("user_id", ids.length > 0 ? ids : ["00000000-0000-0000-0000-000000000000"]);
-
-  const statsOf = new Map((stats ?? []).map((row) => [row.user_id, row]));
-
-  return (
-    <section className="flex flex-col gap-4">
-      <h2 className="card-title">Twoje dzieci</h2>
-      {error && <p className="msg-error">{dbLoadError(error)}</p>}
-      {/* Prośba poszła sama przy logowaniu (`request_child_access`), więc nie każemy rodzicowi
-          szukać innej drogi — mówimy, że już czeka. */}
-      {(children ?? []).length === 0 && !error && (
-        <p className="text-zinc-600 dark:text-zinc-400">
-          Nie masz jeszcze przypisanego żadnego dziecka. Administrator dostał prośbę o dostęp —
-          pokaże się tutaj, gdy ją zatwierdzi.
-        </p>
-      )}
-      <ul className="flex flex-col gap-4">
-        {(children ?? []).map((child) => {
-          const stat = statsOf.get(child.user_id);
-          return (
-            <li key={child.user_id}>
-              <Link
-                href={`/dziecko/${child.user_id}`}
-                className="card flex flex-wrap items-center gap-4 p-5 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800"
-              >
-                <span className="text-4xl" aria-hidden>
-                  🧒
-                </span>
-                <span className="card-title">{child.display_name}</span>
-                <span className="ml-auto flex flex-wrap items-center gap-2 text-base">
-                  <span className="chip">⭐ {stat?.total_points ?? 0}</span>
-                  <span className="chip">📘 {stat?.lessons_done ?? 0}</span>
-                  <span className="chip">🔥 {stat?.streak_days ?? 0}</span>
-                  {(stat?.words_due ?? 0) > 0 && <span className="chip">🔁 {stat?.words_due}</span>}
-                </span>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </section>
-  );
-}
 
 async function Home() {
   // Imię, punkty i seria są w pasku u góry (`TopBar`) — tu zostaje lista kursów, a rodzicowi
@@ -95,7 +36,19 @@ async function Home() {
           jedno i drugie: dzieci, po które tu przychodzi, i kursy, na które go zapisano.
           Rodzic-administrator (jedno konto obsługujące oba) widzi dokładnie to samo. */}
       <PageHeader title={isParent ? "Twoje dzieci i kursy" : "Twoje kursy"} />
-      {isParent && <Children />}
+      {isParent && (
+        // Prośba poszła sama przy logowaniu (`request_child_access`), więc nie każemy rodzicowi
+        // szukać innej drogi — mówimy w `empty`, że już czeka.
+        <ChildrenList
+          title="Twoje dzieci"
+          empty={
+            <p className="text-zinc-600 dark:text-zinc-400">
+              Nie masz jeszcze przypisanego żadnego dziecka. Administrator dostał prośbę o dostęp —
+              pokaże się tutaj, gdy ją zatwierdzi.
+            </p>
+          }
+        />
+      )}
       {error && <p className="msg-error">{dbLoadError(error)}</p>}
       {isParent && <h2 className="card-title">Twoje kursy</h2>}
       <ul className="flex flex-col gap-4">

@@ -13,7 +13,9 @@ async function Rewards() {
 
   const [{ data: badges, error }, { data: mine }, { data: stats }] = await Promise.all([
     supabase.from("badges").select("code, title, description, icon, rule").eq("is_active", true).order("sort_order"),
-    supabase.from("user_badges").select("badge_code, awarded_at"),
+    // Filtr po użytkowniku: polityka `user_badges_read` puszcza rodzicowi odznaki jego dzieci,
+    // a administratorowi wszystkie — bez tego cudza odznaka zapalałaby się tu jako zdobyta.
+    supabase.from("user_badges").select("badge_code, awarded_at").eq("user_id", userId),
     supabase.from("v_my_stats").select("total_points, badges_earned").eq("user_id", userId).maybeSingle(),
   ]);
 

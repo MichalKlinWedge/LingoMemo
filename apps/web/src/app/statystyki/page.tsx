@@ -2,6 +2,7 @@ import { Suspense } from "react";
 
 import { DAYS, formatDuration, plural, POINTS, spellDuration, WORDS } from "@lingomemo/core";
 
+import { ChildrenList } from "@/app/children-list";
 import { CRUMB_HOME } from "@/components/breadcrumbs";
 import { Flag } from "@/components/flag";
 import { PageHeader } from "@/components/page-header";
@@ -11,12 +12,21 @@ import { requireUser } from "@/lib/auth";
 import { dbLoadError } from "@/lib/db-error";
 
 async function Stats() {
-  const { supabase, userId } = await requireUser("/statystyki");
+  const { supabase, userId, isParent } = await requireUser("/statystyki");
 
+  // Filtr po użytkowniku przy każdym widoku, nie tylko przy tych z sumą: polityki `*_read`
+  // puszczają rodzicowi także wiersze jego dzieci, a administratorowi wszystkie. Bez `eq`
+  // wykres tygodnia i „do poćwiczenia" pokazywałyby cudzą naukę jako własną.
   const [{ data: stats, error }, { data: daily }, { data: weak }, { data: courses }] = await Promise.all([
     supabase.from("v_my_stats").select("*").eq("user_id", userId).maybeSingle(),
-    supabase.from("v_my_daily").select("day, answers, correct"),
-    supabase.from("v_my_weak_words").select("*").gt("lapses", 0).order("lapses", { ascending: false }).limit(5),
+    supabase.from("v_my_daily").select("day, answers, correct").eq("user_id", userId),
+    supabase
+      .from("v_my_weak_words")
+      .select("*")
+      .eq("user_id", userId)
+      .gt("lapses", 0)
+      .order("lapses", { ascending: false })
+      .limit(5),
     supabase.from("v_my_courses").select("*").eq("user_id", userId).order("course_title"),
   ]);
 
@@ -66,6 +76,10 @@ async function Stats() {
           </ul>
         </section>
       )}
+
+      {/* Rodzic ma tu swoje postępy i dojście do postępów dziecka — karta dziecka
+          (`/dziecko/[id]`) pokazuje dokładnie to samo, tylko policzone dla niego. */}
+      {isParent && <ChildrenList title="Postępy dzieci" />}
 
       <section className="flex flex-col gap-3">
         <h2 className="card-title">Do poćwiczenia</h2>

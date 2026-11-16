@@ -998,6 +998,16 @@ mniej w wyzwalaczu zaproszeń i jedna sekcja więcej na stronie głównej.
 | Postępy | księgują się na koncie rodzica | każdy wiersz postępu ma `user_id`, więc statystyki dziecka pozostają nietknięte | wspólny wynik „rodziny" |
 | `exercises` | **dalej zamknięte** | rodzic robiący lekcje dostaje treść zadań z `get_lesson_exercises`, bez `accepted` / `answer` / `solution` — jak dziecko | otwarcie tabeli dla rodzica, bo „i tak się uczy" |
 
+**Pułapka odkryta przy okazji:** strony własnych postępów (`/statystyki`, `/nagrody`) pytały
+o `v_my_daily`, `v_my_weak_words` i `user_badges` bez `eq("user_id", …)`. Dla dziecka to obojętne —
+RLS i tak oddaje mu jeden komplet wierszy — ale rodzic (i administrator) dostaje tam także wiersze
+cudze, więc wykres tygodnia sumował naukę dzieci, a odznaka dziecka zapalała się rodzicowi jako
+zdobyta. Filtr po `user_id` idzie teraz przy **każdym** zapytaniu o własne dane, nie tylko przy tych,
+które i tak musiały wskazać wiersz (`v_my_stats`, `v_my_courses`). Widoki zostają bez zmian: te same
+czytają karty dzieci, tylko z innym identyfikatorem. Lista dzieci stała się wspólnym komponentem
+(`app/children-list.tsx`) i stoi na stronie głównej oraz w „Twoich postępach" — rodzic ma jedno
+dojście do karty dziecka niezależnie od tego, gdzie zacznie.
+
 Test `parent_learns.test.sql` pilnuje obu końców tej zmiany: że rodzic po zapisie zaczyna lekcję
 i dostaje zadania, oraz że zapis DZIECKA mu kursu nie otwiera, a tabeli `exercises` nie widzi
 ani przed zapisem, ani po nim.
