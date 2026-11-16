@@ -256,18 +256,19 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
                       </span>
                     </span>
                     {/* Jedna linia kwadracików na samym dole kafelka: etapy poziomu łatwego oraz
-                        wejścia na średni i trudny. */}
+                        wejścia na średni i trudny. Kwadracik staje także przy JEDNYM etapie:
+                        bez niego rząd zaczynał się od średniego i łatwego nie było widać wcale,
+                        a krótka lekcja ma na łatwym jeden etap — czyli dotyczyło to każdego
+                        kursu o kilkunastu słówkach w lekcji. */}
                     <span className="marks">
-                      {etapy > 1 && (
-                        <Stages
-                          lesson={lesson.id}
-                          title={lesson.title}
-                          locked={state === "locked"}
-                          done={etapyZrobione}
-                          total={etapy}
-                          stars={starsOf(lesson.id)}
-                        />
-                      )}
+                      <Stages
+                        lesson={lesson.id}
+                        title={lesson.title}
+                        locked={state === "locked"}
+                        done={etapyZrobione}
+                        total={etapy}
+                        stars={starsOf(lesson.id)}
+                      />
                       {harderOf(lesson.id).map((row) => (
                         <LevelBox key={row.level} lesson={lesson.id} title={lesson.title} row={row} />
                       ))}
@@ -386,16 +387,25 @@ function Stages({
   const zrobione = Math.min(Math.max(done, 0), total);
   const numery = Array.from({ length: total }, (_, index) => index + 1);
   const gwiazdkiEtapu = (nr: number) => Math.min(Math.max(stars.get(nr) ?? 0, 0), 3);
-  const opisEtapu = (nr: number) => `Etap ${nr} z ${total} — ${plural(gwiazdkiEtapu(nr), STARS)}`;
+  // Jeden etap to cała lekcja na łatwym, więc „Etap 1 z 1" niczego nie mówi — kwadracik nazywa
+  // się wtedy poziomem, bo tym właśnie jest w rzędzie obok średniego i trudnego.
+  const opisEtapu = (nr: number) =>
+    total === 1
+      ? `Poziom łatwy — ${plural(gwiazdkiEtapu(nr), STARS)}`
+      : `Etap ${nr} z ${total} — ${plural(gwiazdkiEtapu(nr), STARS)}`;
 
   if (locked) {
     return (
       <span
         className="stages"
         role="img"
-        aria-label={`Zrobione etapy: ${zrobione} z ${total}; ${numery
-          .map((nr) => `etap ${nr} — ${plural(gwiazdkiEtapu(nr), STARS)}`)
-          .join(", ")}`}
+        aria-label={
+          total === 1
+            ? opisEtapu(1)
+            : `Zrobione etapy: ${zrobione} z ${total}; ${numery
+                .map((nr) => `etap ${nr} — ${plural(gwiazdkiEtapu(nr), STARS)}`)
+                .join(", ")}`
+        }
       >
         {numery.map((nr) => (
           <span key={nr} className="mark-col">
