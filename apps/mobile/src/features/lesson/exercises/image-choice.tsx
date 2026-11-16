@@ -1,5 +1,6 @@
+import { Image } from 'expo-image';
 import { useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { color, size } from '@/constants/theme';
 import { mediaUrl } from '@/lib/media';
@@ -15,8 +16,9 @@ import { type ExerciseProps, list, str } from './types';
  * („Obrazek 2”), nie nazwą pliku: nazwa zwykle zdradza odpowiedź, a czytnik ekranu przeczytałby
  * ją dziecku na głos.
  *
- * Zwykły `Image` z React Native, nie `expo-image`: nowy moduł natywny wymagałby przebudowania
- * aplikacji na telefonie, a pamięć podręczna przyda się dopiero przy nauce bez sieci.
+ * `Image` z `expo-image`, nie wbudowany: obrazki lekcji są w SVG (tak je wgrywa panel), a tego
+ * formatu wbudowany `Image` nie rysuje wcale — kafelki były puste. Przy okazji dochodzi pamięć
+ * podręczna na dysku, więc drugi raz obrazek nie leci z sieci.
  */
 export function ImageChoiceExercise({
   exercise,
@@ -88,7 +90,8 @@ export function ImageChoiceExercise({
                 <Image
                   source={{ uri: url }}
                   style={styles.image}
-                  resizeMode="contain"
+                  contentFit="contain"
+                  cachePolicy="disk"
                   onError={() => setBroken((was) => (was.includes(option) ? was : [...was, option]))}
                 />
               )}

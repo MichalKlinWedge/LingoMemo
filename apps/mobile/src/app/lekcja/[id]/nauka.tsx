@@ -1,7 +1,8 @@
 import { plural, WORDS } from '@lingomemo/core';
+import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Body, Button, Message, Screen, Title } from '@/components/ui';
 import { color, size } from '@/constants/theme';
@@ -152,7 +153,8 @@ function WordBoard({ words, targetLang }: { words: BoardWord[]; targetLang: stri
               style={({ pressed }) => [styles.card, reading === index && styles.cardReading, pressed && styles.pressed]}
             >
               {url !== null ? (
-                <Image source={{ uri: url }} style={styles.image} resizeMode="contain" />
+                // `expo-image`, bo obrazki słówek są w SVG — wbudowany `Image` ich nie rysuje.
+                <Image source={{ uri: url }} style={styles.image} contentFit="contain" cachePolicy="disk" />
               ) : (
                 <Text style={styles.emoji}>{word.emoji !== '' ? word.emoji : '🔈'}</Text>
               )}
