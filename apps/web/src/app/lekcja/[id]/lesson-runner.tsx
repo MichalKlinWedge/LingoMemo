@@ -34,6 +34,7 @@ export function LessonRunner({
   stages,
   level,
   hintsLeft,
+  preview,
 }: {
   lessonId: string;
   courseSlug: string;
@@ -50,6 +51,9 @@ export function LessonRunner({
   level: number;
   /** Ile podpowiedzi zostało dziecku na dziś. Pula odnawia się o północy w jego strefie. */
   hintsLeft: number;
+  /** Podgląd z panelu: baza wpuszcza administratora także w lekcję zamkniętą
+   *  albo nieopublikowaną. Ucząc się normalnie, ma zamki jak dziecko. */
+  preview: boolean;
 }) {
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>("answering");
@@ -100,7 +104,7 @@ export function LessonRunner({
       }
 
       if (sessionRef.current === null) {
-        const started = await startLesson(lessonId, keyRef.current, stage, level);
+        const started = await startLesson(lessonId, keyRef.current, stage, level, preview);
         if ("error" in started) {
           setError(started.error);
           setPhase("answering");
@@ -156,7 +160,7 @@ export function LessonRunner({
     }
 
     if (sessionRef.current === null) {
-      const started = await startLesson(lessonId, keyRef.current, stage, level);
+      const started = await startLesson(lessonId, keyRef.current, stage, level, preview);
       if ("error" in started) {
         setError(started.error);
         return;
@@ -174,7 +178,7 @@ export function LessonRunner({
     setHints(result.hintsLeft);
     setDraftOf(null);
     startedAt.current = Date.now();
-  }, [exercise, index, lessonId, level, phase, stage]);
+  }, [exercise, index, lessonId, level, phase, preview, stage]);
 
   const next = useCallback(async () => {
     setVerdict(null);
@@ -452,6 +456,40 @@ function Feedback({
   showAnswer?: boolean;
 }) {
   const shown = showAnswer && typeof verdict.correctAnswer === "string" ? verdict.correctAnswer : null;
+
+  /**
+   * Po dobrej odpowiedzi lekcja idzie dalej sama po dziesięciu sekundach.
+   *
+   * Tylko po dobrej: przy błędnej dziecko musi zdążyć przeczytać, jak było poprawnie, a tego
+   * nie da się zmierzyć zegarem. Tylko gdy jest następne zadanie: zakończenie etapu albo lekcji
+   * zapisuje wynik i przyznaje punkty, więc ten jeden przycisk dziecko naciska samo.
+   *
+   * Każde kliknięcie i każdy klawisz odmierzają czas od nowa — dziecko, które słucha słówka
+   * głośnikiem albo ogląda odpowiedzi, nie ma zniknąć ekranu sprzed nosa w połowie.
+   */
+  const auto = verdict.correct && !last;
+
+  useEffect(() => {
+    if (!auto) return;
+
+    let timer = 0;
+    const odlicz = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(onNext, 10_000);
+    };
+
+    odlicz();
+    // Faza przechwytywania: licznik ma się przestawić także wtedy, gdy kliknięcie zatrzyma
+    // się na przycisku i nie dojdzie do okna.
+    window.addEventListener("pointerdown", odlicz, true);
+    window.addEventListener("keydown", odlicz, true);
+
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("pointerdown", odlicz, true);
+      window.removeEventListener("keydown", odlicz, true);
+    };
+  }, [auto, onNext]);
 
   return (
     <div
