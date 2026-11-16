@@ -63,11 +63,13 @@ npx eas-cli@latest env:list --environment preview
   włoskiego, francuskiego — tego, w którym dziecko ma kurs. Bez głosu aplikacja **pomija**
   zadanie ze słuchu i nie liczy go jako błędu.
 
-  Brakujący głos nie zawsze objawia się ciszą. Gdy Android dostaje `it-IT`, a danych włoskich nie
-  ma, nie zgłasza błędu — zostaje przy swoim domyślnym głosie i czyta włoskie słowa po angielsku.
-  Tak samo dla pozostałych języków. Jeśli więc kurs brzmi jak angielski, zacznij od sprawdzenia,
-  czy głos tego języka jest pobrany; w samej aplikacji ani w bazie nie ma czego przestawiać,
-  bo znacznik języka (`languages.tts_lang`, np. `it-IT`) idzie z bazy razem z zadaniem.
+  Brakujący głos nie objawia się ciszą. Gdy Android dostaje sam znacznik `it-IT`, a danych
+  włoskich nie ma, nie zgłasza błędu — zostaje przy swoim domyślnym głosie i czyta włoskie słowa
+  po angielsku. Dlatego aplikacja wskazuje mu **konkretny głos** z listy urządzenia (tak samo
+  robi web): albo przeczyta tym głosem, albo powie, że nie umie, a wtedy zamiast angielskiego
+  akcentu widać „ten telefon nie ma głosu dla tego języka” i zadanie ze słuchu jest pomijane.
+  W aplikacji ani w bazie nie ma czego przestawiać — znacznik języka (`languages.tts_lang`,
+  np. `it-IT`) idzie z bazy razem z zadaniem. Jedyne lekarstwo to pobrać głos w ustawieniach.
 
 ## Czego nie ma na tablecie
 
