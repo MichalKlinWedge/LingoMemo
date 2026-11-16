@@ -74,6 +74,10 @@ npx eas-cli@latest env:list --environment preview
   włoskiego, francuskiego — tego, w którym dziecko ma kurs. Bez głosu aplikacja **pomija**
   zadanie ze słuchu i nie liczy go jako błędu.
 
+  Które języki ten tablet umie przeczytać, pokazuje sekcja **„Konto”** na ekranie kursów:
+  wiersz „Głosy: polski ✓ · angielski ✓ · włoski ✗”. Pytanie „dlaczego nie mówi” da się tam
+  rozstrzygnąć bez zgadywania.
+
   Brakujący głos nie objawia się ciszą. Gdy Android dostaje sam znacznik `it-IT`, a danych
   włoskich nie ma, nie zgłasza błędu — zostaje przy swoim domyślnym głosie i czyta włoskie słowa
   po angielsku. Dlatego aplikacja wskazuje mu **konkretny głos** z listy urządzenia (tak samo

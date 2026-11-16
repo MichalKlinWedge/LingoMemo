@@ -133,3 +133,15 @@ export function useSpeak(lang: string) {
 
   return { speak, speaking, hasVoice, voicesLoaded: voices !== null };
 }
+
+/**
+ * Znaczniki języków (`pl`, `en`, `it`), dla których ten telefon ma jakikolwiek głos. Do podglądu
+ * w sekcji „Konto”; korzysta z tej samej, raz wczytanej listy co czytanie słówek.
+ *
+ * Głos na liście to jeszcze nie pewność: system zapowiada też języki, których danych nie pobrał
+ * (patrz `broken` wyżej). Dlatego podgląd mówi o tym wprost, zamiast obiecywać, że przeczyta.
+ */
+export async function voiceLanguages(): Promise<string[]> {
+  const voices = await allVoices();
+  return Array.from(new Set(voices.map((voice) => tag(voice.language).slice(0, 2))));
+}

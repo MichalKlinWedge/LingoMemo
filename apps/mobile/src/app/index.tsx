@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 
 import { Body, Button, Card, Chip, Message, Screen, Title } from '@/components/ui';
 import { UpdateBanner, UpdateCheck, UpdateInfo } from '@/components/update';
+import { VoiceList } from '@/components/voices';
 import { color, size } from '@/constants/theme';
 import { type Course, loadMyCourses } from '@/features/courses/load';
 import {
@@ -294,6 +295,7 @@ function Account({ email }: { email: string | null }) {
           <Body muted>Zalogowany: {email ?? '—'}</Body>
           <UpdateInfo />
           <UpdateCheck />
+          <VoiceList />
           {__DEV__ && (
             <>
               <Button kind="quiet" label="PoC-M1 — zadanie z bazy" onPress={() => router.push('/zadanie')} />
