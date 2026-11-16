@@ -1006,7 +1006,11 @@ zdobyta. Filtr po `user_id` idzie teraz przy **każdym** zapytaniu o własne dan
 które i tak musiały wskazać wiersz (`v_my_stats`, `v_my_courses`). Widoki zostają bez zmian: te same
 czytają karty dzieci, tylko z innym identyfikatorem. Lista dzieci stała się wspólnym komponentem
 (`app/children-list.tsx`) i stoi na stronie głównej oraz w „Twoich postępach" — rodzic ma jedno
-dojście do karty dziecka niezależnie od tego, gdzie zacznie.
+dojście do karty dziecka niezależnie od tego, gdzie zacznie. Tamże doszła sekcja „Twoje odznaki":
+zdobyte odznaki z datą i licznik punktów, żeby „ile zrobiłem" i „co za to mam" stało na jednej
+karcie — pełna lista, razem z niezdobytymi, zostaje w „Nagrodach". Sekcja jest dla każdego, nie
+tylko dla rodzica: to ta sama strona własnych postępów, a rozgałęzianie jej po roli dodałoby warunek
+bez żadnego zysku.
 
 Test `parent_learns.test.sql` pilnuje obu końców tej zmiany: że rodzic po zapisie zaczyna lekcję
 i dostaje zadania, oraz że zapis DZIECKA mu kursu nie otwiera, a tabeli `exercises` nie widzi

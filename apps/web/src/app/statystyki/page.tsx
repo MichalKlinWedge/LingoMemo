@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Suspense } from "react";
 
 import { DAYS, formatDuration, plural, POINTS, spellDuration, WORDS } from "@lingomemo/core";
@@ -17,7 +18,14 @@ async function Stats() {
   // Filtr po użytkowniku przy każdym widoku, nie tylko przy tych z sumą: polityki `*_read`
   // puszczają rodzicowi także wiersze jego dzieci, a administratorowi wszystkie. Bez `eq`
   // wykres tygodnia i „do poćwiczenia" pokazywałyby cudzą naukę jako własną.
-  const [{ data: stats, error }, { data: daily }, { data: weak }, { data: courses }] = await Promise.all([
+  const [
+    { data: stats, error },
+    { data: daily },
+    { data: weak },
+    { data: courses },
+    { data: badges },
+    { data: mine },
+  ] = await Promise.all([
     supabase.from("v_my_stats").select("*").eq("user_id", userId).maybeSingle(),
     supabase.from("v_my_daily").select("day, answers, correct").eq("user_id", userId),
     supabase
@@ -28,9 +36,16 @@ async function Stats() {
       .order("lapses", { ascending: false })
       .limit(5),
     supabase.from("v_my_courses").select("*").eq("user_id", userId).order("course_title"),
+    supabase.from("badges").select("code, title, icon").eq("is_active", true).order("sort_order"),
+    supabase.from("user_badges").select("badge_code, awarded_at").eq("user_id", userId),
   ]);
 
   if (error) return <p className="msg-error">{dbLoadError(error)}</p>;
+
+  // Zdobyte odznaki w kolejnosci z `badges` (sort_order), a nie w kolejnosci zdobywania: na
+  // stronie „Nagrody" stoja tak samo, wiec ta sama odznaka jest w tym samym miejscu listy.
+  const kiedy = new Map((mine ?? []).map((row) => [row.badge_code, row.awarded_at]));
+  const zdobyte = (badges ?? []).filter((badge) => kiedy.has(badge.code));
 
   const secondsWeek = stats?.seconds_week ?? 0;
   const secondsTotal = stats?.seconds_total ?? 0;
@@ -76,6 +91,40 @@ async function Stats() {
           </ul>
         </section>
       )}
+
+      {/* Odznaki i punkty na tej samej karcie, co kursy i wykres — żeby „ile zrobiłem" i „co za to
+          mam" stało w jednym miejscu. Pełna lista, razem z niezdobytymi, zostaje w „Nagrodach". */}
+      <section className="flex flex-col gap-3">
+        <h2 className="card-title">Twoje odznaki</h2>
+        {zdobyte.length === 0 ? (
+          <p className="text-zinc-600 dark:text-zinc-400">
+            Jeszcze żadnej — pierwsza jest za ukończoną lekcję.{" "}
+            <Link href="/nagrody" className="back-link">
+              Zobacz, co można zdobyć
+            </Link>
+            .
+          </p>
+        ) : (
+          <ul className="flex flex-wrap gap-2">
+            {zdobyte.map((badge) => (
+              <li key={badge.code} className="chip">
+                <span aria-hidden>{badge.icon ?? "🏅"}</span> {badge.title}
+                <span className="text-zinc-500">
+                  {" "}
+                  · {new Date(kiedy.get(badge.code) as string).toLocaleDateString("pl-PL")}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+        <p className="text-base text-zinc-600 dark:text-zinc-400">
+          Masz {plural(stats?.total_points ?? 0, POINTS)} i {zdobyte.length} z {(badges ?? []).length} odznak.{" "}
+          <Link href="/nagrody" className="back-link">
+            Wszystkie nagrody
+          </Link>
+          .
+        </p>
+      </section>
 
       {/* Rodzic ma tu swoje postępy i dojście do postępów dziecka — karta dziecka
           (`/dziecko/[id]`) pokazuje dokładnie to samo, tylko policzone dla niego. */}
