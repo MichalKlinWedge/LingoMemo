@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 
 import { Body, Button, Card, Chip, Message, Screen, Title } from '@/components/ui';
+import { Flag } from '@/components/flag';
 import { UpdateBanner, UpdateCheck, UpdateInfo } from '@/components/update';
 import { VoiceList } from '@/components/voices';
 import { color, size } from '@/constants/theme';
@@ -144,7 +145,7 @@ function CourseCard({ course }: { course: Course }) {
       onPress={() => router.push(`/kurs/${course.slug}`)}
       style={({ pressed }) => [styles.course, pressed && styles.pressed]}
     >
-      <Text style={styles.icon}>{course.icon ?? '📘'}</Text>
+      <Flag code={course.target_lang} fallback={course.icon} size={44} />
       <View style={styles.courseText}>
         <Text style={styles.courseTitle}>{course.title}</Text>
         {course.description !== null && <Text style={styles.courseDesc}>{course.description}</Text>}

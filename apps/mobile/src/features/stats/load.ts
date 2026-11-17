@@ -41,6 +41,7 @@ export type CourseStat = {
   course_id: string | null;
   course_title: string | null;
   course_icon: string | null;
+  course_target_lang: string | null;
   lessons_done: number | null;
   lessons_total: number | null;
   words_seen: number | null;

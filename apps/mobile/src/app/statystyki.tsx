@@ -3,6 +3,7 @@ import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { Flag } from '@/components/flag';
 import { Body, Card, Message, Screen, Title } from '@/components/ui';
 import { accuracy, Tile, WeekChart } from '@/components/stats-widgets';
 import { color, size } from '@/constants/theme';
@@ -81,9 +82,10 @@ export default function StatsScreen() {
           <Title>Twoje kursy</Title>
           {data.courses.map((course) => (
             <Card key={course.course_id ?? course.course_title}>
-              <Text style={styles.courseTitle}>
-                {course.course_icon ?? '📘'} {course.course_title}
-              </Text>
+              <View style={styles.courseHead}>
+                <Flag code={course.course_target_lang} fallback={course.course_icon} size={32} />
+                <Text style={styles.courseTitle}>{course.course_title}</Text>
+              </View>
               <Body muted>
                 lekcje: {course.lessons_done ?? 0} z {course.lessons_total ?? 0} ·{' '}
                 {plural(course.words_seen ?? 0, WORDS)} · ⏱️ {formatDuration(course.seconds_total ?? 0)}
@@ -118,5 +120,6 @@ export default function StatsScreen() {
 
 const styles = StyleSheet.create({
   tiles: { flexDirection: 'row', flexWrap: 'wrap', gap: size.gap },
+  courseHead: { alignItems: 'center', flexDirection: 'row', gap: size.gap },
   courseTitle: { color: color.text, fontSize: 19, fontWeight: '700' },
 });

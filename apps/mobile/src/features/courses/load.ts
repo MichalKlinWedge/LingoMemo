@@ -16,6 +16,8 @@ export type Course = {
   title: string;
   description: string | null;
   icon: string | null;
+  /** Język uczony — po nim dobiera się flagę kursu. */
+  target_lang: string | null;
 };
 
 export type Lesson = {
@@ -71,7 +73,7 @@ export type CourseMap = {
 /** Kursy, na które uczeń jest zapisany. Kurs bez zapisu jest w bazie zamknięty, więc go nie ma. */
 export async function loadMyCourses(userId: string): Promise<Result<Course[]>> {
   const [{ data: courses, error }, { data: enrolled }] = await Promise.all([
-    supabase.from('courses').select('id, slug, title, description, icon').order('sort_order'),
+    supabase.from('courses').select('id, slug, title, description, icon, target_lang').order('sort_order'),
     // Filtr po użytkowniku mimo RLS: uczeń widzi tu tylko swoje zapisy, ale rodzic widzi też
     // zapisy dzieci — bez filtru miałby u siebie kursy, których sam się nie uczy.
     supabase.from('enrollments').select('course_id').eq('user_id', userId),
@@ -86,7 +88,7 @@ export async function loadMyCourses(userId: string): Promise<Result<Course[]>> {
 export async function loadCourseMap(slug: string, userId: string): Promise<Result<CourseMap>> {
   const { data: course, error: courseError } = await supabase
     .from('courses')
-    .select('id, slug, title, description, icon')
+    .select('id, slug, title, description, icon, target_lang')
     .eq('slug', slug)
     .maybeSingle();
 
@@ -116,7 +118,7 @@ export async function loadCourseMap(slug: string, userId: string): Promise<Resul
   // Błąd zapytania o poziomy albo etapy też musi być widoczny: po cichu znikają wtedy
   // kwadraciki, a ekran wygląda na poprawny — tak właśnie wygląda brak migracji w bazie.
   const error = unitsError ?? lessonsError ?? levelsError ?? stagesError;
-  if (error) return { ok: false, error: dbErrorMessage(error, 'Nie udało się wczytać mapy kursu.') };
+  if (error) return { ok: false, error: dbErrorMessage(error, 'Nie udało się wczytać kursu.') };
 
   const bramka = (gate as unknown as Gate | null) ?? null;
   const reviewLesson = bramka?.lessonId ?? null;

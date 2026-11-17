@@ -3,6 +3,7 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { Flag } from '@/components/flag';
 import { Body, Button, Card, Chip, Message, Screen, Title } from '@/components/ui';
 import { color, level as levelColor, size } from '@/constants/theme';
 import { type CourseMap, type Lesson, loadCourseMap, unlockLesson } from '@/features/courses/load';
@@ -54,7 +55,7 @@ export default function CourseScreen() {
   if (map === null) {
     return (
       <Screen>
-        <Body muted>Wczytuję mapę…</Body>
+        <Body muted>Wczytuję kurs…</Body>
       </Screen>
     );
   }
@@ -63,9 +64,11 @@ export default function CourseScreen() {
 
   return (
     <Screen>
-      <Title>
-        {map.course.icon ?? '📘'} {map.course.title}
-      </Title>
+      {/* Flaga obok tytułu, a nie w nim: obrazek wewnątrz <Text> Android rysuje po swojemu. */}
+      <View style={styles.courseHead}>
+        <Flag code={map.course.target_lang} fallback={map.course.icon} size={36} />
+        <Title>{map.course.title}</Title>
+      </View>
       <Body muted>Ukończone: {plural(map.done, LESSONS)}</Body>
 
       {/* Stan konta punktów odblokowania. Bez tego dziecko nie wie, że kłódka z kluczykiem jest
@@ -408,6 +411,7 @@ function Mark({
 }
 
 const styles = StyleSheet.create({
+  courseHead: { alignItems: 'center', flexDirection: 'row', gap: size.gap },
   unit: { gap: size.gap },
   unitTitle: { color: color.text, fontSize: 22, fontWeight: '700' },
   tiles: { flexDirection: 'row', flexWrap: 'wrap', gap: size.gap },
