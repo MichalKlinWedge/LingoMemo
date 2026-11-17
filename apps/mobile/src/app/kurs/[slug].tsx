@@ -259,6 +259,7 @@ function LessonTile({
             stars={stageStars[nr] ?? 0}
             state={nr <= stagesDone ? 'done' : 'new'}
             paint={color.grass}
+            kind="stage"
             locked={state === 'locked'}
             label={
               stages === 1
@@ -277,6 +278,7 @@ function LessonTile({
               stars={row.stars ?? 0}
               state={levelState(row.status, row.stars ?? 0)}
               paint={paint}
+              kind="level"
               locked={row.is_unlocked !== true}
               label={`${lesson.title} — poziom ${nr === 2 ? 'średni' : 'trudny'}`}
               onPress={() => router.push(`/lekcja/${lesson.id}?poziom=${nr}`)}
@@ -390,11 +392,17 @@ function levelState(status: string | null, stars: number): MarkState {
  * Zaczęte, a niezaliczone rysujemy kropką w środku, tak jak web. Wcześniej było to wypełnienie
  * z przezroczystością (`${paint}80`) i przy osiemnastu pikselach czytało się jak kwadracik
  * zamalowany — czyli jak zaliczony poziom, którym nie był.
+ *
+ * Zamknięty kwadracik ZOSTAJE w kolorze swojego poziomu — blednie, ale się nie szarzeje, bo
+ * szary nie mówi, co się po przejściu łatwego otworzy. Bledną przy tym tylko poziomy; zamknięte
+ * etapy zostają w pełnym kolorze, dokładnie jak na webie (`.level-box[data-locked]` ma `opacity`,
+ * `.stage` nie ma go wcale).
  */
 function Mark({
   stars,
   state,
   paint,
+  kind,
   locked,
   label,
   onPress,
@@ -402,6 +410,7 @@ function Mark({
   stars: number;
   state: MarkState;
   paint: string;
+  kind: 'stage' | 'level';
   locked: boolean;
   label: string;
   onPress: () => void;
@@ -412,8 +421,9 @@ function Mark({
       <View
         style={[
           styles.mark,
-          { borderColor: locked ? color.line : paint },
+          { borderColor: paint },
           state === 'done' && { backgroundColor: paint },
+          locked && kind === 'level' && styles.markLocked,
         ]}
       >
         {state === 'tried' && <View style={[styles.markDot, { backgroundColor: paint }]} />}
@@ -494,6 +504,7 @@ const styles = StyleSheet.create({
   mark: { alignItems: 'center', borderRadius: 4, borderWidth: 2, height: 18, justifyContent: 'center', width: 18 },
   // Kropka „byłem tu, nie zaliczyłem": ten sam udział w kwadraciku, co promień 28% na webie.
   markDot: { borderRadius: 5, height: 10, width: 10 },
+  markLocked: { opacity: 0.35 },
   backdrop: {
     alignItems: 'center',
     backgroundColor: '#00000080',
