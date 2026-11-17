@@ -584,7 +584,7 @@ function SummaryScreen({
         )}
         <Button
           kind={nextStage === null ? 'primary' : 'quiet'}
-          label="Wróć do mapy"
+          label="Wróć do kursu"
           onPress={() => backToMap(router, courseSlug)}
         />
       </View>
@@ -602,7 +602,7 @@ function Exit({ courseSlug, text }: { courseSlug: string; text: string }) {
     >
       <Card>
         <Body>{text}</Body>
-        <Button label="Wróć do mapy" onPress={() => backToMap(router, courseSlug)} />
+        <Button label="Wróć do kursu" onPress={() => backToMap(router, courseSlug)} />
       </Card>
     </ScrollView>
   );

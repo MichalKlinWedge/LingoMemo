@@ -276,7 +276,7 @@ export function LessonRunner({
         </span>
         <p>Tego etapu nie da się zrobić bez głosu w przeglądarce. Nic nie policzyliśmy.</p>
         <Link href={`/kurs/${courseSlug}`} className="btn-primary">
-          Wróć do mapy
+          Wróć do kursu
         </Link>
       </div>
     );
@@ -287,7 +287,7 @@ export function LessonRunner({
       <div className="flex flex-col items-center gap-4 pt-10 text-center">
         <p>Ta lekcja nie ma jeszcze żadnych zadań.</p>
         <Link href={`/kurs/${courseSlug}`} className="btn-secondary">
-          Wróć do mapy
+          Wróć do kursu
         </Link>
       </div>
     );
@@ -673,7 +673,7 @@ function SummaryScreen({
           href={`/kurs/${courseSlug}`}
           className={nextStage !== null ? "btn-secondary" : "btn-primary"}
         >
-          Wróć do mapy
+          Wróć do kursu
         </Link>
       </div>
     </div>
