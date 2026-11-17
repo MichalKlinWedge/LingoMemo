@@ -1,7 +1,7 @@
--- Mapa kursu: zamknięte lekcje mają być WIDOCZNE, tylko niedostępne.
+-- Ekran kursu: zamknięte lekcje mają być WIDOCZNE, tylko niedostępne.
 --
 -- Pierwotnie polityka na `lessons` ukrywała lekcje, których uczeń jeszcze nie odblokował.
--- Dla bezpieczeństwa to było szczelne, ale dla dziecka bez sensu: mapa kursu pokazywałaby jedną
+-- Dla bezpieczeństwa to było szczelne, ale dla dziecka bez sensu: ekran kursu pokazywałby jedną
 -- lekcję i pustkę, zamiast ścieżki z kłódkami, po której widać, co jeszcze przed nim. Tytuł
 -- lekcji nie jest tajemnicą — tajemnicą są zadania i poprawne odpowiedzi, a tych pilnują
 -- osobne mechanizmy: `exercises` nie ma polityki SELECT dla ucznia, a `get_lesson_exercises`
@@ -23,7 +23,7 @@ create policy lessons_read on public.lessons
     )
   );
 
--- Mapa lekcji dla zalogowanego ucznia: stan otwarcia i postęp w jednym zapytaniu.
+-- Lista lekcji dla zalogowanego ucznia: stan otwarcia i postęp w jednym zapytaniu.
 -- `security_invoker`: widok dziedziczy RLS tabel bazowych, więc uczeń widzi wyłącznie swój
 -- postęp, a nie cudzy.
 create view public.v_my_lessons with (security_invoker = on) as
