@@ -171,23 +171,13 @@
       "type": "inflection",
       "conceptKey": "thing.pencil",
       "points": 15,
-      "payload": { "base": "a pencil", "formLabel": "sześć sztuk", "instruction": "Napisz liczbę mnogą.", "accepted": ["six pencils", "pencils"] }
-    },
-    {
-      "type": "inflection",
-      "points": 15,
-      "payload": { "base": "an orange", "formLabel": "dwie sztuki", "instruction": "Napisz liczbę mnogą.", "accepted": ["two oranges", "oranges"] }
-    },
-    {
-      "type": "inflection",
-      "points": 15,
-      "payload": { "base": "a box", "formLabel": "cztery sztuki", "instruction": "Napisz liczbę mnogą.", "accepted": ["four boxes", "boxes"] }
+      "payload": { "base": "a pencil", "formLabel": "liczba mnoga", "instruction": "Napisz liczbę mnogą.", "accepted": ["pencils", "six pencils"] }
     },
     {
       "type": "inflection",
       "conceptKey": "spell.sandwich",
       "points": 15,
-      "payload": { "base": "a sandwich", "formLabel": "dwie sztuki", "instruction": "Napisz liczbę mnogą.", "accepted": ["two sandwiches", "sandwiches"] }
+      "payload": { "base": "a sandwich", "formLabel": "liczba mnoga", "instruction": "Napisz liczbę mnogą.", "accepted": ["sandwiches", "two sandwiches"] }
     },
     {
       "type": "fill_blank_choice",
