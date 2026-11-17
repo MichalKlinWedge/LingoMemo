@@ -1365,3 +1365,30 @@ tak, jak się je pisze — bo dokładnie o to prosi komunikat na ekranie.
 Dwa testy, które opisywały stan sprzed poprawki (`typo_retry.test.sql`, `lessons.test.sql`),
 mówią teraz odwrotnie, a doszedł trzeci: poprawiona naprawdę odpowiedź ma przechodzić. Bez niego
 poprzedni test dałoby się zdać, zamykając poprawianie w ogóle.
+
+### Telefon: ustawienia pod zębatką, nie na ekranie kursów (2026-11-17)
+
+Ekran kursów zebrał z czasem wszystko, co nie miało innego miejsca: kartę przypomnienia
+o powtórkach pośrodku listy, a pod nią rozwijany napis „Konto" z zalogowanym adresem, wersją
+aplikacji, sprawdzeniem aktualizacji, listą głosów i wylogowaniem. Dorosły musiał przewinąć
+wszystkie kursy dziecka i wiedzieć, że ten napis w ogóle się rozwija.
+
+Od teraz w prawym górnym rogu nagłówka ekranu kursów stoi zębatka (`SettingsButton`
+w `headerRight`), a za nią osobny ekran `ustawienia.tsx`: konto, wersja aplikacji ze
+sprawdzeniem aktualizacji, przypomnienie o powtórkach, głosy i wyjście z konta. Ekran kursów
+pokazuje kursy, pasek stanu i kartę „Nowa wersja gotowa" — czyli to, co dotyczy dziecka.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Gdzie zębatka | tylko na ekranie kursów | to jedyny ekran, z którego dorosły zaczyna; w lekcji każdy piksel nagłówka jest zajęty, a wyjście do ustawień w środku zadania gubi podejście | zębatka w nagłówku każdego ekranu |
+| Co z przypomnieniem | przenosimy w całości | jedno miejsce na rzeczy ustawiane raz; włączenie i tak jest czynnością dorosłego, a nie dziecka | zostawienie karty na ekranie kursów (wraca bałagan, od którego zaczęliśmy) |
+| Zębatka dla niezalogowanego | nie pokazuje się | ekran kursów jest wtedy powitaniem z prośbą o zalogowanie — w ustawieniach konta, którego nie ma, nie ma czego ustawiać | zębatka zawsze, z komunikatem po wejściu |
+| Rozmiar dotyku | 44 px plus `hitSlop` 8 | nagłówek ma 56 px wysokości, więc wymagane 56 nie mieści się jako obrys; `hitSlop` dokłada je tam, gdzie i tak nic nie stoi | przycisk 56 px (rozpycha nagłówek), sama ikona bez zapasu (dla palca za mała) |
+
+Numer wersji pokazuje `UpdateInfo` tak jak dotąd — `runtimeVersion` z `useUpdates`, czyli przy
+polityce `appVersion` wprost `version` z `app.json`. Osobnego licznika wersji nie zakładamy
+z tego samego powodu co poprzednio: druga prawda o wersji to drugie miejsce do pomyłki.
+
+Zapowiedziany skutek do sprawdzenia na urządzeniu: wyłączone przypomnienie jest teraz o jedno
+dotknięcie dalej niż było. Jeśli po tygodniu okaże się, że nikt go nie włączył, na ekran kursów
+wraca jednowierszowa zachęta prowadząca do ustawień — ale sam przełącznik zostaje pod zębatką.

@@ -2,6 +2,7 @@ import * as Notifications from 'expo-notifications';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
+import { SettingsButton } from '@/components/settings-button';
 import { color } from '@/constants/theme';
 
 // Powiadomienie ma być widoczne także wtedy, gdy aplikacja jest otwarta — inaczej pomiar
@@ -27,8 +28,12 @@ export default function Layout() {
           contentStyle: { backgroundColor: color.background },
         }}
       >
-        <Stack.Screen name="index" options={{ title: 'Twoje kursy' }} />
+        <Stack.Screen
+          name="index"
+          options={{ title: 'Twoje kursy', headerRight: () => <SettingsButton /> }}
+        />
         <Stack.Screen name="logowanie" options={{ title: 'Logowanie' }} />
+        <Stack.Screen name="ustawienia" options={{ title: 'Ustawienia' }} />
         <Stack.Screen name="kurs/[slug]" options={{ title: 'Kurs' }} />
         {/* Lekcja ma własny pasek: krzyżyk wyjścia, postęp i liczniki. Drugi nagłówek nad nim
             zabierałby wysokość ekranu, której przy zadaniu z klawiaturą i tak brakuje. */}

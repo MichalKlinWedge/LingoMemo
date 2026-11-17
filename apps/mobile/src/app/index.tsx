@@ -1,30 +1,19 @@
 import { DAYS, plural, POINTS } from '@lingomemo/core';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
+import { useCallback, useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Body, Button, Card, Chip, Message, Screen, Title } from '@/components/ui';
 import { Flag } from '@/components/flag';
-import { UpdateBanner, UpdateCheck, UpdateInfo } from '@/components/update';
-import { VoiceList } from '@/components/voices';
+import { UpdateBanner } from '@/components/update';
 import { color, size } from '@/constants/theme';
 import { type Course, loadMyCourses } from '@/features/courses/load';
-import {
-  disableReminders,
-  enableReminders,
-  exactAlarms,
-  HOURS,
-  reminderHour,
-  remindersOn,
-  refreshReminder,
-  requestExactAlarms,
-  setReminderHour,
-} from '@/features/reminders/reminders';
+import { refreshReminder } from '@/features/reminders/reminders';
 import { type BarData, loadBar } from '@/features/stats/load';
 import { useSession } from '@/lib/session';
-import { isConfigured, supabase } from '@/lib/supabase';
+import { isConfigured } from '@/lib/supabase';
 
-/** Twoje kursy, a pod nimi nagrody, postępy i przypomnienia o powtórkach. */
+/** Twoje kursy, a pod nimi nagrody i postępy. Konto i przypomnienia — pod zębatką w nagłówku. */
 export default function Home() {
   const session = useSession();
   const userId = session?.user.id ?? null;
@@ -94,8 +83,6 @@ export default function Home() {
       ))}
 
       <Nav />
-      <Reminders userId={session.user.id} />
-      <Account email={session.user.email ?? null} />
     </Screen>
   );
 }
@@ -170,95 +157,6 @@ function Nav() {
   );
 }
 
-/**
- * Przypomnienie o powtórkach: jeden przełącznik i godzina. Stoi na ekranie kursów, a nie
- * w ustawieniach systemowych, bo wyłączone domyślnie przypomnienie to przypomnienie, którego
- * nikt nie włączy (lekcja P1.3 z ExpeditionPlan).
- */
-function Reminders({ userId }: { userId: string }) {
-  const [on, setOn] = useState(remindersOn());
-  const [hour, setHour] = useState(reminderHour());
-  const [exact, setExact] = useState<boolean | null>(null);
-  const [note, setNote] = useState<string | null>(null);
-
-  useEffect(() => {
-    let alive = true;
-    void exactAlarms().then((granted) => {
-      if (alive) setExact(granted);
-    });
-    return () => {
-      alive = false;
-    };
-  }, [on]);
-
-  const toggle = async (next: boolean) => {
-    if (!next) {
-      await disableReminders();
-      setOn(false);
-      setNote(null);
-      return;
-    }
-    const result = await enableReminders(userId, hour);
-    setOn(result.on);
-    setNote(
-      result.on
-        ? null
-        : 'Android nie dał zgody na powiadomienia — można ją włączyć w ustawieniach aplikacji.',
-    );
-  };
-
-  return (
-    <Card>
-      <Title>Przypomnienie o powtórkach</Title>
-      <View style={styles.switchRow}>
-        <Body>{on ? `Codziennie o ${hour}:00` : 'Wyłączone'}</Body>
-        <Switch
-          value={on}
-          onValueChange={(next) => void toggle(next)}
-          accessibilityLabel="Codzienne przypomnienie o powtórkach"
-          trackColor={{ true: color.brand, false: color.line }}
-        />
-      </View>
-      {on && (
-        <View style={styles.hours}>
-          {HOURS.map((option) => (
-            <Pressable
-              key={option}
-              accessibilityRole="button"
-              accessibilityState={{ selected: option === hour }}
-              onPress={() => {
-                setHour(option);
-                void setReminderHour(userId, option);
-              }}
-              style={({ pressed }) => [
-                styles.hour,
-                option === hour && styles.hourPicked,
-                pressed && styles.pressed,
-              ]}
-            >
-              <Text style={[styles.hourText, option === hour && styles.hourTextPicked]}>{option}:00</Text>
-            </Pressable>
-          ))}
-        </View>
-      )}
-      {on && exact === false && (
-        <>
-          <Body muted>
-            Android bez zgody na dokładne alarmy może przesunąć przypomnienie nawet o kilkanaście
-            minut.
-          </Body>
-          <Button
-            kind="quiet"
-            label="Włącz dokładne alarmy"
-            onPress={() => void requestExactAlarms(userId).then((granted) => setExact(granted))}
-          />
-        </>
-      )}
-      {note !== null && <Message kind="error" text={note} />}
-    </Card>
-  );
-}
-
 function Welcome() {
   const router = useRouter();
   return (
@@ -273,41 +171,6 @@ function Welcome() {
         </Body>
       </Card>
     </Screen>
-  );
-}
-
-/**
- * Konto: kto jest zalogowany i wylogowanie. Stoi na dole i cicho, bo dziecko zagląda tu raz.
- *
- * Ekrany pomiarowe bramki M0 (PoC-M1/M2/M3) są schowane za `__DEV__`, czyli widać je wyłącznie
- * w dev buildzie z Metro. APK dziecka to ta sama paczka kodu co telefon właściciela, więc bez
- * tego warunku dziecko dostawało na ekranie kursów trzy drogi do narzędzi, które nie są nauką.
- */
-function Account({ email }: { email: string | null }) {
-  const router = useRouter();
-  const [open, setOpen] = useState(false);
-  return (
-    <View style={styles.tools}>
-      <Pressable accessibilityRole="button" onPress={() => setOpen(!open)} style={styles.toolsHeader}>
-        <Text style={styles.toolsText}>{open ? 'Ukryj' : 'Konto'}</Text>
-      </Pressable>
-      {open && (
-        <Card>
-          <Body muted>Zalogowany: {email ?? '—'}</Body>
-          <UpdateInfo />
-          <UpdateCheck />
-          <VoiceList />
-          {__DEV__ && (
-            <>
-              <Button kind="quiet" label="PoC-M1 — zadanie z bazy" onPress={() => router.push('/zadanie')} />
-              <Button kind="quiet" label="PoC-M2 — mowa" onPress={() => router.push('/mowa')} />
-              <Button kind="quiet" label="PoC-M3 — przypomnienia" onPress={() => router.push('/powiadomienia')} />
-            </>
-          )}
-          <Button kind="quiet" label="Wyloguj" onPress={() => void supabase.auth.signOut()} />
-        </Card>
-      )}
-    </View>
   );
 }
 
@@ -332,22 +195,4 @@ const styles = StyleSheet.create({
   bar: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   nav: { flexDirection: 'row', gap: size.gap },
   navItem: { flex: 1 },
-  switchRow: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' },
-  hours: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  hour: {
-    alignItems: 'center',
-    backgroundColor: color.surface,
-    borderColor: color.line,
-    borderRadius: 999,
-    borderWidth: 2,
-    justifyContent: 'center',
-    minHeight: 44,
-    paddingHorizontal: 14,
-  },
-  hourPicked: { backgroundColor: color.brandLight, borderColor: color.brand },
-  hourText: { color: color.text, fontSize: 16, fontWeight: '700' },
-  hourTextPicked: { color: color.brandDark },
-  tools: { gap: size.gap, marginTop: 24 },
-  toolsHeader: { alignItems: 'center', justifyContent: 'center', minHeight: 44 },
-  toolsText: { color: color.muted, fontSize: 16, textDecorationLine: 'underline' },
 });
