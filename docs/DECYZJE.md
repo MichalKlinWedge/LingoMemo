@@ -1042,7 +1042,7 @@ planuje, a telefon działa w trasie.
 | Obszar | Wybór | Dlaczego | Odrzucone |
 |---|---|---|---|
 | Rodzaj aplikacji | Expo / React Native, Android | przewidywalna mowa (głosy systemowe offline), codzienne przypomnienia o powtórkach z dokładnym alarmem, ikona i pełny ekran bez proszenia dziecka o „Dodaj do ekranu głównego”, zapas na naukę offline w v1.x | PWA — Web Speech API jest u nas znaną pułapką, a powiadomienia codzienne na iOS praktycznie nie istnieją; WebView z adresem produkcyjnym — oszczędza drugi interfejs, ale nie daje ani mowy, ani offline, czyli tego, po co w ogóle robimy telefon |
-| System | tylko Android | jest czym rozdawać APK (EAS, kanał `dzieci`); na iPada zostaje PWA | iOS — bez konta dewelopera Apple nie ma dystrybucji |
+| System | tylko Android | jest czym rozdawać APK (EAS, kanał `preview`); na iPada zostaje PWA | iOS — bez konta dewelopera Apple nie ma dystrybucji |
 | Zakładanie konta | zostaje na webie (link z zaproszeniem, hook `before_user_created`) | druga ścieżka rejestracji w aplikacji to drugie miejsce, w którym można się pomylić co do tokenu | rejestracja w aplikacji, logowanie magic linkiem |
 | Magazyn sesji | `localStorage` z expo-sqlite | SecureStore ma limit 2 KB na wartość, a token sesji Supabase bywa dłuższy — sesja ginęłaby po restarcie | `expo-secure-store` (tak było w pierwszej wersji planu), AsyncStorage (dodatkowa zależność bez zysku) |
 | Limit czasu zapytań | 15 s w `fetch` klienta Supabase | klient Supabase nie ma własnego limitu; przy jednej kresce zasięgu zapytanie wisi minutami, a dziecko patrzy w „Sprawdzam…”. Lekcja P1.1 z ExpeditionPlan | bez limitu (domyślnie), 30 s jak w ExpeditionPlan — tam chodzi o góry, tu o odpowiedź w lekcji |
@@ -1156,12 +1156,12 @@ tylko przy nowym APK, nie przez OTA):
   i przewijane, więc poziomo działają.
 - **`updates.checkAutomatically: "ON_LOAD"` zamiast `"ON_ERROR_RECOVERY"`.** Przy wartości
   z szablonu aplikacja szuka aktualizacji dopiero po awarii, a my nie mamy (jeszcze) własnego
-  sprawdzania w kodzie — czyli `npm run ota:dzieci` nigdy by do tabletu nie dotarł. Zauważone
+  sprawdzania w kodzie — czyli poprawka OTA nigdy by do tabletu nie dotarła. Zauważone
   przed wysłaniem pliku dziecku; build z poprzednią wartością został anulowany.
 
 Zmienne `EXPO_PUBLIC_SUPABASE_URL` i `EXPO_PUBLIC_SUPABASE_ANON_KEY` są zapisane po stronie EAS
-(środowisko `preview`, widoczność `plaintext`), bo `.env.local` nie jedzie do chmury, a profile
-`preview` i `dzieci` wskazują to środowisko w `eas.json`. Klucz publishable może być w APK —
+(środowisko `preview`, widoczność `plaintext`), bo `.env.local` nie jedzie do chmury, a profil
+`preview` wskazuje to środowisko w `eas.json`. Klucz publishable może być w APK —
 dostępu do danych pilnuje RLS, a ocena odpowiedzi i tak dzieje się w bazie.
 
 Instrukcja instalacji dla rodzica: `docs/TELEFON.md`.
@@ -1392,3 +1392,23 @@ z tego samego powodu co poprzednio: druga prawda o wersji to drugie miejsce do p
 Zapowiedziany skutek do sprawdzenia na urządzeniu: wyłączone przypomnienie jest teraz o jedno
 dotknięcie dalej niż było. Jeśli po tygodniu okaże się, że nikt go nie włączył, na ekran kursów
 wraca jednowierszowa zachęta prowadząca do ustawień — ale sam przełącznik zostaje pod zębatką.
+## Jeden kanał na Androida, nie osobny dla dzieci (2026-11-17)
+
+Były dwa kanały EAS: `preview` na telefon właściciela i `dzieci` na tablety dzieci. Pomysł był
+taki, że poprawka idzie najpierw do siebie, a do dzieci dopiero po sprawdzeniu. W praktyce
+oznaczało to podwójny build, podwójne `npm run ota` i cztery polecenia w `package.json`, przy
+których łatwo było wysłać poprawkę u siebie i zapomnieć o dzieciach — czyli zostawić je na
+starszym kodzie, nie wiedząc o tym.
+
+Od teraz **wersje są dwie: strona w przeglądarce i Android**. Jeden profil (`preview`), jeden
+kanał, jedno `npm run ota`, jedno `npm run apk`.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Ile kanałów Androida | jeden, `preview` | telefony w domu są trzy, nie trzysta — osobny kanał kosztował krok przy każdej poprawce, a nie kupował nic, czego nie da się sprawdzić na webie albo na dev buildzie | dwa kanały (tak było); kanał `dzieci` wskazujący gałąź `preview` (działa bez przeinstalowania, ale zostawia nazwę, która już nic nie znaczy) |
+| Co z wgranym APK dzieci | nowy plik do zainstalowania raz | kanał wchodzi do paczki przy budowaniu, więc stary APK słucha kanału, którego już nie zasilamy | zostawienie starego kanału przy życiu |
+| Gdzie sprawdzać przed wysłaniem | na webie albo na dev buildzie | przebieg lekcji jest w obu aplikacjach ten sam, a różnice natywne i tak wymagają APK | kanał „najpierw u mnie" (to właśnie znosimy) |
+
+Nazwa `preview` zostaje, choć kanał jest już jedyny: siedzi w APK właściciela, więc zmiana nazwy
+znaczyłaby nowy plik także dla niego. To jest nazwa dystrybucji wewnętrznej w EAS, nie obietnica,
+że wersja jest próbna.

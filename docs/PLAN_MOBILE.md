@@ -278,8 +278,8 @@ paska nawigacji (`useSafeAreaInsets`).
 
 ### Etap M4 — dystrybucja i stabilizacja
 
-APK na kanale `dzieci` (`eas build --profile dzieci`), aktualizacje OTA najpierw na kanał
-właściciela, do dzieci osobnym poleceniem i tylko ze sprawdzonego commita. `expo-updates`
+APK na kanale `preview` (`eas build --profile preview`) — jeden dla właściciela i dla dzieci,
+tak samo aktualizacje OTA, zawsze ze sprawdzonego commita. `expo-updates`
 z propozycją restartu. Obsługa wygaśnięcia sesji bez wyrzucania na biały ekran. Krótki
 `docs/TELEFON.md` dla rodzica: instalacja z linku w Chrome, zgoda na źródło, „Zainstaluj mimo to”
 w Play Protect — wszystkie trzy pułapki opisane w `ZNAJOMI.md` są prawdziwe.
@@ -321,7 +321,7 @@ apps/mobile/
 ```
 
 Polecenia w katalogu głównym: `npm run mobile` (sync-env + `expo start`), `npm run ota`
-i `npm run ota:dzieci`, `npm run apk` i `npm run apk:dzieci`. Typecheck i lint telefonu wchodzą
+i `npm run apk` — po jednym, bo kanał Androida jest jeden. Typecheck i lint telefonu wchodzą
 do `npm run check` same, bo `npm run typecheck --workspaces --if-present` obejmuje nowy pakiet.
 Buildu EAS do bramy jakości **nie** wnosimy — trwa minuty i wymaga sieci; bramą dla telefonu jest
 kryterium odbioru etapu.

@@ -2,8 +2,10 @@
 /**
  * Poprawka OTA na wskazany kanał EAS, z komunikatem z ostatniego commita.
  *
- *   node scripts/ota.mjs preview   — kanał właściciela (najpierw sprawdzamy u siebie)
- *   node scripts/ota.mjs dzieci    — ta sama poprawka do dzieci, z tego samego commita
+ *   node scripts/ota.mjs preview   — jedyny kanał Androida, ten sam dla właściciela i dla dzieci
+ *
+ * Kanał zostaje parametrem, mimo że jest jeden: nazwa i tak musi trafić do `eas update`, a gdyby
+ * kiedyś doszedł drugi (choćby `development` do pracy z dev buildem), skrypt jest już na to gotów.
  *
  * Komunikat jest wymagany: `eas update` bez niego zatrzymuje się na pytaniu, a w skrypcie nie
  * ma kto odpowiedzieć. Podanie go z wiersza poleceń przez `npm run ota -- --message "…"` nie

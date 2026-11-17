@@ -7,14 +7,18 @@ w niej nie ma — to zostaje na stronie w przeglądarce. Plan i etapy: `docs/PLA
 
 ## Dla właściciela: skąd się bierze plik do instalacji
 
-Dziecko dostaje **osobny APK** z kanału `dzieci`. Aktualizacje wysyłane poleceniem `npm run ota`
-trafiają tylko na telefon właściciela; do dzieci idzie wersja sprawdzona, osobnym poleceniem.
+Jest **jeden APK i jeden kanał** (`preview`) — ten sam u właściciela i u dzieci. Dwie wersje
+aplikacji to strona w przeglądarce i Android, a nie dwa Androidy.
 
 ```bash
-npm run apk:dzieci   # nowy APK dla dzieci (gdy zmieni się coś natywnego albo uprawnienie)
-npm run ota          # poprawka JS u właściciela — najpierw sprawdzamy u siebie
-npm run ota:dzieci   # ta sama poprawka do dzieci, z tego samego commita
+npm run apk          # nowy APK (gdy zmieni się coś natywnego albo uprawnienie)
+npm run ota          # poprawka JS na wszystkie telefony
 ```
+
+Skoro poprawka idzie od razu także do dzieci, **sprawdzamy ją przed wysłaniem** — na swoim
+telefonie z dev buildem albo na stronie, która ma ten sam kod przebiegu lekcji. Wcześniej była
+na to osobna para kanałów (`preview` u właściciela, `dzieci` u dzieci); zabierała jeden krok
+przy każdej poprawce, a i tak pierwszy raz oglądało się ją dopiero na telefonie.
 
 Po zbudowaniu EAS podaje link ze stroną instalacyjną — ten link wysyłamy albo otwieramy na
 tablecie. Historia buildów: https://expo.dev/accounts/klin.michal/projects/lingomemo/builds

@@ -44,21 +44,20 @@ npm run typecheck && npm run lint   # przed uznaniem zadania za zrobione
 ## Projekt EAS
 
 Projekt jest połączony z kontem właściciela: **@klin.michal/lingomemo**
-(`extra.eas.projectId` i `updates.url` w `app.json`). Build dla siebie i dla dzieci:
+(`extra.eas.projectId` i `updates.url` w `app.json`). **Jeden kanał Androida — `preview`** —
+ten sam APK i ta sama poprawka OTA u właściciela i u dzieci:
 
 ```bash
 npx eas-cli@latest build --platform android --profile development   # dev build (do pracy z expo start)
-npm run apk           # APK „preview" dla właściciela
-npm run apk:dzieci    # APK dla dzieci
-npm run ota           # aktualizacja JS na kanał właściciela
-npm run ota:dzieci    # ta sama zmiana do dzieci — tylko ze sprawdzonego commita
+npm run apk           # APK dla wszystkich (profil „preview")
+npm run ota           # aktualizacja JS na telefony — sprawdzona, bo idzie do dzieci od razu
 ```
 
 **Dev build wczytuje kod z komputera**: po instalacji uruchamiamy `npm run mobile` w katalogu
 głównym i telefon musi widzieć ten komputer (to samo Wi-Fi; inaczej `npx expo start --tunnel`).
 Dlatego dev buildowi nie są potrzebne zmienne z chmury — `.env.local` czyta Metro na komputerze.
 
-**APK „preview" i „dzieci" to inna sprawa**: zmienne wchodzą do paczki przy budowaniu, a
+**APK „preview" to inna sprawa**: zmienne wchodzą do paczki przy budowaniu, a
 `.env.local` nie jedzie do EAS (jest w `.gitignore`). Przed pierwszym takim buildem trzeba wpisać
 je po stronie EAS, raz na środowisko:
 
