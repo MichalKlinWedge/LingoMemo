@@ -160,6 +160,26 @@
     {
       "type": "fill_blank_choice",
       "payload": { "sentence": "Giorgia and Toni are {{blank}}.", "options": ["Italian", "italian", "ITALIAN", "iTalian"], "answer": "Italian", "translation": "Narodowości piszemy wielką literą." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "place.in-the-garden",
+      "payload": { "sentence": "Flowers, a tree and our cat. We're {{blank}}.", "options": ["in the garden", "at school", "on holiday", "at a party"], "answer": "in the garden", "translation": "Kwiatki, drzewo i nasz kot. Jesteśmy w ogrodzie." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "place.at-home",
+      "payload": { "sentence": "It's Sunday. We're {{blank}} with Mum and Dad.", "options": ["at home", "at school", "in the park", "on holiday"], "answer": "at home", "translation": "Jest niedziela. Jesteśmy w domu z mamą i tatą." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "verb.spell",
+      "payload": { "sentence": "How do you {{blank}} your name?", "options": ["spell", "speak", "say", "write"], "answer": "spell", "translation": "Jak się literuje twoje imię?" }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "adj.interesting",
+      "payload": { "sentence": "This book about Australia is very {{blank}}.", "options": ["interesting", "favourite", "near", "too"], "answer": "interesting", "translation": "Ta książka o Australii jest bardzo interesująca." }
     }
   ]
 }

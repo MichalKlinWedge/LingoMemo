@@ -72,6 +72,12 @@ Pojedynczy test: `npx vitest run src/__tests__/x.test.ts` wewnątrz pakietu.
   więc trzy zostawiają dziurę w drugim rzędzie, a strzał w ciemno trafia co trzeci raz zamiast
   co czwarty. Walidacja przepuszcza od dwóch do czterech (lekcja może nie mieć czym uzupełnić),
   ale generowana treść ma zawsze cztery.
+- **Nowa lekcja ma mieć co najmniej dwa etapy łatwe, jedno zadanie średnie i jedno trudne.**
+  Etap to piętnaście zadań (`ceil(zadań / 15)`), więc dwa etapy znaczą szesnaście zadań poziomu
+  pierwszego. Poziomu nie podaje się w pliku — wylicza go `default_exercise_level` z typu
+  i payloadu: wskazywanie i układanie klocków to 1, wpisanie jednego słowa 2, zdanie, pisanie
+  ze słuchu i odmiana 3. Lekcja na jeden etap wygląda dla dziecka na zaliczoną po jednym
+  podejściu i nie ma z czego robić powtórek na wyższych poziomach.
 - Jedna szerokość treści dla wszystkich stron — `<Shell>`. Strona nie dobiera sobie własnej.
 - Nawigacja zawsze jako `<Link>`, nigdy `router.push` z `<button>`.
 - Autoryzacja w **każdej** stronie i akcji przez `requireUser()` — Server Actions omijają matcher

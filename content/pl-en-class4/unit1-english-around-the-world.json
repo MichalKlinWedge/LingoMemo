@@ -133,6 +133,25 @@
         "tokens": ["The", "UK", "is", "four", "different", "countries."],
         "solution": ["The", "UK", "is", "four", "different", "countries."]
       }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "country.wales",
+      "payload": { "sentence": "Cardiff is the capital city of {{blank}}.", "options": ["Wales", "Scotland", "England", "Canada"], "answer": "Wales", "translation": "Cardiff jest stolicą Walii." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "country.northern-ireland",
+      "payload": { "sentence": "Belfast is in {{blank}}.", "options": ["Northern Ireland", "Scotland", "Wales", "Canada"], "answer": "Northern Ireland", "translation": "Belfast leży w Irlandii Północnej." }
+    },
+    {
+      "type": "fill_blank_choice",
+      "conceptKey": "country.canada",
+      "payload": { "sentence": "People speak English and French in {{blank}}.", "options": ["Canada", "Australia", "Poland", "Wales"], "answer": "Canada", "translation": "W Kanadzie mówi się po angielsku i po francusku." }
+    },
+    {
+      "type": "match_pairs",
+      "payload": { "instruction": "Połącz kraj z jego stolicą.", "pairs": [{ "a": "England", "b": "London" }, { "a": "Scotland", "b": "Edinburgh" }, { "a": "Wales", "b": "Cardiff" }, { "a": "Northern Ireland", "b": "Belfast" }] }
     }
   ]
 }
