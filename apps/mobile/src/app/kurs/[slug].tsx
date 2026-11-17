@@ -6,7 +6,7 @@ import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Flag } from '@/components/flag';
 import { Body, Button, Card, Chip, Message, Screen, Title } from '@/components/ui';
 import { color, level as levelColor, size } from '@/constants/theme';
-import { type CourseMap, type Lesson, loadCourseMap, unlockLesson } from '@/features/courses/load';
+import { type CourseData, type Lesson, loadCourse, unlockLesson } from '@/features/courses/load';
 import { useSession } from '@/lib/session';
 
 /**
@@ -18,7 +18,7 @@ export default function CourseScreen() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const session = useSession();
   const userId = session?.user.id ?? null;
-  const [map, setMap] = useState<CourseMap | null>(null);
+  const [data, setData] = useState<CourseData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   /**
@@ -28,10 +28,10 @@ export default function CourseScreen() {
   const load = useCallback(() => {
     if (userId === null) return;
     let alive = true;
-    void loadCourseMap(slug, userId).then((result) => {
+    void loadCourse(slug, userId).then((result) => {
       if (!alive) return;
       if (result.ok) {
-        setMap(result.value);
+        setData(result.value);
         setError(null);
       } else {
         setError(result.error);
@@ -52,7 +52,7 @@ export default function CourseScreen() {
     );
   }
 
-  if (map === null) {
+  if (data === null) {
     return (
       <Screen>
         <Body muted>Wczytuję kurs…</Body>
@@ -60,28 +60,28 @@ export default function CourseScreen() {
     );
   }
 
-  const byUnit = (unitId: string) => map.lessons.filter((lesson) => lesson.unit_id === unitId);
+  const byUnit = (unitId: string) => data.lessons.filter((lesson) => lesson.unit_id === unitId);
 
   return (
     <Screen>
       {/* Flaga obok tytułu, a nie w nim: obrazek wewnątrz <Text> Android rysuje po swojemu. */}
       <View style={styles.courseHead}>
-        <Flag code={map.course.target_lang} fallback={map.course.icon} size={36} />
-        <Title>{map.course.title}</Title>
+        <Flag code={data.course.target_lang} fallback={data.course.icon} size={36} />
+        <Title>{data.course.title}</Title>
       </View>
-      <Body muted>Ukończone: {plural(map.done, LESSONS)}</Body>
+      <Body muted>Ukończone: {plural(data.done, LESSONS)}</Body>
 
       {/* Stan konta punktów odblokowania. Bez tego dziecko nie wie, że kłódka z kluczykiem jest
           dla niego — punkt zdobyło kilka lekcji wcześniej, na poziomie trudnym. */}
-      {map.unlockLeft > 0 && (
-        <Chip>🔑 {plural(map.unlockLeft, UNLOCKS)} — dotknij kłódki z kluczykiem</Chip>
+      {data.unlockLeft > 0 && (
+        <Chip>🔑 {plural(data.unlockLeft, UNLOCKS)} — dotknij kłódki z kluczykiem</Chip>
       )}
 
       {/* Zamknięty kurs: jedno wejście, od razu na wierzchu. Kafelków lekcji nie ukrywamy —
           dziecko ma widzieć, co się otworzy, gdy zda test. */}
-      {map.gate?.active === true && map.gate.lessonId !== null && <GateCard gate={map.gate} />}
+      {data.gate?.active === true && data.gate.lessonId !== null && <GateCard gate={data.gate} />}
 
-      {map.units.map((unit) => {
+      {data.units.map((unit) => {
         const lessons = byUnit(unit.id);
         // Dział zamknięty w całości, czyli czekający na test poprzedniego działu. Poznajemy go
         // po tym, że ani jedna jego lekcja nie jest otwarta — reguła siedzi w bazie.
@@ -95,7 +95,7 @@ export default function CourseScreen() {
             </Text>
             {unitLocked && (
               <Body muted>
-                {map.gate?.active === true
+                {data.gate?.active === true
                   ? 'Ten dział otworzy się po zdanym teście powtórkowym.'
                   : 'Ten dział otworzy się po zdanym teście poprzedniego działu.'}
               </Body>
@@ -105,7 +105,7 @@ export default function CourseScreen() {
                 <LessonTile
                   key={lesson.id}
                   lesson={lesson}
-                  map={map}
+                  data={data}
                   unitLocked={unitLocked}
                   onUnlocked={load}
                 />
@@ -118,7 +118,7 @@ export default function CourseScreen() {
   );
 }
 
-function GateCard({ gate }: { gate: NonNullable<CourseMap['gate']> }) {
+function GateCard({ gate }: { gate: NonNullable<CourseData['gate']> }) {
   const router = useRouter();
   return (
     <Card>
@@ -140,12 +140,12 @@ function GateCard({ gate }: { gate: NonNullable<CourseMap['gate']> }) {
  */
 function LessonTile({
   lesson,
-  map,
+  data,
   unitLocked,
   onUnlocked,
 }: {
   lesson: Lesson;
-  map: CourseMap;
+  data: CourseData;
   /** Dział czekający na test poprzedniego — wtedy powodem zamka nie jest poprzednia lekcja. */
   unitLocked: boolean;
   onUnlocked: () => void;
@@ -157,16 +157,16 @@ function LessonTile({
   // Kłódka do otwarcia punktem — ale tylko wtedy, gdy punkt jest. Bez punktu zostaje zwykły
   // zamek, którego powód mówi, skąd punkt wziąć; klikalna kłódka bez pokrycia obiecywałaby coś,
   // czego baza nie da. O tym, czy tę lekcję wolno kupić, decyduje `can_unlock_lesson`.
-  const unlockable = state === 'locked' && lesson.is_unlockable === true && map.unlockLeft > 0;
+  const unlockable = state === 'locked' && lesson.is_unlockable === true && data.unlockLeft > 0;
 
-  const harder = map.levels.filter(
+  const harder = data.levels.filter(
     (row) => row.lesson_id === lesson.id && (row.level ?? 1) > 1 && (row.exercise_count ?? 0) > 0,
   );
 
   const stages = lesson.stage_count ?? 1;
   // Zaliczona lekcja ma z definicji wszystkie etapy za sobą — licznik dotyczy bieżącego podejścia.
   const stagesDone = state === 'done' ? stages : (lesson.stages_done ?? 0);
-  const stageStars = map.stageStars[lesson.id] ?? {};
+  const stageStars = data.stageStars[lesson.id] ?? {};
 
   const open = () => {
     if (state === 'locked') {
@@ -188,7 +188,7 @@ function LessonTile({
   // lekcji w tym dziale albo do lekcji obok. Bramka powtórek zamyka cały kurs, więc stoi przed
   // pozostałymi. Piąte wyjście — punkt odblokowania — dopisujemy tylko tam, gdzie jest do wzięcia.
   const why =
-    map.gate?.active === true
+    data.gate?.active === true
       ? 'Najpierw zdaj test powtórkowy'
       : unitLocked
         ? 'Najpierw zdaj test poprzedniego działu'
@@ -278,7 +278,7 @@ function LessonTile({
       {asking && (
         <UnlockDialog
           lesson={lesson}
-          left={map.unlockLeft}
+          left={data.unlockLeft}
           onClose={() => setAsking(false)}
           onDone={() => {
             setAsking(false);

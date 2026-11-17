@@ -56,7 +56,7 @@ export type Gate = {
   triedToday: boolean;
 };
 
-export type CourseMap = {
+export type CourseData = {
   course: Course;
   units: Unit[];
   lessons: Lesson[];
@@ -85,7 +85,7 @@ export async function loadMyCourses(userId: string): Promise<Result<Course[]>> {
   return { ok: true, value: (courses ?? []).filter((course) => mine.has(course.id)) };
 }
 
-export async function loadCourseMap(slug: string, userId: string): Promise<Result<CourseMap>> {
+export async function loadCourse(slug: string, userId: string): Promise<Result<CourseData>> {
   const { data: course, error: courseError } = await supabase
     .from('courses')
     .select('id, slug, title, description, icon, target_lang')

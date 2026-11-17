@@ -14,7 +14,7 @@ import { dbLoadError } from "@/lib/db-error";
 
 import { UnlockLesson } from "./unlock-lesson";
 
-async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params"] }) {
+async function CourseScreen({ params }: { params: PageProps<"/kurs/[slug]">["params"] }) {
   const { slug } = await params;
   const { supabase, userId, isAdmin } = await requireUser(`/kurs/${slug}`);
 
@@ -535,7 +535,7 @@ export default function CoursePage({ params }: PageProps<"/kurs/[slug]">) {
   return (
     <Shell>
       <Suspense fallback={<Loading />}>
-        <CourseMap params={params} />
+        <CourseScreen params={params} />
       </Suspense>
     </Shell>
   );

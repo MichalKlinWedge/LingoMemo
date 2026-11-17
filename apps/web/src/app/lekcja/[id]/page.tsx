@@ -45,7 +45,7 @@ async function Lesson({
 
   // Długa lekcja jest podzielona na etapy po najwyżej 15 zadań. Bez wskazania w adresie
   // zaczynamy od pierwszego niezaliczonego — dziecko wraca tam, gdzie skończyło.
-  const [{ data: mapRow }, { data: stageProgress }] = await Promise.all([
+  const [{ data: lessonRow }, { data: stageProgress }] = await Promise.all([
     supabase.from("v_my_lessons").select("stage_count").eq("id", id).maybeSingle(),
     // Filtr po użytkowniku, mimo RLS: uczeń widzi w tej tabeli tylko swoje wiersze, ale
     // administrator widzi wszystkie — bez filtru zaczynałby lekcję od etapu, który zrobiło
@@ -62,7 +62,7 @@ async function Lesson({
   const wantedLevel = Number(Array.isArray(poziom) ? poziom[0] : poziom);
   const level = wantedLevel === 2 || wantedLevel === 3 ? wantedLevel : 1;
 
-  const stages = level > 1 ? 1 : (mapRow?.stage_count ?? 1);
+  const stages = level > 1 ? 1 : (lessonRow?.stage_count ?? 1);
   const done = new Set(
     (stageProgress ?? []).filter((row) => row.status === "completed").map((row) => row.stage_nr),
   );

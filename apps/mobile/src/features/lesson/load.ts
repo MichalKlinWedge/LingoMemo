@@ -47,7 +47,7 @@ export async function loadLesson(
 
   const course = lesson.units.courses;
 
-  const [{ data: languages }, { data: mapRow }, { data: stageProgress }] = await Promise.all([
+  const [{ data: languages }, { data: lessonRow }, { data: stageProgress }] = await Promise.all([
     supabase.from('languages').select('code, tts_lang').in('code', [course.source_lang, course.target_lang]),
     supabase.from('v_my_lessons').select('stage_count').eq('id', lessonId).maybeSingle(),
     // Filtr po użytkowniku mimo RLS: uczeń widzi w tej tabeli tylko swoje wiersze, ale konto
@@ -64,7 +64,7 @@ export async function loadLesson(
   // Poziom z adresu: łatwy (bez parametru) to lekcja z etapami, średni i trudny to jedno
   // krótkie wejście na ośmiu losowych słówkach — więc etapów tam nie ma.
   const level = wanted.level === 2 || wanted.level === 3 ? wanted.level : 1;
-  const stages = level > 1 ? 1 : (mapRow?.stage_count ?? 1);
+  const stages = level > 1 ? 1 : (lessonRow?.stage_count ?? 1);
 
   const done = new Set(
     (stageProgress ?? []).filter((row) => row.status === 'completed').map((row) => row.stage_nr),

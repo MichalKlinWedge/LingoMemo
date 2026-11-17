@@ -41,7 +41,7 @@ type Phase = 'answering' | 'checking' | 'feedback' | 'done';
  * w `app/kurs/[slug].tsx`), więc powrót na istniejący ekran nie pokazuje gwiazdek i zamków
  * sprzed lekcji.
  */
-function backToMap(router: ReturnType<typeof useRouter>, courseSlug: string) {
+function backToCourse(router: ReturnType<typeof useRouter>, courseSlug: string) {
   router.dismissTo(`/kurs/${courseSlug}`);
 }
 
@@ -431,7 +431,7 @@ function Progress({
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Przerwij lekcję"
-          onPress={() => backToMap(router, courseSlug)}
+          onPress={() => backToCourse(router, courseSlug)}
           style={styles.close}
         >
           <Text style={styles.closeText}>✕</Text>
@@ -586,7 +586,7 @@ function SummaryScreen({
         <Button
           kind={nextStage === null ? 'primary' : 'quiet'}
           label="Wróć do kursu"
-          onPress={() => backToMap(router, courseSlug)}
+          onPress={() => backToCourse(router, courseSlug)}
         />
       </View>
     </ScrollView>
@@ -603,7 +603,7 @@ function Exit({ courseSlug, text }: { courseSlug: string; text: string }) {
     >
       <Card>
         <Body>{text}</Body>
-        <Button label="Wróć do kursu" onPress={() => backToMap(router, courseSlug)} />
+        <Button label="Wróć do kursu" onPress={() => backToCourse(router, courseSlug)} />
       </Card>
     </ScrollView>
   );
