@@ -71,6 +71,16 @@ export default function CourseScreen() {
       </View>
       <Body muted>Ukończone: {plural(data.done, LESSONS)}</Body>
 
+      {/* Ile zaległych słówek ma TEN kurs. Pasek na ekranie kursów sumuje wszystkie kursy, więc
+          „🔁 22" potrafiło wisieć nad kursem, w którym do powtórzenia jest pięć słówek — a bramka
+          liczy każdy kurs osobno. Przy stojącej bramce tego nie pokazujemy: mówi to już jej karta. */}
+      {data.gate !== null && !data.gate.active && data.gate.due > 0 && (
+        <Chip>
+          🔁 {plural(data.gate.due, WORDS)} do powtórzenia — przy {data.gate.limit} lekcje poczekają
+          na test powtórkowy
+        </Chip>
+      )}
+
       {/* Stan konta punktów odblokowania. Bez tego dziecko nie wie, że kłódka z kluczykiem jest
           dla niego — punkt zdobyło kilka lekcji wcześniej, na poziomie trudnym. */}
       {data.unlockLeft > 0 && (

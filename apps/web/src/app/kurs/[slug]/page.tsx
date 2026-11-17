@@ -188,6 +188,16 @@ async function CourseScreen({ params }: { params: PageProps<"/kurs/[slug]">["par
         </section>
       )}
 
+      {/* Ile zaległych słówek ma TEN kurs. Pasek na górze sumuje wszystkie kursy, więc „🔁 22"
+          potrafiło wisieć nad kursem, w którym do powtórzenia jest pięć słówek — a bramka liczy
+          każdy kurs osobno. Przy stojącej bramce tego nie pokazujemy: mówi to już jej karta. */}
+      {bramka && !bramka.active && bramka.due > 0 && (
+        <p className="chip self-start">
+          🔁 {plural(bramka.due, WORDS)} do powtórzenia w tym kursie — przy {bramka.limit} lekcje
+          poczekają na test powtórkowy
+        </p>
+      )}
+
       {/* Stan konta punktów odblokowania. Bez tego dziecko nie wie, że kłódka z kluczykiem jest
           dla niego — punkt zdobyło kilka lekcji wcześniej, na poziomie trudnym. */}
       {punkty > 0 && (
