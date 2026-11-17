@@ -247,8 +247,8 @@ function LessonTile({
           <Mark
             key={`stage-${nr}`}
             stars={stageStars[nr] ?? 0}
-            fill={nr <= stagesDone ? color.grass : null}
-            border={color.grass}
+            state={nr <= stagesDone ? 'done' : 'new'}
+            paint={color.grass}
             locked={state === 'locked'}
             label={
               stages === 1
@@ -265,8 +265,8 @@ function LessonTile({
             <Mark
               key={`level-${nr}`}
               stars={row.stars ?? 0}
-              fill={row.status === 'completed' ? paint : row.status === 'in_progress' ? `${paint}80` : null}
-              border={paint}
+              state={levelState(row.status, row.stars ?? 0)}
+              paint={paint}
               locked={row.is_unlocked !== true}
               label={`${lesson.title} — poziom ${nr === 2 ? 'średni' : 'trudny'}`}
               onPress={() => router.push(`/lekcja/${lesson.id}?poziom=${nr}`)}
@@ -357,21 +357,41 @@ function UnlockDialog({
   );
 }
 
+type MarkState = 'new' | 'tried' | 'done';
+
+/**
+ * Stan wejścia na poziom średni albo trudny — ta sama reguła, co na webie (`kurs/[slug]/page.tsx`).
+ *
+ * Trzy stany, nie dwa: zaczęte bez zaliczenia to kwadracik z kropką, a nie zamalowany. Zrobione
+ * wymaga gwiazdki, nie samego statusu — wiersze sprzed `…_level_chain.sql` mogły dostać
+ * „completed" przy obniżonym progu lekcji i zerze gwiazdek, a zamalowany kwadracik przy
+ * zamkniętym następnym poziomie byłby sprzecznością na jednym ekranie.
+ */
+function levelState(status: string | null, stars: number): MarkState {
+  if (status === 'completed' && stars >= 1) return 'done';
+  if (status === 'completed' || status === 'in_progress') return 'tried';
+  return 'new';
+}
+
 /**
  * Kwadracik etapu albo poziomu z gwiazdkami nad nim. Sam kwadracik jest mały, bo w rzędzie stoi
  * ich kilka — dlatego pole dotyku powiększa `hitSlop` do progu, od którego dziecko trafia palcem.
+ *
+ * Zaczęte, a niezaliczone rysujemy kropką w środku, tak jak web. Wcześniej było to wypełnienie
+ * z przezroczystością (`${paint}80`) i przy osiemnastu pikselach czytało się jak kwadracik
+ * zamalowany — czyli jak zaliczony poziom, którym nie był.
  */
 function Mark({
   stars,
-  fill,
-  border,
+  state,
+  paint,
   locked,
   label,
   onPress,
 }: {
   stars: number;
-  fill: string | null;
-  border: string;
+  state: MarkState;
+  paint: string;
   locked: boolean;
   label: string;
   onPress: () => void;
@@ -382,10 +402,12 @@ function Mark({
       <View
         style={[
           styles.mark,
-          { borderColor: locked ? color.line : border },
-          fill !== null && { backgroundColor: fill },
+          { borderColor: locked ? color.line : paint },
+          state === 'done' && { backgroundColor: paint },
         ]}
-      />
+      >
+        {state === 'tried' && <View style={[styles.markDot, { backgroundColor: paint }]} />}
+      </View>
     </>
   );
 
@@ -400,7 +422,9 @@ function Mark({
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={label}
+      accessibilityLabel={
+        state === 'tried' ? `${label} — zaczęty, jeszcze nie zaliczony` : state === 'done' ? `${label} — zrobiony` : label
+      }
       hitSlop={12}
       onPress={onPress}
       style={({ pressed }) => [styles.markCol, pressed && styles.pressed]}
@@ -457,7 +481,9 @@ const styles = StyleSheet.create({
   marks: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center', marginTop: 2 },
   markCol: { alignItems: 'center', gap: 2 },
   markStars: { color: color.sun, fontSize: 9, height: 11 },
-  mark: { borderRadius: 4, borderWidth: 2, height: 18, width: 18 },
+  mark: { alignItems: 'center', borderRadius: 4, borderWidth: 2, height: 18, justifyContent: 'center', width: 18 },
+  // Kropka „byłem tu, nie zaliczyłem": ten sam udział w kwadraciku, co promień 28% na webie.
+  markDot: { borderRadius: 5, height: 10, width: 10 },
   backdrop: {
     alignItems: 'center',
     backgroundColor: '#00000080',
