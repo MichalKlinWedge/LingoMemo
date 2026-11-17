@@ -1305,3 +1305,34 @@ bez ani jednej gwiazdki — i dostać ekran, na którym poziom jest „zrobiony"
 
 Reguła dotyczy wyłącznie poziomów. Następną **lekcję** otwiera jak dotąd zaliczony poziom łatwy —
 z tą jedną zmianą, że i tam „zaliczony" znaczy teraz „z gwiazdką".
+## Źle zrobione zadanie wraca w tym samym etapie (2026-11-17)
+
+Zadanie, które dziecku nie wyszło, wracało dopiero w powtórkach — za dzień albo za tydzień. W
+obrębie etapu nie miało drugiego podejścia, więc całą nauką po błędzie był czerwony panel z
+poprawną odpowiedzią, przeczytany przez cztery sekundy i zamknięty przyciskiem „Dalej". Od teraz
+przebieg lekcji dokłada takie zadanie na koniec kolejki etapu i pokazuje je jeszcze raz, z napisem
+„🔁 Jeszcze raz", żeby dziecko wiedziało, że to drugie podejście, a nie usterka.
+
+Raz na zadanie. Powtórzone zadanie, zrobione źle po raz drugi, już nie wraca: dziecko, które
+czegoś nie umie, kręciłoby się na jednym zadaniu do końca etapu, a „Nie wiem, pomiń" (dla bazy
+zwykły błąd) tylko przedłużałoby pętlę.
+
+Powtórka wywróciła liczenie wyniku. Dotąd z każdego zadania liczyła się OSTATNIA odpowiedź —
+reguła z czasów, gdy ta sama sesja widziała zadanie dwa razy tylko przez przypadek. Z powtórką
+znaczyłaby tyle, że każdy etap kończy się kompletem gwiazdek: poprawna odpowiedź stoi przecież na
+ekranie tuż przed powtórzonym zadaniem. Od teraz liczy się każda odpowiedź z osobna. Poprawka jest
+warta tyle co odpowiedź od razu, ale błąd zostaje w wyniku, bo dołożył do etapu jedno zadanie
+więcej: dziesięć zadań z dwoma błędami naprawionymi w powtórce to 10/12, czyli 0,833 — jedna
+gwiazdka, nie trzy.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Kiedy zadanie wraca | na końcu kolejki etapu | dziecko odpowiada na nie po kilku innych, a nie zaraz po przeczytaniu odpowiedzi — wtedy to pamięć, nie przepisanie | od razu po błędzie (przepisanie z ekranu obok); dopiero w powtórkach następnego dnia (tak było i to właśnie zmieniamy) |
+| Ile razy | raz na zadanie | ogranicza etap z góry; po drugim błędzie słówko i tak idzie do powtórek z oceną „powtórz" | aż do skutku (pętla dla dziecka, które nie umie) |
+| Udział w wyniku | każda odpowiedź liczy się z osobna | poprawka coś daje, a błąd coś kosztuje — jedno i drugie widać w liczniku „Dobrze: 10 z 12" | pierwsza odpowiedź wygrywa (powtórka byłaby karą bez nagrody); ostatnia odpowiedź wygrywa (darmowe trzy gwiazdki) |
+| Gdzie liczone | w bazie, w `finish_lesson_session` | wynik i gwiazdki powstają wyłącznie w bazie; przeglądarka nie wysyła ani jednego, ani drugiego | licznik w `lesson-runner.tsx` (klient zacząłby decydować o ocenie) |
+
+Prośba o poprawienie literówki zostaje bez zmian i nie miesza się z powtórką: nie zapisuje próby,
+więc nie wchodzi do mianownika, i dalej przysługuje raz na zadanie w sesji. Podpowiedź też działa
+jak dotąd — zamienia zadanie na łatwiejsze tylko na tej jednej pozycji w kolejce, więc powtórka
+pokazuje zadanie w pełnej postaci.

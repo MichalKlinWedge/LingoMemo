@@ -67,6 +67,10 @@ export function LessonRunner({
   autoNextMs: number;
 }) {
   const [index, setIndex] = useState(0);
+  // Zadania, które wracają w tym podejściu: numery tych, na które odpowiedź była zła. Kolejka
+  // etapu to lista zadań plus te numery, więc pozycje od 0 do `exercises.length - 1` to pierwsze
+  // pokazanie zadania, a wszystko dalej to powtórka.
+  const [repeats, setRepeats] = useState<number[]>([]);
   const [phase, setPhase] = useState<Phase>("answering");
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [summary, setSummary] = useState<Summary | null>(null);
@@ -117,6 +121,7 @@ export function LessonRunner({
   useEffect(() => {
     return () => {
       setIndex(0);
+      setRepeats([]);
       setPhase("answering");
       setVerdict(null);
       setSummary(null);
@@ -133,8 +138,13 @@ export function LessonRunner({
     };
   }, []);
 
-  const exercise = swapped[index] ?? exercises[index];
-  const total = exercises.length;
+  // Kolejka etapu: najpierw wszystkie zadania po kolei, potem te, które wróciły po błędzie.
+  // Trzymamy numery, nie same zadania — podpowiedź podmienia zadanie na łatwiejsze tylko na tej
+  // jednej pozycji, więc powtórka pokazuje je znowu w pełnej postaci.
+  const queue = [...exercises.map((_, nr) => nr), ...repeats];
+  const total = queue.length;
+  const repeat = index >= exercises.length;
+  const exercise = swapped[index] ?? exercises[queue[index]];
   const hinted = swapped[index] !== undefined;
 
   const handleAnswer = useCallback(
@@ -183,12 +193,21 @@ export function LessonRunner({
         return;
       }
 
+      // Źle zrobione zadanie wraca na koniec kolejki etapu — jeszcze raz, w tym samym podejściu,
+      // zaraz po tym, jak dziecko zobaczyło poprawną odpowiedź. Pominięcie też jest błędem,
+      // więc też wraca. Tylko raz (`index` z pierwszego pokazania): inaczej dziecko, które
+      // czegoś nie umie, kręciłoby się na jednym zadaniu do końca etapu. Wynik na tym nie traci
+      // — baza liczy teraz każdą odpowiedź z osobna, więc powtórka dokłada zadanie do mianownika.
+      if (!result.verdict.correct && !repeat) {
+        setRepeats((prev) => [...prev, index]);
+      }
+
       setFixAsked(null);
       setVerdict(result.verdict);
       play(result.verdict.correct ? "correct" : "wrong");
       setPhase("feedback");
     },
-    [exercise, hinted, lessonId, level, phase, play, preview, stage],
+    [exercise, hinted, index, lessonId, level, phase, play, preview, repeat, stage],
   );
 
   /**
@@ -228,6 +247,9 @@ export function LessonRunner({
 
   const next = useCallback(async () => {
     setVerdict(null);
+    // Powtórzone zadanie ma ten sam identyfikator co za pierwszym razem, więc ślad po wpisanej
+    // wtedy odpowiedzi nie zniknąłby sam — a z nim chowałoby się wyjście „Nie wiem, pomiń".
+    setDraftOf(null);
     if (index + 1 < total) {
       setIndex(index + 1);
       setPhase("answering");
@@ -355,6 +377,9 @@ export function LessonRunner({
             Bez tego napisu administrator nie odróżniłby „lekcja jest otwarta" od „wszedłem
             tylnymi drzwiami". */}
         {preview && <span className="chip">👀 Podgląd</span>}
+        {/* Zadanie, które wróciło po błędzie. Bez tego napisu dziecko widzi tylko, że ekran
+            pokazuje coś, co już było — a ma wiedzieć, że dostaje drugie podejście. */}
+        {repeat && <span className="chip">🔁 Jeszcze raz</span>}
         <span className="chip" aria-label={`Podpowiedzi na dziś: ${hints}`} title="Podpowiedzi na dziś">
           💡 {hints}
         </span>
@@ -363,12 +388,13 @@ export function LessonRunner({
         </span>
       </div>
 
-      {/* Klucz z identyfikatora zadania. Bez niego React przy przejściu dalej zostawia ten
-          sam komponent, a w nim stan poprzedniego zadania: wpisaną odpowiedź, zaznaczony
-          kafelek, ułożone zdanie. Dziecko widziało wtedy w polu to, co napisało poprzednio. */}
+      {/* Klucz z pozycji w kolejce i identyfikatora zadania. Bez niego React przy przejściu
+          dalej zostawia ten sam komponent, a w nim stan poprzedniego zadania: wpisaną odpowiedź,
+          zaznaczony kafelek, ułożone zdanie. Pozycja jest w kluczu, bo sam identyfikator
+          nie wystarcza — powtórzone zadanie ma ten sam, a ma zacząć się od czystego ekranu. */}
       {exercise.type === "listening" ? (
         <ListeningExercise
-          key={exercise.id}
+          key={`${index}-${exercise.id}`}
           exercise={exercise}
           locked={locked}
           onAnswer={handleAnswer}
@@ -377,7 +403,7 @@ export function LessonRunner({
         />
       ) : exercise.type === "listen_match" ? (
         <ListenMatchExercise
-          key={exercise.id}
+          key={`${index}-${exercise.id}`}
           exercise={exercise}
           locked={locked}
           onAnswer={handleAnswer}
@@ -385,7 +411,7 @@ export function LessonRunner({
         />
       ) : exercise.type === "match_pairs" ? (
         <MatchPairsExercise
-          key={exercise.id}
+          key={`${index}-${exercise.id}`}
           exercise={exercise}
           locked={locked}
           onAnswer={handleAnswer}
@@ -394,7 +420,7 @@ export function LessonRunner({
         />
       ) : exercise.type === "image_choice" ? (
         <ImageChoiceExercise
-          key={exercise.id}
+          key={`${index}-${exercise.id}`}
           exercise={exercise}
           locked={locked}
           onAnswer={handleAnswer}
@@ -409,7 +435,7 @@ export function LessonRunner({
         />
       ) : exercise.type === "sentence_order" ? (
         <SentenceOrderExercise
-          key={exercise.id}
+          key={`${index}-${exercise.id}`}
           exercise={exercise}
           locked={locked}
           onAnswer={handleAnswer}
@@ -417,7 +443,7 @@ export function LessonRunner({
         />
       ) : exercise.type === "fill_blank_choice" || (exercise.type === "translate_ab" && hasOptions) ? (
         <ChoiceExercise
-          key={exercise.id}
+          key={`${index}-${exercise.id}`}
           exercise={exercise}
           locked={locked}
           onAnswer={handleAnswer}
@@ -427,7 +453,7 @@ export function LessonRunner({
         />
       ) : (
         <TypingExercise
-          key={exercise.id}
+          key={`${index}-${exercise.id}`}
           exercise={exercise}
           locked={locked}
           onAnswer={handleAnswer}

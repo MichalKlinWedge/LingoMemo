@@ -339,8 +339,16 @@ select throws_ok(
   'nie da się odpowiadać w nieswojej sesji'
 );
 
--- Reszta lekcji: wszystko poprawnie. Liczy się ostatnia odpowiedź na zadanie, więc wcześniejszy
--- błąd nie psuje wyniku.
+-- Od tego miejsca sprawdzamy samo podsumowanie, więc czyścimy ślad po próbach z asercji wyżej.
+-- Złe odpowiedzi szły tam celowo — po to, żeby obejrzeć werdykt — a od
+-- `…_repeat_wrong_exercise.sql` liczy się KAŻDA odpowiedź z osobna, więc zostawione w sesji
+-- zaniżałyby wynik etapu, o który w tych asercjach nie chodzi. Samo liczenie powtórek ma
+-- własny plik: `repeat_wrong_exercise.test.sql`.
+reset role;
+delete from public.attempts where session_id in (select id from t_session);
+select set_config('role', 'authenticated', true);
+
+-- Reszta lekcji: wszystko poprawnie, każde zadanie raz.
 do $run$
 declare
   r record;
