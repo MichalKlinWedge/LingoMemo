@@ -1275,3 +1275,33 @@ kursów, gdzie restart nic nie kosztuje); własny licznik wersji w bazie i poró
 (`expo-updates` już wie, co pobrał, a druga prawda o wersji to drugie miejsce do pomyłki);
 `checkAutomatically: ON_ERROR_RECOVERY` z ręcznym sprawdzaniem (pierwszy APK dla dzieci miał tak
 przez pomyłkę — aktualizacja nie przyszłaby nigdy, dopóki aplikacja się nie wywali).
+
+
+## Poziomy w łańcuchu, a gwiazdka warunkiem zaliczenia (2026-11-17)
+
+Zgłoszone z ekranu: poziom średni nie został zdany — za dużo błędów — a poziom trudny i tak stał
+otworem. To nie był przypadek, tylko reguła zapisana w `20261115095000_lesson_levels.sql`:
+`is_level_unlocked` dla każdego poziomu powyżej łatwego pytała wyłącznie o to, czy skończona jest
+lekcja. Zaliczenie łatwego otwierało więc średni i trudny naraz, a test pgTAP przyklepywał to
+zdaniem „łatwy poziom otwiera oba trudniejsze kwadraciki naraz".
+
+Dla dziecka to zaprzeczenie nazwy. „Trudny" ma być tym, do czego się dochodzi; jeśli stoi otworem
+od początku, przestaje być nagrodą za średni i staje się drugą listą zadań obok.
+
+Od teraz poziomy są łańcuchem — łatwy → średni → trudny — a każde ogniwo wymaga **co najmniej
+jednej gwiazdki** z poprzedniego. Gwiazdki, nie samego statusu: wiersz z „completed" i zerem
+gwiazdek mógł powstać wcześniej, przy obniżonym progu lekcji, a reguła ma obowiązywać i dla niego.
+
+Drugie ogniwo tej samej zasady jest w `finish_lesson_session`: próg zaliczenia nie schodzi poniżej
+0,8, czyli poniżej pierwszej gwiazdki (`greatest(pass_threshold, 0.800)`). Administrator może
+obniżyć próg w formularzu lekcji i bez tego dałoby się ustawić 0,5, zamalować kwadracik wynikiem
+bez ani jednej gwiazdki — i dostać ekran, na którym poziom jest „zrobiony", a następny zamknięty.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Warunek otwarcia | jedna gwiazdka z poprzedniego poziomu | to ta sama liczba, którą dziecko widzi nad kwadracikiem — nie trzeba tłumaczyć osobnego progu | komplet trzech gwiazdek (mur, nie próg); sam status „completed" (to on się rozjechał) |
+| Gdzie pilnować progu | w bazie, w `finish_lesson_session` | ocena i tak jest liczona wyłącznie w bazie; warunek w przeglądarce omija się wyłączeniem JS | walidacja pola `pass_threshold` w panelu (nie zmienia wierszy już zapisanych) |
+| Kwadracik zaczętego poziomu | kropka w środku zamiast połowy wypełnienia | pół kwadracika przy 1,5 rem czyta się jak kwadracik zamalowany — zgłoszenie zaczęło się właśnie od „kwadracik się zamalował" | puste pole (znikałaby prawdziwa informacja, że dziecko tu już było) |
+
+Reguła dotyczy wyłącznie poziomów. Następną **lekcję** otwiera jak dotąd zaliczony poziom łatwy —
+z tą jedną zmianą, że i tam „zaliczony" znaczy teraz „z gwiazdką".

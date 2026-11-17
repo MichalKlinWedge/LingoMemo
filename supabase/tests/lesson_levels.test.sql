@@ -3,9 +3,10 @@
 -- Sprawdzamy to, od czego zależy cała polityka: że łatwy wydaje tylko klikanie i że tylko on
 -- otwiera następną lekcję, że trudniejsze wejście bierze najwyżej osiem słówek i jest zamknięte
 -- do czasu przejścia łatwego, oraz że jego wynik nie miesza się z postępem lekcji.
+-- Poziomy układają się w łańcuch: trudny otwiera dopiero zaliczony średni.
 
 begin;
-select plan(11);
+select plan(16);
 
 create or replace function pg_temp.make_user(p_email text) returns uuid
 language plpgsql as $$
@@ -150,9 +151,24 @@ select ok(
 
 select is(
   (select is_unlocked from public.v_my_lesson_levels
-    where lesson_id = (select lesson_id from t_ctx) and level = 3),
+    where lesson_id = (select lesson_id from t_ctx) and level = 2),
   true,
-  'łatwy poziom otwiera oba trudniejsze kwadraciki naraz');
+  'łatwy poziom otwiera średni kwadracik');
+
+-- Łańcuch, nie wachlarz: trudny czeka na zaliczony średni. Inaczej „trudny" byłby otwarty
+-- od początku, a dziecko, które poległo na średnim, dostawało go mimo wszystko.
+select is(
+  (select is_unlocked from public.v_my_lesson_levels
+    where lesson_id = (select lesson_id from t_ctx) and level = 3),
+  false,
+  'trudny kwadracik czeka na zaliczony średni');
+
+select throws_ok(
+  format('select public.start_lesson_session(%L, ''proba-trudny'', 1, 3::smallint)',
+         (select lesson_id from t_ctx)),
+  '42501',
+  null,
+  'trudnego wejścia nie da się zacząć przed zaliczeniem średniego');
 
 select ok(
   (select count(*) from public.get_lesson_exercises((select lesson_id from t_ctx), 1, 2::smallint))
@@ -188,6 +204,64 @@ select is(
     where lesson_id = (select lesson_id from t_ctx) and level = 1),
   0,
   'poziom łatwy nie dubluje się w tabeli trudniejszych wejść — ma własny postęp lekcji');
+
+select is(
+  (select is_unlocked from public.v_my_lesson_levels
+    where lesson_id = (select lesson_id from t_ctx) and level = 3),
+  true,
+  'zaliczony średni otwiera trudny');
+
+-- Zaliczenie wymaga gwiazdki, nawet gdy administrator obniży próg lekcji. Bez tego da się
+-- ustawić lekcji próg 0,5 i zamalować kwadracik wynikiem, nad którym nie ma ani jednej gwiazdki
+-- — a trudniejszy poziom i tak zostałby zamknięty, bo łańcuch pyta o gwiazdkę.
+reset role;
+update public.lessons set pass_threshold = 0.500 where id = (select lesson_id from t_ctx);
+
+select set_config('role', 'authenticated', true),
+       set_config('request.jwt.claims',
+         (select json_build_object('sub', u.id, 'role', 'authenticated',
+                 'app_metadata', coalesce(u.raw_app_meta_data, '{}'::jsonb))::text
+            from auth.users u where u.id = (select id from t_ids where name = 'uczen')), true);
+
+do $trudny$
+declare
+  v_sess uuid;
+  v_ile  integer;
+  v_ok   integer;
+  v_nr   integer := 0;
+  r      record;
+begin
+  v_sess := public.start_lesson_session((select lesson_id from t_ctx), 'trudny-1', 1, 3::smallint);
+  select count(*) into v_ile
+    from public.get_lesson_exercises((select lesson_id from t_ctx), 1, 3::smallint);
+  -- Sześć dziesiątych: ponad obniżonym progiem 0,5, poniżej pierwszej gwiazdki (0,8).
+  v_ok := ceil(v_ile * 0.6);
+  for r in select x.id, k.answer
+             from public.get_lesson_exercises((select lesson_id from t_ctx), 1, 3::smallint) x
+             join t_klucz k on k.id = x.id
+  loop
+    v_nr := v_nr + 1;
+    perform public.submit_attempt(
+      v_sess, r.id,
+      case when v_nr <= v_ok
+           then jsonb_build_object('text', r.answer, 'choice', r.answer)
+           else jsonb_build_object('text', 'zzz-nie-ta-odpowiedz', 'choice', 'zzz-nie-ta-odpowiedz')
+      end);
+  end loop;
+  perform public.finish_lesson_session(v_sess);
+end;
+$trudny$;
+
+select ok(
+  (select last_score from public.lesson_level_progress
+    where lesson_id = (select lesson_id from t_ctx) and level = 3) between 0.500 and 0.799,
+  'wynik trudnego wejścia wyszedł nad obniżonym progiem lekcji, ale pod pierwszą gwiazdką');
+
+select is(
+  (select status from public.v_my_lesson_levels
+    where lesson_id = (select lesson_id from t_ctx) and level = 3),
+  'in_progress',
+  'bez gwiazdki poziom zostaje niezaliczony, choćby próg lekcji był niższy');
 
 select * from finish();
 rollback;

@@ -723,10 +723,12 @@ h2 {
     --level-color: var(--level-3);
   }
 
-  /* Zaczęte, ale niezaliczone: pół kwadracika. Pusty kwadracik po przejściu całego wejścia
-     wygląda jak usterka, a różnica jest prawdziwa — do zaliczenia trzeba próg lekcji. */
+  /* Zaczęte, ale niezaliczone: kwadracik z kropką w środku. Wcześniej było to pół wypełnienia
+     i przy 1,5 rem czytało się jak kwadracik zamalowany — czyli jak zaliczony poziom, którym
+     nie był. Kropka trzyma podział na „puste albo pełne", ten sam, co przy etapach, a mimo to
+     mówi, że dziecko tu już było. */
   .level-box[data-state="tried"] {
-    background: linear-gradient(to top, var(--level-color) 50%, transparent 50%);
+    background: radial-gradient(circle at center, var(--level-color) 28%, transparent 29%);
   }
 
   .level-box[data-state="done"] {

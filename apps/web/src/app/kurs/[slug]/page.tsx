@@ -372,15 +372,24 @@ function LevelBox({
 }) {
   const level = row.level ?? 2;
   const name = LEVEL_NAME[level] ?? "trudniejszy";
-  // Trzy stany, nie dwa: zaczęte bez zaliczenia to pół kwadracika. Samo „puste albo pełne"
-  // kazało myśleć, że przejście się nie zapisało, a różnica jest prawdziwa: zaliczenie wymaga
-  // progu lekcji, nie samego dojścia do końca.
-  const state = row.status === "completed" ? "done" : row.status === "in_progress" ? "tried" : "new";
-  const done = state === "done";
   // Gwiazdki także przy wejściu zaczętym, a niezaliczonym: baza zapisuje je z każdego podejścia
-  // (najlepsze z dotychczasowych), więc „dwie gwiazdki, a kwadracik w połowie" to prawda o tym
+  // (najlepsze z dotychczasowych), więc „dwie gwiazdki, a kwadracik zaczęty" to prawda o tym
   // wejściu, nie sprzeczność.
   const gwiazdki = row.stars ?? 0;
+  // Trzy stany, nie dwa: zaczęte bez zaliczenia to kwadracik z kropką. Samo „puste albo pełne"
+  // kazało myśleć, że przejście się nie zapisało, a różnica jest prawdziwa: zaliczenie wymaga
+  // progu lekcji, nie samego dojścia do końca.
+  //
+  // Zrobione wymaga gwiazdki, nie samego statusu: wiersze sprzed migracji `…_level_chain.sql`
+  // mogły dostać „completed" przy obniżonym progu lekcji i zerze gwiazdek. Zamalowany kwadracik
+  // przy zamkniętym następnym poziomie byłby wtedy sprzecznością na jednym ekranie.
+  const state =
+    row.status === "completed" && gwiazdki >= 1
+      ? "done"
+      : row.status === "completed" || row.status === "in_progress"
+        ? "tried"
+        : "new";
+  const done = state === "done";
   const label = `${title} — poziom ${name}`;
 
   if (!row.is_unlocked) {
@@ -389,7 +398,11 @@ function LevelBox({
         className="mark-col"
         role="img"
         aria-label={`${label} — zamknięty`}
-        title="Najpierw przejdź tę lekcję na poziomie łatwym"
+        title={
+          level === 2
+            ? "Najpierw przejdź tę lekcję na poziomie łatwym"
+            : "Najpierw zalicz poziom średni — potrzebna co najmniej jedna gwiazdka"
+        }
       >
         <MarkStars count={0} />
         <span className="level-box" data-level={level} data-locked="true" aria-hidden />
