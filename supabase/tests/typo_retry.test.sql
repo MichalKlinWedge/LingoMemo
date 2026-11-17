@@ -3,10 +3,11 @@
 -- Bliska pomyłka (jedna litera, przy dłuższym słowie dwie) nie jest od razu oceniana: baza
 -- oddaje `retry` i czeka na drugie podejście, nie zapisując próby ani nie ruszając powtórek.
 -- Drugi raz w tym samym zadaniu już nie poprosi — inaczej dziecko poprawiałoby w kółko,
--- aż trafi.
+-- aż trafi. Po prośbie o poprawkę liczy się odpowiedź dokładna: tolerancja literówki
+-- obowiązuje do pierwszego „Prawie!", a nie po nim.
 
 begin;
-select plan(13);
+select plan(14);
 
 create or replace function pg_temp.make_user(p_email text) returns uuid
 language plpgsql as $$
@@ -116,10 +117,18 @@ insert into t_r values ('jedna-drugi-raz', public.submit_attempt(
 
 select is((select (v ->> 'retry')::boolean from t_r where step = 'jedna-drugi-raz'), false,
           'o poprawkę baza prosi tylko raz na zadanie');
-select is((select (v ->> 'correct')::boolean from t_r where step = 'jedna-drugi-raz'), true,
-          'po poprawce jedna literówka nadal jest zaliczana');
+select is((select (v ->> 'correct')::boolean from t_r where step = 'jedna-drugi-raz'), false,
+          'ta sama literówka wysłana po prośbie o poprawkę nie jest zaliczana');
 select is((select (v ->> 'nearMiss')::boolean from t_r where step = 'jedna-drugi-raz'), true,
-          'zaliczenie z literówką jest odnotowane');
+          'bliska pomyłka zostaje odnotowana, choć nie zalicza');
+
+-- 2b. A poprawiona odpowiedź przechodzi. Bez tego poprzedni test dałoby się zdać,
+-- zamykając poprawianie w ogóle — a prośba o poprawkę ma mieć wyjście.
+insert into t_r values ('jedna-poprawione', public.submit_attempt(
+  (select id from t_sesja), pg_temp.ex('food.apple'), jsonb_build_object('text', 'jabłko'), 4000, false));
+
+select is((select (v ->> 'correct')::boolean from t_r where step = 'jedna-poprawione'), true,
+          'naprawdę poprawiona odpowiedź jest zaliczana');
 
 -- 3. Dwie litery, ale słowo długie (dziewięć liter).
 insert into t_r values ('dwie', public.submit_attempt(
@@ -157,21 +166,22 @@ select is((select (v ->> 'retry')::boolean from t_r where step = 'pominiecie'), 
 
 reset role;
 
--- 7. Prośba o poprawkę nie zostawia po sobie śladu w statystykach: zapisana jest jedna próba
--- (ta po poprawce), a nie dwie.
+-- 7. Prośba o poprawkę nie zostawia po sobie śladu w statystykach. Zadanie „food.apple"
+-- dostało trzy wywołania — literówka, ta sama literówka, poprawna odpowiedź — a próby są dwie:
+-- pierwsza, ta z prośbą o poprawkę, nie jest odpowiedzią i nie ma jej w `attempts`.
 select is(
   (select count(*)::integer from public.attempts a
     where a.exercise_id = pg_temp.ex('food.apple')),
-  1,
-  'prośba o poprawkę nie jest zapisaną próbą'
+  2,
+  'prośba o poprawkę nie jest zapisaną próbą — trzy wywołania, dwie próby'
 );
 
 select is(
   (select s.reps from public.srs_state s
     where s.user_id = (select id from t_ids where name = 'uczen')
       and s.concept_id = (select concept_id from t_ex where key = 'food.apple')),
-  1,
-  'harmonogram powtórek widzi jedną odpowiedź, nie dwie'
+  2,
+  'harmonogram powtórek widzi dwie ocenione odpowiedzi, a prośby o poprawkę nie widzi'
 );
 
 select * from finish();

@@ -189,7 +189,8 @@ select is((select (result ->> 'correct')::boolean from t_r where step = 'zle'), 
 select isnt((select result -> 'correctAnswer' from t_r where step = 'zle'), 'null'::jsonb,
           'przy błędzie pokazujemy poprawną odpowiedź');
 
--- Literówka. Pierwsze podejście wraca jako prośba o poprawkę, dopiero drugie jest oceniane.
+-- Literówka. Pierwsze podejście wraca jako prośba o poprawkę, dopiero drugie jest oceniane —
+-- i wtedy liczy się już odpowiedź dokładna, bo o poprawienie właśnie prosiliśmy.
 insert into t_r
 select 'poprawka', public.submit_attempt(
   pg_temp.sess((select id from t_ex where sort_order = 999)),
@@ -207,12 +208,12 @@ select 'literowka', public.submit_attempt(
   jsonb_build_object('text', 'krolikk'), 6000, false
 );
 
-select is((select (result ->> 'correct')::boolean from t_r where step = 'literowka'), true,
-          'jedna literówka nie przekreśla odpowiedzi');
+select is((select (result ->> 'correct')::boolean from t_r where step = 'literowka'), false,
+          'ta sama literówka wysłana po prośbie o poprawkę nie jest zaliczana');
 select is((select (result ->> 'nearMiss')::boolean from t_r where step = 'literowka'), true,
           'literówka jest odnotowana');
-select is((select (result ->> 'grade')::integer from t_r where step = 'literowka'), 2,
-          'literówka to ocena „z trudem” dla harmonogramu powtórek');
+select is((select (result ->> 'grade')::integer from t_r where step = 'literowka'), 1,
+          'niepoprawiona literówka to dla harmonogramu powtórek zwykły błąd');
 
 -- Punkty za to samo zadanie tylko raz w sesji.
 insert into t_r

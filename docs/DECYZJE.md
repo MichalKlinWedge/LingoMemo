@@ -1336,3 +1336,32 @@ Prośba o poprawienie literówki zostaje bez zmian i nie miesza się z powtórk�
 więc nie wchodzi do mianownika, i dalej przysługuje raz na zadanie w sesji. Podpowiedź też działa
 jak dotąd — zamienia zadanie na łatwiejsze tylko na tej jednej pozycji w kolejce, więc powtórka
 pokazuje zadanie w pełnej postaci.
+
+
+## Po prośbie o poprawkę liczy się odpowiedź dokładna (2026-11-17)
+
+Zgłoszone z ekranu: dziecko robi literówkę, dostaje „Prawie! Zajrzyj w litery i popraw", klika
+„Sprawdź" drugi raz nie dotykając pola — i zadanie zostaje zaliczone. Prośba o poprawkę zamieniła
+się w jedno kliknięcie więcej do tego samego wyniku, a przy okazji sama podpowiadała, że warto
+kliknąć ponownie.
+
+To nie było przeoczenie w jednym miejscu, tylko zderzenie dwóch reguł pisanych w różnym czasie.
+`20261115090600_lessons.sql` wprowadziło tolerancję jednej literówki — słusznie, bo „dogg" to nie
+jest nieznajomość słowa „dog". `20261115095400_typo_retry.sql` dołożyło nad nią prośbę o poprawkę:
+zamiast po cichu zaliczyć, pokaż „Prawie!" i oddaj zadanie do poprawienia, raz na zadanie. Przy
+drugim podejściu zadanie jest już w `retried_exercise_ids`, więc warunek prośby nie przechodzi
+i odpowiedź leci niżej — prosto na starą tolerancję, która ją zalicza.
+
+Tolerancja obowiązuje teraz wyłącznie **do pierwszego „Prawie!"**. Po nim trzeba napisać słowo
+tak, jak się je pisze — bo dokładnie o to prosi komunikat na ekranie.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Zakres tolerancji | do pierwszej prośby o poprawkę | komunikat prosi o poprawienie; jeśli niepoprawione przechodzi, komunikat kłamie | zniesienie tolerancji w ogóle (wraca „dogg" liczony jak nieznajomość słowa; tolerancja dalej działa tam, gdzie prośba nie przysługuje) |
+| Druga prośba | nie ma | pętla, z której dziecko nie wychodzi, a „Nie wiem, pomiń" tylko ją przedłuża | poprawianie aż do skutku |
+| `near_miss` przy niepoprawionej literówce | zostaje prawdą | to prawda o tej odpowiedzi i stąd w statystykach wiadomo, że dziecko było blisko; o zaliczeniu decyduje `is_correct`, nie ona | kasowanie znacznika razem z zaliczeniem (traci się informację) |
+| Ocena dla harmonogramu | zwykły błąd (1) | niepoprawiona literówka to słówko, którego dziecko nie umie napisać — ma wrócić w powtórkach | „z trudem" (2), czyli ocena dla zaliczenia z potknięciem |
+
+Dwa testy, które opisywały stan sprzed poprawki (`typo_retry.test.sql`, `lessons.test.sql`),
+mówią teraz odwrotnie, a doszedł trzeci: poprawiona naprawdę odpowiedź ma przechodzić. Bez niego
+poprzedni test dałoby się zdać, zamykając poprawianie w ogóle.
