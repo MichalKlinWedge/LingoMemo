@@ -1,4 +1,4 @@
--- Trzy poziomy przy każdej lekcji, wybierane przez dziecko na mapie kursu.
+-- Trzy poziomy przy każdej lekcji, wybierane przez dziecko na ekranie kursu.
 --
 -- Zmiana polityki względem `20261115094000_learner_level.sql`. Tamto rozwiązanie dobierało
 -- trudność za dziecko: sufit z profilu plus rampa z FSRS decydowały, które zadania w ogóle
@@ -16,7 +16,7 @@
 -- `profiles.level` zostaje w bazie i w panelu, ale nie filtruje już niczego — o trudności
 -- decyduje kwadracik, który dziecko kliknęło. Usunięcie pola to osobna decyzja na później.
 --
--- Odrzucone: poziom jako trzy osobne lekcje na mapie (dziecko widzi trzy razy więcej kafelków
+-- Odrzucone: poziom jako trzy osobne lekcje na ekranie kursu (dziecko widzi trzy razy więcej kafelków
 -- i gubi się, która jest która); wymaganie przejścia średniego przed trudnym (trudny bywa wtedy
 -- nieosiągalny przez jedną nieudaną próbę); liczenie postępu z każdego poziomu osobno do
 -- otwierania lekcji (dziecko musiałoby przejść wszystko, żeby ruszyć dalej).
@@ -643,7 +643,7 @@ begin
 end;
 $fn$;
 
--- 9. Trzy kwadraciki na mapie kursu: stan każdego poziomu każdej lekcji.
+-- 9. Trzy kwadraciki na ekranie kursu: stan każdego poziomu każdej lekcji.
 create or replace view public.v_my_lesson_levels with (security_invoker = on) as
 select
   l.id                                                   as lesson_id,

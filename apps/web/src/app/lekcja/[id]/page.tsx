@@ -18,7 +18,7 @@ async function Lesson({
   const { id } = await params;
   const { etap, poziom, podglad } = await searchParams;
   // Podgląd z panelu („Zobacz lekcję oczami dziecka"). Tylko on omija zamki i brak publikacji,
-  // i tylko administratorowi — sprawdza to baza. Wejście w lekcję z mapy kursu podgląd ma
+  // i tylko administratorowi — sprawdza to baza. Wejście w lekcję z ekranu kursu podgląd ma
   // wyłączony, więc administrator uczy się na tych samych zasadach co dziecko.
   const preview = (Array.isArray(podglad) ? podglad[0] : podglad) === "1";
   const { supabase, userId } = await requireUser(`/lekcja/${id}`);

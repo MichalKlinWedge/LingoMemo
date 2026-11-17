@@ -70,7 +70,7 @@ begin
     where l.is_published
       and u.is_published
       -- Tylko kursy, na które dziecko jest zapisane. `v_my_lessons` wydaje wszystkie lekcje
-      -- w bazie, bo mapa kursu i tak pyta o jeden kurs — tutaj pytamy o dziecko, więc to tu
+      -- w bazie, bo ekran kursu i tak pyta o jeden kurs — tutaj pytamy o dziecko, więc to tu
       -- jest miejsce na odsianie kursów, które go nie dotyczą.
       and exists (
         select 1 from public.enrollments e

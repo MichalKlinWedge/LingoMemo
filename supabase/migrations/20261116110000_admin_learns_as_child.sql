@@ -2,14 +2,14 @@
 --
 -- `is_lesson_unlocked` oddawało administratorowi „otwarte" dla każdej lekcji, a
 -- `get_lesson_exercises` i `start_lesson_session` wpuszczały go też do lekcji przed publikacją.
--- Miało to służyć podglądowi z panelu, ale działało wszędzie: administrator wchodzący na mapę
+-- Miało to służyć podglądowi z panelu, ale działało wszędzie: administrator wchodzący na ekran
 -- kursu jak każdy uczeń miał cały kurs otwarty, bez zamków, bez warunków wstępnych i bez testów
 -- działów. Nie da się wtedy sprawdzić tego, co dziecko naprawdę zobaczy, ani uczyć się razem
 -- z nim na równych prawach.
 --
 -- Od teraz obejście jest jawne i jednorazowe: przeglądarka musi o nie poprosić parametrem
 -- `p_preview`, a baza i tak sprawdza, czy pytający jest administratorem. Panel podaje go
--- w linku „Zobacz lekcję oczami dziecka" (`?podglad=1`), a zwykłe wejście w lekcję z mapy
+-- w linku „Zobacz lekcję oczami dziecka" (`?podglad=1`), a zwykłe wejście w lekcję z ekranu
 -- kursu — nie. Administrator uczący się normalnie ma zamki, warunki wstępne i testy działów
 -- dokładnie takie, jak dziecko.
 --

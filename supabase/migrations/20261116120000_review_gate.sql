@@ -324,7 +324,7 @@ language sql stable security definer set search_path = ''
 as $fn$
   select case
     -- Test powtórkowy jest otwarty dokładnie wtedy, gdy stoi bramka. Bez zaległości nie ma
-    -- czego powtarzać, więc kafelek jest zamknięty i mapa go nie pokazuje.
+    -- czego powtarzać, więc kafelek jest zamknięty i ekran go nie pokazuje.
     when l.review_scope_course_id is not null then public.review_gate_on(l.review_scope_course_id, p_user)
     -- Bramka stoi przed zamkiem działu: zamyka cały kurs, razem z powtórkami i testami działów.
     when public.review_gate_on(
@@ -370,7 +370,7 @@ comment on function public.is_lesson_unlocked(uuid, uuid) is
 -- 6. Test powtórkowy powstaje sam przy pierwszym słówku w kursie — jak test działu.
 --
 -- Stoi w pierwszym dziale kursu, bo lekcja musi gdzieś wisieć (`lessons.unit_id` jest wymagane),
--- a pierwszy dział nigdy nie jest zamknięty testem poprzedniego. Na mapie dziecko widzi go
+-- a pierwszy dział nigdy nie jest zamknięty testem poprzedniego. Na ekranie kursu dziecko widzi go
 -- osobno, nad działami, nie jako kafelek tamtego działu.
 create or replace function public.add_review_test()
 returns trigger

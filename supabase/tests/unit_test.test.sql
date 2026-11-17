@@ -1,6 +1,6 @@
 -- Test działu i zamek na kolejnym dziale.
 --
--- Sprawdza to, co dziecko widzi na mapie kursu: że dział kończy się testem, że test czeka
+-- Sprawdza to, co dziecko widzi na ekranie kursu: że dział kończy się testem, że test czeka
 -- na komplet lekcji działu, a następny dział czeka na zdany test. I że żadna z tych blokad
 -- nie dotyczy administratora oglądającego kurs oczami dziecka.
 

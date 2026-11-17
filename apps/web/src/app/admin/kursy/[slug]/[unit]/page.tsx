@@ -105,7 +105,7 @@ async function Unit({ params }: { params: PageProps<"/admin/kursy/[slug]/[unit]"
             <span aria-hidden>{unit.icon}</span> {unit.title}
           </>
         }
-        intro="Lekcje w dziale. Kolejność decyduje o tym, co dziecko widzi na mapie kursu."
+        intro="Lekcje w dziale. Kolejność decyduje o tym, co dziecko widzi na ekranie kursu."
       />
 
       <LessonTable

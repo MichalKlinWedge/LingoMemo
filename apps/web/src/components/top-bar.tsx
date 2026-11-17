@@ -21,7 +21,7 @@ export async function TopBar() {
   const [{ data: profile }, { data: stats }, { data: unlock }] = await Promise.all([
     supabase.from("profiles").select("display_name").eq("id", userId).maybeSingle(),
     supabase.from("v_my_stats").select("total_points, streak_days, words_due").eq("user_id", userId).maybeSingle(),
-    // Punkty odblokowania. W pasku, a nie tylko na mapie kursu: zdobywa się je w lekcji
+    // Punkty odblokowania. W pasku, a nie tylko na ekranie kursu: zdobywa się je w lekcji
     // (poziom trudny), a wydaje piętro wyżej — dziecko musi je widzieć także po drodze.
     supabase.rpc("unlock_status", { p_user: userId }),
   ]);
@@ -51,13 +51,13 @@ export async function TopBar() {
           )}
           {/* Bez punktów znacznika nie ma: dziecko przed pierwszym poziomem trudnym nie ma
               o czym wiedzieć, a pasek ma być krótki. Kliknięcie prowadzi na listę kursów,
-              czyli do map z kłódkami — tam się te punkty wydaje. */}
+              czyli do kursów z kłódkami — tam się te punkty wydaje. */}
           {doOdblokowania > 0 && (
             <Link
               href="/"
               className="chip"
               aria-label={`${plural(doOdblokowania, UNLOCKS)} — otwórz nimi zamkniętą lekcję`}
-              title="Kliknij kłódkę z kluczykiem na mapie kursu, żeby otworzyć lekcję"
+              title="Kliknij kłódkę z kluczykiem na ekranie kursu, żeby otworzyć lekcję"
             >
               <span aria-hidden>🔑 {doOdblokowania} do odblokowania</span>
             </Link>

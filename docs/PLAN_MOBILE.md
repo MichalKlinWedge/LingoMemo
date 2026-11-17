@@ -19,7 +19,7 @@ funkcji**, nie drugą implementacją logiki.
 |---|---|
 | Logowanie e-mail + hasło, pamiętana sesja | `auth`, bez zakładania konta |
 | Lista kursów ucznia | `list_courses_started`, `enrollments` |
-| Mapa działów i lekcji: gwiazdki etapów, kwadraciki poziomów, kłódki | widok `v_my_lessons`, `is_lesson_unlocked`, `is_unit_unlocked` |
+| Ekran kursu — działy i lekcje: gwiazdki etapów, kwadraciki poziomów, kłódki | widok `v_my_lessons`, `is_lesson_unlocked`, `is_unit_unlocked` |
 | Lekcja w etapach po 15 zadań, dziewięć typów zadań | `start_lesson_session`, `get_lesson_exercises`, `submit_attempt`, `finish_lesson_session` |
 | Podpowiedzi (łatwiejszy wariant tego samego słówka) | `use_hint`, `hints_left`, `hint_status` |
 | Bramka zaległych powtórek przed nową lekcją | `review_gate` |
@@ -165,19 +165,19 @@ wystarczy — powiadomienia, mowa i SQLite to moduły natywne.
 Dev build NIE potrzebuje zmiennych po stronie EAS (Metro czyta `.env.local` z komputera), ale
 APK `preview` i `dzieci` już tak — `apps/mobile/AGENTS.md` ma polecenia `eas env:create`.
 
-### Etap M1 — mapa i lekcja
+### Etap M1 — kurs i lekcja
 
 `@lingomemo/core` i `@lingomemo/db` używane przez Metro (pakiety z workspace jako źródła TS).
-Ekrany: kursy → mapa działów i lekcji → lekcja → podsumowanie. Najpierw cztery typy zadań bez
-grafiki i bez dotykowych układanek: `translate_ab`, `translate_ba`, `fill_blank_choice`,
-`listening`. Etapy po 15 zadań, pasek postępu, bramka zaległych powtórek, podpowiedzi, jedna
-szansa na poprawienie literówki (werdykt `retry` z rozróżnieniem `typo` i `order`).
+Ekrany: kursy → ekran kursu z działami i lekcjami → lekcja → podsumowanie. Najpierw cztery typy
+zadań bez grafiki i bez dotykowych układanek: `translate_ab`, `translate_ba`, `fill_blank_choice`,
+`listening`. Etapy po 15 zadań, pasek postępu, bramka zaległych powtórek, podpowiedzi, jedna szansa
+na poprawienie literówki (werdykt `retry` z rozróżnieniem `typo` i `order`).
 
 Logika z `lesson-actions.ts` przenosi się jako cienki moduł klienta — te same RPC, bez Server
 Actions. Nowego backendu nie ma i być nie powinno: prawa i ocena są w bazie, a `requireUser()`
 na webie jest tylko bramką na interfejs.
 
-**Kryterium odbioru:** dziecko przechodzi lekcję demo na telefonie od mapy do podsumowania;
+**Kryterium odbioru:** dziecko przechodzi lekcję demo na telefonie od ekranu kursu do podsumowania;
 gwiazdki, punkty i stan powtórek zgadzają się z tym, co o tej samej lekcji pokazuje web.
 
 **Stan (2026-11-16):** kod jest, przejścia lekcji na telefonie jeszcze nie było (brak dev buildu).
@@ -185,7 +185,7 @@ Powstało:
 
 - **Kursy** (`app/index.tsx`): kursy, na które uczeń jest zapisany; wejście w kurs. Kursu bez
   zapisu nie pokazujemy wcale — w bazie jest zamknięty, a o dopisanie prosi się na webie.
-- **Mapa kursu** (`app/kurs/[slug].tsx`): działy, kafelki lekcji z ikoną, gwiazdkami i liczbą
+- **Ekran kursu** (`app/kurs/[slug].tsx`): działy, kafelki lekcji z ikoną, gwiazdkami i liczbą
   słówek, kwadraciki etapów (z gwiazdkami etapu) oraz wejścia na poziom średni i trudny, karta
   bramki zaległych powtórek, powody zamknięcia pod kafelkiem. Dotknięcie kafelka otwiera „to,
   co dalej": po zaliczeniu łatwego — średni, potem trudny.
@@ -254,7 +254,7 @@ z powiadomienia wprost w powtórkę, robi ją i seria dni rośnie.
 **Stan (2026-11-16):** powtórki i testy działu działały już w M1, bo to zwykłe lekcje — zadania
 wydaje im to samo `get_lesson_exercises`. Doszły trzy ekrany i przypomnienia:
 
-- **Plansza ze słówkami** (`app/lekcja/[id]/nauka.tsx`, sowa przy kafelku na mapie): karty
+- **Plansza ze słówkami** (`app/lekcja/[id]/nauka.tsx`, sowa przy kafelku na ekranie kursu): karty
   z obrazkiem albo emoji, słowo w języku kursu, zapis fonetyczny i tłumaczenie; dotknięcie karty
   czyta słowo, „Przeczytaj wszystkie" idzie po kolei (następne słowo startuje z wywołania
   zwrotnego poprzedniego, bo syntezator nie mówi z góry, ile wypowiedź potrwa). Nic tu nie jest

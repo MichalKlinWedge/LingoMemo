@@ -197,7 +197,7 @@ select throws_ok(
   format('select * from public.child_lessons(%L)', (select id from t_ids where name = 'moje')),
   '42501',
   null,
-  'ani w jego mapę lekcji');
+  'ani w jego listę lekcji');
 
 -- Ta sama funkcja wydaje dziecku jego własne lekcje: nie ma potrzeby trzymać osobnej dla każdej roli.
 select is(

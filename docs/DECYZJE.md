@@ -99,7 +99,7 @@ podejść do tego samego słówka w jednej lekcji jest poprawnie uwzględnione.
   `installCommand: "npm install --include=dev"` w `vercel.json`. Odtworzenie błędu lokalnie:
   `NODE_ENV=production npm install` w świeżym klonie.
 - **Zamknięte lekcje muszą być widoczne.** Pierwotna polityka RLS ukrywała je całkowicie, przez
-  co mapa kursu pokazywałaby jedną lekcję i pustkę. Tytuł lekcji nie jest tajemnicą — tajemnicą
+  co ekran kursu pokazywałby jedną lekcję i pustkę. Tytuł lekcji nie jest tajemnicą — tajemnicą
   są zadania, a tych pilnują osobne mechanizmy. Patrz migracja `…_lesson_map.sql`.
 - **W React nie wolno wołać `Date.now()` ani dotykać refów w trakcie renderu** (linter Next to
   wyłapuje). Klucz idempotencji sesji nadajemy więc przy pierwszej odpowiedzi, czyli w obsłudze
@@ -350,12 +350,12 @@ a `lesson_progress` dostaje `completed` dopiero wtedy, gdy zaliczone są wszystk
 
 | Obszar | Wybór | Dlaczego | Odrzucone |
 |---|---|---|---|
-| Skąd etapy | liczone w bazie z liczby zadań: `ceil(zadań / 15)`, zadanie `rn` trafia do `((rn-1) * etapów) / zadań + 1` | zero zmian w treści i w imporcie; lekcje do 15 zadań mają jeden etap i działają jak dotąd | etap jako pole w JSON-ie (każdy plik do poprawy, limit pilnowany ręcznie) oraz etap jako osobna lekcja (na mapie trzy kafelki zamiast jednego) |
+| Skąd etapy | liczone w bazie z liczby zadań: `ceil(zadań / 15)`, zadanie `rn` trafia do `((rn-1) * etapów) / zadań + 1` | zero zmian w treści i w imporcie; lekcje do 15 zadań mają jeden etap i działają jak dotąd | etap jako pole w JSON-ie (każdy plik do poprawy, limit pilnowany ręcznie) oraz etap jako osobna lekcja (na ekranie kursu trzy kafelki zamiast jednego) |
 | Próg podziału | zawsze, gdy zadań jest więcej niż 15 | jeden warunek zamiast dwóch; „więcej niż 10 słówek" i tak znaczy ponad 30 zadań, bo każde słówko ma ich trzy | dosłowne „> 10 słówek" (lekcja z 10 słówkami zostawałaby jednym etapem na 30 zadań) |
 | Kawałki | równe co do jednego zadania (36 → 12/12/12, 31 → 11/10/10) | ostatni etap z jednym zadaniem wygląda jak usterka | pełne piętnastki i reszta na końcu (36 → 15/15/6) |
-| Przejście dalej | podsumowanie etapu z przyciskiem „Następny etap", puchar dopiero po ostatnim | dziecko widzi postęp i ma gdzie skończyć; „Lekcja zaliczona!" po pierwszym z trzech kawałków byłoby nieprawdą | wybór etapu z mapy (więcej klikania) i jeden ciąg bez przerw (znika cały zysk z dzielenia) |
+| Przejście dalej | podsumowanie etapu z przyciskiem „Następny etap", puchar dopiero po ostatnim | dziecko widzi postęp i ma gdzie skończyć; „Lekcja zaliczona!" po pierwszym z trzech kawałków byłoby nieprawdą | wybór etapu z ekranu kursu (więcej klikania) i jeden ciąg bez przerw (znika cały zysk z dzielenia) |
 | Punkty za lekcję | `xp_reward` dzielone między etapy, reszta z dzielenia do ostatniego | przejście lekcji po kawałku daje tyle samo, co za jednym razem | pełna nagroda za każdy etap (trzykrotność) albo wypłata dopiero na końcu (dwa etapy bez nagrody) |
-| Wynik lekcji | średnia z najlepszych wyników etapów, etapy nierozegrane liczone jako zero | po pierwszym z trzech etapów na mapie widać jedną trzecią, a nie komplet gwiazdek | wynik ostatniego etapu (jeden słaby kawałek kasowałby dwa dobre) |
+| Wynik lekcji | średnia z najlepszych wyników etapów, etapy nierozegrane liczone jako zero | po pierwszym z trzech etapów na ekranie kursu widać jedną trzecią, a nie komplet gwiazdek | wynik ostatniego etapu (jeden słaby kawałek kasowałby dwa dobre) |
 
 Gwiazdki za lekcję pojawiają się dopiero po ostatnim etapie — wcześniej nie ma czego oceniać.
 Powtórka ma najwyżej `review_limit()` zadań, więc zawsze jest jednoetapowa.
@@ -477,14 +477,14 @@ trudniejsze zadanie, nawet gdy chciało, a dorosły musiał to przestawiać w pa
 
 | Decyzja | Wybór | Dlaczego | Odrzucone |
 |---|---|---|---|
-| Kto wybiera trudność | dziecko, klikając jeden z trzech kwadracików pod lekcją | wybór jest na mapie, tam gdzie i tak patrzy; nic nie trzeba ustawiać w panelu | sufit w profilu i rampa z FSRS (dobierały za dziecko) |
+| Kto wybiera trudność | dziecko, klikając jeden z trzech kwadracików pod lekcją | wybór jest na ekranie kursu, tam gdzie i tak patrzy; nic nie trzeba ustawiać w panelu | sufit w profilu i rampa z FSRS (dobierały za dziecko) |
 | Co otwiera następną lekcję | wyłącznie poziom łatwy | dziecko ma iść dalej po materiale, a nie utknąć na trudnym; trudniejsze wejścia są dobrowolne | zaliczenie wszystkich trzech poziomów |
 | Kiedy otwierają się średni i trudny | po zaliczeniu łatwego, oba naraz | najpierw poznanie słówek klikaniem; kaskada (trudny po średnim) robi trudny nieosiągalnym po jednej nieudanej próbie | od razu wszystkie trzy; kaskadowo |
 | Ile materiału w trudniejszym wejściu | osiem losowych słówek lekcji, po jednym zadaniu na słówko | krótkie podejście, inne za każdym razem; cała lekcja na trudnym to pół godziny pisania | wszystkie słówka lekcji |
 | Gdzie zapisuje się wynik | `lesson_level_progress` (tylko poziom 2 i 3); poziom łatwy zostaje w `lesson_progress` | postęp lekcji i odblokowania zostają takie jak były, a kwadraciki mają swój stan | kolumna `level` w `lesson_progress` (zmienia klucz główny i wszystkie widoki postępu) |
 | Migawka zadań w sesji | tylko poziom łatwy; trudniejsze wejście jej nie zapisuje | zestaw jest losowany przy każdym wywołaniu, więc zapisana lista i tak nie byłaby tą, którą zobaczyła przeglądarka — dokładnie jak przy powtórce | losowanie raz i zapamiętanie w sesji (strona renderuje zadania przed założeniem sesji) |
 | Kolory kwadracików | fiolet łatwy (jak etapy), błękit średni, bursztyn trudny | zieleń i koral są zarezerwowane na „dobrze" i „źle", a bursztyn ma własny ciemniejszy obrys, bo samo `--color-sun` na jasnym tle jest niewidoczne | zieleń/żółty/czerwony jako skala trudności |
-| Układ na mapie | wszystkie kwadraciki w jednej linii, przyklejonej do dołu kafelka (`margin-top: auto`) | tytuły lekcji mają różną liczbę wierszy, więc bez tego kwadraciki stały w rzędzie na różnych wysokościach | kwadraciki tuż pod tytułem |
+| Układ na ekranie kursu | wszystkie kwadraciki w jednej linii, przyklejonej do dołu kafelka (`margin-top: auto`) | tytuły lekcji mają różną liczbę wierszy, więc bez tego kwadraciki stały w rzędzie na różnych wysokościach | kwadraciki tuż pod tytułem |
 
 `profiles.level` i `set_learner_level` zostają w bazie i w panelu, ale nie filtrują już niczego —
 usunięcie pola to osobna decyzja. Funkcje dobierające po sufucie (`visible_exercises`,
@@ -572,9 +572,9 @@ widać wszystkie słówka lekcji i można ich posłuchać, zanim zacznie się za
 | Czytanie całej listy | następne słowo startuje z wywołania zwrotnego poprzedniego, po 0,7 s przerwy | `speechSynthesis` nie mówi, ile wypowiedź potrwa, więc stała przerwa dla wszystkich albo ucinałaby dłuższe słowa, albo kazała czekać po krótkich | `setInterval` co stałą liczbę sekund; kolejkowanie wszystkich wypowiedzi naraz (nie da się wtedy przerwać w środku ani pokazać, które słowo leci) |
 | Przerwanie czytania | numer przebiegu w `useRef`, podbijany przy każdym przerwaniu | `cancel()` w części przeglądarek kończy wypowiedź zdarzeniem `onend` nie do odróżnienia od normalnego końca, więc bez tego lista jechałaby dalej po naciśnięciu „Przerwij" | flaga `boolean` (spóźnione wywołanie zwrotne z poprzedniego przebiegu i tak by ją zastało ustawioną) |
 
-Dół kafelka na mapie (liczba słówek, sowa, kwadraciki postępu) jedzie w jednym bloku z `mt-auto`,
-a miejsce po sowie zostaje puste tam, gdzie jej nie ma. Tytuły lekcji mają różną liczbę wierszy,
-więc każdy z tych elementów osobno stał w sąsiednich kolumnach na innej wysokości.
+Dół kafelka na ekranie kursu (liczba słówek, sowa, kwadraciki postępu) jedzie w jednym bloku z
+`mt-auto`, a miejsce po sowie zostaje puste tam, gdzie jej nie ma. Tytuły lekcji mają różną liczbę
+wierszy, więc każdy z tych elementów osobno stał w sąsiednich kolumnach na innej wysokości.
 
 ### Test na koniec działu (2026-11-15)
 
@@ -723,8 +723,8 @@ w którym etapie zgubiło trzecią.
 |---|---|---|---|
 | Co znaczy gwiazdka przy kafelku | ocena CAŁEJ lekcji: średnia z najlepszych wyników wszystkich etapów, zapisywana po zamknięciu ostatniego i tylko w górę | to ona idzie do statystyk i do karty u rodzica, i tylko ona jest porównywalna między lekcjami | ocena ostatniego etapu (dziecko poprawiałoby jeden etap i dostawało trzy gwiazdki za całość) |
 | Czy zostaje obok etapowych | zostaje | odpowiada na inne pytanie: „jak dobrze umiem tę lekcję", a nie „który etap powtórzyć" | zastąpienie jej gwiazdkami etapów |
-| Skąd dane na mapie | zapytanie wprost do `lesson_stage_progress` z filtrem po użytkowniku | tabela ma politykę odczytu dla ucznia, więc nie trzeba migracji ani nowego widoku | nowy widok `v_my_lesson_stages` (migracja za jedno zapytanie); dopisanie tablicy gwiazdek do `v_my_lessons` |
-| Dlaczego filtr po użytkowniku, skoro jest RLS | bo polityka przepuszcza też administratora (`is_admin()`) | bez filtru na mapie administratora zmieszałyby się podejścia różnych dzieci | poleganie na samym RLS (ta sama poprawka poszła do ekranu lekcji, gdzie decydowała o tym, od którego etapu zaczyna się lekcja) |
+| Skąd dane na ekranie kursu | zapytanie wprost do `lesson_stage_progress` z filtrem po użytkowniku | tabela ma politykę odczytu dla ucznia, więc nie trzeba migracji ani nowego widoku | nowy widok `v_my_lesson_stages` (migracja za jedno zapytanie); dopisanie tablicy gwiazdek do `v_my_lessons` |
+| Dlaczego filtr po użytkowniku, skoro jest RLS | bo polityka przepuszcza też administratora (`is_admin()`) | bez filtru na ekranie administratora zmieszałyby się podejścia różnych dzieci | poleganie na samym RLS (ta sama poprawka poszła do ekranu lekcji, gdzie decydowała o tym, od którego etapu zaczyna się lekcja) |
 | Czym rysujemy gwiazdkę | znak `★` w pudełku o stałej szerokości 0,625 rem | „★" ma w każdym kroju inną szerokość, a od niej zależy, czy rząd mieści się w kafelku; emoji `⭐` w tym rozmiarze jest plamą | emoji `⭐` jak przy kafelku; tekst bez pudełka |
 | Puste gwiazdki na obrys | odrzucone | przy trzech etapach to dziewięć znaczków pod jednym kafelkiem | — |
 | Szerokość kafelka lekcji | 9,5 rem → 11,5 rem | rząd gwiazdek jest szerszy od kwadracika; najgorszy przypadek (trzy etapy po trzy gwiazdki i dwa poziomy) ma 160 px przy 164 px miejsca | ściśnięcie gwiazdek do szerokości kwadracika (8 px na gwiazdkę, czyli kropka) |
@@ -744,7 +744,7 @@ najlepszy wynik z podejść, więc „dwie gwiazdki nad kwadracikiem w połowie"
 
 `is_lesson_unlocked` oddawało administratorowi „otwarte" dla każdej lekcji, a wydawanie zadań
 i start sesji wpuszczały go też do lekcji przed publikacją. Miało to służyć podglądowi z panelu,
-ale działało wszędzie: administrator wchodzący na mapę kursu jak każdy uczeń miał cały kurs
+ale działało wszędzie: administrator wchodzący na ekran kursu jak każdy uczeń miał cały kurs
 otwarty — bez warunków wstępnych i bez testów działów. Nie dało się wtedy ani sprawdzić, co
 dziecko naprawdę zobaczy, ani uczyć się razem z nim na tych samych zasadach.
 
@@ -752,7 +752,7 @@ dziecko naprawdę zobaczy, ani uczyć się razem z nim na tych samych zasadach.
 |---|---|---|---|
 | Kiedy obejście działa | tylko gdy przeglądarka poprosi wprost: `p_preview` w `get_lesson_exercises` i `start_lesson_session` | widać w sygnaturze, że funkcja ma dwa tryby, i widać w kodzie strony, który tryb wybiera | obejście po samym `is_admin()` (było); nagłówek albo `set_config` (tryb niewidoczny w wywołaniu) |
 | Kto może o nie poprosić | i tak tylko administrator — `p_preview and public.is_admin()` | parametr przychodzi z przeglądarki, więc nie może sam z siebie niczego otwierać | zaufanie parametrowi |
-| Skąd się bierze | link „Zobacz lekcję oczami dziecka" w panelu, `?podglad=1` | to jedyne wejście, które ma być podglądem; wejście z mapy kursu jest nauką | osobny adres `/podglad/[id]` (drugi raz ten sam ekran do utrzymania) |
+| Skąd się bierze | link „Zobacz lekcję oczami dziecka" w panelu, `?podglad=1` | to jedyne wejście, które ma być podglądem; wejście z ekranu kursu jest nauką | osobny adres `/podglad/[id]` (drugi raz ten sam ekran do utrzymania) |
 | Co z zamkami w podglądzie | omija zamek lekcji, zamek działu, poziom i brak publikacji | po to jest: zobaczyć etap albo lekcję, której dziecko jeszcze nie otworzyło | omijanie tylko publikacji (nie dałoby się obejrzeć etapu za kłódką) |
 | Jak to widać na ekranie | chip „👀 Podgląd" na pasku lekcji | bez tego administrator nie odróżnia „lekcja jest otwarta" od „wszedłem tylnymi drzwiami" | nic nie pokazywać |
 | Postęp i punkty | zapisują się jak dotąd, na koncie pytającego, także w podglądzie | to jego własne konto, więc niczyjej nauki nie dotyka; podgląd zmienia dostęp, nie księgowanie | kasowanie postępu po podglądzie (nie da się odróżnić, co powstało w podglądzie) |
@@ -800,7 +800,7 @@ z zaległych słówek. Zdany test, próg lekcji jak wszędzie (80%), otwiera kur
 | Wyjątek od zatrzasku | brak zaległych słówek z zadaniem puszcza bramkę | dziecko, które oblało test obejmujący całą kolejkę, zostałoby z zamkniętym kursem i pustym testem | zatrzask bez wyjątku |
 | Porzucona sesja testu | nie zatrzaskuje (liczy się tylko dokończona) | zerwane połączenie i zamknięta karta to nie oblany test | każde wejście w test |
 | Czym jest test powtórkowy | zwykłą lekcją `kind = 'review'` z nową kolumną `review_scope_course_id` | cały silnik (sesja, próby, punkty, postęp) wisi na `lessons.id`, a `kind = 'review'` ma już dobór zadań ze stanu powtórek, wymuszony poziom łatwy i pustą migawkę zadań | nowa wartość `review_test` w `lesson_kind` (osobna migracja na sam enum i gałąź w dwóch największych funkcjach bazy, bez żadnego zysku) |
-| Gdzie wisi | w pierwszym dziale kursu, a na mapie osobno nad działami | `lessons.unit_id` jest wymagane, a pierwszy dział nigdy nie jest zamknięty testem poprzedniego; między kafelkami działu wyglądałby na jego lekcję | osobny „dział techniczny" na kurs (pusty nagłówek na mapie dziecka) |
+| Gdzie wisi | w pierwszym dziale kursu, a na ekranie kursu osobno nad działami | `lessons.unit_id` jest wymagane, a pierwszy dział nigdy nie jest zamknięty testem poprzedniego; między kafelkami działu wyglądałby na jego lekcję | osobny „dział techniczny" na kurs (pusty nagłówek na ekranie dziecka) |
 | Ile słówek w teście | najwyżej `review_limit` (12), najdłużej zaległe pierwsze | tyle, co zwykła powtórka — test ma być jednym podejściem, a nie odrabianiem czterdziestu słówek pod rząd; kolejność po terminie, bo inaczej przy równym priorytecie wchodziłyby stale te same słówka (decyduje wtedy identyfikator zadania) | `test_limit` (15) oraz cała kolejka naraz |
 | Kto zakłada test | wyzwalacz `lesson_items_review_test` przy pierwszym słówku kursu + dosyp dla kursów, które już mają słówka | tak samo jak test działu: kurs bez testu nie może być stanem domyślnym, bo wtedy reguła nie dotyczy niczego | zakładanie ręcznie w panelu |
 | Powtórka działu | zostaje bez zmian: bierze wszystko, co dziecko w dziale widziało, i nie ma progu | jest ćwiczeniem do woli, a nie bramką; blokadę zdejmuje wyłącznie test kursu | podniesienie powtórki działu do roli bramki (dziecko musiałoby trafić w ten dział, w którym uzbierały się zaległości) |
@@ -905,7 +905,7 @@ z kilkoma zadaniami jednego poziomu wchodzi do lekcji **raz**, losowo wybranym w
 | Język bez głosu | słówko zostaje na dwóch poziomach | bez `languages.tts_lang` nie ma czego odsłuchać, a zmyślone zadanie trudne byłoby kopią średniego z inną etykietą; panel pokazuje wtedy kreskę w kolumnie „Zadań" | sztuczne zadanie trudne dla każdego słówka |
 | Ile zadań słówka wchodzi do lekcji | jedno, losowane z wariantów danego poziomu | lekcja z dwudziestoma słówkami po trzy zadania to sześćdziesiąt zadań pod rząd, a to samo słówko wracało w jednym etapie kilka razy | wszystkie warianty w jednym przejściu (tak było) oraz jeden wariant na etap, reszta w kolejnych etapach (lekcja dalej trwa trzy razy dłużej) |
 | Czym losujemy | `variant_pick`: md5 z pary (zadanie, dziecko, dzisiejsza data w jego strefie) | lekcja pyta o zadania DWA razy — raz renderuje je strona, raz zapisuje migawkę `start_lesson_session`; przy `random()` obie listy byłyby inne i dziecko dostawałoby „To zadanie nie było w tym etapie lekcji". Ziarno z doby daje jeden wynik przez cały dzień, a jutro inny | `random()` przy każdym wywołaniu; ziarno z numeru podejścia (rośnie po KAŻDYM etapie, więc zestaw zmieniałby się w środku lekcji) |
-| Którego poziomu dotyczy reguła „raz" | poziomu łatwego, bo on JEST lekcją | średni i trudny i tak biorą osiem słówek po jednym zadaniu (`pick_level_exercises`), a `lesson_exercises_at_level` odpowiada tam na inne pytanie: ile zadań tego poziomu lekcja ma (z tego bierze się kwadracik na mapie) | jedno na słówko na każdym poziomie (kwadracik na mapie przestałby pokazywać, ile treści naprawdę jest) |
+| Którego poziomu dotyczy reguła „raz" | poziomu łatwego, bo on JEST lekcją | średni i trudny i tak biorą osiem słówek po jednym zadaniu (`pick_level_exercises`), a `lesson_exercises_at_level` odpowiada tam na inne pytanie: ile zadań tego poziomu lekcja ma (z tego bierze się kwadracik na ekranie kursu) | jedno na słówko na każdym poziomie (kwadracik na ekranie kursu przestałby pokazywać, ile treści naprawdę jest) |
 
 ### Co trzeba było poprawić w testach
 
@@ -919,14 +919,14 @@ dałoby się w jednym przejściu sprawdzić czterech różnych typów należący
 
 ### Prośba o dostęp do kursu (2026-11-16)
 
-Strona główna wypisywała dziecku wszystkie opublikowane kursy, mapa kursu nie pytała o zapis,
+Strona główna wypisywała dziecku wszystkie opublikowane kursy, ekran kursu nie pytał o zapis,
 a polityka `enrollments_insert_own` pozwalała zapisać się samemu. Zapis istniał, ale nie znaczył
 nic poza statystykami. Teraz zapis jest warunkiem nauki, a kurs bez zapisu dziecko widzi tylko
 z nazwy — z przyciskiem prośby zamiast strzałki.
 
 | Decyzja | Wybór | Dlaczego | Odrzucone |
 |---|---|---|---|
-| Gdzie stoi bramka | `is_lesson_unlocked` | pod nią siedzą `get_lesson_exercises`, `start_lesson_session` i mapa kursu — jedno miejsce zamiast polityk na czterech tabelach | polityka SELECT na `courses` ograniczona do zapisanych (dziecko nie zobaczyłoby nazw, więc nie miałoby o co poprosić, a rodzic straciłby kursy dziecka z `v_my_courses`) |
+| Gdzie stoi bramka | `is_lesson_unlocked` | pod nią siedzą `get_lesson_exercises`, `start_lesson_session` i ekran kursu — jedno miejsce zamiast polityk na czterech tabelach | polityka SELECT na `courses` ograniczona do zapisanych (dziecko nie zobaczyłoby nazw, więc nie miałoby o co poprosić, a rodzic straciłby kursy dziecka z `v_my_courses`) |
 | Kto zakłada zapis | administrator albo zaproszenie | o tym, czy czwartoklasista bierze się za włoski, decyduje dorosły; wyzwalacz z zaproszenia jest `security definer`, więc działa dalej | `enrollments_insert_own` (zostawienie go znaczyłoby, że bramka jest ozdobą) |
 | Czym jest prośba | para (dziecko, kurs) z datą, kasowana wyzwalaczem w chwili zapisu | to ten sam wzorzec, co `parent_requests`: ślad przy uczniu, nie kolejka zgłoszeń do odhaczenia | osobny stan „rozpatrzona/odrzucona" (druga maszyna stanów do utrzymania); powiadomienie mailem (nie mamy wysyłki) |
 | Co z dziećmi, które już się uczą | zapisy wsteczne w migracji, z trzech śladów nauki | zapis miał dotąd zbyt małe znaczenie, żeby zakładać, że jest wszędzie tam, gdzie jest nauka — bez tego bramka zamknęłaby kursy robione dzisiaj | ogłoszenie „poproś o dostęp" także tym, którzy kurs już robią |
@@ -968,7 +968,7 @@ filtrować, a pole zostało w panelu „do osobnej decyzji". To jest ta decyzja:
 
 Przełącznik, który niczego nie zmienia, jest gorszy niż jego brak. Dorosły ustawiał dziecku
 poziom 1, widział trzy kwadraciki pod każdą lekcją i miał prawo sądzić, że jedno psuje drugie.
-O trudności decyduje dziecko, klikając kwadracik na mapie kursu — i to jest jedyne miejsce.
+O trudności decyduje dziecko, klikając kwadracik na ekranie kursu — i to jest jedyne miejsce.
 
 | Decyzja | Wybór | Dlaczego | Odrzucone |
 |---|---|---|---|
@@ -1022,7 +1022,7 @@ w środku tej listy. Dostępu nie pilnuje komponent, tylko RLS: `user_badges` wy
 wiersze wyłącznie przypisanych dzieci.
 
 Prośba o dostęp stoi też przy kursach dziecka, na jego karcie: rodzic czyta, czego uczy się
-dziecko, i w tym samym wierszu widzi albo „uczysz się tego kursu" (odnośnik do mapy), albo
+dziecko, i w tym samym wierszu widzi albo „uczysz się tego kursu" (odnośnik do kursu), albo
 przycisk prośby dla SIEBIE. To zwykłe `request_course_access` — nowej drogi nie ma, bo zapis
 rodzica niczym się nie różni od zapisu dziecka, a decyduje tak samo administrator. Kursu ukrytego
 nie trzeba tam obsługiwać: polityka `courses_read` nie wydaje go nikomu poza administratorem,
@@ -1072,14 +1072,14 @@ adresu `127.0.0.1` komputera, więc `--local` go nie dotyczy.
 
 ## Telefon, Etap M1: co przenosimy wprost, a co inaczej niż na webie (2026-11-16)
 
-Mapa kursu i przebieg lekcji na telefonie wołają te same funkcje bazy co web, więc reguły
+Ekran kursu i przebieg lekcji na telefonie wołają te same funkcje bazy co web, więc reguły
 (co otwarte, ile gwiazdek, kiedy bramka) nie są przepisane — przychodzą z bazy. Różnice dotyczą
 tylko tego, czego telefon nie ma albo ma inaczej.
 
 | Rzecz | Na webie | Na telefonie | Dlaczego |
 |---|---|---|---|
 | Wywołania bazy | Server Actions (`lesson-actions.ts`) | wprost z aplikacji (`features/lesson/api.ts`) | nie ma serwera aplikacji i nie jest potrzebny: praw pilnuje RLS, a klucze odpowiedzi wycina `get_lesson_exercises` |
-| Odświeżanie danych | nowy render strony po powrocie | `useFocusEffect` wczytuje mapę przy każdym wejściu na ekran | po lekcji zmieniają się gwiazdki i zamki; ekran, który został w pamięci, pokazywałby stan sprzed lekcji |
+| Odświeżanie danych | nowy render strony po powrocie | `useFocusEffect` wczytuje kurs przy każdym wejściu na ekran | po lekcji zmieniają się gwiazdki i zamki; ekran, który został w pamięci, pokazywałby stan sprzed lekcji |
 | Automatyczne przejście po dobrej odpowiedzi | licznik odkładany przy każdym kliknięciu i klawiszu | licznik odkładany przy każdym dotknięciu ekranu (`onStartShouldSetResponderCapture`, bez przechwytywania dotknięcia) | dziecko, które słucha słówka głośnikiem, nie ma stracić ekranu sprzed nosa |
 | Kwadraciki etapów i poziomów | małe, mysz trafia | te same rozmiary, ale `hitSlop` powiększa pole dotyku do progu dla palca | rząd kilku kwadracików nie zmieści się w 56 px na sztukę, a pole dotyku może być większe niż rysunek |
 | Dźwięk reakcji i animacje | Web Audio + CSS | nie ma w M1 | to osobna zależność natywna; brak dźwięku nie psuje nauki, brak oceny z bazy — psuje |
@@ -1190,7 +1190,7 @@ dopisywania i cofania — skasowana lekcja zabiera i punkt, i odblokowanie, bez 
 Za punkt otwiera się **zwykłą lekcję (`kind = 'standard'`) w dziale, w którym dziecko już jest**.
 Punkt nie jest przepustką przez test działu ani przez bramkę zaległych powtórek: test zostaje
 jedyną drogą do następnego działu, a zaległe słówka trzeba powtórzyć, nie wykupić. Pilnuje tego
-`can_unlock_lesson`, a nie przeglądarka — mapa tylko pokazuje kłódkę z kluczykiem tam, gdzie baza
+`can_unlock_lesson`, a nie przeglądarka — ekran tylko pokazuje kłódkę z kluczykiem tam, gdzie baza
 mówi, że da się ją otworzyć. Kliknięcie kłódki pyta o zgodę, bo punkt kosztuje kilkanaście zadań
 na poziomie trudnym i wydanie go przez pomyłkę byłoby dotkliwe.
 
@@ -1234,9 +1234,9 @@ samo: dziecko w etapie zobaczy podsumowanie poprzedniego podejścia.
 
 Nagrody za poziomy (średni — podpowiedź, trudny — punkt odblokowania) weszły najpierw na webie,
 a telefon został przy samych gwiazdkach. Punkt dziecko zdobywało w aplikacji i nie dowiadywało
-się o tym, a kłódki na mapie były martwe — reguła siedziała w bazie, tylko nie było czym jej
+się o tym, a kłódki na ekranie były martwe — reguła siedziała w bazie, tylko nie było czym jej
 dotknąć. Od teraz telefon robi dokładnie to, co strona: podsumowanie mówi o zdobytym punkcie,
-mapa pokazuje kłódkę z kluczykiem tam, gdzie `can_unlock_lesson` na to pozwala, a dotknięcie
+ekran kursu pokazuje kłódkę z kluczykiem tam, gdzie `can_unlock_lesson` na to pozwala, a dotknięcie
 pyta o zgodę przed wydaniem punktu.
 
 Decyzji o tym, co wolno otworzyć, telefon **nie podejmuje**: wysyła `unlock_lesson` z samym
@@ -1250,7 +1250,7 @@ Punkty, seria i zaległe powtórki stoją **na ekranie kursów**, nie w nagłów
 `TopBar` na webie. Pasek nad stosem nawigacji w expo-router znaczyłby własny nagłówek dla lekcji,
 logowania i planszy ze słówkami — a w lekcji licznik punktów przeszkadza (dziecko ma patrzeć
 na zadanie) i tak czy tak zmieniłby się dopiero w podsumowaniu. Ekran kursów wczytuje się na nowo
-przy każdym pokazaniu, więc punkty zdobyte w lekcji widać zaraz po powrocie na mapę.
+przy każdym pokazaniu, więc punkty zdobyte w lekcji widać zaraz po powrocie na ekran kursu.
 
 Odrzucone: przeliczanie stanu konta w telefonie z `lesson_level_progress` (druga implementacja
 reguły obok `unlock_points_left`); odblokowanie bez pytania (punkt kosztuje kilkanaście zadań na

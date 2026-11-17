@@ -921,7 +921,7 @@ export function LessonTable({
         <>
           <p className="text-base text-zinc-600 dark:text-zinc-400">
             Kolejność zmienia się przeciągnięciem za uchwyt ⠿ albo strzałkami góra i dół. To ona
-            decyduje o tym, co dziecko widzi na mapie kursu.
+            decyduje o tym, co dziecko widzi na ekranie kursu.
           </p>
           <SortableTable
             parentId={unitId}

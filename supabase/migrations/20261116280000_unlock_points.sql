@@ -149,7 +149,7 @@ $fn$;
  * pokazać także wtedy, gdy punktów nie ma, żeby dziecko dowiedziało się, skąd je wziąć.
  *
  * Kolejność gałęzi jest oszczędnością, nie tylko regułą: lekcja otwarta wychodzi po pierwszym
- * sprawdzeniu, a to ta najczęstsza — widok mapy woła tę funkcję dla każdego kafelka.
+ * sprawdzeniu, a to ta najczęstsza — widok kursu woła tę funkcję dla każdego kafelka.
  */
 create or replace function public.can_unlock_lesson(p_lesson uuid, p_user uuid)
 returns boolean
@@ -213,7 +213,7 @@ begin
   -- stan przed wstawieniem tego drugiego wiersza.
   perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(v_user::text, 0));
 
-  -- Otwarta już wcześniej: milczenie zamiast błędu, bo mapa mogła być otwarta sprzed zaliczenia
+  -- Otwarta już wcześniej: milczenie zamiast błędu, bo ekran mógł być otwarty sprzed zaliczenia
   -- poprzedniej lekcji.
   if public.is_lesson_unlocked(p_lesson, v_user) then
     return jsonb_build_object('charged', false, 'left', public.unlock_points_left(v_user));
@@ -248,7 +248,7 @@ as $fn$
            (select u.course_id from public.units u where u.id = l.unit_id), p_user
          ) then false
     -- Test powtórkowy jest otwarty dokładnie wtedy, gdy stoi bramka. Bez zaległości nie ma
-    -- czego powtarzać, więc kafelek jest zamknięty i mapa go nie pokazuje.
+    -- czego powtarzać, więc kafelek jest zamknięty i ekran go nie pokazuje.
     when l.review_scope_course_id is not null then public.review_gate_on(l.review_scope_course_id, p_user)
     -- Bramka stoi przed zamkiem działu: zamyka cały kurs, razem z powtórkami i testami działów.
     when public.review_gate_on(
@@ -296,7 +296,7 @@ comment on function public.is_lesson_unlocked(uuid, uuid) is
   'Czy lekcja jest dla tego ucznia otwarta: zapis na kurs, otwarty dział, a w nim warunek '
   'wstępny lekcji albo punkt odblokowania (test działu czeka na komplet lekcji).';
 
--- 4. Mapa kursu mówi, którą kłódkę da się otworzyć punktem. Ciało przepisane
+-- 4. Ekran kursu mówi, którą kłódkę da się otworzyć punktem. Ciało przepisane
 -- z `20261115093000_lesson_stages.sql` z jedną kolumną więcej na końcu — `create or replace view`
 -- nie pozwala wstawić jej w środku.
 create or replace view public.v_my_lessons with (security_invoker = on) as

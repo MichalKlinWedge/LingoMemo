@@ -29,16 +29,17 @@ import { stopwatch } from '@/lib/clock';
 type Phase = 'answering' | 'checking' | 'feedback' | 'done';
 
 /**
- * Powrót na mapę kursu — `dismissTo`, nie `replace`.
+ * Powrót na ekran kursu — `dismissTo`, nie `replace`.
  *
- * Mapa leży już na stosie (to z niej wchodzi się w lekcję), więc `replace` nie wracał na nią,
- * tylko dokładał jej drugi egzemplarz. Po kilku lekcjach systemowy przycisk Wstecz przewijał
- * kilka identycznych map, zanim doszedł do listy kursów. `dismissTo` zdejmuje ekrany aż do tej
- * mapy, która tam jest, a gdyby jej nie było — na przykład po wejściu w lekcję prosto
- * z powiadomienia — zachowa się dokładnie jak `replace`.
+ * Ekran kursu leży już na stosie (to z niego wchodzi się w lekcję), więc `replace` nie wracał
+ * na niego, tylko dokładał jego drugi egzemplarz. Po kilku lekcjach systemowy przycisk Wstecz
+ * przewijał kilka identycznych ekranów, zanim doszedł do listy kursów. `dismissTo` zdejmuje
+ * ekrany aż do tego, który tam jest, a gdyby go nie było — na przykład po wejściu w lekcję
+ * prosto z powiadomienia — zachowa się dokładnie jak `replace`.
  *
- * Mapa wczytuje się na nowo przy każdym pokazaniu (`useFocusEffect` w `app/kurs/[slug].tsx`),
- * więc powrót na istniejący ekran nie pokazuje gwiazdek i zamków sprzed lekcji.
+ * Ekran kursu wczytuje się na nowo przy każdym pokazaniu (`useFocusEffect`
+ * w `app/kurs/[slug].tsx`), więc powrót na istniejący ekran nie pokazuje gwiazdek i zamków
+ * sprzed lekcji.
  */
 function backToMap(router: ReturnType<typeof useRouter>, courseSlug: string) {
   router.dismissTo(`/kurs/${courseSlug}`);

@@ -3,7 +3,7 @@
 -- `v_my_lesson_levels` ma `security_invoker = on` — i tak ma zostać, bo pokazuje postęp tego,
 -- kto pyta. Ale kolumna `exercise_count` liczyła wiersze prosto z `public.exercises`, a ta tabela
 -- NIE MA polityki SELECT dla ucznia (w payloadzie są klucze odpowiedzi). Dziecku liczba wychodziła
--- więc zawsze zero, mapa uznawała, że na średnim i trudnym nie ma czego robić, i nie rysowała
+-- więc zawsze zero, ekran uznawał, że na średnim i trudnym nie ma czego robić, i nie rysowała
 -- kwadracików. Administrator ma politykę `exercises_admin`, więc u niego wszystko było widać —
 -- stąd „u mnie jest, u dziecka nie ma".
 --

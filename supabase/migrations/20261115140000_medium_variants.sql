@@ -1,6 +1,6 @@
 -- Średni poziom w lekcjach, które go nie mają.
 --
--- Na mapie kursu kwadracik średniego poziomu znikał przy całych lekcjach — na przykład przy
+-- Na ekranie kursu kwadracik średniego poziomu znikał przy całych lekcjach — na przykład przy
 -- „Classroom language", gdzie wszystkie tłumaczenia mają gotowe kafelki (poziom 1), a jedyne
 -- zadania z pisaniem to trzy ze słuchu (poziom 3). Średniego nie było ani jednego, więc nie było
 -- czym wypełnić wejścia i kwadracik się nie pokazywał.

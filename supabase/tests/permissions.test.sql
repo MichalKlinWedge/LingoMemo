@@ -140,7 +140,7 @@ select is(
   'pierwsza lekcja w kursie jest otwarta'
 );
 
--- Zamknięta lekcja jest widoczna na mapie (kafelek z kłódką), ale nie da się jej zacząć
+-- Zamknięta lekcja jest widoczna na ekranie kursu (kafelek z kłódką), ale nie da się jej zacząć
 -- ani podejrzeć jej zadań.
 select is(
   (select is_unlocked from public.v_my_lessons where id = (select id from t_lessons where nr = 2)),
@@ -219,7 +219,7 @@ select lives_ok(
 );
 
 -- Pytanie o cudzy postęp dalej mówi o tamtym dziecku: claim administratora nie może odemknąć
--- lekcji na mapie ucznia, bo to jego postępy, nie oglądającego.
+-- lekcji na ekranie ucznia, bo to jego postępy, nie oglądającego.
 select is(
   public.is_lesson_unlocked((select id from t_lessons where nr = 2), (select id from t_ids where name = 'janek')),
   false,

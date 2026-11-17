@@ -175,7 +175,7 @@ select is(
   0,
   'po odblokowaniu portfel jest pusty');
 
--- Lekcja otwarta nie kosztuje: mapa mogła stać otwarta sprzed zaliczenia poprzedniej lekcji.
+-- Lekcja otwarta nie kosztuje: ekran mógł stać otwarty sprzed zaliczenia poprzedniej lekcji.
 select is(
   (public.unlock_lesson((select lekcja_otwarta from t_ctx)) ->> 'charged')::boolean,
   false,

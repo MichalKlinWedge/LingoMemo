@@ -10,7 +10,7 @@ import { type CourseMap, type Lesson, loadCourseMap, unlockLesson } from '@/feat
 import { useSession } from '@/lib/session';
 
 /**
- * Mapa kursu: działy, a w nich kafelki lekcji z gwiazdkami, kwadracikami etapów i wejściami
+ * Ekran kursu: działy, a w nich kafelki lekcji z gwiazdkami, kwadracikami etapów i wejściami
  * na poziom średni i trudny. Co jest otwarte, mówi baza (`v_my_lessons.is_unlocked`) — ekran
  * tylko nazywa to, co z niej wyszło, tak samo jak strona na webie.
  */
@@ -22,7 +22,7 @@ export default function CourseScreen() {
   const [error, setError] = useState<string | null>(null);
 
   /**
-   * Wczytanie mapy. Ta sama funkcja obsługuje wejście na ekran (po lekcji zmieniają się gwiazdki
+   * Wczytanie kursu. Ta sama funkcja obsługuje wejście na ekran (po lekcji zmieniają się gwiazdki
    * i zamki) oraz powrót z okna odblokowania — wydany punkt zamienia kłódkę na kafelek do kliknięcia.
    */
   const load = useCallback(() => {
@@ -295,7 +295,7 @@ function LessonTile({
  * trudnym, więc wydanie go przez pomyłkę to kilkanaście zadań do powtórzenia.
  *
  * Po otwarciu lekcji pytanie jest nieprawdą — punkt już poszedł — więc okno zamienia się
- * w potwierdzenie ze stanem konta, a jego zamknięcie wczytuje mapę na nowo.
+ * w potwierdzenie ze stanem konta, a jego zamknięcie wczytuje ekran na nowo.
  */
 function UnlockDialog({
   lesson,

@@ -6,7 +6,7 @@
 --
 -- Dlaczego funkcja, a nie `update` z aplikacji: numery trzeba przepisać wszystkim lekcjom działu
 -- w jednej transakcji. Seria osobnych zapytań zostawiłaby przy błędzie w połowie listę
--- z dwiema „trójkami", a mapa kursu układa lekcje właśnie po tej kolumnie.
+-- z dwiema „trójkami", a ekran kursu układa lekcje właśnie po tej kolumnie.
 
 create or replace function public.admin_reorder_lessons(p_unit uuid, p_ids uuid[])
 returns jsonb
@@ -26,7 +26,7 @@ begin
   end if;
 
   -- Lista musi być kompletna i z tego działu. Inaczej część lekcji zostałaby ze starymi
-  -- numerami i kolejność na mapie kursu wyszłaby losowa.
+  -- numerami i kolejność na ekranie kursu wyszłaby losowa.
   if v_podane <> v_wszystkie then
     raise exception 'Nowa kolejność musi wymieniać wszystkie lekcje działu' using errcode = '22023';
   end if;

@@ -3,7 +3,7 @@
 -- To samo co `admin_reorder_lessons`, piętro wyżej: cała nowa kolejność wchodzi jednym
 -- wywołaniem, bo numery trzeba przepisać wszystkim działom kursu w jednej transakcji.
 -- Przy osobnych zapytaniach błąd w połowie zostawiłby dwa działy na tej samej pozycji,
--- a mapa kursu układa je po tej kolumnie.
+-- a ekran kursu układa je po tej kolumnie.
 
 create or replace function public.admin_reorder_units(p_course uuid, p_ids uuid[])
 returns jsonb

@@ -3,7 +3,7 @@ import { dbErrorMessage } from '@lingomemo/core';
 import { supabase } from '@/lib/supabase';
 
 /**
- * Dane mapy kursu. Odpowiednik `apps/web/src/app/kurs/[slug]/page.tsx` — te same zapytania
+ * Dane ekranu kursu. Odpowiednik `apps/web/src/app/kurs/[slug]/page.tsx` — te same zapytania
  * i ten sam widok `v_my_lessons`, który dokłada do lekcji stan otwarcia i postęp ucznia.
  * Reguł (co jest otwarte, kiedy zamyka się kurs) nie liczymy tutaj: przychodzą z bazy.
  */

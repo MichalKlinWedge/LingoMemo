@@ -1,7 +1,7 @@
 -- Zmiana kolejności lekcji w dziale.
 --
 -- Funkcja przepisuje `sort_order` całej liście naraz, więc testujemy głównie to, czego NIE
--- wolno: niepełnej listy, cudzej lekcji i duplikatu. Każdy z tych przypadków zostawiłby mapę
+-- wolno: niepełnej listy, cudzej lekcji i duplikatu. Każdy z tych przypadków zostawiłby ekran
 -- kursu z dwiema lekcjami na tej samej pozycji.
 
 begin;

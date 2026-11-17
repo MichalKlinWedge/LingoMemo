@@ -2,7 +2,7 @@
 --
 -- Funkcja przepisuje `sort_order` całej liście naraz, więc testujemy głównie to, czego NIE
 -- wolno: niepełnej listy, działu z innego kursu i duplikatu. Każdy z tych przypadków zostawiłby
--- mapę kursu z dwoma działami na tej samej pozycji.
+-- ekran kursu z dwoma działami na tej samej pozycji.
 
 begin;
 select plan(8);

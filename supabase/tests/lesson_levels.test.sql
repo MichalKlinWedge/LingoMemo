@@ -112,10 +112,10 @@ select is(
   (select is_unlocked from public.v_my_lesson_levels
     where lesson_id = (select lesson_id from t_ctx) and level = 2),
   false,
-  'mapa pokazuje średni kwadracik jako zamknięty');
+  'ekran kursu pokazuje średni kwadracik jako zamknięty');
 
 -- `exercises` nie ma polityki SELECT dla ucznia, a widok jest `security_invoker`. Liczba zadań
--- musi i tak dojść — inaczej mapa uznaje, że na tym poziomie nic nie ma, i chowa kwadracik.
+-- musi i tak dojść — inaczej ekran uznaje, że na tym poziomie nic nie ma, i chowa kwadracik.
 select ok(
   (select exercise_count from public.v_my_lesson_levels
     where lesson_id = (select lesson_id from t_ctx) and level = 3) > 0,

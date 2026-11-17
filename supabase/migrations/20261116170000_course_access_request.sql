@@ -1,7 +1,7 @@
 -- Dostęp do kursu na zapis, a do tego prośba, którą uczeń wysyła sam.
 --
 -- Dotąd kurs opublikowany był otwarty dla każdego zalogowanego: strona główna wypisywała
--- wszystkie kursy z `courses`, mapa kursu nie pytała o zapis, a polityka `enrollments_insert_own`
+-- wszystkie kursy z `courses`, ekran kursu nie pytał o zapis, a polityka `enrollments_insert_own`
 -- pozwalała dziecku zapisać się samemu. Zapis istniał, ale nie znaczył nic poza statystykami —
 -- dziecko z zaproszeniem do „Angielskiego klasa 4" widziało tak samo wszystko inne.
 --
@@ -16,7 +16,7 @@
 --
 -- Bramką jest `is_lesson_unlocked`, a nie polityki na `courses`: nazwy kursów mają zostać
 -- widoczne (bez nich nie ma o co prosić), a zamknięte ma być ROBIENIE lekcji. Ta jedna funkcja
--- stoi pod `get_lesson_exercises`, `start_lesson_session` i mapą kursu, więc wystarczy jedno
+-- stoi pod `get_lesson_exercises`, `start_lesson_session` i ekranem kursu, więc wystarczy jedno
 -- miejsce zamiast polityki na czterech tabelach.
 --
 -- Odrzucone: zapis na życzenie bez pytania (to jest dokładnie stan sprzed tej migracji);
@@ -88,7 +88,7 @@ as $fn$
            (select u.course_id from public.units u where u.id = l.unit_id), p_user
          ) then false
     -- Test powtórkowy jest otwarty dokładnie wtedy, gdy stoi bramka. Bez zaległości nie ma
-    -- czego powtarzać, więc kafelek jest zamknięty i mapa go nie pokazuje.
+    -- czego powtarzać, więc kafelek jest zamknięty i ekran go nie pokazuje.
     when l.review_scope_course_id is not null then public.review_gate_on(l.review_scope_course_id, p_user)
     -- Bramka stoi przed zamkiem działu: zamyka cały kurs, razem z powtórkami i testami działów.
     when public.review_gate_on(

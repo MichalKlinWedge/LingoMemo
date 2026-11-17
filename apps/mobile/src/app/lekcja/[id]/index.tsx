@@ -15,8 +15,8 @@ const num = (value: string | string[] | undefined): number | undefined => {
 
 /**
  * Lekcja: wczytanie danych, potem przebieg. Etap i poziom przychodzą z adresu (`?etap=`,
- * `?poziom=`) — tak samo jak na webie, więc kwadraciki z mapy prowadzą dokładnie tam, gdzie
- * dziecko dotknęło.
+ * `?poziom=`) — tak samo jak na webie, więc kwadraciki z ekranu kursu prowadzą dokładnie
+ * tam, gdzie dziecko dotknęło.
  */
 export default function LessonScreen() {
   const { id, etap, poziom } = useLocalSearchParams<{ id: string; etap?: string; poziom?: string }>();

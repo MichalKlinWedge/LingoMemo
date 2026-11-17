@@ -551,7 +551,7 @@ export async function setEnrollmentAction(_prev: FormState, form: FormData): Pro
 /**
  * Nowa kolejność lekcji w dziale. Identyfikatory idą jednym ciągiem, a baza przepisuje numery
  * w jednej transakcji — przy osobnych zapytaniach błąd w połowie zostawiłby dwie lekcje
- * na tej samej pozycji, a mapa kursu układa je właśnie po tej kolumnie.
+ * na tej samej pozycji, a ekran kursu układa je właśnie po tej kolumnie.
  */
 export async function reorderLessonsAction(_prev: FormState, form: FormData): Promise<FormState> {
   const { supabase } = await requireAdmin();

@@ -26,8 +26,8 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
 
   if (!course) notFound();
 
-  // Bez zapisu kurs jest zamknięty w bazie (`is_lesson_unlocked`), więc mapa pokazałaby same
-  // kłódki i dziecko nie dowiedziałoby się, dlaczego. Zamiast niej — jedno zdanie i prośba.
+  // Bez zapisu kurs jest zamknięty w bazie (`is_lesson_unlocked`), więc ekran pokazałby same
+  // kłódki i dziecko nie dowiedziałoby się, dlaczego. Zamiast niego — jedno zdanie i prośba.
   const [{ data: enrollment }, { data: asked }] = await Promise.all([
     supabase.from("enrollments").select("course_id").eq("user_id", userId).eq("course_id", course.id).maybeSingle(),
     supabase.rpc("my_course_requests"),
@@ -83,7 +83,7 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
     // Gwiazdki pojedynczych etapów — leżą w bazie od migracji z etapami, a pokazuje je dopiero
     // ten rząd kwadracików. Filtr po użytkowniku musi być tutaj, mimo RLS: uczeń widzi w tej
     // tabeli tylko swoje wiersze, ale administrator widzi wszystkie, więc bez filtru na jego
-    // mapie zmieszałyby się podejścia różnych dzieci.
+    // ekranie zmieszałyby się podejścia różnych dzieci.
     supabase.from("lesson_stage_progress").select("lesson_id, stage_nr, stars").eq("user_id", userId),
     // Bramka zaległych powtórek: przy dziesięciu zaległych słówkach kurs jest zamknięty do
     // zdanego testu powtórkowego. Regułę liczy baza — strona tylko nazywa to, co z niej wyszło.
@@ -110,7 +110,7 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
   if (error) return <p className="msg-error">{dbLoadError(error)}</p>;
 
   // Test powtórkowy dotyczy całego kursu, a nie działu, w którym technicznie wisi — więc nie
-  // stoi między kafelkami działu, tylko osobno nad mapą.
+  // stoi między kafelkami działu, tylko osobno nad działami.
   const testPowtorkowy = bramka?.lessonId ?? null;
   const byUnit = (unitId: string) =>
     (lessons ?? []).filter((lesson) => lesson.unit_id === unitId && lesson.id !== testPowtorkowy);
@@ -148,7 +148,7 @@ async function CourseMap({ params }: { params: PageProps<"/kurs/[slug]">["params
         .map((row) => [row.stage_nr, row.stars ?? 0] as const),
     );
   // Ukończone lekcje TEGO kursu: widok wydaje lekcje wszystkich kursów, a test powtórkowy
-  // lekcją do ukończenia nie jest — zdany podnosiłby licznik przy każdym wejściu na mapę.
+  // lekcją do ukończenia nie jest — zdany podnosiłby licznik przy każdym wejściu na ekran.
   const dzialyKursu = new Set((units ?? []).map((unit) => unit.id));
   const done = (lessons ?? []).filter(
     (lesson) =>

@@ -81,7 +81,7 @@ Trzy rzeczy wyszły dopiero przy uruchomieniu:
 
 `start_lesson_session`, `submit_attempt`, `finish_lesson_session`, `get_lesson_exercises`;
 cztery typy zadań (`translate_ab`, `translate_ba`, `fill_blank_choice`, `listening`);
-wybór kursu → mapa działów → mapa lekcji → lekcja → podsumowanie; seed kursu PL→EN
+wybór kursu → ekran kursu z działami i lekcjami → lekcja → podsumowanie; seed kursu PL→EN
 (2 działy po 3 lekcje, ~40 słówek).
 
 **Kryterium odbioru:** dziecko przechodzi lekcję demo od początku do końca, wynik jest w bazie,
@@ -89,11 +89,11 @@ następna lekcja odblokowana, a zablokowana widoczna, ale niedostępna.
 
 **Stan (2026-11-15):** zrobione i przejrzane w przeglądarce od logowania po ekran podsumowania.
 Lekcja demo (12 zadań, trzy typy) zaliczona z wynikiem 11/12 — dwie gwiazdki, +50 punktów,
-odznaka „Pierwszy krok". Po powrocie na mapę lekcja pierwsza jest zielona z gwiazdkami, druga
+odznaka „Pierwszy krok". Po powrocie na ekran kursu lekcja pierwsza jest zielona z gwiazdkami, druga
 otwarta, trzecia nadal z kłódką.
 
 Kryterium odbioru zostało zmienione: pierwotnie zamknięta lekcja miała być **niewidoczna**.
-Przy pierwszym podejściu do mapy okazało się, że wtedy dziecko widzi jeden kafelek i pustkę,
+Przy pierwszym podejściu do ekranu kursu okazało się, że wtedy dziecko widzi jeden kafelek i pustkę,
 co nie mówi mu nic o tym, co przed nim. Teraz zamknięte lekcje są widoczne z kłódką, a dostępu
 pilnują `get_lesson_exercises` i `start_lesson_session` — obie odmawiają, co sprawdza pgTAP.
 
@@ -163,7 +163,7 @@ do Storage, lista uczniów z postępami, zarządzanie zaproszeniami, publikowani
 do przejścia jej przez dziecko.
 
 **Stan (2026-11-15):** zrobione i przejrzane w przeglądarce. Wklejony plik z lekcją „Owoce"
-przeszedł podgląd na sucho, import, pojawił się na mapie kursu jako nowy dział i dał się
+przeszedł podgląd na sucho, import, pojawił się na ekranie kursu jako nowy dział i dał się
 przejść na trzy gwiazdki. Błędny plik pokazuje każdy problem ze ścieżką w pliku, np.
 `exercises[0].payload.answer: poprawna odpowiedź musi być jedną z opcji`.
 

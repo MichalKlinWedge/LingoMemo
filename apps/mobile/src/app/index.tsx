@@ -130,7 +130,7 @@ function Bar({ userId }: { userId: string }) {
       <Chip>🔥 {plural(bar.streak, DAYS)}</Chip>
       {bar.due > 0 && <Chip>🔁 {bar.due} do powtórki</Chip>}
       {/* Bez punktów znacznika nie ma: dziecko przed pierwszym poziomem trudnym nie ma o czym
-          wiedzieć, a pasek ma zostać krótki. Wydaje się je na mapie kursu, dotykając kłódki
+          wiedzieć, a pasek ma zostać krótki. Wydaje się je na ekranie kursu, dotykając kłódki
           z kluczykiem. */}
       {bar.unlocks > 0 && <Chip>🔑 {bar.unlocks} do odblokowania</Chip>}
     </View>

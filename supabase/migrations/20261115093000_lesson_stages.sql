@@ -12,7 +12,7 @@
 -- 31 → 11/10/10), nigdy nie przekraczają 15, a treść i import zostają bez zmian: lekcje
 -- mieszczące się w 15 zadaniach mają jeden etap i zachowują się dokładnie jak dotąd.
 --
--- Odrzucone: etap jako osobny wiersz w `lessons` (dziecko widzi na mapie trzy lekcje zamiast
+-- Odrzucone: etap jako osobny wiersz w `lessons` (dziecko widzi na ekranie kursu trzy lekcje zamiast
 -- jednej) i etap deklarowany w JSON-ie (każdy plik treści trzeba poprawić, a limit pilnować
 -- ręcznie). Powtórka ma najwyżej `review_limit()` zadań, więc zawsze jest jednoetapowa.
 
@@ -376,7 +376,7 @@ $fn$;
 -- 6. Zamknięcie etapu, a przez to i lekcji.
 --
 -- Wynik lekcji to średnia z najlepszych wyników etapów, przy czym etapy jeszcze nierozegrane
--- liczą się jako zero — dzięki temu po pierwszym z trzech etapów na mapie widać jedną trzecią
+-- liczą się jako zero — dzięki temu po pierwszym z trzech etapów na ekranie kursu widać jedną trzecią
 -- postępu, a nie komplet gwiazdek. Lekcja dostaje `completed` dopiero, gdy KAŻDY etap jest
 -- zaliczony. Punkty za lekcję dzielą się między etapy (reszta z dzielenia idzie do ostatniego),
 -- więc przejście lekcji po kawałku daje dokładnie tyle samo, co za jednym razem.
@@ -563,7 +563,7 @@ begin
 end;
 $fn$;
 
--- 7. Mapa kursu pokazuje, ile etapów ma lekcja i ile z nich już za dzieckiem.
+-- 7. Ekran kursu pokazuje, ile etapów ma lekcja i ile z nich już za dzieckiem.
 create or replace view public.v_my_lessons with (security_invoker = on) as
 select
   l.id,

@@ -8,8 +8,8 @@
 -- Dlaczego nowa funkcja, a nie `v_my_lessons`: tamten widok liczy wszystko dla ZALOGOWANEGO
 -- (`auth.uid()` siedzi w siedmiu miejscach jego definicji), więc rodzic dostałby z niego własne
 -- postępy podpisane imieniem dziecka. Dopisanie do niego kolumny `user_id` znaczyłoby przeliczanie
--- odblokowań i etapów dla każdej pary dziecko–lekcja w bazie przy każdym wejściu na mapę kursu,
--- a tę mapę otwiera dziecko kilkanaście razy dziennie. Funkcja z parametrem liczy jedno dziecko.
+-- odblokowań i etapów dla każdej pary dziecko–lekcja w bazie przy każdym wejściu na ekran kursu,
+-- a ten ekran otwiera dziecko kilkanaście razy dziennie. Funkcja z parametrem liczy jedno dziecko.
 --
 -- Bez `security definer`: dane chronią polityki `*_read`, tak samo jak na każdym innym ekranie.
 -- Jawne sprawdzenie na wejściu jest mimo to potrzebne, bo `is_lesson_unlocked` JEST `security
@@ -68,7 +68,7 @@ begin
     where l.is_published
       and u.is_published
       -- Tylko kursy, na które dziecko jest zapisane. `v_my_lessons` wydaje wszystkie lekcje
-      -- w bazie, bo mapa kursu i tak pyta o jeden kurs — tutaj pytamy o dziecko, więc to tu
+      -- w bazie, bo ekran kursu i tak pyta o jeden kurs — tutaj pytamy o dziecko, więc to tu
       -- jest miejsce na odsianie kursów, które go nie dotyczą.
       and exists (
         select 1 from public.enrollments e

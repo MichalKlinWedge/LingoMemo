@@ -104,7 +104,7 @@ as $fn$
   -- Poziom łatwy JEST lekcją, więc słówko wchodzi do niej raz. Na średnim i trudnym zestaw
   -- układa `pick_level_exercises` (osiem słówek, po jednym zadaniu na słówko), a ta funkcja
   -- odpowiada tam na inne pytanie: ile zadań tego poziomu lekcja w ogóle ma — z tego bierze
-  -- się kwadracik na mapie kursu.
+  -- się kwadracik na ekranie kursu.
   union all
   select k.id from kandydaci k where p_level <> 1;
 $fn$;

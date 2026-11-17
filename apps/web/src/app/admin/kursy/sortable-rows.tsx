@@ -19,7 +19,7 @@ export type SortableTableRow = {
 /**
  * Tabela, w której da się przestawiać wiersze — używają jej działy w kursie i lekcje w dziale.
  *
- * Kolejność decyduje o tym, co dziecko widzi na mapie kursu, a dotąd zmieniało się ją polem
+ * Kolejność decyduje o tym, co dziecko widzi na ekranie kursu, a dotąd zmieniało się ją polem
  * „Kolejność" w każdym formularzu z osobna: przy sześciu lekcjach to sześć wejść w edycję
  * i liczenie numerów w głowie.
  *
