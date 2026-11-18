@@ -1507,3 +1507,26 @@ kolejce karta zamienia się w sam licznik: „🔁 3 słówka do powtórzenia �
 | Stojąca bramka a próg | bramka wygrywa: stoi, to test jest otwarty | po oblanym teście licznik spada poniżej pięciu (błędna odpowiedź też przesuwa termin), a kurs zostaje zamknięty zatrzaskiem — próg zamknąłby wtedy jedyne wyjście | próg bez wyjątku (kurs bez ani jednego otwartego wejścia) |
 | Gdzie mieszka reguła | `review_test_open` w bazie, używana i przez `is_lesson_unlocked`, i przez `review_gate` | ekran nie liczy progu po swojemu, więc karta i kafelek nie mogą się rozjechać | porównanie `due >= 5` w przeglądarce i w telefonie (ta sama liczba w trzech miejscach) |
 | Co widzi dziecko przy krótkiej kolejce | licznik z progiem, bez przycisku | bez tego „🔁 3" w pasku na górze wygląda na zadanie, którego nie da się wykonać | ukrycie licznika (dziecko nie wie, że coś czeka); przycisk prowadzący donikąd |
+
+## Trzydzieści odznak zamiast ośmiu (2026-11-18)
+
+Osiem odznak i pięć rodzajów reguł wystarczało na pierwszy tydzień: dziecko zbierało „Pierwszy
+krok", „Bez błędu", „Trzy dni z rzędu" i „Dziesięć słówek" w dwa wieczory, a potem na ekranie
+nagród zostawały trzy kłódki odległe o setki punktów. Ekran, na którym nic nie jest blisko,
+przestaje być po co otwierany.
+
+Teraz jest trzydzieści odznak w dziesięciu drabinkach (lekcje, bezbłędne przejścia, gwiazdki,
+trudniejsze poziomy, sprawdziany, seria dni, słówka, dobre odpowiedzi, czas nauki, punkty), a przy
+każdej niezdobytej stoi „7 z 10" i pasek. Siedem nowych rodzajów reguł liczy to, co dziecko i tak
+widzi na swoich postępach: gwiazdki, zdane wejścia wyżej, sprawdziany, odpowiedzi, minuty.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Skąd nowe odznaki | wiersze w `badges` z nowymi `rule.kind` | reguły są deklaratywne od pierwszej migracji; dołożenie progu to wiersz, nie kod | osobna tabela na „wyzwania" (drugi mechanizm obok działającego) |
+| Liczenie wartości reguł | jedna funkcja `badge_values()` zwracająca `jsonb` z wszystkimi licznikami | `award_badges()` wykonywało jedno zapytanie na niezdobytą odznakę — przy trzydziestu byłoby trzydzieści po każdej lekcji | zapytanie per odznaka (koszt rośnie z każdą nową nagrodą) |
+| `badge_values` jest `volatile` | tak, mimo że tylko czyta | funkcja `stable` widzi bazę z chwili rozpoczęcia zewnętrznej instrukcji, więc drugie przejście `award_badges` nie widziało punktów z pierwszego i odznaka za punkty przychodziła o lekcję za późno | `stable` (szybsza, ale w praktyce gubiła nagrodę) |
+| Odznaka płacąca punktami | dwa przejścia w `award_badges()` | „Pięć trudnych poziomów" (250 pkt) potrafi dociągnąć licznik do progu „Pięciuset punktów"; dziecko dostaje obie w tej samej chwili | jedno przejście (nagroda przychodzi po następnej lekcji, bez widocznego powodu); pętla do wyczerpania (żadna odznaka nie płaci tyle, żeby przeskoczyć dwa progi punktowe) |
+| Ile brakuje | `my_badge_progress()` w bazie, wartość przycięta do progu | trzydzieści jednakowych kłódek nie mówi, czy brakuje jednej lekcji, czy czterdziestu; progi zostają tam, gdzie są liczone | liczenie w przeglądarce i w telefonie z `badges.rule` (te same progi w trzech miejscach) |
+| Wygląd niezdobytej | przygaszona sama ikona, opis i pasek w pełnych barwach | to opis mówi, co trzeba zrobić — wyszarzenie całej karty ukrywało właśnie tę informację | `opacity` i `grayscale` na całej karcie (paska postępu nie da się z tego wyłączyć) |
+| Kolejność na liście | drabinkami tematycznymi, w każdej od najłatwiejszej | lista czyta się jak kolekcja, a pasek i tak pokazuje, co jest blisko | sortowanie po „ile brakuje" (ta sama odznaka co tydzień w innym miejscu listy) |
+| Progi istniejących ośmiu | bez zmian | odznaka już zdobyta nie może przestać być zdobyta; zmienia się tylko `sort_order` | podniesienie progów „żeby było więcej do zrobienia" (odebranie nagrody za pracę, która została wykonana) |

@@ -193,7 +193,9 @@ h2 {
     background: var(--color-zinc-100);
   }
 
-  /* Kasowanie. Jedyny czerwony przycisk w aplikacji — dziecko go nigdzie nie zobaczy. */
+  /* Kasowanie w panelu i wyjście z lekcji — jedyne dwa miejsca, gdzie czerwień coś znaczy:
+     „to przerywa albo kasuje”. Nigdzie indziej nie używamy jej na przyciskach, żeby nie
+     spowszedniała. */
   .btn-danger {
     background: var(--color-coral);
     border-color: #8f2420;
@@ -627,6 +629,22 @@ h2 {
     background: var(--color-zinc-100);
     font-size: 1rem;
     font-weight: 600;
+  }
+
+  /* Ile brakuje do odznaki. Sama liczba („7 z 10”) wymaga przeczytania i porównania — kreska
+     mówi „już blisko” jednym spojrzeniem, a tylko to dziecko robi, przewijając listę nagród. */
+  .badge-bar {
+    height: 0.5rem;
+    border-radius: 999px;
+    background: var(--line);
+    overflow: hidden;
+  }
+
+  .badge-bar > span {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background: var(--color-brand);
   }
 
   .back-link {

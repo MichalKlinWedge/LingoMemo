@@ -89,18 +89,24 @@ export type Badge = {
   icon: string | null;
   /** Kiedy zdobyta; `null` znaczy „jeszcze nie". */
   awardedAt: string | null;
+  /** Ile dziecko ma i ile potrzeba — do paska postępu przy niezdobytej odznace. */
+  value: number;
+  target: number;
 };
 
 export async function loadBadges(userId: string): Promise<Result<{ badges: Badge[]; points: number }>> {
-  const [{ data: all, error }, { data: mine }, { data: stats }] = await Promise.all([
+  const [{ data: all, error }, { data: mine }, { data: stats }, { data: progress }] = await Promise.all([
     supabase.from('badges').select('code, title, description, icon').eq('is_active', true).order('sort_order'),
     supabase.from('user_badges').select('badge_code, awarded_at').eq('user_id', userId),
     supabase.from('v_my_stats').select('total_points').eq('user_id', userId).maybeSingle(),
+    // Ile brakuje do każdej odznaki. Liczy baza — progi siedzą w `badges.rule`, nie tutaj.
+    supabase.rpc('my_badge_progress'),
   ]);
 
   if (error) return { ok: false, error: dbErrorMessage(error, 'Nie udało się wczytać odznak.') };
 
   const earned = new Map((mine ?? []).map((row) => [row.badge_code, row.awarded_at]));
+  const postep = new Map((progress ?? []).map((row) => [row.code, row]));
 
   return {
     ok: true,
@@ -111,6 +117,8 @@ export async function loadBadges(userId: string): Promise<Result<{ badges: Badge
         description: badge.description,
         icon: badge.icon,
         awardedAt: earned.get(badge.code) ?? null,
+        value: postep.get(badge.code)?.value ?? 0,
+        target: postep.get(badge.code)?.target ?? 0,
       })),
       points: stats?.total_points ?? 0,
     },

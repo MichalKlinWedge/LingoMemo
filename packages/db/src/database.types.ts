@@ -920,6 +920,9 @@ isOneToOne: false
 "award_badges":
 { Args: { "p_user": string }; Returns: (string)[]
                            },
+"badge_values":
+{ Args: { "p_user": string }; Returns: Json
+                           },
 "bare_token":
 { Args: { "p_token": string }; Returns: string
                            },
@@ -1118,6 +1121,11 @@ isOneToOne: false
 "media_usage":
 { Args: { "p_paths": (string)[] }; Returns: {
               "concepts": number,"exercises": number,"path": string
+            }[]
+                           },
+"my_badge_progress":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "code": string,"target": number,"value": number
             }[]
                            },
 "my_child_ids":
