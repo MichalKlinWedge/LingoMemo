@@ -189,6 +189,12 @@ function LessonTile({
     (row) => row.lesson_id === lesson.id && (row.level ?? 1) > 1 && (row.exercise_count ?? 0) > 0,
   );
 
+  // Zamknięta lekcja szarzeje w całości, nie samym kafelkiem: gwiazdki, liczba słówek
+  // i kwadraciki etapów zostawały w kolorze, więc przy stojącej bramce powtórek (zamknięty cały
+  // kurs) ekran dalej wyglądał na otwarty. Kłódki do otwarcia punktem to nie dotyczy — lekcja
+  // jest w zasięgu, a szary mówiłby, że nie.
+  const gray = state === 'locked' && !unlockable;
+
   const stages = lesson.stage_count ?? 1;
   // Zaliczona lekcja ma z definicji wszystkie etapy za sobą — licznik dotyczy bieżącego podejścia.
   const stagesDone = state === 'done' ? stages : (lesson.stages_done ?? 0);
@@ -225,7 +231,7 @@ function LessonTile({
             : 'Najpierw skończ poprzednią lekcję';
 
   return (
-    <View style={styles.box}>
+    <View style={[styles.box, gray && styles.boxLocked]}>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={`${lesson.title}${
@@ -274,7 +280,7 @@ function LessonTile({
             key={`stage-${nr}`}
             stars={stageStars[nr] ?? 0}
             state={nr <= stagesDone ? 'done' : 'new'}
-            paint={color.grass}
+            paint={gray ? color.muted : color.grass}
             kind="stage"
             locked={state === 'locked'}
             label={
@@ -287,7 +293,10 @@ function LessonTile({
         ))}
         {harder.map((row) => {
           const nr = row.level ?? 2;
-          const paint = levelColor[Math.min(Math.max(nr, 1), 3) - 1];
+          // Zamknięta lekcja szarzeje razem ze swoimi poziomami: reguła „zamknięty poziom
+          // blednie w swoim kolorze" jest po to, żeby dziecko widziało, co się po przejściu
+          // łatwego otworzy — a w zamkniętej lekcji nie otworzy się nic.
+          const paint = gray ? color.muted : levelColor[Math.min(Math.max(nr, 1), 3) - 1];
           return (
             <Mark
               key={`level-${nr}`}
@@ -413,6 +422,10 @@ function levelState(status: string | null, stars: number): MarkState {
  * szary nie mówi, co się po przejściu łatwego otworzy. Bledną przy tym tylko poziomy; zamknięte
  * etapy zostają w pełnym kolorze, dokładnie jak na webie (`.level-box[data-locked]` ma `opacity`,
  * `.stage` nie ma go wcale).
+ *
+ * Wyjątek: w zamkniętej LEKCJI szarzeje całe pudełko, więc kolor dostaje szary i tutaj (`paint`
+ * z `LessonTile`). Nie otworzy się tam nic, dopóki lekcja jest zamknięta, więc nie ma czego
+ * zapowiadać kolorem.
  */
 function Mark({
   stars,
@@ -485,6 +498,13 @@ const styles = StyleSheet.create({
     padding: size.gap,
     width: 160,
   },
+  /**
+   * Zamknięta lekcja w odcieniach szarości. `filter` szarzeje też emoji i gwiazdki, których
+   * kolorów nie przestawimy z kodu. Androidowi starcza do tego nowa architektura, czyli
+   * domyślna od Expo SDK 55; gdyby jej kiedyś nie było, filtr nic nie zrobi — dlatego
+   * kwadraciki dostają szary kolor wprost, a całość przygasza `opacity`.
+   */
+  boxLocked: { filter: [{ grayscale: 1 }], opacity: 0.8 },
   tile: {
     alignItems: 'center',
     backgroundColor: color.brandLight,

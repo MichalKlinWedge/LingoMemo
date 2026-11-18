@@ -1,4 +1,4 @@
-import { DAYS, plural, POINTS } from '@lingomemo/core';
+import { DAYS, plural, POINTS, WORDS } from '@lingomemo/core';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -7,7 +7,7 @@ import { Body, Button, Card, Chip, Message, Screen, Title } from '@/components/u
 import { Flag } from '@/components/flag';
 import { UpdateBanner } from '@/components/update';
 import { color, size } from '@/constants/theme';
-import { type Course, loadMyCourses } from '@/features/courses/load';
+import { loadMyCourses, type MyCourse } from '@/features/courses/load';
 import { refreshReminder } from '@/features/reminders/reminders';
 import { type BarData, loadBar } from '@/features/stats/load';
 import { useSession } from '@/lib/session';
@@ -17,7 +17,7 @@ import { isConfigured } from '@/lib/supabase';
 export default function Home() {
   const session = useSession();
   const userId = session?.user.id ?? null;
-  const [courses, setCourses] = useState<Course[] | null>(null);
+  const [courses, setCourses] = useState<MyCourse[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Przy powrocie z lekcji lista wczytuje się na nowo — kurs mógł właśnie przybyć gwiazdek.
@@ -124,20 +124,34 @@ function Bar({ userId }: { userId: string }) {
   );
 }
 
-function CourseCard({ course }: { course: Course }) {
+function CourseCard({ course }: { course: MyCourse }) {
   const router = useRouter();
+  // Kurs zamknięty zaległymi powtórkami: cała karta w szarościach i kłódka zamiast strzałki.
+  // Dotknięcie dalej działa — w kursie czeka test powtórkowy, czyli jedyne wyjście z blokady.
+  const zamkniety = course.gate?.active === true;
+
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityLabel={
+        zamkniety ? `${course.title} — zamknięty do zdanego testu powtórkowego` : course.title
+      }
       onPress={() => router.push(`/kurs/${course.slug}`)}
-      style={({ pressed }) => [styles.course, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.course, zamkniety && styles.locked, pressed && styles.pressed]}
     >
       <Flag code={course.target_lang} fallback={course.icon} size={44} />
       <View style={styles.courseText}>
         <Text style={styles.courseTitle}>{course.title}</Text>
-        {course.description !== null && <Text style={styles.courseDesc}>{course.description}</Text>}
+        {zamkniety ? (
+          <Text style={styles.courseDesc}>
+            🔁 Lekcje zamknięte — {plural(course.gate?.due ?? 0, WORDS)} do powtórzenia. Wejdź
+            i zrób test powtórkowy.
+          </Text>
+        ) : (
+          course.description !== null && <Text style={styles.courseDesc}>{course.description}</Text>
+        )}
       </View>
-      <Text style={styles.arrow}>→</Text>
+      <Text style={zamkniety ? styles.lock : styles.arrow}>{zamkniety ? '🔒' : '→'}</Text>
     </Pressable>
   );
 }
@@ -187,11 +201,20 @@ const styles = StyleSheet.create({
     padding: size.pad,
   },
   pressed: { opacity: 0.85 },
+  /**
+   * Kurs zamknięty bramką powtórek. `filter` szarzeje wszystko, co w karcie jest kolorowe —
+   * flagę (obrazek, więc własnym kolorem go nie przestawimy) i emoji. Androidowi starcza do
+   * tego nowa architektura, czyli domyślna od Expo SDK 55; gdyby kiedyś jej nie było, filtr
+   * nic nie robi, dlatego przygaszenie całej karty daje osobno `opacity`, a strzałkę w kolorze
+   * marki zastępuje szara kłódka.
+   */
+  locked: { filter: [{ grayscale: 1 }], opacity: 0.75 },
   icon: { fontSize: 40 },
   courseText: { flex: 1, gap: 4 },
   courseTitle: { color: color.text, fontSize: 22, fontWeight: '700' },
   courseDesc: { color: color.muted, fontSize: 16 },
   arrow: { color: color.brand, fontSize: 28 },
+  lock: { color: color.muted, fontSize: 28 },
   bar: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   nav: { flexDirection: 'row', gap: size.gap },
   navItem: { flex: 1 },

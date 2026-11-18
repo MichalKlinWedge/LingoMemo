@@ -1435,3 +1435,26 @@ była (`review_gate_on`: dziesięć zaległych zamyka kurs, zdany test zwalnia d
 
 Opróżniona kolejka oznacza, że kafelek znika sam: `course_due_words` spada do zera i test nie ma
 z czego powstać. Dlatego nie potrzeba osobnego warunku „dość na dziś".
+
+## Zamknięte w odcieniach szarości (2026-11-18)
+
+Bramka zaległych powtórek zamykała w bazie wszystkie lekcje kursu, ale ekran dalej wyglądał
+zapraszająco: szarzał sam kafelek lekcji, a gwiazdki, liczba słówek, kwadraciki etapów i poziomów
+oraz cała karta kursu na liście zostawały w pełnym kolorze. Dziecko dotykało więc kafelka po
+kafelku, a lista kursów nie mówiła wprost, że w tym kursie nie ma teraz czego klikać poza testem.
+
+Od teraz **zamknięte jest szare w całości**: karta kursu trzymanego bramką (z kłódką zamiast
+strzałki i zdaniem, ile słówek czeka) oraz każde zamknięte pudełko lekcji razem z zawartością.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Czym szarzymy | filtrem na całym pudełku (`filter: grayscale(1)`, na telefonie `filter: [{ grayscale: 1 }]`) | w pudełku lekcji siedzi kilkanaście kolorowych drobiazgów (emoji, gwiazdki, kwadraciki, flaga kursu, obrazek flagi) i każdy musiałby mieć swój wariant „na szaro" | własny kolor dla każdego elementu; samo `opacity` (przygasza, ale czerwień zostaje czerwienią) |
+| Czy zamknięty kurs dalej da się otworzyć | tak, karta zostaje klikalna | w kursie czeka test powtórkowy, czyli jedyne wyjście z blokady — martwa karta zabierałaby dziecku drogę dalej | karta nieaktywna; ukrycie kursu z listy |
+| Kłódka do otwarcia punktem | zostaje w kolorze (szarzeje tylko lekcja bez tego wyjścia) | lekcja jest w zasięgu — za punkt odblokowania otwiera się od razu, a szary mówiłby, że nie; to ta sama zasada, co osłabiony filtr na samym kafelku (`data-unlockable`) | szarość na każdej kłódce |
+| Kwadraciki poziomów w zamkniętej lekcji | szarzeją razem z pudełkiem | reguła „zamknięty poziom blednie w swoim kolorze" jest po to, żeby dziecko widziało, co się po przejściu łatwego otworzy — a w zamkniętej lekcji nie otworzy się nic | kolor poziomu także w zamkniętej lekcji (jeden kolorowy element w szarym pudełku czyta się jak usterka) |
+| Skąd ekran wie o blokadzie | `review_gate` per kurs, także na liście kursów (web i telefon) | regułę liczy baza, a lista kursów dotąd o nią nie pytała wcale | liczenie zaległych w przeglądarce z `v_my_stats` (pasek sumuje wszystkie kursy, a bramka liczy każdy osobno) |
+
+Na telefonie `filter` wymaga nowej architektury Reacta Native — domyślnej od Expo SDK 55, czyli
+tej, na której aplikacja stoi. Gdyby jej kiedyś nie było, filtr nic nie zrobi, dlatego szarość nie
+wisi na nim samym: kwadraciki dostają szary kolor wprost, strzałkę zastępuje szara kłódka, a całe
+pudełko przygasza `opacity`.

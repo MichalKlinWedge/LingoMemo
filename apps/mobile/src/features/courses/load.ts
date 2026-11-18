@@ -70,8 +70,11 @@ export type CourseData = {
   done: number;
 };
 
+/** Kurs na liście razem ze stanem bramki — zamknięty kurs ma szarzeć już na ekranie kursów. */
+export type MyCourse = Course & { gate: Gate | null };
+
 /** Kursy, na które uczeń jest zapisany. Kurs bez zapisu jest w bazie zamknięty, więc go nie ma. */
-export async function loadMyCourses(userId: string): Promise<Result<Course[]>> {
+export async function loadMyCourses(userId: string): Promise<Result<MyCourse[]>> {
   const [{ data: courses, error }, { data: enrolled }] = await Promise.all([
     supabase.from('courses').select('id, slug, title, description, icon, target_lang').order('sort_order'),
     // Filtr po użytkowniku mimo RLS: uczeń widzi tu tylko swoje zapisy, ale rodzic widzi też
@@ -82,7 +85,20 @@ export async function loadMyCourses(userId: string): Promise<Result<Course[]>> {
   if (error) return { ok: false, error: dbErrorMessage(error, 'Nie udało się wczytać kursów.') };
 
   const mine = new Set((enrolled ?? []).map((row) => row.course_id));
-  return { ok: true, value: (courses ?? []).filter((course) => mine.has(course.id)) };
+  const moje = (courses ?? []).filter((course) => mine.has(course.id));
+
+  // Bramka zaległych powtórek każdego kursu. Dotąd dziecko dotykało kolorowej karty i dopiero
+  // na ekranie kursu widziało, że wszystkie lekcje czekają na test powtórkowy. Jedno zapytanie
+  // na kurs — kursów jest kilka, a regułę (dziesięć zaległych słówek) liczy baza.
+  const gates = await Promise.all(
+    moje.map(async (course) => {
+      const { data } = await supabase.rpc('review_gate', { p_course: course.id });
+      return [course.id, (data as unknown as Gate | null) ?? null] as const;
+    }),
+  );
+  const byCourse = new Map(gates);
+
+  return { ok: true, value: moje.map((course) => ({ ...course, gate: byCourse.get(course.id) ?? null })) };
 }
 
 export async function loadCourse(slug: string, userId: string): Promise<Result<CourseData>> {

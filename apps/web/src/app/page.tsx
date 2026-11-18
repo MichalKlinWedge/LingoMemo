@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Suspense } from "react";
 
+import { plural, WORDS } from "@lingomemo/core";
+
 import { ChildrenList } from "@/app/children-list";
 import { CourseRequest } from "@/app/course-request";
 import { Flag } from "@/components/flag";
@@ -30,6 +32,19 @@ async function Home() {
   const moje = (courses ?? []).filter((course) => zapisane.has(course.id));
   const inne = (courses ?? []).filter((course) => !zapisane.has(course.id));
 
+  // Bramka zaległych powtórek każdego z moich kursów. Zamknięty kurs ma być widać już tutaj:
+  // dotąd dziecko klikało w kolorową kartę i dopiero na ekranie kursu dowiadywało się, że
+  // wszystkie lekcje czekają na test. Jedno zapytanie na kurs — kursów jest kilka, a regułę
+  // (dziesięć zaległych słówek) i tak liczy baza.
+  const bramki = new Map(
+    await Promise.all(
+      moje.map(async (course) => {
+        const { data } = await supabase.rpc("review_gate", { p_course: course.id });
+        return [course.id, data as { active: boolean; due: number } | null] as const;
+      }),
+    ),
+  );
+
   return (
     <>
       {/* Rodzic uczy się jak dziecko — swoich kursów, na swoim koncie. Dlatego ma na stronie
@@ -52,20 +67,38 @@ async function Home() {
       {error && <p className="msg-error">{dbLoadError(error)}</p>}
       {isParent && <h2 className="card-title">Twoje kursy</h2>}
       <ul className="flex flex-col gap-4">
-        {moje.map((course) => (
-          <li key={course.id}>
-            <Link href={`/kurs/${course.slug}`} className="card flex items-center gap-4 p-5 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800">
-              <Flag code={course.target_lang} fallback={course.icon ?? "📘"} size={56} />
-              <div className="flex min-w-0 flex-col">
-                <span className="card-title">{course.title}</span>
-                <span className="text-base text-zinc-600 dark:text-zinc-400">{course.description}</span>
-              </div>
-              <span className="ml-auto text-3xl" aria-hidden>
-                →
-              </span>
-            </Link>
-          </li>
-        ))}
+        {moje.map((course) => {
+          // Kurs zamknięty zaległymi powtórkami: cała karta w szarościach i kłódka zamiast
+          // strzałki. Odnośnik zostaje klikalny — w kursie czeka test powtórkowy, czyli
+          // jedyne wyjście z blokady. Ukrycie karty zabrałoby dziecku tę drogę.
+          const zamkniety = bramki.get(course.id)?.active === true;
+          const zalegle = bramki.get(course.id)?.due ?? 0;
+
+          return (
+            <li key={course.id}>
+              <Link
+                href={`/kurs/${course.slug}`}
+                className={`card flex items-center gap-4 p-5 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800${zamkniety ? " locked-gray" : ""}`}
+                aria-label={zamkniety ? `${course.title} — zamknięty do zdanego testu powtórkowego` : undefined}
+              >
+                <Flag code={course.target_lang} fallback={course.icon ?? "📘"} size={56} />
+                <div className="flex min-w-0 flex-col">
+                  <span className="card-title">{course.title}</span>
+                  <span className="text-base text-zinc-600 dark:text-zinc-400">{course.description}</span>
+                  {zamkniety && (
+                    <span className="text-base text-zinc-600 dark:text-zinc-400">
+                      🔁 Lekcje zamknięte — {plural(zalegle, WORDS)} do powtórzenia. Wejdź i zrób
+                      test powtórkowy.
+                    </span>
+                  )}
+                </div>
+                <span className="ml-auto text-3xl" aria-hidden>
+                  {zamkniety ? "🔒" : "→"}
+                </span>
+              </Link>
+            </li>
+          );
+        })}
       </ul>
       {moje.length === 0 && !error && (
         <p className="text-zinc-600 dark:text-zinc-400">

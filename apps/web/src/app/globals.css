@@ -310,6 +310,18 @@ h2 {
     cursor: pointer;
   }
 
+  /* Zamknięte w całości: kurs trzymany bramką zaległych powtórek i każda zamknięta lekcja.
+     Szarość idzie na CAŁE pudełko, nie na sam kafelek — gwiazdki, kwadraciki etapów, flaga
+     kursu i liczba słówek zostawały w pełnym kolorze, więc rząd zamkniętych lekcji wyglądał
+     jak otwarty i dziecko dotykało kafelka po kafelku. Przy kłódce do otwarcia punktem
+     szarości nie dajemy: lekcja jest w zasięgu, a szary mówiłby, że nie.
+
+     Filtr, a nie własne kolory: pudełko lekcji ma w sobie kilkanaście kolorowych drobiazgów
+     (emoji, gwiazdki, kwadraciki poziomów) i każdy musiałby mieć swój wariant „na szaro". */
+  .locked-gray {
+    filter: grayscale(1);
+  }
+
   /* --- tryb nauki: sowa na mapie i plansza ze słówkami ---
      Sowa prowadzi na planszę, na której dziecko słucha słówek lekcji, zanim ją zacznie.
      Okrągła i wielkości palca (56 px, jak każdy przycisk dla dziecka), żeby nie dało się
