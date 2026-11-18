@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
-import { LESSONS, plural, STARS, UNLOCKS, WORDS } from "@lingomemo/core";
+import { LESSONS, plural, STARS, WORDS } from "@lingomemo/core";
 
 import { CourseRequest } from "@/app/course-request";
 import { Flag } from "@/components/flag";
@@ -207,14 +207,9 @@ async function CourseScreen({ params }: { params: PageProps<"/kurs/[slug]">["par
         </section>
       )}
 
-      {/* Stan konta punktów odblokowania. Bez tego dziecko nie wie, że kłódka z kluczykiem jest
-          dla niego — punkt zdobyło kilka lekcji wcześniej, na poziomie trudnym. */}
-      {punkty > 0 && (
-        <p className="chip self-start">
-          🔑 {plural(punkty, UNLOCKS)} — kliknij kłódkę z kluczykiem, żeby otworzyć lekcję
-        </p>
-      )}
-
+      {/* Stanu konta punktów odblokowania tu NIE ma: mówi o nim chip `🔑 … do odblokowania`
+          w pasku nad każdą stroną. Dwa razy to samo nad tą samą listą lekcji czytało się jak
+          dwie różne liczby. Co z nimi zrobić, tłumaczy okno przy samej kłódce z kluczykiem. */}
       {(units ?? []).map((unit) => {
         // Dział zamknięty w całości, czyli czekający na test poprzedniego działu. Poznajemy
         // go po tym, że ani jedna jego lekcja nie jest otwarta — reguła siedzi w bazie
