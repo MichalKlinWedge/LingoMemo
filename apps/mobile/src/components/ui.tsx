@@ -41,12 +41,38 @@ export function Body({ children, muted }: { children: ReactNode; muted?: boolean
  * Znacznik stanu. `label` zastępuje treść czytnikowi ekranu — tam, gdzie na ekranie stoi sama
  * ikona i liczba („⭐ 7091"), czytnik ma powiedzieć, czego ta liczba dotyczy. Na telefonie nie
  * ma dymka po najechaniu kursorem, więc to jedyne miejsce, w którym da się te słowa zapisać.
+ *
+ * Z `onPress` znacznik jest przejściem — tak samo jak w pasku na webie, gdzie każdy znacznik
+ * jest odnośnikiem. Sam znacznik jest niższy niż próg palca (56 px), bo w rzędzie stoi ich
+ * kilka; pole dotyku powiększa `hitSlop` do tego progu, zamiast rozpychać pasek.
  */
-export function Chip({ children, label }: { children: ReactNode; label?: string }) {
+export function Chip({
+  children,
+  label,
+  onPress,
+}: {
+  children: ReactNode;
+  label?: string;
+  onPress?: () => void;
+}) {
+  if (onPress === undefined) {
+    return (
+      <View style={styles.chip} accessible={label !== undefined} accessibilityLabel={label}>
+        <Text style={styles.chipText}>{children}</Text>
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.chip} accessible={label !== undefined} accessibilityLabel={label}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      hitSlop={12}
+      onPress={onPress}
+      style={({ pressed }) => [styles.chip, pressed === true && styles.chipPressed]}
+    >
       <Text style={styles.chipText}>{children}</Text>
-    </View>
+    </Pressable>
   );
 }
 
@@ -114,6 +140,7 @@ const styles = StyleSheet.create({
   body: { color: color.text, fontSize: size.text, lineHeight: 28 },
   bodyMuted: { color: color.muted, fontSize: 16, lineHeight: 24 },
   chip: { alignSelf: 'flex-start', backgroundColor: color.brandLight, borderRadius: 999, paddingHorizontal: 14, paddingVertical: 6 },
+  chipPressed: { opacity: 0.7 },
   chipText: { color: color.brandDark, fontSize: 15, fontWeight: '700' },
   button: {
     alignItems: 'center',

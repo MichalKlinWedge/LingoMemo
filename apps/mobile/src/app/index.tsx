@@ -13,7 +13,7 @@ import { type BarData, loadBar } from '@/features/stats/load';
 import { useSession } from '@/lib/session';
 import { isConfigured } from '@/lib/supabase';
 
-/** Twoje kursy, a pod nimi nagrody i postępy. Konto i przypomnienia — pod zębatką w nagłówku. */
+/** Twoje kursy. Nagrody i postępy — ze znaczników nad nimi; konto i przypomnienia — pod zębatką. */
 export default function Home() {
   const session = useSession();
   const userId = session?.user.id ?? null;
@@ -81,8 +81,6 @@ export default function Home() {
       {courses?.map((course) => (
         <CourseCard key={course.id} course={course} />
       ))}
-
-      <Nav />
     </Screen>
   );
 }
@@ -95,6 +93,7 @@ export default function Home() {
  * Liczy je baza (`v_my_stats`, `unlock_status`), nie telefon.
  */
 function Bar({ userId }: { userId: string }) {
+  const router = useRouter();
   const [bar, setBar] = useState<BarData | null>(null);
 
   useFocusEffect(
@@ -116,9 +115,26 @@ function Bar({ userId }: { userId: string }) {
     // się na drugi wiersz i spychały kursy w dół, a dziecko czyta z nich liczbę, nie zdanie.
     // Słowa zostają w etykiecie dla czytnika ekranu.
     <View style={styles.bar}>
-      <Chip label={plural(bar.points, POINTS)}>⭐ {bar.points}</Chip>
-      <Chip label={`seria: ${plural(bar.streak, DAYS)} nauki pod rząd`}>🔥 {bar.streak}</Chip>
-      {bar.due > 0 && <Chip label={`${plural(bar.due, WORDS)} do powtórki`}>🔁 {bar.due}</Chip>}
+      {/* Każdy znacznik prowadzi tam, gdzie widać jego liczbę z bliska — dokładnie jak w pasku
+          na webie. Dlatego pod kursami nie ma już osobnych przycisków „Nagrody" i „Postępy":
+          były drugim wejściem w to samo, a stały najdalej, na samym dole ekranu. */}
+      <Chip label={`${plural(bar.points, POINTS)} — zobacz nagrody`} onPress={() => router.push('/nagrody')}>
+        ⭐ {bar.points}
+      </Chip>
+      <Chip
+        label={`seria: ${plural(bar.streak, DAYS)} nauki pod rząd — zobacz postępy`}
+        onPress={() => router.push('/statystyki')}
+      >
+        🔥 {bar.streak}
+      </Chip>
+      {bar.due > 0 && (
+        <Chip
+          label={`${plural(bar.due, WORDS)} do powtórki — zobacz postępy`}
+          onPress={() => router.push('/statystyki')}
+        >
+          🔁 {bar.due}
+        </Chip>
+      )}
       {/* Bez punktów znacznika nie ma: dziecko przed pierwszym poziomem trudnym nie ma o czym
           wiedzieć, a pasek ma zostać krótki. Wydaje się je na ekranie kursu, dotykając kłódki
           z kluczykiem. */}
@@ -156,21 +172,6 @@ function CourseCard({ course }: { course: MyCourse }) {
       </View>
       <Text style={zamkniety ? styles.lock : styles.arrow}>{zamkniety ? '🔒' : '→'}</Text>
     </Pressable>
-  );
-}
-
-/** Nagrody i postępy — osobne ekrany, bo na kursach nie ma dla nich miejsca. */
-function Nav() {
-  const router = useRouter();
-  return (
-    <View style={styles.nav}>
-      <View style={styles.navItem}>
-        <Button kind="quiet" label="🏅 Nagrody" onPress={() => router.push('/nagrody')} />
-      </View>
-      <View style={styles.navItem}>
-        <Button kind="quiet" label="📈 Postępy" onPress={() => router.push('/statystyki')} />
-      </View>
-    </View>
   );
 }
 
@@ -219,6 +220,4 @@ const styles = StyleSheet.create({
   arrow: { color: color.brand, fontSize: 28 },
   lock: { color: color.muted, fontSize: 28 },
   bar: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  nav: { flexDirection: 'row', gap: size.gap },
-  navItem: { flex: 1 },
 });
