@@ -1,4 +1,4 @@
-import { DAYS, plural, POINTS, UNLOCKS, WORDS } from '@lingomemo/core';
+import { DAYS, HINTS, plural, POINTS, UNLOCKS, WORDS } from '@lingomemo/core';
 import { usePathname, useRouter } from 'expo-router';
 import { type ImageSourcePropType, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -126,6 +126,15 @@ export function TopBar() {
             >
               🔁 {bar.due}
             </Chip>
+          )}
+          {/* Podpowiedzi na dziś — wszędzie poza lekcją. W lekcji tę samą liczbę pokazuje jej
+              własny pasek i robi to na bieżąco: po wzięciu podpowiedzi zmienia się od razu,
+              bo oddaje ją ta sama odpowiedź bazy, która podpowiedź wydaje. Ten pasek odczytuje
+              dane przy zmianie ekranu, więc stałby obok z liczbą o jeden za dużą.
+              Zero pokazujemy, w odróżnieniu od punktów odblokowania: „💡 0" tłumaczy, czemu
+              przycisk podpowiedzi w lekcji jest szary. */}
+          {!pathname.startsWith('/lekcja/') && (
+            <Chip label={`podpowiedzi na dziś: ${plural(bar.hints, HINTS)}`}>💡 {bar.hints}</Chip>
           )}
           {/* Bez punktów znacznika nie ma: dziecko przed pierwszym poziomem trudnym nie ma
               o czym wiedzieć, a pasek ma zostać krótki. Wydaje się je na ekranie kursu,

@@ -135,7 +135,15 @@ export async function dueWords(userId: string, today: string): Promise<number> {
   return count ?? 0;
 }
 
-export type BarData = { name: string; points: number; streak: number; due: number; unlocks: number };
+export type BarData = {
+  name: string;
+  points: number;
+  streak: number;
+  due: number;
+  unlocks: number;
+  /** Podpowiedzi na dziś. Pula odnawia się o północy w strefie dziecka. */
+  hints: number;
+};
 
 /**
  * Pasek stanu: imię, punkty, seria, zaległe powtórki i punkty odblokowania. Wisi nad każdym
@@ -146,10 +154,11 @@ export type BarData = { name: string; points: number; streak: number; due: numbe
  * nieudanym odczycie zostają zera, a ekran kursów pokazuje się normalnie.
  */
 export async function loadBar(userId: string): Promise<BarData> {
-  const [{ data: profile }, { data: stats }, { data: unlock }] = await Promise.all([
+  const [{ data: profile }, { data: stats }, { data: unlock }, { data: hints }] = await Promise.all([
     supabase.from('profiles').select('display_name').eq('id', userId).maybeSingle(),
     supabase.from('v_my_stats').select('total_points, streak_days, words_due').eq('user_id', userId).maybeSingle(),
     supabase.rpc('unlock_status', { p_user: userId }),
+    supabase.rpc('hints_left'),
   ]);
 
   return {
@@ -158,5 +167,6 @@ export async function loadBar(userId: string): Promise<BarData> {
     streak: stats?.streak_days ?? 0,
     due: stats?.words_due ?? 0,
     unlocks: (unlock as { left?: number } | null)?.left ?? 0,
+    hints: hints ?? 0,
   };
 }

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { DAYS, plural, POINTS, UNLOCKS, WORDS } from "@lingomemo/core";
 
 import { signOut } from "@/app/auth-actions";
+import { HintStat } from "@/components/hint-stat";
 import { Logo } from "@/components/logo";
 import { getUser } from "@/lib/auth";
 
@@ -51,12 +52,15 @@ export async function TopBar() {
 
   const { supabase, userId, isAdmin } = session;
 
-  const [{ data: profile }, { data: stats }, { data: unlock }] = await Promise.all([
+  const [{ data: profile }, { data: stats }, { data: unlock }, { data: podpowiedzi }] = await Promise.all([
     supabase.from("profiles").select("display_name").eq("id", userId).maybeSingle(),
     supabase.from("v_my_stats").select("total_points, streak_days, words_due").eq("user_id", userId).maybeSingle(),
     // Punkty odblokowania. W pasku, a nie tylko na ekranie kursu: zdobywa się je w lekcji
     // (poziom trudny), a wydaje piętro wyżej — dziecko musi je widzieć także po drodze.
     supabase.rpc("unlock_status", { p_user: userId }),
+    // Dzienna pula podpowiedzi. W pasku, bo dziecko pyta o nią przed lekcją („ile mi zostało?"),
+    // a dotąd dowiadywało się dopiero w zadaniu, z napisu na przycisku.
+    supabase.rpc("hints_left"),
   ]);
 
   const doOdblokowania = (unlock as { left?: number } | null)?.left ?? 0;
@@ -129,6 +133,9 @@ export async function TopBar() {
               label={`${plural(stats?.words_due ?? 0, WORDS)} do powtórki`}
             />
           )}
+          {/* Podpowiedzi na dziś. Znacznik chowa się w lekcji — tam tę samą liczbę pokazuje
+              pasek lekcji, i robi to na bieżąco. */}
+          <HintStat value={podpowiedzi ?? 0} />
           {/* Bez punktów znacznika nie ma: dziecko przed pierwszym poziomem trudnym nie ma
               o czym wiedzieć, a pasek ma być krótki. Bez adresu, bo punktów nie wydaje się
               na żadnej osobnej stronie — klika się kłódkę z kluczykiem tam, gdzie stoi,
