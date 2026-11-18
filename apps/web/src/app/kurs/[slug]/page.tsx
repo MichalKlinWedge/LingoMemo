@@ -11,6 +11,7 @@ import { Loading, Shell } from "@/components/shell";
 import { requireUser } from "@/lib/auth";
 import { dbLoadError } from "@/lib/db-error";
 
+import { ScrollToUnit } from "./scroll-to-unit";
 import { UnlockLesson } from "./unlock-lesson";
 
 async function CourseScreen({ params }: { params: PageProps<"/kurs/[slug]">["params"] }) {
@@ -160,8 +161,37 @@ async function CourseScreen({ params }: { params: PageProps<"/kurs/[slug]">["par
       dzialyKursu.has(lesson.unit_id),
   ).length;
 
+  /**
+   * Czy dział jest zaliczony, czyli ma zdany test działu. Ta sama rzecz otwiera następny dział
+   * w bazie (`is_unit_unlocked`), więc strona nie wymyśla tu własnej definicji „zrobionego".
+   */
+  const unitPassed = (unitId: string) =>
+    (lessons ?? []).some(
+      (lesson) => lesson.unit_id === unitId && lesson.kind === "test" && lesson.status === "completed",
+    );
+
+  /**
+   * Dział, na którym strona ma się otworzyć: pierwszy niezaliczony.
+   *
+   * Kurs rośnie, a zaliczone działy zostają na widoku (dziecko ma do czego wracać i czym się
+   * chwalić) — więc po kilku zdanych testach to, co jest do zrobienia dziś, leży trzy ekrany
+   * niżej. Zamiast kasować historię albo zwijać działy, strona po prostu otwiera się tam,
+   * gdzie dziecko skończyło.
+   *
+   * Dwa wyjątki, oba nie są czepianiem się:
+   *   * `kolejny <= 0` — pierwszy dział niezaliczony (albo wszystkie zaliczone). W pierwszym
+   *     wypadku i tak stoi na wierzchu, w drugim nie ma „następnego", do którego skakać;
+   *   * stojąca bramka powtórek — wtedy najważniejsza rzecz na ekranie to karta testu
+   *     powtórkowego na samej górze, a działy niżej są i tak zamknięte.
+   */
+  const dzialy = units ?? [];
+  const kolejny = dzialy.findIndex((unit) => !unitPassed(unit.id));
+  const doPrzewiniecia = bramka?.active === true || kolejny <= 0 ? null : dzialy[kolejny].id;
+
   return (
     <>
+      {doPrzewiniecia !== null && <ScrollToUnit id={`dzial-${doPrzewiniecia}`} />}
+
       <PageHeader
         title={
           <>
@@ -221,7 +251,7 @@ async function CourseScreen({ params }: { params: PageProps<"/kurs/[slug]">["par
       {/* Stanu konta punktów odblokowania tu NIE ma: mówi o nim chip `🔑 … do odblokowania`
           w pasku nad każdą stroną. Dwa razy to samo nad tą samą listą lekcji czytało się jak
           dwie różne liczby. Co z nimi zrobić, tłumaczy okno przy samej kłódce z kluczykiem. */}
-      {(units ?? []).map((unit) => {
+      {dzialy.map((unit) => {
         // Dział zamknięty w całości, czyli czekający na test poprzedniego działu. Poznajemy
         // go po tym, że ani jedna jego lekcja nie jest otwarta — reguła siedzi w bazie
         // (`is_unit_unlocked`), a strona tylko nazywa to, co z niej wyszło.
@@ -229,7 +259,7 @@ async function CourseScreen({ params }: { params: PageProps<"/kurs/[slug]">["par
           byUnit(unit.id).length > 0 && byUnit(unit.id).every((lesson) => !lesson.is_unlocked);
 
         return (
-        <section key={unit.id} className="flex flex-col gap-4">
+        <section key={unit.id} id={`dzial-${unit.id}`} className="flex flex-col gap-4">
           <h2>
             {/* Dział bez ikony nie dostaje nic — szablon z `${unit.icon}` wypisywał „null”. */}
             <span aria-hidden>{unitLocked ? "🔒 " : unit.icon ? `${unit.icon} ` : ""}</span>

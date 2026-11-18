@@ -1,7 +1,14 @@
 import { LESSONS, plural, UNLOCKS, WORDS } from '@lingomemo/core';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
-import { useCallback, useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useRef, useState } from 'react';
+import {
+  Modal,
+  Pressable,
+  type ScrollViewInstance,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 import { Flag } from '@/components/flag';
 import { Body, Button, Card, Chip, Message, Screen, Title } from '@/components/ui';
@@ -20,6 +27,13 @@ export default function CourseScreen() {
   const userId = session?.user.id ?? null;
   const [data, setData] = useState<CourseData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const scroll = useRef<ScrollViewInstance>(null);
+  /**
+   * Czy ekran już sam się ustawił na kolejnym dziale. Raz na wejście: bez tego każdy ponowny
+   * pomiar wysokości (obrót tabletu, dorysowana kłódka po wydanym punkcie) odrzucałby dziecko
+   * z powrotem na górę działu, nawet gdy właśnie przewinęło ekran ręką.
+   */
+  const ustawiony = useRef(false);
 
   /**
    * Wczytanie kursu. Ta sama funkcja obsługuje wejście na ekran (po lekcji zmieniają się gwiazdki
@@ -27,6 +41,7 @@ export default function CourseScreen() {
    */
   const load = useCallback(() => {
     if (userId === null) return;
+    ustawiony.current = false;
     let alive = true;
     void loadCourse(slug, userId).then((result) => {
       if (!alive) return;
@@ -62,8 +77,33 @@ export default function CourseScreen() {
 
   const byUnit = (unitId: string) => data.lessons.filter((lesson) => lesson.unit_id === unitId);
 
+  /**
+   * Czy dział jest zaliczony, czyli ma zdany test działu. Tą samą rzeczą baza otwiera następny
+   * dział (`is_unit_unlocked`), więc ekran nie wymyśla własnej definicji „zrobionego".
+   */
+  const unitPassed = (unitId: string) =>
+    data.lessons.some(
+      (lesson) => lesson.unit_id === unitId && lesson.kind === 'test' && lesson.status === 'completed',
+    );
+
+  /**
+   * Dział, na którym ekran ma się otworzyć: pierwszy niezaliczony — dokładnie jak na webie
+   * (`apps/web/src/app/kurs/[slug]/page.tsx`).
+   *
+   * Zaliczone działy zostają na widoku, bo dziecko ma do czego wracać i czym się chwalić — ale
+   * po kilku zdanych testach to, co jest do zrobienia dziś, leży kilka ekranów niżej, a na
+   * tablecie przewija się to palcem za każdym wejściem.
+   *
+   * Dwa wyjątki: pierwszy dział niezaliczony (albo wszystkie zaliczone) — nie ma po co skakać;
+   * oraz stojąca bramka powtórek — wtedy na górze stoi karta testu powtórkowego, a działy
+   * niżej są i tak zamknięte.
+   */
+  const kolejny = data.units.findIndex((unit) => !unitPassed(unit.id));
+  const doUstawienia =
+    data.gate?.active === true || kolejny <= 0 ? null : data.units[kolejny].id;
+
   return (
-    <Screen>
+    <Screen scrollRef={scroll}>
       {/* Flaga obok tytułu, a nie w nim: obrazek wewnątrz <Text> Android rysuje po swojemu. */}
       <View style={styles.courseHead}>
         <Flag code={data.course.target_lang} fallback={data.course.icon} size={36} />
@@ -103,7 +143,23 @@ export default function CourseScreen() {
         const unitLocked = lessons.length > 0 && lessons.every((lesson) => lesson.is_unlocked !== true);
 
         return (
-          <View key={unit.id} style={styles.unit}>
+          <View
+            key={unit.id}
+            style={styles.unit}
+            /**
+             * Przewijamy z `onLayout`, a nie zaraz po wczytaniu danych: dopóki Android nie
+             * rozmierzy kafelków, dział nie ma jeszcze swojego `y`, a `scrollTo` poszłoby
+             * w miejsce, które za chwilę będzie gdzie indziej.
+             */
+            onLayout={(event) => {
+              if (unit.id !== doUstawienia || ustawiony.current) return;
+              ustawiony.current = true;
+              scroll.current?.scrollTo({
+                y: Math.max(event.nativeEvent.layout.y - size.gap, 0),
+                animated: false,
+              });
+            }}
+          >
             <Text style={styles.unitTitle}>
               {unitLocked ? '🔒 ' : unit.icon !== null ? `${unit.icon} ` : ''}
               {unit.title}

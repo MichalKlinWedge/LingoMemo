@@ -1,5 +1,14 @@
-import type { ReactNode } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import type { ReactNode, RefObject } from 'react';
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  type ScrollViewInstance,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { color, size } from '@/constants/theme';
@@ -10,12 +19,24 @@ import { color, size } from '@/constants/theme';
  * tak samo jak na webie.
  */
 
-export function Screen({ children }: { children: ReactNode }) {
+/**
+ * `scrollRef` jest po to, żeby ekran mógł się sam ustawić w miejscu, które ma pokazać — kurs
+ * otwiera się na pierwszym niezaliczonym dziale, a nie na początku historii nauki. Przewijanie
+ * zostaje po stronie ekranu, który wie, co jest ważne; `Screen` tylko wydaje uchwyt.
+ */
+export function Screen({
+  children,
+  scrollRef,
+}: {
+  children: ReactNode;
+  scrollRef?: RefObject<ScrollViewInstance | null>;
+}) {
   // Zapas na dole wielkości paska nawigacji Androida: w trybie edge-to-edge pasek leży NA
   // treści, więc bez tego ostatni przycisk ekranu zostaje pod przyciskami systemu.
   const insets = useSafeAreaInsets();
   return (
     <ScrollView
+      ref={scrollRef}
       style={styles.screen}
       contentContainerStyle={[styles.screenInner, { paddingBottom: 32 + insets.bottom }]}
       keyboardShouldPersistTaps="handled"
