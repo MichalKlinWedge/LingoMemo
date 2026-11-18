@@ -39,7 +39,10 @@ export default function Layout() {
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="logowanie" options={{ title: 'Logowanie' }} />
         <Stack.Screen name="ustawienia" options={{ title: 'Ustawienia' }} />
-        <Stack.Screen name="kurs/[slug]" options={{ title: 'Kurs' }} />
+        {/* Ekran kursu też nie ma nagłówka: tytuł kursu stoi w jego treści, z flagą, a wiersz
+            ze słowem „Kurs" powtarzał tylko to, co dziecko ma pod spodem. Droga wstecz zostaje
+            — sowa w pasku wraca na listę kursów, a Android ma swój gest powrotu. */}
+        <Stack.Screen name="kurs/[slug]" options={{ headerShown: false }} />
         {/* Lekcja ma własny pasek: krzyżyk wyjścia, postęp i liczniki. Drugi nagłówek nad nim
             zabierałby wysokość ekranu, której przy zadaniu z klawiaturą i tak brakuje. */}
         <Stack.Screen name="lekcja/[id]/index" options={{ headerShown: false }} />
