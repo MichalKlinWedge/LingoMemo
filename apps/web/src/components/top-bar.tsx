@@ -14,12 +14,27 @@ import { getUser } from "@/lib/auth";
  * spychając treść strony w dół — a dziecko i tak czyta z nich liczbę, nie zdanie. Ikona mówi,
  * czego liczba dotyczy; po słowa sięga dorosły, i wtedy wystarczy mu kursor.
  */
-function Stat({ href, icon, value, label }: { href: string; icon: string; value: number; label: string }) {
+function Stat({ href, icon, value, label }: { href?: string; icon: string; value: number; label: string }) {
+  const tresc = (
+    <span aria-hidden>
+      {icon} {value}
+    </span>
+  );
+
+  // Znacznik bez adresu jest samą informacją, więc nie jest odnośnikiem: `<span>` zamiast `<a>`
+  // zostawia kursor strzałką. Łapka nad czymś, co po kliknięciu nic nie robi (albo wyrzuca
+  // w bok), to obietnica bez pokrycia — a dziecko sprawdza każdą.
+  if (href === undefined) {
+    return (
+      <span className="chip" title={label} aria-label={label} role="img">
+        {tresc}
+      </span>
+    );
+  }
+
   return (
     <Link href={href} className="chip" title={label} aria-label={label}>
-      <span aria-hidden>
-        {icon} {value}
-      </span>
+      {tresc}
     </Link>
   );
 }
@@ -60,6 +75,23 @@ export async function TopBar() {
           </Link>
 
           <div className="app-bar-actions">
+            {/* Nagrody i postępy miały dotąd wejście tylko przez znaczniki z liczbami, a po
+                znaczniku nie widać, że jest odnośnikiem — dziecko klikało w „⭐ 6411" przez
+                przypadek albo wcale. Ikony te same co w aplikacji na telefon (🏅 i 📈), żeby
+                obie wersje prowadziły w to samo miejsce tym samym znakiem. Napis siedzi
+                w dymku i w etykiecie dla czytnika ekranu: pasek ma 48 rem i dwa dodatkowe
+                słowa zepchnęłyby „Wyloguj" do drugiego wiersza. */}
+            <Link href="/nagrody" className="btn-secondary btn-icon" title="Nagrody" aria-label="Nagrody">
+              <span aria-hidden>🏅</span>
+            </Link>
+            <Link
+              href="/statystyki"
+              className="btn-secondary btn-icon"
+              title="Twoje postępy"
+              aria-label="Twoje postępy"
+            >
+              <span aria-hidden>📈</span>
+            </Link>
             {isAdmin && (
               <Link href="/admin" className="btn-secondary">
                 Panel
@@ -86,20 +118,24 @@ export async function TopBar() {
             value={stats?.streak_days ?? 0}
             label={`seria: ${plural(stats?.streak_days ?? 0, DAYS)} nauki pod rząd`}
           />
+          {/* Powtórki mają własną stronę: co jest do zrobienia teraz, które słówka czekają
+              i kiedy wrócą. Znacznik prowadził wcześniej na postępy, gdzie z tej liczby był
+              jeden kafelek wśród ośmiu innych. */}
           {(stats?.words_due ?? 0) > 0 && (
             <Stat
-              href="/statystyki"
+              href="/powtorki"
               icon="🔁"
               value={stats?.words_due ?? 0}
               label={`${plural(stats?.words_due ?? 0, WORDS)} do powtórki`}
             />
           )}
           {/* Bez punktów znacznika nie ma: dziecko przed pierwszym poziomem trudnym nie ma
-              o czym wiedzieć, a pasek ma być krótki. Kliknięcie prowadzi na listę kursów,
-              czyli do kursów z kłódkami — tam się te punkty wydaje. */}
+              o czym wiedzieć, a pasek ma być krótki. Bez adresu, bo punktów nie wydaje się
+              na żadnej osobnej stronie — klika się kłódkę z kluczykiem tam, gdzie stoi,
+              czyli przy lekcji. Odnośnik na listę kursów (tak było) tylko wyrzucał dziecko
+              z miejsca, w którym właśnie jest. */}
           {doOdblokowania > 0 && (
             <Stat
-              href="/"
               icon="🔑"
               value={doOdblokowania}
               label={`${plural(doOdblokowania, UNLOCKS)} — kliknij kłódkę z kluczykiem na ekranie kursu, żeby otworzyć lekcję`}

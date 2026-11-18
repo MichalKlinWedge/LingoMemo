@@ -534,6 +534,16 @@ h2 {
     font-size: 1rem;
   }
 
+  /* Przycisk z samą ikoną: nagrody i postępy. Kwadratowy (2,25 rem na 2,25 rem), bo bez
+     bocznego zapasu na tekst wyszedłby węższy od sąsiadów i rząd przycisków zrobiłby się
+     poszarpany. Ikona większa od napisu obok, żeby przy braku słowa dało się ją rozpoznać
+     kątem oka; co znaczy, mówi dymek i etykieta dla czytnika ekranu. */
+  .app-bar .btn-icon {
+    min-width: 2.25rem;
+    padding: 0 0.5rem;
+    font-size: 1.25rem;
+  }
+
   /* --- okruszki: cała droga do miejsca, w którym się jest --- */
   .crumbs {
     display: flex;
