@@ -1530,3 +1530,24 @@ widzi na swoich postępach: gwiazdki, zdane wejścia wyżej, sprawdziany, odpowi
 | Wygląd niezdobytej | przygaszona sama ikona, opis i pasek w pełnych barwach | to opis mówi, co trzeba zrobić — wyszarzenie całej karty ukrywało właśnie tę informację | `opacity` i `grayscale` na całej karcie (paska postępu nie da się z tego wyłączyć) |
 | Kolejność na liście | drabinkami tematycznymi, w każdej od najłatwiejszej | lista czyta się jak kolekcja, a pasek i tak pokazuje, co jest blisko | sortowanie po „ile brakuje" (ta sama odznaka co tydzień w innym miejscu listy) |
 | Progi istniejących ośmiu | bez zmian | odznaka już zdobyta nie może przestać być zdobyta; zmienia się tylko `sort_order` | podniesienie progów „żeby było więcej do zrobienia" (odebranie nagrody za pracę, która została wykonana) |
+
+## Wpisanie słowa w języku kursu dorabia baza (2026-11-18)
+
+Zgłoszone z ekranu: dziecko nigdzie nie wpisuje słowa w języku, którego się uczy. I rzeczywiście
+tak było — poza „Angielskim klasa 4" żaden kurs nie miał ani jednego tłumaczenia na język kursu
+bez gotowych kafelków. `admin_add_word` zakłada każdemu słówku dwa zadania: wybór z listy po
+polsku → w języku kursu (poziom 1) i wpisywanie w drugą stronę (poziom 2). Generator średniego
+poziomu (`build_medium_variants`) dorabia zadanie tylko słówku, które NIE MA żadnego zadania
+poziomu 2 — a tłumaczenie na polski ten warunek spełnia, więc generator mijał całe kursy.
+
+Kierunek ma znaczenie: wskazanie „rot" wśród czterech kafelków wymaga rozpoznania słowa, napisanie
+go — pamiętania, jak brzmi i jak się pisze. Dlatego warunek „ma średni poziom" jest teraz
+sprawdzany dla kierunku na język kursu osobno, nowym generatorem.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Gdzie dorobić zadania | piąty generator `build_typing_variants` w wyzwalaczu wariantów | ta sama droga, co pozostałe cztery: dorabia się raz na lekcję, działa też przy każdym następnym imporcie | dopisanie zadań do plików treści (siedemdziesiąt plików, a następny import i tak by ich nie miał) |
+| Jak poznać brak | brak `translate_ab` bez `options` przy słówku | pyta dokładnie o to, czego brakowało: o kierunek, nie o poziom | poszerzenie warunku w `build_medium_variants` o język odpowiedzi (poziomem 2 bywa też rozsypanka, a po jej payloadzie nie poznać, w jakim języku jest rozwiązanie) |
+| Źródło treści | słownik (`terms`), nie istniejące zadanie | słówko, które ma w lekcji tylko zadanie ze słuchu, nie ma z czego zrobić wpisywania metodą „weź tłumaczenie i zabierz mu kafelki" | kopiowanie payloadu zadania z kafelkami (działa tylko wtedy, gdy takie zadanie jest) |
+| Zwroty wielowyrazowe | pomijane, również jako synonimy w `accepted` | wpisanie zdania z klawiatury to poziom trudny i ma własne zadania (ze słuchu, rozsypanka); jeden wielowyrazowy synonim podniósłby poziom całego zadania do 3, a wtedy słówko dalej nie miałoby średniego i dostałoby drugie, prawie identyczne | wpisywanie całych zwrotów na średnim poziomie |
+| Kolejność generatorów | wpisywanie przed `build_medium_variants` | oba potrafią zrobić słówku poziom średni, a ten pierwszy robi go w kierunku, o który chodzi | po nim (powstawałyby dwa zadania o tej samej treści) |

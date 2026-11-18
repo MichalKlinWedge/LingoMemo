@@ -944,6 +944,9 @@ isOneToOne: false
 "build_sentence_order":
 { Args: { "p_lesson": string }; Returns: number
                            },
+"build_typing_variants":
+{ Args: { "p_lesson": string }; Returns: number
+                           },
 "bump_streak":
 { Args: { "p_lesson_done": boolean,"p_today": string,"p_user": string }; Returns: number
                            },
