@@ -1,8 +1,9 @@
 import * as Notifications from 'expo-notifications';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { View } from 'react-native';
 
-import { SettingsButton } from '@/components/settings-button';
+import { TopBar } from '@/components/top-bar';
 import { color } from '@/constants/theme';
 
 // Powiadomienie ma być widoczne także wtedy, gdy aplikacja jest otwarta — inaczej pomiar
@@ -18,8 +19,12 @@ Notifications.setNotificationHandler({
 
 export default function Layout() {
   return (
-    <>
+    <View style={{ backgroundColor: color.background, flex: 1 }}>
       <StatusBar style="dark" />
+      {/* Pasek stoi NAD stosem ekranów, a nie w nagłówku któregoś z nich: tylko wtedy jest
+          widoczny cały czas i nie odjeżdża przy przewijaniu — tak samo jak na webie. Sam
+          decyduje, kiedy się nie pokazywać (niezalogowany, lekcja). */}
+      <TopBar />
       <Stack
         screenOptions={{
           headerStyle: { backgroundColor: color.background },
@@ -28,10 +33,10 @@ export default function Layout() {
           contentStyle: { backgroundColor: color.background },
         }}
       >
-        <Stack.Screen
-          name="index"
-          options={{ title: 'Twoje kursy', headerRight: () => <SettingsButton /> }}
-        />
+        {/* Ekran kursów nie ma własnego nagłówka: „Twoje kursy" zastąpiły sowa i imię w pasku,
+            a drugi wiersz z tym samym znaczeniem tylko zabierałby wysokość. Pozostałe ekrany
+            nagłówek zachowują — to w nim jest strzałka powrotu. */}
+        <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="logowanie" options={{ title: 'Logowanie' }} />
         <Stack.Screen name="ustawienia" options={{ title: 'Ustawienia' }} />
         <Stack.Screen name="kurs/[slug]" options={{ title: 'Kurs' }} />
@@ -45,6 +50,6 @@ export default function Layout() {
         <Stack.Screen name="mowa" options={{ title: 'PoC-M2 — mowa' }} />
         <Stack.Screen name="powiadomienia" options={{ title: 'PoC-M3 — przypomnienia' }} />
       </Stack>
-    </>
+    </View>
   );
 }

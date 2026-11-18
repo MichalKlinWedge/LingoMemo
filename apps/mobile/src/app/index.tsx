@@ -1,15 +1,14 @@
-import { DAYS, plural, POINTS, UNLOCKS, WORDS } from '@lingomemo/core';
+import { plural, WORDS } from '@lingomemo/core';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Body, Button, Card, Chip, Message, Screen, Title } from '@/components/ui';
+import { Body, Button, Card, Message, Screen, Title } from '@/components/ui';
 import { Flag } from '@/components/flag';
 import { UpdateBanner } from '@/components/update';
 import { color, size } from '@/constants/theme';
 import { loadMyCourses, type MyCourse } from '@/features/courses/load';
 import { refreshReminder } from '@/features/reminders/reminders';
-import { type BarData, loadBar } from '@/features/stats/load';
 import { useSession } from '@/lib/session';
 import { isConfigured } from '@/lib/supabase';
 
@@ -66,7 +65,6 @@ export default function Home() {
   return (
     <Screen>
       <UpdateBanner />
-      <Bar userId={session.user.id} />
       {error !== null && <Message kind="error" text={error} />}
       {courses === null && <Body muted>Wczytuję kursy…</Body>}
       {courses?.length === 0 && (
@@ -82,64 +80,6 @@ export default function Home() {
         <CourseCard key={course.id} course={course} />
       ))}
     </Screen>
-  );
-}
-
-/**
- * Punkty, seria, zaległe powtórki i punkty odblokowania. Na webie stoją w pasku nad każdą stroną,
- * więc dziecko widzi je zawsze; na telefonie wspólnego nagłówka nie ma, więc stoją tutaj — a ten
- * ekran wczytuje się na nowo przy każdym pokazaniu, czyli i po każdej lekcji.
- *
- * Liczy je baza (`v_my_stats`, `unlock_status`), nie telefon.
- */
-function Bar({ userId }: { userId: string }) {
-  const router = useRouter();
-  const [bar, setBar] = useState<BarData | null>(null);
-
-  useFocusEffect(
-    useCallback(() => {
-      let alive = true;
-      void loadBar(userId).then((data) => {
-        if (alive) setBar(data);
-      });
-      return () => {
-        alive = false;
-      };
-    }, [userId]),
-  );
-
-  if (bar === null) return null;
-
-  return (
-    // Sama ikona i liczba, tak jak w pasku na webie: cztery znaczniki z pełnym opisem zawijały
-    // się na drugi wiersz i spychały kursy w dół, a dziecko czyta z nich liczbę, nie zdanie.
-    // Słowa zostają w etykiecie dla czytnika ekranu.
-    <View style={styles.bar}>
-      {/* Każdy znacznik prowadzi tam, gdzie widać jego liczbę z bliska — dokładnie jak w pasku
-          na webie. Dlatego pod kursami nie ma już osobnych przycisków „Nagrody" i „Postępy":
-          były drugim wejściem w to samo, a stały najdalej, na samym dole ekranu. */}
-      <Chip label={`${plural(bar.points, POINTS)} — zobacz nagrody`} onPress={() => router.push('/nagrody')}>
-        ⭐ {bar.points}
-      </Chip>
-      <Chip
-        label={`seria: ${plural(bar.streak, DAYS)} nauki pod rząd — zobacz postępy`}
-        onPress={() => router.push('/statystyki')}
-      >
-        🔥 {bar.streak}
-      </Chip>
-      {bar.due > 0 && (
-        <Chip
-          label={`${plural(bar.due, WORDS)} do powtórki — zobacz postępy`}
-          onPress={() => router.push('/statystyki')}
-        >
-          🔁 {bar.due}
-        </Chip>
-      )}
-      {/* Bez punktów znacznika nie ma: dziecko przed pierwszym poziomem trudnym nie ma o czym
-          wiedzieć, a pasek ma zostać krótki. Wydaje się je na ekranie kursu, dotykając kłódki
-          z kluczykiem. */}
-      {bar.unlocks > 0 && <Chip label={plural(bar.unlocks, UNLOCKS)}>🔑 {bar.unlocks}</Chip>}
-    </View>
   );
 }
 
@@ -219,5 +159,4 @@ const styles = StyleSheet.create({
   courseDesc: { color: color.muted, fontSize: 16 },
   arrow: { color: color.brand, fontSize: 28 },
   lock: { color: color.muted, fontSize: 28 },
-  bar: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
 });

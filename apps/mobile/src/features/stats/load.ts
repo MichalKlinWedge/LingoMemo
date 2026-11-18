@@ -127,23 +127,25 @@ export async function dueWords(userId: string, today: string): Promise<number> {
   return count ?? 0;
 }
 
-export type BarData = { points: number; streak: number; due: number; unlocks: number };
+export type BarData = { name: string; points: number; streak: number; due: number; unlocks: number };
 
 /**
- * Pasek stanu: punkty, seria, zaległe powtórki i punkty odblokowania. Na webie wisi nad każdą
- * stroną (`apps/web/src/components/top-bar.tsx`); telefon nie ma wspólnego nagłówka, więc stoi
- * na ekranie kursów — pierwszym, który dziecko widzi po zalogowaniu i po każdej lekcji.
+ * Pasek stanu: imię, punkty, seria, zaległe powtórki i punkty odblokowania. Wisi nad każdym
+ * ekranem (`src/components/top-bar.tsx`), tak samo jak na webie
+ * (`apps/web/src/components/top-bar.tsx`).
  *
  * Błędu nie zwracamy, tak samo jak pasek na webie: to ozdoba nad treścią, a nie treść. Przy
  * nieudanym odczycie zostają zera, a ekran kursów pokazuje się normalnie.
  */
 export async function loadBar(userId: string): Promise<BarData> {
-  const [{ data: stats }, { data: unlock }] = await Promise.all([
+  const [{ data: profile }, { data: stats }, { data: unlock }] = await Promise.all([
+    supabase.from('profiles').select('display_name').eq('id', userId).maybeSingle(),
     supabase.from('v_my_stats').select('total_points, streak_days, words_due').eq('user_id', userId).maybeSingle(),
     supabase.rpc('unlock_status', { p_user: userId }),
   ]);
 
   return {
+    name: profile?.display_name ?? 'uczniu',
     points: stats?.total_points ?? 0,
     streak: stats?.streak_days ?? 0,
     due: stats?.words_due ?? 0,
