@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-it-starter",
+  "unit": { "slug": "ubrania", "title": "Ubrania", "icon": "👕", "sortOrder": 5 },
+  "lesson": {
+    "slug": "lato",
+    "title": "D’estate",
+    "icon": "🩳",
+    "kind": "standard",
+    "sortOrder": 4,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "zima",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"wear.shorts","tags":["🩳"],"terms":{"pl":[{"text":"szorty","pos":"noun"}],"it":[{"text":"pantaloncini","pos":"noun","ipa":"/pantalonˈtʃini/","article":"i"}]}},
+    {"key":"wear.swimsuit","tags":["🩱"],"terms":{"pl":[{"text":"kostium","pos":"noun"}],"it":[{"text":"costume","pos":"noun","ipa":"/kosˈtume/","article":"il","note":"„Il costume” to krótko kostium kąpielowy."}]}},
+    {"key":"wear.sunglasses","tags":["🕶️"],"terms":{"pl":[{"text":"okulary","pos":"noun"}],"it":[{"text":"occhiali","pos":"noun","ipa":"/okˈkjali/","article":"gli"}]}},
+    {"key":"wear.cap","tags":["🧢"],"terms":{"pl":[{"text":"czapeczka","pos":"noun"}],"it":[{"text":"cappellino","pos":"noun","ipa":"/kappelˈlino/","article":"il","note":"Końcówka „-ino” zdrabnia: „cappello” to czapka, „cappellino” czapeczka."}]}},
+    {"key":"wear.flipflops","tags":["🩴"],"terms":{"pl":[{"text":"klapki","pos":"noun"}],"it":[{"text":"infradito","pos":"noun","ipa":"/infraˈdito/","article":"le"}]}},
+    {"key":"wear.vest","tags":["🎽"],"terms":{"pl":[{"text":"podkoszulek","pos":"noun"}],"it":[{"text":"canottiera","pos":"noun","ipa":"/kanotˈtjɛra/","article":"la"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"wear.shorts","payload":{"prompt":"szorty","accepted":["pantaloncini","i pantaloncini"],"options":["pantaloncini","costume","occhiali","cappellino"]}},
+    {"type":"translate_ab","conceptKey":"wear.swimsuit","payload":{"prompt":"kostium","accepted":["costume","il costume"],"options":["costume","occhiali","cappellino","infradito"]}},
+    {"type":"translate_ab","conceptKey":"wear.sunglasses","payload":{"prompt":"okulary","accepted":["occhiali","gli occhiali"],"options":["occhiali","cappellino","infradito","canottiera"]}},
+    {"type":"translate_ab","conceptKey":"wear.cap","payload":{"prompt":"czapeczka","accepted":["cappellino","il cappellino"],"options":["cappellino","infradito","canottiera","pantaloncini"]}},
+    {"type":"translate_ab","conceptKey":"wear.flipflops","payload":{"prompt":"klapki","accepted":["infradito","le infradito"],"options":["infradito","canottiera","pantaloncini","costume"]}},
+    {"type":"translate_ab","conceptKey":"wear.vest","payload":{"prompt":"podkoszulek","accepted":["canottiera","la canottiera"],"options":["canottiera","pantaloncini","costume","occhiali"]}},
+    {"type":"translate_ba","conceptKey":"wear.shorts","payload":{"prompt":"pantaloncini","accepted":["szorty"]}},
+    {"type":"translate_ba","conceptKey":"wear.swimsuit","payload":{"prompt":"costume","accepted":["kostium"]}},
+    {"type":"translate_ba","conceptKey":"wear.sunglasses","payload":{"prompt":"occhiali","accepted":["okulary"]}},
+    {"type":"translate_ba","conceptKey":"wear.cap","payload":{"prompt":"cappellino","accepted":["czapeczka"]}},
+    {"type":"translate_ba","conceptKey":"wear.flipflops","payload":{"prompt":"infradito","accepted":["klapki"]}},
+    {"type":"translate_ba","conceptKey":"wear.vest","payload":{"prompt":"canottiera","accepted":["podkoszulek"]}},
+    {"type":"listening","conceptKey":"wear.shorts","points":15,"payload":{"speak":"pantaloncini","lang":"it-IT","accepted":["pantaloncini"]}},
+    {"type":"listening","conceptKey":"wear.sunglasses","points":15,"payload":{"speak":"occhiali","lang":"it-IT","accepted":["occhiali"]}},
+    {"type":"listening","conceptKey":"wear.flipflops","points":15,"payload":{"speak":"infradito","lang":"it-IT","accepted":["infradito"]}},
+    {"type":"listening","conceptKey":"wear.vest","points":15,"payload":{"speak":"canottiera","lang":"it-IT","accepted":["canottiera"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"szorty","b":"pantaloncini"},{"a":"kostium","b":"costume"},{"a":"okulary","b":"occhiali"},{"a":"czapeczka","b":"cappellino"},{"a":"klapki","b":"infradito"},{"a":"podkoszulek","b":"canottiera"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"it-IT","pairs":[{"a":"szorty","b":"pantaloncini"},{"a":"kostium","b":"costume"},{"a":"okulary","b":"occhiali"},{"a":"czapeczka","b":"cappellino"},{"a":"klapki","b":"infradito"}]}},
+    {"type":"fill_blank_choice","conceptKey":"wear.shorts","payload":{"sentence":"D’estate porto i {{blank}}.","options":["pantaloncini","stivali","guanti","maglione"],"answer":"pantaloncini","translation":"Latem noszę szorty."}},
+    {"type":"fill_blank_choice","conceptKey":"wear.sunglasses","payload":{"sentence":"Gli {{blank}} sono neri.","options":["occhiali","pantaloncini","calzini","sandali"],"answer":"occhiali","translation":"Okulary są czarne."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: Latem noszę klapki.","tokens":["d’estate","porto","le","infradito"],"solution":["d’estate","porto","le","infradito"]}},
+    {"type":"inflection","conceptKey":"wear.swimsuit","points":15,"payload":{"base":"costume","formLabel":"liczba mnoga","instruction":"Napisz po włosku: więcej niż jeden kostium.","accepted":["costumi"]}}
+  ]
+}

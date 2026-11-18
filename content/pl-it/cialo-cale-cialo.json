@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-it-starter",
+  "unit": { "slug": "cialo", "title": "Ciało", "icon": "🧍", "sortOrder": 4 },
+  "lesson": {
+    "slug": "cale-cialo",
+    "title": "Il corpo",
+    "icon": "🧍",
+    "kind": "standard",
+    "sortOrder": 3,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "rece-i-nogi",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"body.head","tags":["🙂"],"terms":{"pl":[{"text":"głowa","pos":"noun"}],"it":[{"text":"testa","pos":"noun","ipa":"/ˈtɛsta/","article":"la"}]}},
+    {"key":"body.neck","tags":["🧣"],"terms":{"pl":[{"text":"szyja","pos":"noun"}],"it":[{"text":"collo","pos":"noun","ipa":"/ˈkɔllo/","article":"il"}]}},
+    {"key":"body.shoulder","tags":["💪"],"terms":{"pl":[{"text":"bark","pos":"noun"}],"it":[{"text":"spalla","pos":"noun","ipa":"/ˈspalla/","article":"la"}]}},
+    {"key":"body.belly","tags":["🫄"],"terms":{"pl":[{"text":"brzuch","pos":"noun"}],"it":[{"text":"pancia","pos":"noun","ipa":"/ˈpantʃa/","article":"la"}]}},
+    {"key":"body.back","tags":["🧍"],"terms":{"pl":[{"text":"plecy","pos":"noun"}],"it":[{"text":"schiena","pos":"noun","ipa":"/ˈskjɛna/","article":"la","note":"„Schi” czyta się jak „ski”, a po włosku to jedna sztuka."}]}},
+    {"key":"body.heart","tags":["❤️"],"terms":{"pl":[{"text":"serce","pos":"noun"}],"it":[{"text":"cuore","pos":"noun","ipa":"/ˈkwɔre/","article":"il"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"body.head","payload":{"prompt":"głowa","accepted":["testa","la testa"],"options":["testa","collo","spalla","pancia"]}},
+    {"type":"translate_ab","conceptKey":"body.neck","payload":{"prompt":"szyja","accepted":["collo","il collo"],"options":["collo","spalla","pancia","schiena"]}},
+    {"type":"translate_ab","conceptKey":"body.shoulder","payload":{"prompt":"bark","accepted":["spalla","la spalla"],"options":["spalla","pancia","schiena","cuore"]}},
+    {"type":"translate_ab","conceptKey":"body.belly","payload":{"prompt":"brzuch","accepted":["pancia","la pancia"],"options":["pancia","schiena","cuore","testa"]}},
+    {"type":"translate_ab","conceptKey":"body.back","payload":{"prompt":"plecy","accepted":["schiena","la schiena"],"options":["schiena","cuore","testa","collo"]}},
+    {"type":"translate_ab","conceptKey":"body.heart","payload":{"prompt":"serce","accepted":["cuore","il cuore"],"options":["cuore","testa","collo","spalla"]}},
+    {"type":"translate_ba","conceptKey":"body.head","payload":{"prompt":"testa","accepted":["głowa"]}},
+    {"type":"translate_ba","conceptKey":"body.neck","payload":{"prompt":"collo","accepted":["szyja"]}},
+    {"type":"translate_ba","conceptKey":"body.shoulder","payload":{"prompt":"spalla","accepted":["bark"]}},
+    {"type":"translate_ba","conceptKey":"body.belly","payload":{"prompt":"pancia","accepted":["brzuch"]}},
+    {"type":"translate_ba","conceptKey":"body.back","payload":{"prompt":"schiena","accepted":["plecy"]}},
+    {"type":"translate_ba","conceptKey":"body.heart","payload":{"prompt":"cuore","accepted":["serce"]}},
+    {"type":"listening","conceptKey":"body.back","points":15,"payload":{"speak":"schiena","lang":"it-IT","accepted":["schiena"]}},
+    {"type":"listening","conceptKey":"body.belly","points":15,"payload":{"speak":"pancia","lang":"it-IT","accepted":["pancia"]}},
+    {"type":"listening","conceptKey":"body.heart","points":15,"payload":{"speak":"cuore","lang":"it-IT","accepted":["cuore"]}},
+    {"type":"listening","conceptKey":"body.shoulder","points":15,"payload":{"speak":"spalla","lang":"it-IT","accepted":["spalla"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"głowa","b":"testa"},{"a":"szyja","b":"collo"},{"a":"bark","b":"spalla"},{"a":"brzuch","b":"pancia"},{"a":"plecy","b":"schiena"},{"a":"serce","b":"cuore"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"it-IT","pairs":[{"a":"głowa","b":"testa"},{"a":"szyja","b":"collo"},{"a":"brzuch","b":"pancia"},{"a":"plecy","b":"schiena"},{"a":"serce","b":"cuore"}]}},
+    {"type":"fill_blank_choice","conceptKey":"body.head","payload":{"sentence":"La {{blank}} mi fa male.","options":["testa","pancia","schiena","spalla"],"answer":"testa","translation":"Boli mnie głowa."}},
+    {"type":"fill_blank_choice","conceptKey":"body.heart","payload":{"sentence":"Il {{blank}} batte.","options":["cuore","collo","piede","dente"],"answer":"cuore","translation":"Serce bije."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: Boli mnie brzuch.","tokens":["mi","fa","male","la","pancia"],"solution":["mi","fa","male","la","pancia"]}},
+    {"type":"inflection","conceptKey":"body.shoulder","points":15,"payload":{"base":"spalla","formLabel":"liczba mnoga","instruction":"Napisz po włosku: więcej niż jeden bark.","accepted":["spalle"]}}
+  ]
+}

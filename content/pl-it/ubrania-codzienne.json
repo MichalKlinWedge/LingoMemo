@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-it-starter",
+  "unit": { "slug": "ubrania", "title": "Ubrania", "icon": "👕", "sortOrder": 5 },
+  "lesson": {
+    "slug": "codzienne",
+    "title": "Ogni giorno",
+    "icon": "👕",
+    "kind": "standard",
+    "sortOrder": 1,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "cialo/jak-sie-czujesz",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"wear.tshirt","tags":["👕"],"terms":{"pl":[{"text":"koszulka","pos":"noun"}],"it":[{"text":"maglietta","pos":"noun","ipa":"/maʎˈʎetta/","article":"la","note":"„Gli” czyta się jak „lji”."}]}},
+    {"key":"wear.trousers","tags":["👖"],"terms":{"pl":[{"text":"spodnie","pos":"noun"}],"it":[{"text":"pantaloni","pos":"noun","ipa":"/pantaˈloni/","article":"i","note":"Zawsze w liczbie mnogiej: „i pantaloni”."}]}},
+    {"key":"wear.skirt","tags":["👗"],"terms":{"pl":[{"text":"spódnica","pos":"noun"}],"it":[{"text":"gonna","pos":"noun","ipa":"/ˈɡonna/","article":"la"}]}},
+    {"key":"wear.dress","tags":["👚"],"terms":{"pl":[{"text":"sukienka","pos":"noun"}],"it":[{"text":"vestito","pos":"noun","ipa":"/vesˈtito/","article":"il"}]}},
+    {"key":"wear.hoodie","tags":["🧥"],"terms":{"pl":[{"text":"bluza","pos":"noun"}],"it":[{"text":"felpa","pos":"noun","ipa":"/ˈfelpa/","article":"la"}]}},
+    {"key":"wear.shirt","tags":["👔"],"terms":{"pl":[{"text":"koszula","pos":"noun"}],"it":[{"text":"camicia","pos":"noun","ipa":"/kaˈmitʃa/","article":"la","note":"„Ci” czyta się jak „czi”."}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"wear.tshirt","payload":{"prompt":"koszulka","accepted":["maglietta","la maglietta"],"options":["maglietta","pantaloni","gonna","vestito"]}},
+    {"type":"translate_ab","conceptKey":"wear.trousers","payload":{"prompt":"spodnie","accepted":["pantaloni","i pantaloni"],"options":["pantaloni","gonna","vestito","felpa"]}},
+    {"type":"translate_ab","conceptKey":"wear.skirt","payload":{"prompt":"spódnica","accepted":["gonna","la gonna"],"options":["gonna","vestito","felpa","camicia"]}},
+    {"type":"translate_ab","conceptKey":"wear.dress","payload":{"prompt":"sukienka","accepted":["vestito","il vestito"],"options":["vestito","felpa","camicia","maglietta"]}},
+    {"type":"translate_ab","conceptKey":"wear.hoodie","payload":{"prompt":"bluza","accepted":["felpa","la felpa"],"options":["felpa","camicia","maglietta","pantaloni"]}},
+    {"type":"translate_ab","conceptKey":"wear.shirt","payload":{"prompt":"koszula","accepted":["camicia","la camicia"],"options":["camicia","maglietta","pantaloni","gonna"]}},
+    {"type":"translate_ba","conceptKey":"wear.tshirt","payload":{"prompt":"maglietta","accepted":["koszulka"]}},
+    {"type":"translate_ba","conceptKey":"wear.trousers","payload":{"prompt":"pantaloni","accepted":["spodnie"]}},
+    {"type":"translate_ba","conceptKey":"wear.skirt","payload":{"prompt":"gonna","accepted":["spódnica"]}},
+    {"type":"translate_ba","conceptKey":"wear.dress","payload":{"prompt":"vestito","accepted":["sukienka"]}},
+    {"type":"translate_ba","conceptKey":"wear.hoodie","payload":{"prompt":"felpa","accepted":["bluza"]}},
+    {"type":"translate_ba","conceptKey":"wear.shirt","payload":{"prompt":"camicia","accepted":["koszula"]}},
+    {"type":"listening","conceptKey":"wear.tshirt","points":15,"payload":{"speak":"maglietta","lang":"it-IT","accepted":["maglietta"]}},
+    {"type":"listening","conceptKey":"wear.shirt","points":15,"payload":{"speak":"camicia","lang":"it-IT","accepted":["camicia"]}},
+    {"type":"listening","conceptKey":"wear.skirt","points":15,"payload":{"speak":"gonna","lang":"it-IT","accepted":["gonna"]}},
+    {"type":"listening","conceptKey":"wear.hoodie","points":15,"payload":{"speak":"felpa","lang":"it-IT","accepted":["felpa"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"koszulka","b":"maglietta"},{"a":"spodnie","b":"pantaloni"},{"a":"spódnica","b":"gonna"},{"a":"sukienka","b":"vestito"},{"a":"bluza","b":"felpa"},{"a":"koszula","b":"camicia"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"it-IT","pairs":[{"a":"koszulka","b":"maglietta"},{"a":"spodnie","b":"pantaloni"},{"a":"spódnica","b":"gonna"},{"a":"sukienka","b":"vestito"},{"a":"koszula","b":"camicia"}]}},
+    {"type":"fill_blank_choice","conceptKey":"wear.tshirt","payload":{"sentence":"La {{blank}} è rossa.","options":["maglietta","gonna","felpa","camicia"],"answer":"maglietta","translation":"Koszulka jest czerwona."}},
+    {"type":"fill_blank_choice","conceptKey":"wear.trousers","payload":{"sentence":"Porto i {{blank}} blu.","options":["pantaloni","vestito","gonna","felpa"],"answer":"pantaloni","translation":"Noszę niebieskie spodnie."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: Koszulka jest zielona.","tokens":["la","maglietta","è","verde"],"solution":["la","maglietta","è","verde"]}},
+    {"type":"inflection","conceptKey":"wear.skirt","points":15,"payload":{"base":"gonna","formLabel":"liczba mnoga","instruction":"Napisz po włosku: więcej niż jedna spódnica.","accepted":["gonne"]}}
+  ]
+}

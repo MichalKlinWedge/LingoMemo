@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-it-starter",
+  "unit": { "slug": "cialo", "title": "Ciało", "icon": "🧍", "sortOrder": 4 },
+  "lesson": {
+    "slug": "twarz",
+    "title": "Il viso",
+    "icon": "😀",
+    "kind": "standard",
+    "sortOrder": 1,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "dom/w-ogrodzie",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"body.eye","tags":["👁️"],"terms":{"pl":[{"text":"oko","pos":"noun"}],"it":[{"text":"occhio","pos":"noun","ipa":"/ˈɔkkjo/","article":"l'","note":"„Cchi” czyta się jak „kki”."}]}},
+    {"key":"body.nose","tags":["👃"],"terms":{"pl":[{"text":"nos","pos":"noun"}],"it":[{"text":"naso","pos":"noun","ipa":"/ˈnazo/","article":"il"}]}},
+    {"key":"body.mouth","tags":["👄"],"terms":{"pl":[{"text":"usta","pos":"noun"}],"it":[{"text":"bocca","pos":"noun","ipa":"/ˈbokka/","article":"la","note":"Po włosku jedna sztuka: „la bocca”."}]}},
+    {"key":"body.ear","tags":["👂"],"terms":{"pl":[{"text":"ucho","pos":"noun"}],"it":[{"text":"orecchio","pos":"noun","ipa":"/oˈrekkjo/","article":"l'"}]}},
+    {"key":"body.tooth","tags":["🦷"],"terms":{"pl":[{"text":"ząb","pos":"noun"}],"it":[{"text":"dente","pos":"noun","ipa":"/ˈdɛnte/","article":"il"}]}},
+    {"key":"body.hair","tags":["💇"],"terms":{"pl":[{"text":"włosy","pos":"noun"}],"it":[{"text":"capelli","pos":"noun","ipa":"/kaˈpelli/","article":"i","note":"Zawsze w liczbie mnogiej: „i capelli”."}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"body.eye","payload":{"prompt":"oko","accepted":["occhio","l'occhio"],"options":["occhio","naso","bocca","orecchio"]}},
+    {"type":"translate_ab","conceptKey":"body.nose","payload":{"prompt":"nos","accepted":["naso","il naso"],"options":["naso","bocca","orecchio","dente"]}},
+    {"type":"translate_ab","conceptKey":"body.mouth","payload":{"prompt":"usta","accepted":["bocca","la bocca"],"options":["bocca","orecchio","dente","capelli"]}},
+    {"type":"translate_ab","conceptKey":"body.ear","payload":{"prompt":"ucho","accepted":["orecchio","l'orecchio"],"options":["orecchio","dente","capelli","occhio"]}},
+    {"type":"translate_ab","conceptKey":"body.tooth","payload":{"prompt":"ząb","accepted":["dente","il dente"],"options":["dente","capelli","occhio","naso"]}},
+    {"type":"translate_ab","conceptKey":"body.hair","payload":{"prompt":"włosy","accepted":["capelli","i capelli"],"options":["capelli","occhio","naso","bocca"]}},
+    {"type":"translate_ba","conceptKey":"body.eye","payload":{"prompt":"occhio","accepted":["oko"]}},
+    {"type":"translate_ba","conceptKey":"body.nose","payload":{"prompt":"naso","accepted":["nos"]}},
+    {"type":"translate_ba","conceptKey":"body.mouth","payload":{"prompt":"bocca","accepted":["usta"]}},
+    {"type":"translate_ba","conceptKey":"body.ear","payload":{"prompt":"orecchio","accepted":["ucho"]}},
+    {"type":"translate_ba","conceptKey":"body.tooth","payload":{"prompt":"dente","accepted":["ząb"]}},
+    {"type":"translate_ba","conceptKey":"body.hair","payload":{"prompt":"capelli","accepted":["włosy"]}},
+    {"type":"listening","conceptKey":"body.eye","points":15,"payload":{"speak":"occhio","lang":"it-IT","accepted":["occhio"]}},
+    {"type":"listening","conceptKey":"body.ear","points":15,"payload":{"speak":"orecchio","lang":"it-IT","accepted":["orecchio"]}},
+    {"type":"listening","conceptKey":"body.mouth","points":15,"payload":{"speak":"bocca","lang":"it-IT","accepted":["bocca"]}},
+    {"type":"listening","conceptKey":"body.tooth","points":15,"payload":{"speak":"dente","lang":"it-IT","accepted":["dente"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"oko","b":"occhio"},{"a":"nos","b":"naso"},{"a":"usta","b":"bocca"},{"a":"ucho","b":"orecchio"},{"a":"ząb","b":"dente"},{"a":"włosy","b":"capelli"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"it-IT","pairs":[{"a":"oko","b":"occhio"},{"a":"nos","b":"naso"},{"a":"usta","b":"bocca"},{"a":"ząb","b":"dente"},{"a":"włosy","b":"capelli"}]}},
+    {"type":"fill_blank_choice","conceptKey":"body.nose","payload":{"sentence":"Il {{blank}} è piccolo.","options":["naso","dente","occhio","orecchio"],"answer":"naso","translation":"Nos jest mały."}},
+    {"type":"fill_blank_choice","conceptKey":"body.mouth","payload":{"sentence":"La {{blank}} è grande.","options":["bocca","naso","dente","capelli"],"answer":"bocca","translation":"Usta są duże."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: Mam niebieskie oczy.","tokens":["ho","gli","occhi","blu"],"solution":["ho","gli","occhi","blu"]}},
+    {"type":"inflection","conceptKey":"body.tooth","points":15,"payload":{"base":"dente","formLabel":"liczba mnoga","instruction":"Napisz po włosku: więcej niż jeden ząb.","accepted":["denti"]}}
+  ]
+}

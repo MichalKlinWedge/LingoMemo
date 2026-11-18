@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-it-starter",
+  "unit": { "slug": "dom", "title": "Dom", "icon": "🏠", "sortOrder": 3 },
+  "lesson": {
+    "slug": "w-kuchni",
+    "title": "In cucina",
+    "icon": "🍽️",
+    "kind": "standard",
+    "sortOrder": 2,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "pokoje",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"home.table","tags":["🪑"],"terms":{"pl":[{"text":"stół","pos":"noun"}],"it":[{"text":"tavolo","pos":"noun","ipa":"/ˈtavolo/","article":"il"}]}},
+    {"key":"home.chair","tags":["🪑"],"terms":{"pl":[{"text":"krzesło","pos":"noun"}],"it":[{"text":"sedia","pos":"noun","ipa":"/ˈsɛdja/","article":"la"}]}},
+    {"key":"home.plate","tags":["🍽️"],"terms":{"pl":[{"text":"talerz","pos":"noun"}],"it":[{"text":"piatto","pos":"noun","ipa":"/ˈpjatto/","article":"il"}]}},
+    {"key":"home.glass","tags":["🥛"],"terms":{"pl":[{"text":"szklanka","pos":"noun"}],"it":[{"text":"bicchiere","pos":"noun","ipa":"/bikˈkjɛre/","article":"il","note":"„Cchi” czyta się jak „kki”."}]}},
+    {"key":"home.fork","tags":["🍴"],"terms":{"pl":[{"text":"widelec","pos":"noun"}],"it":[{"text":"forchetta","pos":"noun","ipa":"/forˈketta/","article":"la","note":"„Che” czyta się jak „ke”."}]}},
+    {"key":"home.spoon","tags":["🥄"],"terms":{"pl":[{"text":"łyżka","pos":"noun"}],"it":[{"text":"cucchiaio","pos":"noun","ipa":"/kukˈkjajo/","article":"il"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"home.table","payload":{"prompt":"stół","accepted":["tavolo","il tavolo"],"options":["tavolo","sedia","piatto","bicchiere"]}},
+    {"type":"translate_ab","conceptKey":"home.chair","payload":{"prompt":"krzesło","accepted":["sedia","la sedia"],"options":["sedia","piatto","bicchiere","forchetta"]}},
+    {"type":"translate_ab","conceptKey":"home.plate","payload":{"prompt":"talerz","accepted":["piatto","il piatto"],"options":["piatto","bicchiere","forchetta","cucchiaio"]}},
+    {"type":"translate_ab","conceptKey":"home.glass","payload":{"prompt":"szklanka","accepted":["bicchiere","il bicchiere"],"options":["bicchiere","forchetta","cucchiaio","tavolo"]}},
+    {"type":"translate_ab","conceptKey":"home.fork","payload":{"prompt":"widelec","accepted":["forchetta","la forchetta"],"options":["forchetta","cucchiaio","tavolo","sedia"]}},
+    {"type":"translate_ab","conceptKey":"home.spoon","payload":{"prompt":"łyżka","accepted":["cucchiaio","il cucchiaio"],"options":["cucchiaio","tavolo","sedia","piatto"]}},
+    {"type":"translate_ba","conceptKey":"home.table","payload":{"prompt":"tavolo","accepted":["stół"]}},
+    {"type":"translate_ba","conceptKey":"home.chair","payload":{"prompt":"sedia","accepted":["krzesło"]}},
+    {"type":"translate_ba","conceptKey":"home.plate","payload":{"prompt":"piatto","accepted":["talerz"]}},
+    {"type":"translate_ba","conceptKey":"home.glass","payload":{"prompt":"bicchiere","accepted":["szklanka"]}},
+    {"type":"translate_ba","conceptKey":"home.fork","payload":{"prompt":"forchetta","accepted":["widelec"]}},
+    {"type":"translate_ba","conceptKey":"home.spoon","payload":{"prompt":"cucchiaio","accepted":["łyżka"]}},
+    {"type":"listening","conceptKey":"home.glass","points":15,"payload":{"speak":"bicchiere","lang":"it-IT","accepted":["bicchiere"]}},
+    {"type":"listening","conceptKey":"home.fork","points":15,"payload":{"speak":"forchetta","lang":"it-IT","accepted":["forchetta"]}},
+    {"type":"listening","conceptKey":"home.spoon","points":15,"payload":{"speak":"cucchiaio","lang":"it-IT","accepted":["cucchiaio"]}},
+    {"type":"listening","conceptKey":"home.chair","points":15,"payload":{"speak":"sedia","lang":"it-IT","accepted":["sedia"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"stół","b":"tavolo"},{"a":"krzesło","b":"sedia"},{"a":"talerz","b":"piatto"},{"a":"szklanka","b":"bicchiere"},{"a":"widelec","b":"forchetta"},{"a":"łyżka","b":"cucchiaio"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"it-IT","pairs":[{"a":"stół","b":"tavolo"},{"a":"krzesło","b":"sedia"},{"a":"talerz","b":"piatto"},{"a":"widelec","b":"forchetta"},{"a":"łyżka","b":"cucchiaio"}]}},
+    {"type":"fill_blank_choice","conceptKey":"home.plate","payload":{"sentence":"Il {{blank}} è sul tavolo.","options":["piatto","bicchiere","sedia","cucchiaio"],"answer":"piatto","translation":"Talerz jest na stole."}},
+    {"type":"fill_blank_choice","conceptKey":"home.spoon","payload":{"sentence":"Mangio la zuppa con il {{blank}}.","options":["cucchiaio","forchetta","piatto","bicchiere"],"answer":"cucchiaio","translation":"Jem zupę łyżką."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: Szklanka jest na stole.","tokens":["il","bicchiere","è","sul","tavolo"],"solution":["il","bicchiere","è","sul","tavolo"]}},
+    {"type":"inflection","conceptKey":"home.chair","points":15,"payload":{"base":"sedia","formLabel":"liczba mnoga","instruction":"Napisz po włosku: więcej niż jedno krzesło.","accepted":["sedie"]}}
+  ]
+}

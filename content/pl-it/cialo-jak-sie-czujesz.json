@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-it-starter",
+  "unit": { "slug": "cialo", "title": "Ciało", "icon": "🧍", "sortOrder": 4 },
+  "lesson": {
+    "slug": "jak-sie-czujesz",
+    "title": "Come stai?",
+    "icon": "🙂",
+    "kind": "standard",
+    "sortOrder": 5,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "u-lekarza",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"feel.happy","tags":["😀"],"terms":{"pl":[{"text":"wesoły","pos":"adjective"}],"it":[{"text":"felice","pos":"adjective","ipa":"/feˈlitʃe/"}]}},
+    {"key":"feel.sad","tags":["😢"],"terms":{"pl":[{"text":"smutny","pos":"adjective"}],"it":[{"text":"triste","pos":"adjective","ipa":"/ˈtriste/"}]}},
+    {"key":"feel.tired","tags":["😴"],"terms":{"pl":[{"text":"zmęczony","pos":"adjective"}],"it":[{"text":"stanco","pos":"adjective","ipa":"/ˈstanko/"}]}},
+    {"key":"feel.angry","tags":["😠"],"terms":{"pl":[{"text":"zły","pos":"adjective"}],"it":[{"text":"arrabbiato","pos":"adjective","ipa":"/arrabˈbjato/"}]}},
+    {"key":"feel.hungry","tags":["🍽️"],"terms":{"pl":[{"text":"głodny","pos":"adjective"}],"it":[{"text":"affamato","pos":"adjective","ipa":"/affaˈmato/"}]}},
+    {"key":"feel.scared","tags":["😨"],"terms":{"pl":[{"text":"przestraszony","pos":"adjective"}],"it":[{"text":"spaventato","pos":"adjective","ipa":"/spavenˈtato/"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"feel.happy","payload":{"prompt":"wesoły","accepted":["felice","felice"],"options":["felice","triste","stanco","arrabbiato"]}},
+    {"type":"translate_ab","conceptKey":"feel.sad","payload":{"prompt":"smutny","accepted":["triste","triste"],"options":["triste","stanco","arrabbiato","affamato"]}},
+    {"type":"translate_ab","conceptKey":"feel.tired","payload":{"prompt":"zmęczony","accepted":["stanco","stanco"],"options":["stanco","arrabbiato","affamato","spaventato"]}},
+    {"type":"translate_ab","conceptKey":"feel.angry","payload":{"prompt":"zły","accepted":["arrabbiato","arrabbiato"],"options":["arrabbiato","affamato","spaventato","felice"]}},
+    {"type":"translate_ab","conceptKey":"feel.hungry","payload":{"prompt":"głodny","accepted":["affamato","affamato"],"options":["affamato","spaventato","felice","triste"]}},
+    {"type":"translate_ab","conceptKey":"feel.scared","payload":{"prompt":"przestraszony","accepted":["spaventato","spaventato"],"options":["spaventato","felice","triste","stanco"]}},
+    {"type":"translate_ba","conceptKey":"feel.happy","payload":{"prompt":"felice","accepted":["wesoły"]}},
+    {"type":"translate_ba","conceptKey":"feel.sad","payload":{"prompt":"triste","accepted":["smutny"]}},
+    {"type":"translate_ba","conceptKey":"feel.tired","payload":{"prompt":"stanco","accepted":["zmęczony"]}},
+    {"type":"translate_ba","conceptKey":"feel.angry","payload":{"prompt":"arrabbiato","accepted":["zły"]}},
+    {"type":"translate_ba","conceptKey":"feel.hungry","payload":{"prompt":"affamato","accepted":["głodny"]}},
+    {"type":"translate_ba","conceptKey":"feel.scared","payload":{"prompt":"spaventato","accepted":["przestraszony"]}},
+    {"type":"listening","conceptKey":"feel.happy","points":15,"payload":{"speak":"felice","lang":"it-IT","accepted":["felice"]}},
+    {"type":"listening","conceptKey":"feel.angry","points":15,"payload":{"speak":"arrabbiato","lang":"it-IT","accepted":["arrabbiato"]}},
+    {"type":"listening","conceptKey":"feel.scared","points":15,"payload":{"speak":"spaventato","lang":"it-IT","accepted":["spaventato"]}},
+    {"type":"listening","conceptKey":"feel.tired","points":15,"payload":{"speak":"stanco","lang":"it-IT","accepted":["stanco"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"wesoły","b":"felice"},{"a":"smutny","b":"triste"},{"a":"zmęczony","b":"stanco"},{"a":"zły","b":"arrabbiato"},{"a":"głodny","b":"affamato"},{"a":"przestraszony","b":"spaventato"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"it-IT","pairs":[{"a":"wesoły","b":"felice"},{"a":"smutny","b":"triste"},{"a":"zmęczony","b":"stanco"},{"a":"zły","b":"arrabbiato"},{"a":"głodny","b":"affamato"}]}},
+    {"type":"fill_blank_choice","conceptKey":"feel.happy","payload":{"sentence":"Sono {{blank}} perché ho vinto.","options":["felice","triste","stanco","arrabbiato"],"answer":"felice","translation":"Jestem wesoły, bo wygrałem."}},
+    {"type":"fill_blank_choice","conceptKey":"feel.tired","payload":{"sentence":"Sono {{blank}}, vado a dormire.","options":["stanco","felice","affamato","spaventato"],"answer":"stanco","translation":"Jestem zmęczony, idę spać."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: Dziś jestem bardzo wesoły.","tokens":["oggi","sono","molto","felice"],"solution":["oggi","sono","molto","felice"]}},
+    {"type":"inflection","conceptKey":"feel.tired","points":15,"payload":{"base":"stanco","formLabel":"liczba mnoga","instruction":"Napisz po włosku: zmęczona dziewczynka mówi o sobie.","accepted":["stanca"]}}
+  ]
+}

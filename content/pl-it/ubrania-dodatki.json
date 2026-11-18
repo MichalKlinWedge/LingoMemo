@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-it-starter",
+  "unit": { "slug": "ubrania", "title": "Ubrania", "icon": "👕", "sortOrder": 5 },
+  "lesson": {
+    "slug": "dodatki",
+    "title": "Gli accessori",
+    "icon": "🎒",
+    "kind": "standard",
+    "sortOrder": 5,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "lato",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"wear.backpack","tags":["🎒"],"terms":{"pl":[{"text":"plecak","pos":"noun"}],"it":[{"text":"zaino","pos":"noun","ipa":"/ˈdzaino/","article":"lo","note":"Przed „z” rodzajnik brzmi „lo”, nie „il”."}]}},
+    {"key":"wear.bag","tags":["👜"],"terms":{"pl":[{"text":"torba","pos":"noun"}],"it":[{"text":"borsa","pos":"noun","ipa":"/ˈborsa/","article":"la"}]}},
+    {"key":"wear.belt","tags":["🪢"],"terms":{"pl":[{"text":"pasek","pos":"noun"}],"it":[{"text":"cintura","pos":"noun","ipa":"/tʃinˈtura/","article":"la"}]}},
+    {"key":"wear.watch","tags":["⌚"],"terms":{"pl":[{"text":"zegarek","pos":"noun"}],"it":[{"text":"orologio","pos":"noun","ipa":"/oroˈlɔdʒo/","article":"l'"}]}},
+    {"key":"wear.umbrella","tags":["☂️"],"terms":{"pl":[{"text":"parasol","pos":"noun"}],"it":[{"text":"ombrello","pos":"noun","ipa":"/omˈbrɛllo/","article":"l'"}]}},
+    {"key":"wear.button","tags":["🔘"],"terms":{"pl":[{"text":"guzik","pos":"noun"}],"it":[{"text":"bottone","pos":"noun","ipa":"/botˈtone/","article":"il"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"wear.backpack","payload":{"prompt":"plecak","accepted":["zaino","lo zaino"],"options":["zaino","borsa","cintura","orologio"]}},
+    {"type":"translate_ab","conceptKey":"wear.bag","payload":{"prompt":"torba","accepted":["borsa","la borsa"],"options":["borsa","cintura","orologio","ombrello"]}},
+    {"type":"translate_ab","conceptKey":"wear.belt","payload":{"prompt":"pasek","accepted":["cintura","la cintura"],"options":["cintura","orologio","ombrello","bottone"]}},
+    {"type":"translate_ab","conceptKey":"wear.watch","payload":{"prompt":"zegarek","accepted":["orologio","l'orologio"],"options":["orologio","ombrello","bottone","zaino"]}},
+    {"type":"translate_ab","conceptKey":"wear.umbrella","payload":{"prompt":"parasol","accepted":["ombrello","l'ombrello"],"options":["ombrello","bottone","zaino","borsa"]}},
+    {"type":"translate_ab","conceptKey":"wear.button","payload":{"prompt":"guzik","accepted":["bottone","il bottone"],"options":["bottone","zaino","borsa","cintura"]}},
+    {"type":"translate_ba","conceptKey":"wear.backpack","payload":{"prompt":"zaino","accepted":["plecak"]}},
+    {"type":"translate_ba","conceptKey":"wear.bag","payload":{"prompt":"borsa","accepted":["torba"]}},
+    {"type":"translate_ba","conceptKey":"wear.belt","payload":{"prompt":"cintura","accepted":["pasek"]}},
+    {"type":"translate_ba","conceptKey":"wear.watch","payload":{"prompt":"orologio","accepted":["zegarek"]}},
+    {"type":"translate_ba","conceptKey":"wear.umbrella","payload":{"prompt":"ombrello","accepted":["parasol"]}},
+    {"type":"translate_ba","conceptKey":"wear.button","payload":{"prompt":"bottone","accepted":["guzik"]}},
+    {"type":"listening","conceptKey":"wear.backpack","points":15,"payload":{"speak":"zaino","lang":"it-IT","accepted":["zaino"]}},
+    {"type":"listening","conceptKey":"wear.belt","points":15,"payload":{"speak":"cintura","lang":"it-IT","accepted":["cintura"]}},
+    {"type":"listening","conceptKey":"wear.watch","points":15,"payload":{"speak":"orologio","lang":"it-IT","accepted":["orologio"]}},
+    {"type":"listening","conceptKey":"wear.umbrella","points":15,"payload":{"speak":"ombrello","lang":"it-IT","accepted":["ombrello"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"plecak","b":"zaino"},{"a":"torba","b":"borsa"},{"a":"pasek","b":"cintura"},{"a":"zegarek","b":"orologio"},{"a":"parasol","b":"ombrello"},{"a":"guzik","b":"bottone"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"it-IT","pairs":[{"a":"plecak","b":"zaino"},{"a":"torba","b":"borsa"},{"a":"zegarek","b":"orologio"},{"a":"parasol","b":"ombrello"},{"a":"guzik","b":"bottone"}]}},
+    {"type":"fill_blank_choice","conceptKey":"wear.backpack","payload":{"sentence":"Lo {{blank}} è pesante.","options":["zaino","orologio","ombrello","bottone"],"answer":"zaino","translation":"Plecak jest ciężki."}},
+    {"type":"fill_blank_choice","conceptKey":"wear.umbrella","payload":{"sentence":"Piove, prendo l’{{blank}}.","options":["ombrello","orologio","zaino","cintura"],"answer":"ombrello","translation":"Pada, biorę parasol."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: Mój plecak jest czerwony.","tokens":["il","mio","zaino","è","rosso"],"solution":["il","mio","zaino","è","rosso"]}},
+    {"type":"inflection","conceptKey":"wear.button","points":15,"payload":{"base":"bottone","formLabel":"liczba mnoga","instruction":"Napisz po włosku: więcej niż jeden guzik.","accepted":["bottoni"]}}
+  ]
+}

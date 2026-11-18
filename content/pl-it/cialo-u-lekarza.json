@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-it-starter",
+  "unit": { "slug": "cialo", "title": "Ciało", "icon": "🧍", "sortOrder": 4 },
+  "lesson": {
+    "slug": "u-lekarza",
+    "title": "Dal dottore",
+    "icon": "🩺",
+    "kind": "standard",
+    "sortOrder": 4,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "cale-cialo",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"health.doctor","tags":["🩺"],"terms":{"pl":[{"text":"lekarz","pos":"noun"}],"it":[{"text":"dottore","pos":"noun","ipa":"/dotˈtore/","article":"il"}]}},
+    {"key":"health.nurse","tags":["💉"],"terms":{"pl":[{"text":"pielęgniarka","pos":"noun"}],"it":[{"text":"infermiera","pos":"noun","ipa":"/inferˈmjɛra/","article":"l'"}]}},
+    {"key":"health.medicine","tags":["💊"],"terms":{"pl":[{"text":"lekarstwo","pos":"noun"}],"it":[{"text":"medicina","pos":"noun","ipa":"/mediˈtʃina/","article":"la"}]}},
+    {"key":"health.fever","tags":["🤒"],"terms":{"pl":[{"text":"gorączka","pos":"noun"}],"it":[{"text":"febbre","pos":"noun","ipa":"/ˈfebbre/","article":"la"}]}},
+    {"key":"health.plaster","tags":["🩹"],"terms":{"pl":[{"text":"plaster","pos":"noun"}],"it":[{"text":"cerotto","pos":"noun","ipa":"/tʃeˈrɔtto/","article":"il","note":"„Ce” czyta się jak „cze”."}]}},
+    {"key":"health.hospital","tags":["🏥"],"terms":{"pl":[{"text":"szpital","pos":"noun"}],"it":[{"text":"ospedale","pos":"noun","ipa":"/ospeˈdale/","article":"l'"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"health.doctor","payload":{"prompt":"lekarz","accepted":["dottore","il dottore"],"options":["dottore","infermiera","medicina","febbre"]}},
+    {"type":"translate_ab","conceptKey":"health.nurse","payload":{"prompt":"pielęgniarka","accepted":["infermiera","l'infermiera"],"options":["infermiera","medicina","febbre","cerotto"]}},
+    {"type":"translate_ab","conceptKey":"health.medicine","payload":{"prompt":"lekarstwo","accepted":["medicina","la medicina"],"options":["medicina","febbre","cerotto","ospedale"]}},
+    {"type":"translate_ab","conceptKey":"health.fever","payload":{"prompt":"gorączka","accepted":["febbre","la febbre"],"options":["febbre","cerotto","ospedale","dottore"]}},
+    {"type":"translate_ab","conceptKey":"health.plaster","payload":{"prompt":"plaster","accepted":["cerotto","il cerotto"],"options":["cerotto","ospedale","dottore","infermiera"]}},
+    {"type":"translate_ab","conceptKey":"health.hospital","payload":{"prompt":"szpital","accepted":["ospedale","l'ospedale"],"options":["ospedale","dottore","infermiera","medicina"]}},
+    {"type":"translate_ba","conceptKey":"health.doctor","payload":{"prompt":"dottore","accepted":["lekarz"]}},
+    {"type":"translate_ba","conceptKey":"health.nurse","payload":{"prompt":"infermiera","accepted":["pielęgniarka"]}},
+    {"type":"translate_ba","conceptKey":"health.medicine","payload":{"prompt":"medicina","accepted":["lekarstwo"]}},
+    {"type":"translate_ba","conceptKey":"health.fever","payload":{"prompt":"febbre","accepted":["gorączka"]}},
+    {"type":"translate_ba","conceptKey":"health.plaster","payload":{"prompt":"cerotto","accepted":["plaster"]}},
+    {"type":"translate_ba","conceptKey":"health.hospital","payload":{"prompt":"ospedale","accepted":["szpital"]}},
+    {"type":"listening","conceptKey":"health.nurse","points":15,"payload":{"speak":"infermiera","lang":"it-IT","accepted":["infermiera"]}},
+    {"type":"listening","conceptKey":"health.medicine","points":15,"payload":{"speak":"medicina","lang":"it-IT","accepted":["medicina"]}},
+    {"type":"listening","conceptKey":"health.plaster","points":15,"payload":{"speak":"cerotto","lang":"it-IT","accepted":["cerotto"]}},
+    {"type":"listening","conceptKey":"health.hospital","points":15,"payload":{"speak":"ospedale","lang":"it-IT","accepted":["ospedale"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"lekarz","b":"dottore"},{"a":"pielęgniarka","b":"infermiera"},{"a":"lekarstwo","b":"medicina"},{"a":"gorączka","b":"febbre"},{"a":"plaster","b":"cerotto"},{"a":"szpital","b":"ospedale"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"it-IT","pairs":[{"a":"lekarz","b":"dottore"},{"a":"lekarstwo","b":"medicina"},{"a":"gorączka","b":"febbre"},{"a":"plaster","b":"cerotto"},{"a":"szpital","b":"ospedale"}]}},
+    {"type":"fill_blank_choice","conceptKey":"health.doctor","payload":{"sentence":"Il {{blank}} mi visita.","options":["dottore","cerotto","ospedale","febbre"],"answer":"dottore","translation":"Lekarz mnie bada."}},
+    {"type":"fill_blank_choice","conceptKey":"health.fever","payload":{"sentence":"Ho la {{blank}}.","options":["febbre","medicina","infermiera","testa"],"answer":"febbre","translation":"Mam gorączkę."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: Mam dziś gorączkę.","tokens":["oggi","ho","la","febbre"],"solution":["oggi","ho","la","febbre"]}},
+    {"type":"inflection","conceptKey":"health.doctor","points":15,"payload":{"base":"dottore","formLabel":"liczba mnoga","instruction":"Napisz po włosku: więcej niż jeden lekarz.","accepted":["dottori"]}}
+  ]
+}

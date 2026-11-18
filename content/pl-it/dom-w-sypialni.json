@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-it-starter",
+  "unit": { "slug": "dom", "title": "Dom", "icon": "🏠", "sortOrder": 3 },
+  "lesson": {
+    "slug": "w-sypialni",
+    "title": "In camera",
+    "icon": "🛏️",
+    "kind": "standard",
+    "sortOrder": 3,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "w-kuchni",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"home.bed","tags":["🛏️"],"terms":{"pl":[{"text":"łóżko","pos":"noun"}],"it":[{"text":"letto","pos":"noun","ipa":"/ˈlɛtto/","article":"il"}]}},
+    {"key":"home.pillow","tags":["🛌"],"terms":{"pl":[{"text":"poduszka","pos":"noun"}],"it":[{"text":"cuscino","pos":"noun","ipa":"/kuʃˈʃino/","article":"il","note":"„Sci” czyta się jak „szi”."}]}},
+    {"key":"home.blanket","tags":["🧣"],"terms":{"pl":[{"text":"kołdra","pos":"noun"}],"it":[{"text":"coperta","pos":"noun","ipa":"/koˈpɛrta/","article":"la"}]}},
+    {"key":"home.lamp","tags":["💡"],"terms":{"pl":[{"text":"lampa","pos":"noun"}],"it":[{"text":"lampada","pos":"noun","ipa":"/ˈlampada/","article":"la"}]}},
+    {"key":"home.wardrobe","tags":["🚪"],"terms":{"pl":[{"text":"szafa","pos":"noun"}],"it":[{"text":"armadio","pos":"noun","ipa":"/arˈmadjo/","article":"l'"}]}},
+    {"key":"home.window","tags":["🪟"],"terms":{"pl":[{"text":"okno","pos":"noun"}],"it":[{"text":"finestra","pos":"noun","ipa":"/fiˈnɛstra/","article":"la"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"home.bed","payload":{"prompt":"łóżko","accepted":["letto","il letto"],"options":["letto","cuscino","coperta","lampada"]}},
+    {"type":"translate_ab","conceptKey":"home.pillow","payload":{"prompt":"poduszka","accepted":["cuscino","il cuscino"],"options":["cuscino","coperta","lampada","armadio"]}},
+    {"type":"translate_ab","conceptKey":"home.blanket","payload":{"prompt":"kołdra","accepted":["coperta","la coperta"],"options":["coperta","lampada","armadio","finestra"]}},
+    {"type":"translate_ab","conceptKey":"home.lamp","payload":{"prompt":"lampa","accepted":["lampada","la lampada"],"options":["lampada","armadio","finestra","letto"]}},
+    {"type":"translate_ab","conceptKey":"home.wardrobe","payload":{"prompt":"szafa","accepted":["armadio","l'armadio"],"options":["armadio","finestra","letto","cuscino"]}},
+    {"type":"translate_ab","conceptKey":"home.window","payload":{"prompt":"okno","accepted":["finestra","la finestra"],"options":["finestra","letto","cuscino","coperta"]}},
+    {"type":"translate_ba","conceptKey":"home.bed","payload":{"prompt":"letto","accepted":["łóżko"]}},
+    {"type":"translate_ba","conceptKey":"home.pillow","payload":{"prompt":"cuscino","accepted":["poduszka"]}},
+    {"type":"translate_ba","conceptKey":"home.blanket","payload":{"prompt":"coperta","accepted":["kołdra"]}},
+    {"type":"translate_ba","conceptKey":"home.lamp","payload":{"prompt":"lampada","accepted":["lampa"]}},
+    {"type":"translate_ba","conceptKey":"home.wardrobe","payload":{"prompt":"armadio","accepted":["szafa"]}},
+    {"type":"translate_ba","conceptKey":"home.window","payload":{"prompt":"finestra","accepted":["okno"]}},
+    {"type":"listening","conceptKey":"home.pillow","points":15,"payload":{"speak":"cuscino","lang":"it-IT","accepted":["cuscino"]}},
+    {"type":"listening","conceptKey":"home.wardrobe","points":15,"payload":{"speak":"armadio","lang":"it-IT","accepted":["armadio"]}},
+    {"type":"listening","conceptKey":"home.window","points":15,"payload":{"speak":"finestra","lang":"it-IT","accepted":["finestra"]}},
+    {"type":"listening","conceptKey":"home.bed","points":15,"payload":{"speak":"letto","lang":"it-IT","accepted":["letto"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"łóżko","b":"letto"},{"a":"poduszka","b":"cuscino"},{"a":"kołdra","b":"coperta"},{"a":"lampa","b":"lampada"},{"a":"szafa","b":"armadio"},{"a":"okno","b":"finestra"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"it-IT","pairs":[{"a":"łóżko","b":"letto"},{"a":"kołdra","b":"coperta"},{"a":"lampa","b":"lampada"},{"a":"szafa","b":"armadio"},{"a":"okno","b":"finestra"}]}},
+    {"type":"fill_blank_choice","conceptKey":"home.bed","payload":{"sentence":"Dormo nel {{blank}}.","options":["letto","cuscino","armadio","lampada"],"answer":"letto","translation":"Śpię w łóżku."}},
+    {"type":"fill_blank_choice","conceptKey":"home.window","payload":{"sentence":"La {{blank}} è aperta.","options":["finestra","coperta","lampada","camera"],"answer":"finestra","translation":"Okno jest otwarte."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: Śpię w moim łóżku.","tokens":["dormo","nel","mio","letto"],"solution":["dormo","nel","mio","letto"]}},
+    {"type":"inflection","conceptKey":"home.window","points":15,"payload":{"base":"finestra","formLabel":"liczba mnoga","instruction":"Napisz po włosku: więcej niż jedno okno.","accepted":["finestre"]}}
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-it-starter",
+  "unit": { "slug": "dom", "title": "Dom", "icon": "🏠", "sortOrder": 3 },
+  "lesson": {
+    "slug": "pokoje",
+    "title": "La casa",
+    "icon": "🏠",
+    "kind": "standard",
+    "sortOrder": 1,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "jedzenie/slodycze",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"home.house","tags":["🏠"],"terms":{"pl":[{"text":"dom","pos":"noun"}],"it":[{"text":"casa","pos":"noun","ipa":"/ˈkasa/","article":"la"}]}},
+    {"key":"home.room","tags":["🚪"],"terms":{"pl":[{"text":"pokój","pos":"noun"}],"it":[{"text":"camera","pos":"noun","ipa":"/ˈkamera/","article":"la","note":"„Camera” to pokój, nie kamera."}]}},
+    {"key":"home.kitchen","tags":["🍳"],"terms":{"pl":[{"text":"kuchnia","pos":"noun"}],"it":[{"text":"cucina","pos":"noun","ipa":"/kuˈtʃina/","article":"la","note":"„Ci” czyta się jak „czi”."}]}},
+    {"key":"home.bathroom","tags":["🛁"],"terms":{"pl":[{"text":"łazienka","pos":"noun"}],"it":[{"text":"bagno","pos":"noun","ipa":"/ˈbaɲɲo/","article":"il","note":"„Gn” czyta się jak „ń”."}]}},
+    {"key":"home.garden","tags":["🌳"],"terms":{"pl":[{"text":"ogród","pos":"noun"}],"it":[{"text":"giardino","pos":"noun","ipa":"/dʒarˈdino/","article":"il","note":"„Gi” czyta się jak „dżi”."}]}},
+    {"key":"home.door","tags":["🚪"],"terms":{"pl":[{"text":"drzwi","pos":"noun"}],"it":[{"text":"porta","pos":"noun","ipa":"/ˈpɔrta/","article":"la","note":"Po włosku jedna sztuka: „la porta”."}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"home.house","payload":{"prompt":"dom","accepted":["casa","la casa"],"options":["casa","camera","cucina","bagno"]}},
+    {"type":"translate_ab","conceptKey":"home.room","payload":{"prompt":"pokój","accepted":["camera","la camera"],"options":["camera","cucina","bagno","giardino"]}},
+    {"type":"translate_ab","conceptKey":"home.kitchen","payload":{"prompt":"kuchnia","accepted":["cucina","la cucina"],"options":["cucina","bagno","giardino","porta"]}},
+    {"type":"translate_ab","conceptKey":"home.bathroom","payload":{"prompt":"łazienka","accepted":["bagno","il bagno"],"options":["bagno","giardino","porta","casa"]}},
+    {"type":"translate_ab","conceptKey":"home.garden","payload":{"prompt":"ogród","accepted":["giardino","il giardino"],"options":["giardino","porta","casa","camera"]}},
+    {"type":"translate_ab","conceptKey":"home.door","payload":{"prompt":"drzwi","accepted":["porta","la porta"],"options":["porta","casa","camera","cucina"]}},
+    {"type":"translate_ba","conceptKey":"home.house","payload":{"prompt":"casa","accepted":["dom"]}},
+    {"type":"translate_ba","conceptKey":"home.room","payload":{"prompt":"camera","accepted":["pokój"]}},
+    {"type":"translate_ba","conceptKey":"home.kitchen","payload":{"prompt":"cucina","accepted":["kuchnia"]}},
+    {"type":"translate_ba","conceptKey":"home.bathroom","payload":{"prompt":"bagno","accepted":["łazienka"]}},
+    {"type":"translate_ba","conceptKey":"home.garden","payload":{"prompt":"giardino","accepted":["ogród"]}},
+    {"type":"translate_ba","conceptKey":"home.door","payload":{"prompt":"porta","accepted":["drzwi"]}},
+    {"type":"listening","conceptKey":"home.kitchen","points":15,"payload":{"speak":"cucina","lang":"it-IT","accepted":["cucina"]}},
+    {"type":"listening","conceptKey":"home.bathroom","points":15,"payload":{"speak":"bagno","lang":"it-IT","accepted":["bagno"]}},
+    {"type":"listening","conceptKey":"home.garden","points":15,"payload":{"speak":"giardino","lang":"it-IT","accepted":["giardino"]}},
+    {"type":"listening","conceptKey":"home.house","points":15,"payload":{"speak":"casa","lang":"it-IT","accepted":["casa"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"dom","b":"casa"},{"a":"pokój","b":"camera"},{"a":"kuchnia","b":"cucina"},{"a":"łazienka","b":"bagno"},{"a":"ogród","b":"giardino"},{"a":"drzwi","b":"porta"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"it-IT","pairs":[{"a":"dom","b":"casa"},{"a":"pokój","b":"camera"},{"a":"kuchnia","b":"cucina"},{"a":"ogród","b":"giardino"},{"a":"drzwi","b":"porta"}]}},
+    {"type":"fill_blank_choice","conceptKey":"home.house","payload":{"sentence":"La {{blank}} è grande.","options":["casa","camera","cucina","porta"],"answer":"casa","translation":"Dom jest duży."}},
+    {"type":"fill_blank_choice","conceptKey":"home.kitchen","payload":{"sentence":"La mamma è in {{blank}}.","options":["cucina","giardino","bagno","camera"],"answer":"cucina","translation":"Mama jest w kuchni."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: Mój dom jest duży.","tokens":["la","mia","casa","è","grande"],"solution":["la","mia","casa","è","grande"]}},
+    {"type":"inflection","conceptKey":"home.room","points":15,"payload":{"base":"camera","formLabel":"liczba mnoga","instruction":"Napisz po włosku: więcej niż jeden pokój.","accepted":["camere"]}}
+  ]
+}

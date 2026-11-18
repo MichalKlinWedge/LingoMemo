@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-it-starter",
+  "unit": { "slug": "cialo", "title": "Ciało", "icon": "🧍", "sortOrder": 4 },
+  "lesson": {
+    "slug": "rece-i-nogi",
+    "title": "Le mani e i piedi",
+    "icon": "🖐️",
+    "kind": "standard",
+    "sortOrder": 2,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "twarz",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"body.hand","tags":["🖐️"],"terms":{"pl":[{"text":"ręka","pos":"noun"}],"it":[{"text":"mano","pos":"noun","ipa":"/ˈmano/","article":"la","note":"Kończy się na „o”, a jest rodzaju żeńskiego: „la mano”."}]}},
+    {"key":"body.arm","tags":["💪"],"terms":{"pl":[{"text":"ramię","pos":"noun"}],"it":[{"text":"braccio","pos":"noun","ipa":"/ˈbrattʃo/","article":"il"}]}},
+    {"key":"body.leg","tags":["🦵"],"terms":{"pl":[{"text":"noga","pos":"noun"}],"it":[{"text":"gamba","pos":"noun","ipa":"/ˈɡamba/","article":"la"}]}},
+    {"key":"body.foot","tags":["🦶"],"terms":{"pl":[{"text":"stopa","pos":"noun"}],"it":[{"text":"piede","pos":"noun","ipa":"/ˈpjɛde/","article":"il"}]}},
+    {"key":"body.finger","tags":["👆"],"terms":{"pl":[{"text":"palec","pos":"noun"}],"it":[{"text":"dito","pos":"noun","ipa":"/ˈdito/","article":"il","note":"Liczba mnoga jest nietypowa: „le dita”."}]}},
+    {"key":"body.knee","tags":["🦵"],"terms":{"pl":[{"text":"kolano","pos":"noun"}],"it":[{"text":"ginocchio","pos":"noun","ipa":"/dʒiˈnɔkkjo/","article":"il"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"body.hand","payload":{"prompt":"ręka","accepted":["mano","la mano"],"options":["mano","braccio","gamba","piede"]}},
+    {"type":"translate_ab","conceptKey":"body.arm","payload":{"prompt":"ramię","accepted":["braccio","il braccio"],"options":["braccio","gamba","piede","dito"]}},
+    {"type":"translate_ab","conceptKey":"body.leg","payload":{"prompt":"noga","accepted":["gamba","la gamba"],"options":["gamba","piede","dito","ginocchio"]}},
+    {"type":"translate_ab","conceptKey":"body.foot","payload":{"prompt":"stopa","accepted":["piede","il piede"],"options":["piede","dito","ginocchio","mano"]}},
+    {"type":"translate_ab","conceptKey":"body.finger","payload":{"prompt":"palec","accepted":["dito","il dito"],"options":["dito","ginocchio","mano","braccio"]}},
+    {"type":"translate_ab","conceptKey":"body.knee","payload":{"prompt":"kolano","accepted":["ginocchio","il ginocchio"],"options":["ginocchio","mano","braccio","gamba"]}},
+    {"type":"translate_ba","conceptKey":"body.hand","payload":{"prompt":"mano","accepted":["ręka"]}},
+    {"type":"translate_ba","conceptKey":"body.arm","payload":{"prompt":"braccio","accepted":["ramię"]}},
+    {"type":"translate_ba","conceptKey":"body.leg","payload":{"prompt":"gamba","accepted":["noga"]}},
+    {"type":"translate_ba","conceptKey":"body.foot","payload":{"prompt":"piede","accepted":["stopa"]}},
+    {"type":"translate_ba","conceptKey":"body.finger","payload":{"prompt":"dito","accepted":["palec"]}},
+    {"type":"translate_ba","conceptKey":"body.knee","payload":{"prompt":"ginocchio","accepted":["kolano"]}},
+    {"type":"listening","conceptKey":"body.hand","points":15,"payload":{"speak":"mano","lang":"it-IT","accepted":["mano"]}},
+    {"type":"listening","conceptKey":"body.knee","points":15,"payload":{"speak":"ginocchio","lang":"it-IT","accepted":["ginocchio"]}},
+    {"type":"listening","conceptKey":"body.finger","points":15,"payload":{"speak":"dito","lang":"it-IT","accepted":["dito"]}},
+    {"type":"listening","conceptKey":"body.foot","points":15,"payload":{"speak":"piede","lang":"it-IT","accepted":["piede"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"ręka","b":"mano"},{"a":"ramię","b":"braccio"},{"a":"noga","b":"gamba"},{"a":"stopa","b":"piede"},{"a":"palec","b":"dito"},{"a":"kolano","b":"ginocchio"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"it-IT","pairs":[{"a":"ręka","b":"mano"},{"a":"ramię","b":"braccio"},{"a":"noga","b":"gamba"},{"a":"stopa","b":"piede"},{"a":"kolano","b":"ginocchio"}]}},
+    {"type":"fill_blank_choice","conceptKey":"body.leg","payload":{"sentence":"La {{blank}} è lunga.","options":["gamba","mano","piede","dito"],"answer":"gamba","translation":"Noga jest długa."}},
+    {"type":"fill_blank_choice","conceptKey":"body.finger","payload":{"sentence":"Il {{blank}} è piccolo.","options":["dito","braccio","piede","ginocchio"],"answer":"dito","translation":"Palec jest mały."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: Myję ręce.","tokens":["mi","lavo","le","mani"],"solution":["mi","lavo","le","mani"]}},
+    {"type":"inflection","conceptKey":"body.hand","points":15,"payload":{"base":"mano","formLabel":"liczba mnoga","instruction":"Napisz po włosku: więcej niż jedna ręka.","accepted":["mani"]}}
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-it-starter",
+  "unit": { "slug": "ubrania", "title": "Ubrania", "icon": "👕", "sortOrder": 5 },
+  "lesson": {
+    "slug": "zima",
+    "title": "D’inverno",
+    "icon": "🧣",
+    "kind": "standard",
+    "sortOrder": 3,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "buty",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"wear.coat","tags":["🧥"],"terms":{"pl":[{"text":"płaszcz","pos":"noun"}],"it":[{"text":"cappotto","pos":"noun","ipa":"/kapˈpɔtto/","article":"il"}]}},
+    {"key":"wear.scarf","tags":["🧣"],"terms":{"pl":[{"text":"szalik","pos":"noun"}],"it":[{"text":"sciarpa","pos":"noun","ipa":"/ˈʃarpa/","article":"la","note":"„Scia” czyta się jak „sza”."}]}},
+    {"key":"wear.gloves","tags":["🧤"],"terms":{"pl":[{"text":"rękawiczki","pos":"noun"}],"it":[{"text":"guanti","pos":"noun","ipa":"/ˈɡwanti/","article":"i"}]}},
+    {"key":"wear.hat","tags":["🧢"],"terms":{"pl":[{"text":"czapka","pos":"noun"}],"it":[{"text":"cappello","pos":"noun","ipa":"/kapˈpɛllo/","article":"il"}]}},
+    {"key":"wear.jacket","tags":["🧥"],"terms":{"pl":[{"text":"kurtka","pos":"noun"}],"it":[{"text":"giacca","pos":"noun","ipa":"/ˈdʒakka/","article":"la"}]}},
+    {"key":"wear.sweater","tags":["🧶"],"terms":{"pl":[{"text":"sweter","pos":"noun"}],"it":[{"text":"maglione","pos":"noun","ipa":"/maʎˈʎone/","article":"il"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"wear.coat","payload":{"prompt":"płaszcz","accepted":["cappotto","il cappotto"],"options":["cappotto","sciarpa","guanti","cappello"]}},
+    {"type":"translate_ab","conceptKey":"wear.scarf","payload":{"prompt":"szalik","accepted":["sciarpa","la sciarpa"],"options":["sciarpa","guanti","cappello","giacca"]}},
+    {"type":"translate_ab","conceptKey":"wear.gloves","payload":{"prompt":"rękawiczki","accepted":["guanti","i guanti"],"options":["guanti","cappello","giacca","maglione"]}},
+    {"type":"translate_ab","conceptKey":"wear.hat","payload":{"prompt":"czapka","accepted":["cappello","il cappello"],"options":["cappello","giacca","maglione","cappotto"]}},
+    {"type":"translate_ab","conceptKey":"wear.jacket","payload":{"prompt":"kurtka","accepted":["giacca","la giacca"],"options":["giacca","maglione","cappotto","sciarpa"]}},
+    {"type":"translate_ab","conceptKey":"wear.sweater","payload":{"prompt":"sweter","accepted":["maglione","il maglione"],"options":["maglione","cappotto","sciarpa","guanti"]}},
+    {"type":"translate_ba","conceptKey":"wear.coat","payload":{"prompt":"cappotto","accepted":["płaszcz"]}},
+    {"type":"translate_ba","conceptKey":"wear.scarf","payload":{"prompt":"sciarpa","accepted":["szalik"]}},
+    {"type":"translate_ba","conceptKey":"wear.gloves","payload":{"prompt":"guanti","accepted":["rękawiczki"]}},
+    {"type":"translate_ba","conceptKey":"wear.hat","payload":{"prompt":"cappello","accepted":["czapka"]}},
+    {"type":"translate_ba","conceptKey":"wear.jacket","payload":{"prompt":"giacca","accepted":["kurtka"]}},
+    {"type":"translate_ba","conceptKey":"wear.sweater","payload":{"prompt":"maglione","accepted":["sweter"]}},
+    {"type":"listening","conceptKey":"wear.scarf","points":15,"payload":{"speak":"sciarpa","lang":"it-IT","accepted":["sciarpa"]}},
+    {"type":"listening","conceptKey":"wear.jacket","points":15,"payload":{"speak":"giacca","lang":"it-IT","accepted":["giacca"]}},
+    {"type":"listening","conceptKey":"wear.sweater","points":15,"payload":{"speak":"maglione","lang":"it-IT","accepted":["maglione"]}},
+    {"type":"listening","conceptKey":"wear.gloves","points":15,"payload":{"speak":"guanti","lang":"it-IT","accepted":["guanti"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"płaszcz","b":"cappotto"},{"a":"szalik","b":"sciarpa"},{"a":"rękawiczki","b":"guanti"},{"a":"czapka","b":"cappello"},{"a":"kurtka","b":"giacca"},{"a":"sweter","b":"maglione"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"it-IT","pairs":[{"a":"płaszcz","b":"cappotto"},{"a":"szalik","b":"sciarpa"},{"a":"rękawiczki","b":"guanti"},{"a":"czapka","b":"cappello"},{"a":"sweter","b":"maglione"}]}},
+    {"type":"fill_blank_choice","conceptKey":"wear.coat","payload":{"sentence":"D’inverno porto il {{blank}}.","options":["cappotto","cappello","maglione","giacca"],"answer":"cappotto","translation":"Zimą noszę płaszcz."}},
+    {"type":"fill_blank_choice","conceptKey":"wear.scarf","payload":{"sentence":"La {{blank}} è calda.","options":["sciarpa","giacca","felpa","gonna"],"answer":"sciarpa","translation":"Szalik jest ciepły."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: Zimą noszę czapkę.","tokens":["d’inverno","porto","il","cappello"],"solution":["d’inverno","porto","il","cappello"]}},
+    {"type":"inflection","conceptKey":"wear.hat","points":15,"payload":{"base":"cappello","formLabel":"liczba mnoga","instruction":"Napisz po włosku: więcej niż jedna czapka.","accepted":["cappelli"]}}
+  ]
+}

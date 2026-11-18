@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-it-starter",
+  "unit": { "slug": "ubrania", "title": "Ubrania", "icon": "👕", "sortOrder": 5 },
+  "lesson": {
+    "slug": "buty",
+    "title": "Le scarpe",
+    "icon": "👟",
+    "kind": "standard",
+    "sortOrder": 2,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "codzienne",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"wear.shoes","tags":["👟"],"terms":{"pl":[{"text":"buty","pos":"noun"}],"it":[{"text":"scarpe","pos":"noun","ipa":"/ˈskarpe/","article":"le","note":"Jedna sztuka to „la scarpa”."}]}},
+    {"key":"wear.socks","tags":["🧦"],"terms":{"pl":[{"text":"skarpetki","pos":"noun"}],"it":[{"text":"calzini","pos":"noun","ipa":"/kalˈtsini/","article":"i"}]}},
+    {"key":"wear.sandals","tags":["👡"],"terms":{"pl":[{"text":"sandały","pos":"noun"}],"it":[{"text":"sandali","pos":"noun","ipa":"/ˈsandali/","article":"i"}]}},
+    {"key":"wear.boots","tags":["👢"],"terms":{"pl":[{"text":"kozaki","pos":"noun"}],"it":[{"text":"stivali","pos":"noun","ipa":"/stiˈvali/","article":"gli","note":"Przed „st” rodzajnik mnogi brzmi „gli”."}]}},
+    {"key":"wear.slippers","tags":["🩴"],"terms":{"pl":[{"text":"kapcie","pos":"noun"}],"it":[{"text":"pantofole","pos":"noun","ipa":"/panˈtɔfole/","article":"le"}]}},
+    {"key":"wear.lace","tags":["🪢"],"terms":{"pl":[{"text":"sznurówka","pos":"noun"}],"it":[{"text":"stringa","pos":"noun","ipa":"/ˈstrinɡa/","article":"la"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"wear.shoes","payload":{"prompt":"buty","accepted":["scarpe","le scarpe"],"options":["scarpe","calzini","sandali","stivali"]}},
+    {"type":"translate_ab","conceptKey":"wear.socks","payload":{"prompt":"skarpetki","accepted":["calzini","i calzini"],"options":["calzini","sandali","stivali","pantofole"]}},
+    {"type":"translate_ab","conceptKey":"wear.sandals","payload":{"prompt":"sandały","accepted":["sandali","i sandali"],"options":["sandali","stivali","pantofole","stringa"]}},
+    {"type":"translate_ab","conceptKey":"wear.boots","payload":{"prompt":"kozaki","accepted":["stivali","gli stivali"],"options":["stivali","pantofole","stringa","scarpe"]}},
+    {"type":"translate_ab","conceptKey":"wear.slippers","payload":{"prompt":"kapcie","accepted":["pantofole","le pantofole"],"options":["pantofole","stringa","scarpe","calzini"]}},
+    {"type":"translate_ab","conceptKey":"wear.lace","payload":{"prompt":"sznurówka","accepted":["stringa","la stringa"],"options":["stringa","scarpe","calzini","sandali"]}},
+    {"type":"translate_ba","conceptKey":"wear.shoes","payload":{"prompt":"scarpe","accepted":["buty"]}},
+    {"type":"translate_ba","conceptKey":"wear.socks","payload":{"prompt":"calzini","accepted":["skarpetki"]}},
+    {"type":"translate_ba","conceptKey":"wear.sandals","payload":{"prompt":"sandali","accepted":["sandały"]}},
+    {"type":"translate_ba","conceptKey":"wear.boots","payload":{"prompt":"stivali","accepted":["kozaki"]}},
+    {"type":"translate_ba","conceptKey":"wear.slippers","payload":{"prompt":"pantofole","accepted":["kapcie"]}},
+    {"type":"translate_ba","conceptKey":"wear.lace","payload":{"prompt":"stringa","accepted":["sznurówka"]}},
+    {"type":"listening","conceptKey":"wear.socks","points":15,"payload":{"speak":"calzini","lang":"it-IT","accepted":["calzini"]}},
+    {"type":"listening","conceptKey":"wear.boots","points":15,"payload":{"speak":"stivali","lang":"it-IT","accepted":["stivali"]}},
+    {"type":"listening","conceptKey":"wear.slippers","points":15,"payload":{"speak":"pantofole","lang":"it-IT","accepted":["pantofole"]}},
+    {"type":"listening","conceptKey":"wear.lace","points":15,"payload":{"speak":"stringa","lang":"it-IT","accepted":["stringa"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"buty","b":"scarpe"},{"a":"skarpetki","b":"calzini"},{"a":"sandały","b":"sandali"},{"a":"kozaki","b":"stivali"},{"a":"kapcie","b":"pantofole"},{"a":"sznurówka","b":"stringa"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"it-IT","pairs":[{"a":"buty","b":"scarpe"},{"a":"skarpetki","b":"calzini"},{"a":"sandały","b":"sandali"},{"a":"kozaki","b":"stivali"},{"a":"kapcie","b":"pantofole"}]}},
+    {"type":"fill_blank_choice","conceptKey":"wear.shoes","payload":{"sentence":"Le {{blank}} sono nuove.","options":["scarpe","calzini","stivali","sandali"],"answer":"scarpe","translation":"Buty są nowe."}},
+    {"type":"fill_blank_choice","conceptKey":"wear.sandals","payload":{"sentence":"D’estate porto i {{blank}}.","options":["sandali","stivali","pantofole","calzini"],"answer":"sandali","translation":"Latem noszę sandały."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: Moje buty są nowe.","tokens":["le","mie","scarpe","sono","nuove"],"solution":["le","mie","scarpe","sono","nuove"]}},
+    {"type":"inflection","conceptKey":"wear.lace","points":15,"payload":{"base":"stringa","formLabel":"liczba mnoga","instruction":"Napisz po włosku: więcej niż jedna sznurówka (pamiętaj o „h”).","accepted":["stringhe"]}}
+  ]
+}

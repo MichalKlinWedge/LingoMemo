@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-it-starter",
+  "unit": { "slug": "dom", "title": "Dom", "icon": "🏠", "sortOrder": 3 },
+  "lesson": {
+    "slug": "w-ogrodzie",
+    "title": "In giardino",
+    "icon": "🌳",
+    "kind": "standard",
+    "sortOrder": 5,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "w-lazience",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"home.tree","tags":["🌳"],"terms":{"pl":[{"text":"drzewo","pos":"noun"}],"it":[{"text":"albero","pos":"noun","ipa":"/ˈalbero/","article":"l'"}]}},
+    {"key":"home.flower","tags":["🌸"],"terms":{"pl":[{"text":"kwiat","pos":"noun"}],"it":[{"text":"fiore","pos":"noun","ipa":"/ˈfjore/","article":"il"}]}},
+    {"key":"home.grass","tags":["🌿"],"terms":{"pl":[{"text":"trawa","pos":"noun"}],"it":[{"text":"erba","pos":"noun","ipa":"/ˈɛrba/","article":"l'"}]}},
+    {"key":"home.bench","tags":["🪑"],"terms":{"pl":[{"text":"ławka","pos":"noun"}],"it":[{"text":"panchina","pos":"noun","ipa":"/panˈkina/","article":"la","note":"„Chi” czyta się jak „ki”."}]}},
+    {"key":"home.gate","tags":["🚧"],"terms":{"pl":[{"text":"brama","pos":"noun"}],"it":[{"text":"cancello","pos":"noun","ipa":"/kanˈtʃɛllo/","article":"il"}]}},
+    {"key":"home.swing","tags":["🛝"],"terms":{"pl":[{"text":"huśtawka","pos":"noun"}],"it":[{"text":"altalena","pos":"noun","ipa":"/altaˈlena/","article":"l'"}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"home.tree","payload":{"prompt":"drzewo","accepted":["albero","l'albero"],"options":["albero","fiore","erba","panchina"]}},
+    {"type":"translate_ab","conceptKey":"home.flower","payload":{"prompt":"kwiat","accepted":["fiore","il fiore"],"options":["fiore","erba","panchina","cancello"]}},
+    {"type":"translate_ab","conceptKey":"home.grass","payload":{"prompt":"trawa","accepted":["erba","l'erba"],"options":["erba","panchina","cancello","altalena"]}},
+    {"type":"translate_ab","conceptKey":"home.bench","payload":{"prompt":"ławka","accepted":["panchina","la panchina"],"options":["panchina","cancello","altalena","albero"]}},
+    {"type":"translate_ab","conceptKey":"home.gate","payload":{"prompt":"brama","accepted":["cancello","il cancello"],"options":["cancello","altalena","albero","fiore"]}},
+    {"type":"translate_ab","conceptKey":"home.swing","payload":{"prompt":"huśtawka","accepted":["altalena","l'altalena"],"options":["altalena","albero","fiore","erba"]}},
+    {"type":"translate_ba","conceptKey":"home.tree","payload":{"prompt":"albero","accepted":["drzewo"]}},
+    {"type":"translate_ba","conceptKey":"home.flower","payload":{"prompt":"fiore","accepted":["kwiat"]}},
+    {"type":"translate_ba","conceptKey":"home.grass","payload":{"prompt":"erba","accepted":["trawa"]}},
+    {"type":"translate_ba","conceptKey":"home.bench","payload":{"prompt":"panchina","accepted":["ławka"]}},
+    {"type":"translate_ba","conceptKey":"home.gate","payload":{"prompt":"cancello","accepted":["brama"]}},
+    {"type":"translate_ba","conceptKey":"home.swing","payload":{"prompt":"altalena","accepted":["huśtawka"]}},
+    {"type":"listening","conceptKey":"home.bench","points":15,"payload":{"speak":"panchina","lang":"it-IT","accepted":["panchina"]}},
+    {"type":"listening","conceptKey":"home.gate","points":15,"payload":{"speak":"cancello","lang":"it-IT","accepted":["cancello"]}},
+    {"type":"listening","conceptKey":"home.swing","points":15,"payload":{"speak":"altalena","lang":"it-IT","accepted":["altalena"]}},
+    {"type":"listening","conceptKey":"home.flower","points":15,"payload":{"speak":"fiore","lang":"it-IT","accepted":["fiore"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"drzewo","b":"albero"},{"a":"kwiat","b":"fiore"},{"a":"trawa","b":"erba"},{"a":"ławka","b":"panchina"},{"a":"brama","b":"cancello"},{"a":"huśtawka","b":"altalena"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"it-IT","pairs":[{"a":"drzewo","b":"albero"},{"a":"kwiat","b":"fiore"},{"a":"trawa","b":"erba"},{"a":"ławka","b":"panchina"},{"a":"huśtawka","b":"altalena"}]}},
+    {"type":"fill_blank_choice","conceptKey":"home.flower","payload":{"sentence":"Il {{blank}} è rosso.","options":["fiore","albero","cancello","giardino"],"answer":"fiore","translation":"Kwiat jest czerwony."}},
+    {"type":"fill_blank_choice","conceptKey":"home.bench","payload":{"sentence":"Mi siedo sulla {{blank}}.","options":["panchina","altalena","erba","porta"],"answer":"panchina","translation":"Siadam na ławce."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: Drzewo jest w ogrodzie.","tokens":["l’albero","è","in","giardino"],"solution":["l’albero","è","in","giardino"]}},
+    {"type":"inflection","conceptKey":"home.flower","points":15,"payload":{"base":"fiore","formLabel":"liczba mnoga","instruction":"Napisz po włosku: więcej niż jeden kwiat.","accepted":["fiori"]}}
+  ]
+}

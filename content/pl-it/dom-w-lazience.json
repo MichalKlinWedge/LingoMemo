@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "course": "pl-it-starter",
+  "unit": { "slug": "dom", "title": "Dom", "icon": "🏠", "sortOrder": 3 },
+  "lesson": {
+    "slug": "w-lazience",
+    "title": "In bagno",
+    "icon": "🛁",
+    "kind": "standard",
+    "sortOrder": 4,
+    "xpReward": 50,
+    "passThreshold": 0.8,
+    "prerequisiteLessonSlug": "w-sypialni",
+    "isPublished": true
+  },
+  "concepts": [
+    {"key":"home.soap","tags":["🧼"],"terms":{"pl":[{"text":"mydło","pos":"noun"}],"it":[{"text":"sapone","pos":"noun","ipa":"/saˈpone/","article":"il"}]}},
+    {"key":"home.toothbrush","tags":["🪥"],"terms":{"pl":[{"text":"szczoteczka","pos":"noun"}],"it":[{"text":"spazzolino","pos":"noun","ipa":"/spattsoˈlino/","article":"lo","note":"Przed „sp” rodzajnik brzmi „lo”, nie „il”."}]}},
+    {"key":"home.towel","tags":["🧺"],"terms":{"pl":[{"text":"ręcznik","pos":"noun"}],"it":[{"text":"asciugamano","pos":"noun","ipa":"/aʃʃuɡaˈmano/","article":"l'","note":"„Sciu” czyta się jak „szu”."}]}},
+    {"key":"home.mirror","tags":["🪞"],"terms":{"pl":[{"text":"lustro","pos":"noun"}],"it":[{"text":"specchio","pos":"noun","ipa":"/ˈspɛkkjo/","article":"lo"}]}},
+    {"key":"home.comb","tags":["💈"],"terms":{"pl":[{"text":"grzebień","pos":"noun"}],"it":[{"text":"pettine","pos":"noun","ipa":"/ˈpettine/","article":"il"}]}},
+    {"key":"home.shower","tags":["🚿"],"terms":{"pl":[{"text":"prysznic","pos":"noun"}],"it":[{"text":"doccia","pos":"noun","ipa":"/ˈdottʃa/","article":"la","note":"„Ccia” czyta się jak „cza”."}]}}
+  ],
+  "exercises": [
+    {"type":"translate_ab","conceptKey":"home.soap","payload":{"prompt":"mydło","accepted":["sapone","il sapone"],"options":["sapone","spazzolino","asciugamano","specchio"]}},
+    {"type":"translate_ab","conceptKey":"home.toothbrush","payload":{"prompt":"szczoteczka","accepted":["spazzolino","lo spazzolino"],"options":["spazzolino","asciugamano","specchio","pettine"]}},
+    {"type":"translate_ab","conceptKey":"home.towel","payload":{"prompt":"ręcznik","accepted":["asciugamano","l'asciugamano"],"options":["asciugamano","specchio","pettine","doccia"]}},
+    {"type":"translate_ab","conceptKey":"home.mirror","payload":{"prompt":"lustro","accepted":["specchio","lo specchio"],"options":["specchio","pettine","doccia","sapone"]}},
+    {"type":"translate_ab","conceptKey":"home.comb","payload":{"prompt":"grzebień","accepted":["pettine","il pettine"],"options":["pettine","doccia","sapone","spazzolino"]}},
+    {"type":"translate_ab","conceptKey":"home.shower","payload":{"prompt":"prysznic","accepted":["doccia","la doccia"],"options":["doccia","sapone","spazzolino","asciugamano"]}},
+    {"type":"translate_ba","conceptKey":"home.soap","payload":{"prompt":"sapone","accepted":["mydło"]}},
+    {"type":"translate_ba","conceptKey":"home.toothbrush","payload":{"prompt":"spazzolino","accepted":["szczoteczka"]}},
+    {"type":"translate_ba","conceptKey":"home.towel","payload":{"prompt":"asciugamano","accepted":["ręcznik"]}},
+    {"type":"translate_ba","conceptKey":"home.mirror","payload":{"prompt":"specchio","accepted":["lustro"]}},
+    {"type":"translate_ba","conceptKey":"home.comb","payload":{"prompt":"pettine","accepted":["grzebień"]}},
+    {"type":"translate_ba","conceptKey":"home.shower","payload":{"prompt":"doccia","accepted":["prysznic"]}},
+    {"type":"listening","conceptKey":"home.toothbrush","points":15,"payload":{"speak":"spazzolino","lang":"it-IT","accepted":["spazzolino"]}},
+    {"type":"listening","conceptKey":"home.towel","points":15,"payload":{"speak":"asciugamano","lang":"it-IT","accepted":["asciugamano"]}},
+    {"type":"listening","conceptKey":"home.shower","points":15,"payload":{"speak":"doccia","lang":"it-IT","accepted":["doccia"]}},
+    {"type":"listening","conceptKey":"home.soap","points":15,"payload":{"speak":"sapone","lang":"it-IT","accepted":["sapone"]}},
+    {"type":"match_pairs","points":20,"payload":{"instruction":"Połącz słówka w pary","pairs":[{"a":"mydło","b":"sapone"},{"a":"szczoteczka","b":"spazzolino"},{"a":"ręcznik","b":"asciugamano"},{"a":"lustro","b":"specchio"},{"a":"grzebień","b":"pettine"},{"a":"prysznic","b":"doccia"}]}},
+    {"type":"listen_match","points":20,"payload":{"instruction":"Posłuchaj i dopasuj polskie słowo.","lang":"it-IT","pairs":[{"a":"mydło","b":"sapone"},{"a":"ręcznik","b":"asciugamano"},{"a":"lustro","b":"specchio"},{"a":"grzebień","b":"pettine"},{"a":"prysznic","b":"doccia"}]}},
+    {"type":"fill_blank_choice","conceptKey":"home.soap","payload":{"sentence":"Mi lavo le mani con il {{blank}}.","options":["sapone","pettine","specchio","asciugamano"],"answer":"sapone","translation":"Myję ręce mydłem."}},
+    {"type":"fill_blank_choice","conceptKey":"home.mirror","payload":{"sentence":"Mi guardo nello {{blank}}.","options":["specchio","sapone","pettine","spazzolino"],"answer":"specchio","translation":"Patrzę w lustro."}},
+    {"type":"sentence_order","points":20,"payload":{"prompt":"Ułóż zdanie: Mydło jest w łazience.","tokens":["il","sapone","è","in","bagno"],"solution":["il","sapone","è","in","bagno"]}},
+    {"type":"inflection","conceptKey":"home.towel","points":15,"payload":{"base":"asciugamano","formLabel":"liczba mnoga","instruction":"Napisz po włosku: więcej niż jeden ręcznik.","accepted":["asciugamani"]}}
+  ]
+}
