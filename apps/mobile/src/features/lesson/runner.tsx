@@ -24,6 +24,7 @@ import { ListeningExercise } from '@/features/lesson/exercises/listening';
 import { MatchPairsExercise } from '@/features/lesson/exercises/match-pairs';
 import { SentenceOrderExercise } from '@/features/lesson/exercises/sentence-order';
 import { TypingExercise } from '@/features/lesson/exercises/typing';
+import { barChanged } from '@/features/stats/load';
 import { stopwatch } from '@/lib/clock';
 
 type Phase = 'answering' | 'checking' | 'feedback' | 'done';
@@ -207,6 +208,9 @@ export function LessonRunner({
     }
     setSwapped((prev) => ({ ...prev, [index]: result.value.exercise }));
     setHints(result.value.hintsLeft);
+    // Pula podpowiedzi jest teraz w pasku nad lekcją, a ekran się nie zmienił — bez tego
+    // wołania pasek pokazywałby liczbę sprzed podpowiedzi aż do wyjścia z lekcji.
+    barChanged();
     setDraftOf(null);
     tookRef.current = stopwatch();
   }, [ensureSession, exercise, index, phase]);
@@ -391,7 +395,7 @@ export function LessonRunner({
         {/* Podpowiedź: to samo słówko w łatwiejszej postaci. Znika po użyciu na tym zadaniu
             i wtedy, gdy na dziś nic nie zostało. */}
         {phase === 'answering' && hints > 0 && !hinted && (
-          <Button kind="quiet" label={`💡 Podpowiedź (${hints})`} onPress={() => void takeHint()} />
+          <Button kind="quiet" label={`Podpowiedź (${hints})`} onPress={() => void takeHint()} />
         )}
 
         {/* Wyjście dla dziecka, które utknęło: idzie do bazy jako `{"skipped": true}`, czyli
@@ -473,7 +477,6 @@ function Progress({
         {level > 1 && <Chip>{level === 2 ? 'Poziom średni' : 'Poziom trudny'}</Chip>}
         {/* Bez tego napisu dziecko widzi tylko, że ekran pokazuje coś, co już było. */}
         {repeat && <Chip>🔁 Jeszcze raz</Chip>}
-        <Chip>💡 {hints}</Chip>
       </View>
     </View>
   );

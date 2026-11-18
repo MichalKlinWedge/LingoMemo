@@ -2,11 +2,11 @@ import { DAYS, HINTS, plural, POINTS, UNLOCKS, WORDS } from '@lingomemo/core';
 import { usePathname, useRouter } from 'expo-router';
 import { type ImageSourcePropType, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 
 import { Chip } from '@/components/ui';
 import { color, size } from '@/constants/theme';
-import { type BarData, loadBar } from '@/features/stats/load';
+import { type BarData, barVersion, loadBar, subscribeBar } from '@/features/stats/load';
 import { useSession } from '@/lib/session';
 
 const IKONA = require('../../assets/ikona.png') as ImageSourcePropType;
@@ -31,6 +31,9 @@ export function TopBar() {
   const insets = useSafeAreaInsets();
   const userId = session?.user.id ?? null;
   const [bar, setBar] = useState<BarData | null>(null);
+  // Numer wersji danych paska. Rośnie, gdy lekcja wyda podpowiedź albo zamknie etap — wtedy
+  // liczby są już inne, a ekran się nie zmienił, więc sam adres by tego nie wychwycił.
+  const wersja = useSyncExternalStore(subscribeBar, barVersion, barVersion);
 
   /**
    * Odczyt przy każdej zmianie ekranu: po lekcji punktów i zaległych jest już inaczej.
@@ -48,7 +51,7 @@ export function TopBar() {
     return () => {
       alive = false;
     };
-  }, [userId, pathname]);
+  }, [userId, pathname, wersja]);
 
   if (session === null || session === undefined) return null;
 
@@ -127,15 +130,11 @@ export function TopBar() {
               🔁 {bar.due}
             </Chip>
           )}
-          {/* Podpowiedzi na dziś — wszędzie poza lekcją. W lekcji tę samą liczbę pokazuje jej
-              własny pasek i robi to na bieżąco: po wzięciu podpowiedzi zmienia się od razu,
-              bo oddaje ją ta sama odpowiedź bazy, która podpowiedź wydaje. Ten pasek odczytuje
-              dane przy zmianie ekranu, więc stałby obok z liczbą o jeden za dużą.
+          {/* Podpowiedzi na dziś — również w lekcji, bo to tam dziecko po nie sięga. Liczba
+              nadąża, bo lekcja woła `barChanged()` zaraz po wydaniu podpowiedzi.
               Zero pokazujemy, w odróżnieniu od punktów odblokowania: „💡 0" tłumaczy, czemu
-              przycisk podpowiedzi w lekcji jest szary. */}
-          {!pathname.startsWith('/lekcja/') && (
-            <Chip label={`podpowiedzi na dziś: ${plural(bar.hints, HINTS)}`}>💡 {bar.hints}</Chip>
-          )}
+              w lekcji nie ma już przycisku podpowiedzi. */}
+          <Chip label={`podpowiedzi na dziś: ${plural(bar.hints, HINTS)}`}>💡 {bar.hints}</Chip>
           {/* Bez punktów znacznika nie ma: dziecko przed pierwszym poziomem trudnym nie ma
               o czym wiedzieć, a pasek ma zostać krótki. Wydaje się je na ekranie kursu,
               dotykając kłódki z kluczykiem. */}

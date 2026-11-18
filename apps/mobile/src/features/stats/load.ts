@@ -153,6 +153,34 @@ export type BarData = {
  * Błędu nie zwracamy, tak samo jak pasek na webie: to ozdoba nad treścią, a nie treść. Przy
  * nieudanym odczycie zostają zera, a ekran kursów pokazuje się normalnie.
  */
+/**
+ * Powiadomienie dla paska: „liczby się zmieniły, przeczytaj je od nowa”.
+ *
+ * Pasek sam z siebie czyta dane przy zmianie ekranu, a to nie wystarcza w lekcji: podpowiedź
+ * i zaliczony etap zmieniają pulę i punkty bez ruszania się z miejsca. Zamiast przeciągać stan
+ * paska przez pół aplikacji wystarczy jedno wołanie — `useSyncExternalStore` w pasku zauważy
+ * nowy numer wersji i wczyta dane jeszcze raz.
+ */
+const sluchacze = new Set<() => void>();
+let wersja = 0;
+
+export function subscribeBar(listener: () => void): () => void {
+  sluchacze.add(listener);
+  return () => {
+    sluchacze.delete(listener);
+  };
+}
+
+export function barVersion(): number {
+  return wersja;
+}
+
+/** Wołane po podpowiedzi i po zamknięciu etapu — wtedy liczby w pasku są już inne. */
+export function barChanged(): void {
+  wersja += 1;
+  for (const listener of sluchacze) listener();
+}
+
 export async function loadBar(userId: string): Promise<BarData> {
   const [{ data: profile }, { data: stats }, { data: unlock }, { data: hints }] = await Promise.all([
     supabase.from('profiles').select('display_name').eq('id', userId).maybeSingle(),
