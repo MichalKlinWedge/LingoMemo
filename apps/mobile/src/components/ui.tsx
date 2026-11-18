@@ -37,9 +37,14 @@ export function Body({ children, muted }: { children: ReactNode; muted?: boolean
   return <Text style={[styles.body, muted === true && styles.bodyMuted]}>{children}</Text>;
 }
 
-export function Chip({ children }: { children: ReactNode }) {
+/**
+ * Znacznik stanu. `label` zastępuje treść czytnikowi ekranu — tam, gdzie na ekranie stoi sama
+ * ikona i liczba („⭐ 7091"), czytnik ma powiedzieć, czego ta liczba dotyczy. Na telefonie nie
+ * ma dymka po najechaniu kursorem, więc to jedyne miejsce, w którym da się te słowa zapisać.
+ */
+export function Chip({ children, label }: { children: ReactNode; label?: string }) {
   return (
-    <View style={styles.chip}>
+    <View style={styles.chip} accessible={label !== undefined} accessibilityLabel={label}>
       <Text style={styles.chipText}>{children}</Text>
     </View>
   );

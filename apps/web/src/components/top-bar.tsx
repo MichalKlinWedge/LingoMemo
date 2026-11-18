@@ -1,10 +1,28 @@
 import Link from "next/link";
 
-import { DAYS, plural, POINTS, UNLOCKS } from "@lingomemo/core";
+import { DAYS, plural, POINTS, UNLOCKS, WORDS } from "@lingomemo/core";
 
 import { signOut } from "@/app/auth-actions";
 import { Logo } from "@/components/logo";
 import { getUser } from "@/lib/auth";
+
+/**
+ * Znacznik stanu w pasku: ikona i liczba, nic więcej. Słowa („punktów", „do powtórki") siedzą
+ * w dymku i w etykiecie dla czytnika ekranu.
+ *
+ * Cztery znaczniki z pełnym opisem nie mieściły się w jednym wierszu i zawijały się na drugi,
+ * spychając treść strony w dół — a dziecko i tak czyta z nich liczbę, nie zdanie. Ikona mówi,
+ * czego liczba dotyczy; po słowa sięga dorosły, i wtedy wystarczy mu kursor.
+ */
+function Stat({ href, icon, value, label }: { href: string; icon: string; value: number; label: string }) {
+  return (
+    <Link href={href} className="chip" title={label} aria-label={label}>
+      <span aria-hidden>
+        {icon} {value}
+      </span>
+    </Link>
+  );
+}
 
 /**
  * Pasek u góry każdej strony: imię, punkty, seria, punkty odblokowania i wyjście. Dziecko widzi
@@ -56,29 +74,36 @@ export async function TopBar() {
         </div>
 
         <nav className="flex flex-wrap items-center gap-2">
-          <Link href="/nagrody" className="chip">
-            ⭐ {plural(stats?.total_points ?? 0, POINTS)}
-          </Link>
-          <Link href="/statystyki" className="chip">
-            🔥 {plural(stats?.streak_days ?? 0, DAYS)}
-          </Link>
+          <Stat
+            href="/nagrody"
+            icon="⭐"
+            value={stats?.total_points ?? 0}
+            label={plural(stats?.total_points ?? 0, POINTS)}
+          />
+          <Stat
+            href="/statystyki"
+            icon="🔥"
+            value={stats?.streak_days ?? 0}
+            label={`seria: ${plural(stats?.streak_days ?? 0, DAYS)} nauki pod rząd`}
+          />
           {(stats?.words_due ?? 0) > 0 && (
-            <Link href="/statystyki" className="chip">
-              🔁 {stats?.words_due} do powtórki
-            </Link>
+            <Stat
+              href="/statystyki"
+              icon="🔁"
+              value={stats?.words_due ?? 0}
+              label={`${plural(stats?.words_due ?? 0, WORDS)} do powtórki`}
+            />
           )}
           {/* Bez punktów znacznika nie ma: dziecko przed pierwszym poziomem trudnym nie ma
               o czym wiedzieć, a pasek ma być krótki. Kliknięcie prowadzi na listę kursów,
               czyli do kursów z kłódkami — tam się te punkty wydaje. */}
           {doOdblokowania > 0 && (
-            <Link
+            <Stat
               href="/"
-              className="chip"
-              aria-label={`${plural(doOdblokowania, UNLOCKS)} — otwórz nimi zamkniętą lekcję`}
-              title="Kliknij kłódkę z kluczykiem na ekranie kursu, żeby otworzyć lekcję"
-            >
-              <span aria-hidden>🔑 {doOdblokowania} do odblokowania</span>
-            </Link>
+              icon="🔑"
+              value={doOdblokowania}
+              label={`${plural(doOdblokowania, UNLOCKS)} — kliknij kłódkę z kluczykiem na ekranie kursu, żeby otworzyć lekcję`}
+            />
           )}
         </nav>
       </div>

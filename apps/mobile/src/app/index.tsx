@@ -1,4 +1,4 @@
-import { DAYS, plural, POINTS, WORDS } from '@lingomemo/core';
+import { DAYS, plural, POINTS, UNLOCKS, WORDS } from '@lingomemo/core';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -112,14 +112,17 @@ function Bar({ userId }: { userId: string }) {
   if (bar === null) return null;
 
   return (
+    // Sama ikona i liczba, tak jak w pasku na webie: cztery znaczniki z pełnym opisem zawijały
+    // się na drugi wiersz i spychały kursy w dół, a dziecko czyta z nich liczbę, nie zdanie.
+    // Słowa zostają w etykiecie dla czytnika ekranu.
     <View style={styles.bar}>
-      <Chip>⭐ {plural(bar.points, POINTS)}</Chip>
-      <Chip>🔥 {plural(bar.streak, DAYS)}</Chip>
-      {bar.due > 0 && <Chip>🔁 {bar.due} do powtórki</Chip>}
+      <Chip label={plural(bar.points, POINTS)}>⭐ {bar.points}</Chip>
+      <Chip label={`seria: ${plural(bar.streak, DAYS)} nauki pod rząd`}>🔥 {bar.streak}</Chip>
+      {bar.due > 0 && <Chip label={`${plural(bar.due, WORDS)} do powtórki`}>🔁 {bar.due}</Chip>}
       {/* Bez punktów znacznika nie ma: dziecko przed pierwszym poziomem trudnym nie ma o czym
           wiedzieć, a pasek ma zostać krótki. Wydaje się je na ekranie kursu, dotykając kłódki
           z kluczykiem. */}
-      {bar.unlocks > 0 && <Chip>🔑 {bar.unlocks} do odblokowania</Chip>}
+      {bar.unlocks > 0 && <Chip label={plural(bar.unlocks, UNLOCKS)}>🔑 {bar.unlocks}</Chip>}
     </View>
   );
 }
