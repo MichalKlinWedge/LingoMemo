@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Body } from '@/components/ui';
 import { color, size } from '@/constants/theme';
+import { useSpeak } from '@/lib/speak';
 
 import { SpeakButton } from './speak-button';
 import { type ExerciseProps, list, str } from './types';
@@ -22,6 +23,7 @@ export function ChoiceExercise({
   result,
 }: ExerciseProps & { targetLang: string; result: 'correct' | 'wrong' | null }) {
   const [picked, setPicked] = useState<string | null>(null);
+  const { speak } = useSpeak(targetLang);
   const options = list(exercise.payload.options);
   const isBlank = exercise.type === 'fill_blank_choice';
   const sentence = str(exercise.payload.sentence);
@@ -30,6 +32,10 @@ export function ChoiceExercise({
   const pick = (option: string) => {
     if (locked) return;
     setPicked(option);
+    // Wybór sam się wymawia — ten sam dźwięk, co z głośnika obok. Dziecko i tak dotyka
+    // kafelka, więc usłyszy słówko także wtedy, gdy po głośnik nigdy nie sięga. Opcje są tu
+    // zawsze w języku uczonym (`fill_blank_choice` i `translate_ab`).
+    speak(option);
     onAnswer({ choice: option });
   };
 

@@ -1,5 +1,7 @@
 "use client";
 
+import { useSpeak } from "@/lib/use-speak";
+
 import { SpeakButton } from "./speak-button";
 import { type ExerciseProps, list, str } from "./types";
 import { useMatching } from "./use-matching";
@@ -20,8 +22,20 @@ export function MatchPairsExercise({
 }: ExerciseProps & { targetLang: string }) {
   const left = list(exercise.payload.pairsLeft);
   const right = list(exercise.payload.pairsRight);
+  const { speak } = useSpeak(targetLang);
 
   const { pairs, used, pick, undo, isPicked } = useMatching(left.length, (done) => onAnswer({ pairs: done }));
+
+  /**
+   * Dotknięcie kafelka w prawej kolumnie wymawia słówko — ten sam dźwięk, co z głośnika obok.
+   * Tylko prawa: lewa jest w języku dziecka, a wymówienie polskiego słowa angielskim głosem
+   * brzmi jak pomyłka. Na wąskim ekranie głośnika nie ma wcale (zabierałby kolumnie szerokość),
+   * więc tam dotknięcie jest jedynym sposobem, żeby usłyszeć słówko.
+   */
+  const pickRight = (item: string) => {
+    speak(item);
+    pick("b", item);
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -82,7 +96,7 @@ export function MatchPairsExercise({
                   style={{ minHeight: "3.5rem", fontSize: "1.25rem" }}
                   aria-pressed={isPicked("b", item)}
                   disabled={locked}
-                  onClick={() => pick("b", item)}
+                  onClick={() => pickRight(item)}
                 >
                   {item}
                 </button>
