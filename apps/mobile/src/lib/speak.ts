@@ -23,17 +23,37 @@ function allVoices(): Promise<Speech.Voice[]> {
 /** Znaczniki języka przychodzą w kilku postaciach (`it-IT`, `it_IT`, `IT-it`) — zrównujemy je. */
 const tag = (lang: string): string => lang.replace('_', '-').toLowerCase();
 
+/** Sam język, bez kraju (`it-IT` → `it`). */
+const base = (lang: string): string => tag(lang).slice(0, 2);
+
 /**
- * Głos dla danego języka: najpierw dokładny (`it-IT`), potem jakikolwiek z tej samej rodziny
- * (`it-CH`). Brak zwraca `null` i wtedy nie ma czym czytać.
+ * Głos dla danego języka — i celowo NIE pierwszy z listy.
+ *
+ * Android podaje dla jednego języka po kilka głosów i nie układa ich od najlepszego. Są wśród
+ * nich dwa rodzaje, których dziecko nie chce usłyszeć:
+ *
+ *   * `…-network` — głos liczony na serwerze Google. Bez internetu albo przy słabym zasięgu
+ *     silnik podmienia go po cichu na swój domyślny, czyli włoskie słowo czyta polskim albo
+ *     angielskim lektorem. Dlatego `-local` ma pierwszeństwo;
+ *   * głos zwykłej jakości, kiedy obok stoi `Enhanced` — ten sam język, tylko wyraźniejszy.
+ *
+ * Kolejność: najpierw głosy dokładnie w znaczniku kursu (`it-IT`), potem z tej samej rodziny
+ * (`it-CH`), a w każdej grupie lokalny i lepszy przed gorszym. Brak zwraca `null` i wtedy nie ma
+ * czym czytać.
  */
 function pickVoice(voices: Speech.Voice[], lang: string): Speech.Voice | null {
   const wanted = tag(lang);
-  return (
-    voices.find((voice) => tag(voice.language) === wanted) ??
-    voices.find((voice) => tag(voice.language).slice(0, 2) === wanted.slice(0, 2)) ??
-    null
-  );
+  const best = voices
+    .filter((voice) => base(voice.language) === base(wanted))
+    .map((voice) => ({
+      voice,
+      ocena:
+        (tag(voice.language) === wanted ? 4 : 0) +
+        (tag(voice.identifier).includes('network') ? 0 : 2) +
+        (voice.quality === Speech.VoiceQuality.Enhanced ? 1 : 0),
+    }))
+    .sort((a, b) => b.ocena - a.ocena)[0];
+  return best?.voice ?? null;
 }
 
 /**
@@ -106,29 +126,51 @@ export function useSpeak(lang: string) {
         setSpeaking(false);
         onDone?.();
       };
-      Speech.speak(text, {
-        language: lang,
-        /**
-         * Sam `language` Androidowi nie wystarcza. Gdy danych języka nie ma, system nie zgłasza
-         * błędu — zostaje przy swoim domyślnym głosie, więc włoskie słowo czytał po angielsku.
-         * Wskazanie konkretnego głosu z listy urządzenia nie zostawia mu tego wyboru: albo
-         * przeczyta tym głosem, albo powie, że nie umie, i wtedy chowamy głośnik.
-         */
-        ...(voice === null ? {} : { voice: voice.identifier }),
-        onDone: () => {
-          worked.add(tag(lang));
-          end();
-        },
-        onStopped: end,
-        onError: () => {
-          // Język, w którym nigdy nic nie wyszło, uznajemy za nieobsługiwany — dziecko zobaczy
-          // wtedy „ten telefon nie ma głosu", zamiast dotykać głośnika, z którego nic nie leci.
-          if (!worked.has(tag(lang))) markBroken(lang);
-          end();
-        },
-      });
+      const powiedz = (wybrany: Speech.Voice | null) => {
+        Speech.speak(text, {
+          /**
+           * Sam język, bez kraju — i to nie niedopatrzenie. `expo-speech` buduje z tego, co
+           * dostanie, `Locale.Builder().setLanguage(…)`, a ten przyjmuje wyłącznie samo `it`.
+           * Na pełnym `it-IT` rzuca wyjątkiem, który moduł łapie i po cichu podstawia język
+           * urządzenia — włoskie słowo czytał wtedy polski albo angielski lektor. Kraj nie
+           * ginie: dobiera go `pickVoice`, dopasowując głos dokładnie do `it-IT`.
+           */
+          language: base(lang),
+          /**
+           * Wolniej niż domyślnie, tak samo jak na webie (`apps/web/src/lib/use-speak.ts`):
+           * dziecko ma zdążyć usłyszeć każdą głoskę, a przy zadaniu ze słuchu — zapisać słowo.
+           */
+          rate: 0.85,
+          /**
+           * Sam `language` Androidowi nie wystarcza. Gdy danych języka nie ma, system nie zgłasza
+           * błędu — zostaje przy swoim domyślnym głosie. Wskazanie konkretnego głosu z listy
+           * urządzenia nie zostawia mu tego wyboru: albo przeczyta tym głosem, albo powie, że nie
+           * umie, i wtedy chowamy głośnik.
+           */
+          ...(wybrany === null ? {} : { voice: wybrany.identifier }),
+          onDone: () => {
+            worked.add(tag(lang));
+            end();
+          },
+          onStopped: end,
+          onError: () => {
+            // Język, w którym nigdy nic nie wyszło, uznajemy za nieobsługiwany — dziecko zobaczy
+            // wtedy „ten telefon nie ma głosu", zamiast dotykać głośnika, z którego nic nie leci.
+            if (!worked.has(tag(lang))) markBroken(lang);
+            end();
+          },
+        });
+      };
+
+      /**
+       * Przy pierwszym dotknięciu lista głosów może jeszcze nie dojść — czyta się ją raz na
+       * uruchomienie aplikacji i trwa to chwilę. Bez czekania ta jedna wypowiedź poszłaby bez
+       * wskazanego głosu, czyli dokładnie tak, jak brzmiał włoski przed tą poprawką.
+       */
+      if (voices !== null) powiedz(voice);
+      else void allVoices().then((list) => powiedz(pickVoice(list, lang)));
     },
-    [lang, voice],
+    [lang, voice, voices],
   );
 
   return { speak, speaking, hasVoice, voicesLoaded: voices !== null };
@@ -143,5 +185,5 @@ export function useSpeak(lang: string) {
  */
 export async function voiceLanguages(): Promise<string[]> {
   const voices = await allVoices();
-  return Array.from(new Set(voices.map((voice) => tag(voice.language).slice(0, 2))));
+  return Array.from(new Set(voices.map((voice) => base(voice.language))));
 }

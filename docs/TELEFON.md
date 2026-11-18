@@ -101,6 +101,13 @@ npx eas-cli@latest env:list --environment preview
   W aplikacji ani w bazie nie ma czego przestawiać — znacznik języka (`languages.tts_lang`,
   np. `it-IT`) idzie z bazy razem z zadaniem. Jedyne lekarstwo to pobrać głos w ustawieniach.
 
+  Do 2026-11-18 angielski lektor nad włoskim słowem miał jeszcze drugą, ważniejszą przyczynę,
+  niezależną od pobranych głosów: `expo-speech` składa z przysłanego znacznika `Locale` metodą,
+  która przyjmuje tylko sam język (`it`), a na pełnym `it-IT` rzuca wyjątkiem — i moduł po cichu
+  podstawia wtedy język urządzenia. Dlatego aplikacja podaje mu teraz sam język, a kraj wskazuje
+  wyborem konkretnego głosu. Przy okazji głosy `…-network` (liczone na serwerze Google, bez sieci
+  podmieniane na domyślny) ustępują lokalnym, a tempo zeszło do 0,85 — tyle samo, co na stronie.
+
 ## Czego nie ma na tablecie
 
 Panelu administratora, widoku rodzica (postępy dzieci, prośby o dostęp), zakładania konta
