@@ -259,7 +259,12 @@ async function CourseScreen({ params }: { params: PageProps<"/kurs/[slug]">["par
               // gwiazdki, liczbę słówek i kwadraciki etapów, więc przy stojącej bramce powtórek
               // (zamknięty cały kurs) ekran dalej wyglądał na otwarty. Kłódki do otwarcia
               // punktem to nie dotyczy — tam lekcja jest w zasięgu i szary by kłamał.
-              const szara = state === "locked" && !(lesson.is_unlockable && punkty > 0);
+              //
+              // Pytamy o `is_unlocked`, nie o `state`: ZALICZONA lekcja w zamkniętym dziale ma
+              // stan „done", więc po samym stanie zostawała kolorowa i rząd zamkniętych lekcji
+              // dalej wyglądał na otwarty — dokładnie to widać było pod zamkniętym UNIT 0.
+              // Zamek dotyczy jej tak samo jak reszty: bramka nie wpuszcza nawet z powrotem.
+              const szara = lesson.is_unlocked !== true && !(lesson.is_unlockable && punkty > 0);
 
               const etapy = lesson.stage_count ?? 1;
               // Zaliczona lekcja ma z definicji wszystkie etapy za sobą — nie opieramy się tu

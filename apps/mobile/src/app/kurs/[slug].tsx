@@ -193,7 +193,11 @@ function LessonTile({
   // i kwadraciki etapów zostawały w kolorze, więc przy stojącej bramce powtórek (zamknięty cały
   // kurs) ekran dalej wyglądał na otwarty. Kłódki do otwarcia punktem to nie dotyczy — lekcja
   // jest w zasięgu, a szary mówiłby, że nie.
-  const gray = state === 'locked' && !unlockable;
+  //
+  // Pytamy o `is_unlocked`, nie o `state`: ZALICZONA lekcja w zamkniętym dziale ma stan „done",
+  // więc po samym stanie zostawała kolorowa i rząd zamkniętych lekcji dalej wyglądał na otwarty.
+  // Zamek dotyczy jej tak samo jak reszty: bramka nie wpuszcza nawet z powrotem.
+  const gray = lesson.is_unlocked !== true && !unlockable;
 
   const stages = lesson.stage_count ?? 1;
   // Zaliczona lekcja ma z definicji wszystkie etapy za sobą — licznik dotyczy bieżącego podejścia.
