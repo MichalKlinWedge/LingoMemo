@@ -68,3 +68,15 @@ npx eas-cli@latest env:create --environment preview --name EXPO_PUBLIC_SUPABASE_
 
 Bez nich aplikacja wstanie i powie „Brak adresu bazy" — klucz publishable może być w APK,
 dostępu pilnuje RLS.
+
+**Gdy skończy się darmowa pula buildów** („This account has used its Android builds from the Free
+plan this month"), APK zbuduj na GitHubie: Actions → **„APK na telefon"** → Run workflow
+(`.github/workflows/apk.yml`). Runner jest Linuksem, więc może `eas build --local`, a lokalny
+build nie zużywa puli. Paczka wychodzi taka sama jak z chmury — ten sam keystore z serwera i kanał
+`preview` z `eas.json` — czyli instaluje się na tablecie po wierzchu i dalej dostaje OTA. Workflow
+wymaga sekretu `EXPO_TOKEN` (token z <https://expo.dev/settings/access-tokens>, wklejony
+w Settings → Secrets and variables → Actions).
+
+Na Windowsie `eas build --local` nie zadziała („macOS or Linux is required to build apps for
+Android"), a droga przez `npx expo prebuild` + gradle daje APK podpisany innym kluczem (nie
+zainstaluje się po wierzchu) i bez kanału OTA — kanał wstrzykuje EAS z `eas.json`.

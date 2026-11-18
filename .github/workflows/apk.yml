@@ -1,0 +1,73 @@
+# Budowanie APK na runnerze GitHuba, nie w chmurze EAS.
+#
+# Po co: darmowy plan EAS ma miesięczną pulę buildów Androida, a po jej wyczerpaniu
+# `npm run apk` odbija się z „This account has used its Android builds from the Free plan".
+# `eas build --local` tej puli nie zużywa (liczą się tylko buildy wykonane na serwerach EAS),
+# ale nie działa na Windowsie — „macOS or Linux is required to build apps for Android". Runner
+# `ubuntu-latest` jest Linuksem i ma już Android SDK, więc robi to za nas.
+#
+# APK wychodzi stąd taki sam jak z chmury: CLI zalogowane przez `EXPO_TOKEN` ściąga z serwera
+# ten sam keystore i czyta `apps/mobile/eas.json`, czyli kanał `preview` i `autoIncrement`.
+# Dzięki temu paczka instaluje się na tablecie po wierzchu poprzedniej i dalej dostaje OTA.
+#
+# Wymaga jednego sekretu w repozytorium: `EXPO_TOKEN` — token z
+# https://expo.dev/settings/access-tokens, wklejony w Settings → Secrets and variables →
+# Actions. Bez niego krok buildu kończy się na „Not logged in".
+#
+# Uruchamia się tylko z ręki (Actions → „APK na telefon" → Run workflow), bo APK jest potrzebny
+# rzadko — zmiany w JS i w bazie dowozi OTA do APK, który już jest na tablecie.
+
+name: APK na telefon
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: Profil z apps/mobile/eas.json
+        type: choice
+        default: preview
+        options:
+          - preview
+          - development
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    # Build gradle'a schodzi w kwadrans, ale pierwszy (zimny cache gradle'a) bywa dłuższy.
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # Android Gradle Plugin wymaga JDK 17. Runner ma kilka JDK, więc wybieramy wprost.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      # Cały workspace, nie tylko apps/mobile: `npm ci` w monorepo instaluje z jednego
+      # `package-lock.json` w katalogu głównym.
+      - run: npm ci
+
+      # `env:exec` podkłada zmienne ze środowiska EAS o tej samej nazwie co profil
+      # (`EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY`). Wchodzą do paczki przy
+      # budowaniu, a `.env.local` nie jedzie do CI — bez nich aplikacja wstanie i powie
+      # „Brak adresu bazy".
+      - name: Build APK
+        working-directory: apps/mobile
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          npx eas-cli@latest env:exec "${{ inputs.profile }}" \
+            "npx eas-cli@latest build --platform android --profile ${{ inputs.profile }} --local --non-interactive --output $GITHUB_WORKSPACE/lingomemo-${{ inputs.profile }}.apk"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lingomemo-${{ inputs.profile }}-apk
+          path: lingomemo-*.apk
+          # Dłużej nie trzeba: po tygodniu i tak jest nowszy build albo wystarcza OTA.
+          retention-days: 14
