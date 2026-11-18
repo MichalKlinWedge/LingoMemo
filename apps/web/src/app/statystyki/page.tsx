@@ -4,7 +4,6 @@ import { DAYS, formatDuration, plural, POINTS, spellDuration, WORDS } from "@lin
 
 import { BadgeList } from "@/app/badge-list";
 import { ChildrenList } from "@/app/children-list";
-import { CRUMB_HOME } from "@/components/breadcrumbs";
 import { Flag } from "@/components/flag";
 import { PageHeader } from "@/components/page-header";
 import { Loading, Shell } from "@/components/shell";
@@ -43,7 +42,7 @@ async function Stats() {
 
   return (
     <>
-      <PageHeader crumbs={[CRUMB_HOME]} title="Twoje postępy" />
+      <PageHeader title="Twoje postępy" />
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Tile icon="⭐" value={stats?.total_points ?? 0} label="punktów" />

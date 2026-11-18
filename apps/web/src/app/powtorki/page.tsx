@@ -3,7 +3,6 @@ import { Suspense } from "react";
 
 import { DAYS, plural, WORDS } from "@lingomemo/core";
 
-import { CRUMB_HOME } from "@/components/breadcrumbs";
 import { Flag } from "@/components/flag";
 import { PageHeader } from "@/components/page-header";
 import { Loading, Shell } from "@/components/shell";
@@ -97,7 +96,6 @@ async function Reviews() {
   return (
     <>
       <PageHeader
-        crumbs={[CRUMB_HOME]}
         title="Powtórki"
         intro={
           slowka.length > 0

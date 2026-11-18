@@ -6,7 +6,6 @@ import { LESSONS, plural, STARS, WORDS } from "@lingomemo/core";
 
 import { CourseRequest } from "@/app/course-request";
 import { Flag } from "@/components/flag";
-import { CRUMB_HOME } from "@/components/breadcrumbs";
 import { PageHeader } from "@/components/page-header";
 import { Loading, Shell } from "@/components/shell";
 import { requireUser } from "@/lib/auth";
@@ -37,7 +36,6 @@ async function CourseScreen({ params }: { params: PageProps<"/kurs/[slug]">["par
     return (
       <>
         <PageHeader
-          crumbs={[CRUMB_HOME]}
           title={
             <>
               <Flag code={course.target_lang} fallback={course.icon ?? "📘"} size={32} /> {course.title}
@@ -165,7 +163,6 @@ async function CourseScreen({ params }: { params: PageProps<"/kurs/[slug]">["par
   return (
     <>
       <PageHeader
-        crumbs={[CRUMB_HOME]}
         title={
           <>
             <Flag code={course.target_lang} fallback={course.icon} size={36} /> {course.title}
