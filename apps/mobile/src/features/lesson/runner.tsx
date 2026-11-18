@@ -476,8 +476,23 @@ function Progress({
         {/* Wyjście jest napisem, nie krzyżykiem: dziecko w drugiej klasie czyta „Wyjdź", a ✕ musi
             sobie wytłumaczyć. Czerwień mówi, że to wyjście bez dokończenia etapu. */}
         <Button kind="danger" compact label="Wyjdź" onPress={() => backToCourse(router, courseSlug)} />
-        <View style={styles.bar}>
-          <View style={[styles.barFill, { width: `${Math.round((index / total) * 100)}%` }]} />
+        {/* Poziom mówi kolorem paska postępu, a nie własnym znacznikiem: ekran telefonu jest
+            wąski, a napis „Poziom trudny" zabierał cały wiersz pod paskiem. Kolory te same co
+            kwadraciki na ekranie kursu (zielony → żółty → czerwony). Obrys jest konieczny:
+            na pierwszym zadaniu wypełnienie ma zerową szerokość i bez niego poziomu nie byłoby
+            po czym poznać. */}
+        <View
+          style={[styles.bar, { borderColor: levelColor(level) }]}
+          accessibilityRole="progressbar"
+          accessibilityLabel={`Postęp lekcji — poziom ${levelName(level)}`}
+          accessibilityValue={{ min: 0, max: total, now: index }}
+        >
+          <View
+            style={[
+              styles.barFill,
+              { backgroundColor: levelColor(level), width: `${Math.round((index / total) * 100)}%` },
+            ]}
+          />
         </View>
         <Text style={styles.counter}>
           {index + 1}/{total}
@@ -489,13 +504,6 @@ function Progress({
             Etap {stage}/{stages}
           </Chip>
         )}
-        {/* Poziom na każdym wejściu i kolorem, nie tylko napisem na średnim i trudnym. Kwadracik
-            jest ten sam i w tym samym kolorze co na ekranie kursu, więc dziecko w trakcie zadań
-            poznaje poziom tak samo jak przy wybieraniu lekcji. Pełna nazwa idzie do etykiety dla
-            czytnika ekranu — na telefonie nie ma dymka, a rząd znaczników ma być krótki. */}
-        <Chip tint={levelColor(level)} label={`Poziom ${levelName(level).toLowerCase()}`}>
-          {levelName(level)}
-        </Chip>
         {/* Bez tego napisu dziecko widzi tylko, że ekran pokazuje coś, co już było. */}
         {repeat && <Chip>🔁 Jeszcze raz</Chip>}
       </View>
@@ -661,8 +669,18 @@ const styles = StyleSheet.create({
   head: { gap: size.gap, paddingHorizontal: size.pad, paddingTop: size.gap },
   headRow: { alignItems: 'center', flexDirection: 'row', gap: size.gap },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  bar: { backgroundColor: color.line, borderRadius: 999, flex: 1, height: 16, overflow: 'hidden' },
-  barFill: { backgroundColor: color.grass, borderRadius: 999, height: '100%' },
+  // Obrys w kolorze poziomu (`borderColor` dokłada ekran lekcji). Pasek rośnie przez to
+  // o 4 px zamiast chować poziom w osobnym znaczniku pod spodem — na wąskim ekranie to
+  // zamiana całego wiersza na cztery piksele.
+  bar: {
+    backgroundColor: color.line,
+    borderRadius: 999,
+    borderWidth: 2,
+    flex: 1,
+    height: 20,
+    overflow: 'hidden',
+  },
+  barFill: { borderRadius: 999, height: '100%' },
   counter: { color: color.muted, fontSize: 16, fontWeight: '700' },
   body: { gap: size.gap * 1.5, padding: size.pad, paddingBottom: 40 },
   skip: { alignItems: 'center', justifyContent: 'center', minHeight: 44 },

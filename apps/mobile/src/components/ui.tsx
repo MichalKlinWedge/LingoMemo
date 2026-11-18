@@ -50,25 +50,14 @@ export function Chip({
   children,
   label,
   onPress,
-  tint,
 }: {
   children: ReactNode;
   label?: string;
   onPress?: () => void;
-  /**
-   * Kolor obrysu i kwadracika z przodu — dla znacznika, który mówi kolorem, nie samym napisem
-   * (poziom lekcji). Wypełnienia nie kolorujemy: zieleń i czerwień na całej powierzchni znaczą
-   * w zadaniu „dobrze" i „źle".
-   */
-  tint?: string;
 }) {
-  const tinted = tint === undefined ? null : [styles.chipTinted, { borderColor: tint }];
-  const dot = tint === undefined ? null : <View style={[styles.chipDot, { backgroundColor: tint }]} />;
-
   if (onPress === undefined) {
     return (
-      <View style={[styles.chip, tinted]} accessible={label !== undefined} accessibilityLabel={label}>
-        {dot}
+      <View style={styles.chip} accessible={label !== undefined} accessibilityLabel={label}>
         <Text style={styles.chipText}>{children}</Text>
       </View>
     );
@@ -80,9 +69,8 @@ export function Chip({
       accessibilityLabel={label}
       hitSlop={12}
       onPress={onPress}
-      style={({ pressed }) => [styles.chip, tinted, pressed === true && styles.chipPressed]}
+      style={({ pressed }) => [styles.chip, pressed === true && styles.chipPressed]}
     >
-      {dot}
       <Text style={styles.chipText}>{children}</Text>
     </Pressable>
   );
@@ -169,20 +157,7 @@ const styles = StyleSheet.create({
   // Przy 14 klucz przeskakiwał do drugiego wiersza już przy czterocyfrowych punktach, a tych
   // będą dziesiątki tysięcy. Przy 9, licząc z metryk Roboto, pięć znaczników schodzi do ~338 dp
   // i zostaje miejsce na punkty sześciocyfrowe (na szerszym telefonie — siedmiocyfrowe).
-  chip: {
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    backgroundColor: color.brandLight,
-    borderRadius: 999,
-    flexDirection: 'row',
-    gap: 6,
-    paddingHorizontal: 9,
-    paddingVertical: 6,
-  },
-  // Obrys dokłada się do wysokości, a znacznik stoi w rzędzie z pozostałymi — mniejsze
-  // dopełnienie trzyma wszystkie w tej samej linii.
-  chipTinted: { borderWidth: 2, paddingHorizontal: 7, paddingVertical: 4 },
-  chipDot: { borderRadius: 4, height: 14, width: 14 },
+  chip: { alignSelf: 'flex-start', backgroundColor: color.brandLight, borderRadius: 999, paddingHorizontal: 9, paddingVertical: 6 },
   chipPressed: { opacity: 0.7 },
   chipText: { color: color.brandDark, fontSize: 15, fontWeight: '700' },
   button: {
