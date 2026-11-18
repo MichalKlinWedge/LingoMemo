@@ -52,6 +52,28 @@ export function TopBar() {
 
   if (session === null || session === undefined) return null;
 
+  /**
+   * Wejście w ekran poboczny (nagrody, postępy, ustawienia) z paska.
+   *
+   * Pasek wisi nad KAŻDYM ekranem, więc jego znaczniki i zębatkę da się dotknąć także na tych
+   * ekranach. Zwykłe `push` dokładałoby wtedy ten sam ekran drugi raz na stos, a strzałka
+   * powrotu wracała do jego kopii — dziecko naciskało „wstecz", nic się nie zmieniało i do
+   * kursu nie było jak wrócić. Dlatego:
+   *
+   *   * ten sam ekran — nie robimy nic,
+   *   * przesiadka między ekranami pobocznymi — `replace`, czyli stos nie rośnie,
+   *   * wejście z kursu albo z lekcji — `push`, bo stamtąd powrót ma wrócić właśnie tam.
+   *
+   * Dzięki temu powrót z nagród i postępów prowadzi zawsze do kursu, z którego dziecko weszło,
+   * niezależnie od tego, ile razy przeskakiwało między nimi paskiem.
+   */
+  const POBOCZNE: string[] = ['/nagrody', '/statystyki', '/ustawienia'];
+  const otworz = (href: '/nagrody' | '/statystyki' | '/ustawienia') => {
+    if (pathname === href) return;
+    if (POBOCZNE.includes(pathname)) router.replace(href);
+    else router.push(href);
+  };
+
   return (
     <View style={[styles.bar, { paddingTop: insets.top + 8 }]}>
       <View style={styles.row}>
@@ -73,7 +95,7 @@ export function TopBar() {
           accessibilityRole="button"
           accessibilityLabel="Ustawienia"
           hitSlop={8}
-          onPress={() => router.push('/ustawienia')}
+          onPress={() => otworz('/ustawienia')}
           style={({ pressed }) => [styles.gear, pressed && styles.pressed]}
         >
           <Text style={styles.gearIcon}>⚙️</Text>
@@ -88,19 +110,19 @@ export function TopBar() {
           {/* Każdy znacznik prowadzi tam, gdzie widać jego liczbę z bliska — dokładnie jak
               w pasku na webie. Dlatego pod kursami nie ma osobnych przycisków „Nagrody"
               i „Postępy": były drugim wejściem w to samo, a stały na samym dole ekranu. */}
-          <Chip label={`${plural(bar.points, POINTS)} — zobacz nagrody`} onPress={() => router.push('/nagrody')}>
+          <Chip label={`${plural(bar.points, POINTS)} — zobacz nagrody`} onPress={() => otworz('/nagrody')}>
             ⭐ {bar.points}
           </Chip>
           <Chip
             label={`seria: ${plural(bar.streak, DAYS)} nauki pod rząd — zobacz postępy`}
-            onPress={() => router.push('/statystyki')}
+            onPress={() => otworz('/statystyki')}
           >
             🔥 {bar.streak}
           </Chip>
           {bar.due > 0 && (
             <Chip
               label={`${plural(bar.due, WORDS)} do powtórki — zobacz postępy`}
-              onPress={() => router.push('/statystyki')}
+              onPress={() => otworz('/statystyki')}
             >
               🔁 {bar.due}
             </Chip>
