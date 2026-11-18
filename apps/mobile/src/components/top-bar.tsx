@@ -163,5 +163,8 @@ const styles = StyleSheet.create({
   gear: { alignItems: 'center', height: 44, justifyContent: 'center', width: 44 },
   gearIcon: { fontSize: 24 },
   pressed: { opacity: 0.6 },
-  stats: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  // Odstęp mniejszy niż między kartami: cztery przerwy po 8 px to pół znacznika szerokości,
+  // a wiersz ma pomieścić wszystkie pięć. Zawijanie zostaje jako wyjście awaryjne — gdy liczby
+  // kiedyś przerosną i to, lepiej drugi wiersz niż ucięty klucz.
+  stats: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
 });

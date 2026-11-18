@@ -142,7 +142,12 @@ const styles = StyleSheet.create({
   title: { color: color.text, fontSize: 24, fontWeight: '700' },
   body: { color: color.text, fontSize: size.text, lineHeight: 28 },
   bodyMuted: { color: color.muted, fontSize: 16, lineHeight: 24 },
-  chip: { alignSelf: 'flex-start', backgroundColor: color.brandLight, borderRadius: 999, paddingHorizontal: 14, paddingVertical: 6 },
+  // Wyściółka po bokach jest wąska przez pasek stanu: stoi w nim pięć znaczników w jednym
+  // wierszu (punkty, seria, powtórki, podpowiedzi, klucze), a telefon w pionie ma 360 dp.
+  // Przy 14 klucz przeskakiwał do drugiego wiersza już przy czterocyfrowych punktach, a tych
+  // będą dziesiątki tysięcy. Przy 9, licząc z metryk Roboto, pięć znaczników schodzi do ~338 dp
+  // i zostaje miejsce na punkty sześciocyfrowe (na szerszym telefonie — siedmiocyfrowe).
+  chip: { alignSelf: 'flex-start', backgroundColor: color.brandLight, borderRadius: 999, paddingHorizontal: 9, paddingVertical: 6 },
   chipPressed: { opacity: 0.7 },
   chipText: { color: color.brandDark, fontSize: 15, fontWeight: '700' },
   button: {
