@@ -39,8 +39,19 @@ poprawki (ten sam co na pulpicie EAS) albo `kod z pliku APK`, jeśli urządzenie
 żadnej aktualizacji. Tym zaczynaj, gdy „na tablecie jest stara wersja": świeżo zainstalowany APK
 zawsze startuje swoim kodem, nawet gdy nowsza poprawka czeka już pobrana.
 
+Ten sam wiersz rozstrzyga pytanie „czy trzeba wgrać nowy plik". **Kanał wchodzi do paczki przy
+budowaniu**, więc urządzenie z APK sprzed 2026-11-17 pokazuje `kanał dzieci` i słucha kanału,
+którego już nie zasilamy — do niego żadna poprawka nie dojdzie, choćby wyszło ich dziesięć.
+Pisze `kanał preview` — nie ma nic do roboty, OTA dociera tam razem z telefonem właściciela.
+
 **Nowego APK wymaga tylko zmiana natywna**: nowy moduł (np. obrazki SVG przez `expo-image`),
 nowe uprawnienie, zmiana w `app.json`. Zmiany w kodzie aplikacji idą przez OTA i dochodzą same.
+
+Darmowy plan EAS daje **kilka buildów Androida na miesiąc** i licznik zeruje się pierwszego dnia
+następnego. Po wyczerpaniu puli `npm run apk` kończy się od razu komunikatem „has used its
+Android builds from the Free plan this month" i datą odnowienia — nic się przy tym nie psuje
+(podbija się tylko numer wersji po stronie EAS). Dlatego buduj plik wtedy, gdy naprawdę jest
+potrzebny; poprawki JS i tak idą przez OTA bez limitu.
 
 Adres bazy i klucz publiczny są zapisane po stronie EAS (środowisko `preview`), bo `.env.local`
 nie jedzie do chmury:

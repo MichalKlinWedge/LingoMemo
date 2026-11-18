@@ -55,7 +55,7 @@ rodzic wchodzi na web.
 |---|---|
 | Expo + `expo-router`, dev build zamiast Expo Go | **tak** — `apps/mobile` w tym samym monorepo |
 | `AGENTS.md` w `apps/mobile` z regułą „nie wierz pamięci o Expo, czytaj wersjonowane dokumenty” | **tak**, przenosimy prawie 1:1 — SDK łamie API co wydanie |
-| EAS: profile `preview` (właściciel) i `friends` (inni), OTA `eas update` na kanał | **tak**, z kanałem `dzieci` zamiast `friends` |
+| EAS: profile `preview` (właściciel) i `friends` (inni), OTA `eas update` na kanał | **nie** — jeden profil i jeden kanał `preview` dla wszystkich telefonów w domu (osobny kanał `dzieci` był i zniknął 2026-11-17, patrz `docs/DECYZJE.md`) |
 | Wspólna logika w `packages/core` jako źródła TypeScript, bez importów z Node i przeglądarki | **tak** — `packages/core` już taki jest (`main: src/index.ts`, rozszerzenia `.ts` w importach) |
 | Dokument „Analiza telefonu” z brakami P1/P2/P3 i podziałem na OTA i APK | **tak, ale po pierwszym tygodniu używania**, nie przed |
 | `packages/sync`: SQLite, outbox, `pull_changes`, brak twardych usunięć | **nie w MVP** — patrz decyzja o offline niżej |
@@ -163,7 +163,7 @@ w katalogu głównym, telefon w tej samej sieci (albo `npx expo start --tunnel`)
 wystarczy — powiadomienia, mowa i SQLite to moduły natywne.
 
 Dev build NIE potrzebuje zmiennych po stronie EAS (Metro czyta `.env.local` z komputera), ale
-APK `preview` i `dzieci` już tak — `apps/mobile/AGENTS.md` ma polecenia `eas env:create`.
+APK `preview` już tak — `apps/mobile/AGENTS.md` ma polecenia `eas env:create`.
 
 ### Etap M1 — kurs i lekcja
 
@@ -288,7 +288,8 @@ w Play Protect — wszystkie trzy pułapki opisane w `ZNAJOMI.md` są prawdziwe.
 następna poprawka dochodzi do niego jako OTA, bez ponownej instalacji.
 
 **Stan (2026-11-16):** zaczęty wcześniej niż planowano, bo dziecko ma uczyć się na tablecie już
-teraz. Jest: profil `dzieci` z własnym kanałem, zmienne bazy po stronie EAS (środowisko
+teraz. Jest: osobny profil `dzieci` z własnym kanałem (zniesiony 2026-11-17 — został jeden profil
+i kanał `preview` dla wszystkich telefonów), zmienne bazy po stronie EAS (środowisko
 `preview`), `orientation: "default"` (tablet leży poziomo), `checkAutomatically: "ON_LOAD"`
 (inaczej OTA nigdy by nie doszło) i instrukcja `docs/TELEFON.md`. Nie ma jeszcze: własnego
 znacznika „jest nowa wersja" w aplikacji, obsługi wygaśnięcia sesji i zadania w tle do
