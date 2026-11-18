@@ -4,6 +4,29 @@ import { useState } from 'react';
 import { Body, Button, Card, Message, Title } from '@/components/ui';
 
 /**
+ * Restart po pobraniu nowej wersji.
+ *
+ * Osobny komponent, bo ten przycisk jest potrzebny w dwóch miejscach: na karcie na ekranie kursów
+ * (dla kogoś, kto nic nie sprawdzał) i od razu pod „Sprawdź aktualizację" (dla kogoś, kto właśnie
+ * sprawdził). Odesłanie go na inny ekran było krokiem, którego nikt nie robił.
+ *
+ * Restartu nie robimy sami: aplikacja, która nagle startuje od nowa, wygląda na zepsutą.
+ */
+function RestartButton() {
+  const [starting, setStarting] = useState(false);
+  return (
+    <Button
+      label="Uruchom teraz"
+      busy={starting}
+      onPress={() => {
+        setStarting(true);
+        void reloadAsync().catch(() => setStarting(false));
+      }}
+    />
+  );
+}
+
+/**
  * Nowa wersja aplikacji.
  *
  * Poprawki jadą na tablet przez OTA (EAS Update), a aplikacja sprawdza je sama przy starcie
@@ -11,13 +34,11 @@ import { Body, Button, Card, Message, Title } from '@/components/ui';
  * dopiero przy następnym uruchomieniu — bez tej karty trzeba było zamknąć aplikację z listy
  * ostatnich i otworzyć ją dwa razy, czego nikt nie zgadnie.
  *
- * Restartu nie robimy sami: aplikacja, która nagle startuje od nowa, wygląda na zepsutą. Dlatego
- * jest przycisk, i tylko na ekranie kursów — nigdy w trakcie lekcji, gdzie restart zabrałby
+ * Karta stoi tylko na ekranie kursów — nigdy w trakcie lekcji, gdzie restart zabrałby
  * niedokończone podejście.
  */
 export function UpdateBanner() {
   const { isUpdatePending } = useUpdates();
-  const [starting, setStarting] = useState(false);
 
   if (!isUpdatePending) return null;
 
@@ -25,14 +46,7 @@ export function UpdateBanner() {
     <Card>
       <Title>🔄 Nowa wersja gotowa</Title>
       <Body muted>Uruchom aplikację od nowa, żeby z niej korzystać. Punkty i postępy zostają.</Body>
-      <Button
-        label="Uruchom teraz"
-        busy={starting}
-        onPress={() => {
-          setStarting(true);
-          void reloadAsync().catch(() => setStarting(false));
-        }}
-      />
+      <RestartButton />
     </Card>
   );
 }
@@ -63,6 +77,9 @@ export function UpdateInfo() {
  * poprawka wyszła przy włączonej aplikacji: sprawdzenie przy starcie już było i samo się nie
  * powtórzy, dopóki aplikacja nie wstanie od nowa.
  *
+ * Pobrana wersja dostaje przycisk restartu tu, na miejscu: kto sprawdził aktualizację, ten chce ją
+ * uruchomić teraz, a nie dowiadywać się, że przycisk czeka na innym ekranie.
+ *
  * W wersji z Metro (dev build) `isEnabled` jest nieprawdą — OTA tam nie działa, bo kod
  * przychodzi wprost z komputera. Mówimy to wprost, zamiast pokazywać przycisk, który nic nie robi.
  */
@@ -76,7 +93,12 @@ export function UpdateCheck() {
   }
 
   if (isUpdatePending) {
-    return <Body muted>Nowa wersja jest pobrana — uruchom ją przyciskiem na górze ekranu kursów.</Body>;
+    return (
+      <>
+        <Body muted>Nowa wersja jest pobrana. Punkty i postępy zostają.</Body>
+        <RestartButton />
+      </>
+    );
   }
 
   const check = async () => {
@@ -88,8 +110,8 @@ export function UpdateCheck() {
         setNote('Masz najnowszą wersję.');
         return;
       }
-      // Pobranie przestawia `isUpdatePending`, więc karta z przyciskiem „Uruchom teraz" pojawia
-      // się sama — tutaj nie ma już czego dopisywać.
+      // Pobranie przestawia `isUpdatePending`, więc przycisk „Uruchom teraz" pojawia się sam —
+      // tutaj nie ma już czego dopisywać.
       await fetchUpdateAsync();
     } catch {
       setError('Nie udało się sprawdzić aktualizacji. Sprawdź internet.');
