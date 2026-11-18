@@ -644,6 +644,35 @@ h2 {
     font-weight: 600;
   }
 
+  /* Poziom lekcji mówi kolorem, nie samym napisem: kwadracik i kolor te same co na ekranie
+     kursu (zielony → żółty → czerwony), więc dziecko w trakcie zadań poznaje poziom tak samo
+     jak przy wybieraniu lekcji. Wypełnienia nie kolorujemy — zieleń i czerwień na całej
+     powierzchni znaczą w zadaniu „dobrze" i „źle", a to jest informacja o lekcji, nie
+     o odpowiedzi. */
+  .chip-level {
+    --level-color: var(--level-1);
+    border: 2px solid var(--level-color);
+    /* Obrys dokłada się do wysokości, a znacznik stoi w jednym rzędzie z pozostałymi —
+       mniejsze dopełnienie trzyma wszystkie w tej samej linii. */
+    padding: calc(0.25rem - 2px) calc(0.75rem - 2px);
+  }
+
+  .chip-level[data-level="2"] {
+    --level-color: var(--level-2);
+  }
+
+  .chip-level[data-level="3"] {
+    --level-color: var(--level-3);
+  }
+
+  .chip-level::before {
+    content: "";
+    width: 0.875rem;
+    height: 0.875rem;
+    border-radius: 0.25rem;
+    background: var(--level-color);
+  }
+
   /* Ile brakuje do odznaki. Sama liczba („7 z 10”) wymaga przeczytania i porównania — kreska
      mówi „już blisko” jednym spojrzeniem, a tylko to dziecko robi, przewijając listę nagród. */
   .badge-bar {

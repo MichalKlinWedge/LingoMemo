@@ -5,7 +5,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Body, Button, Card, Chip, Message, Title } from '@/components/ui';
-import { color, size } from '@/constants/theme';
+import { color, level as levelTones, size } from '@/constants/theme';
 import {
   askHint,
   type Answer,
@@ -28,6 +28,21 @@ import { barChanged } from '@/features/stats/load';
 import { stopwatch } from '@/lib/clock';
 
 type Phase = 'answering' | 'checking' | 'feedback' | 'done';
+
+/**
+ * Nazwa poziomu w znaczniku. Krótka, bo znacznik stoi w rzędzie z etapem i podpowiedziami —
+ * pełne „Poziom trudny" idzie do etykiety dla czytnika ekranu.
+ */
+function levelName(value: number) {
+  if (value === 2) return 'Średni';
+  if (value === 3) return 'Trudny';
+  return 'Łatwy';
+}
+
+/** Kolor poziomu — ten sam, którym świecą kwadraciki na ekranie kursu. */
+function levelColor(value: number) {
+  return levelTones[value - 1] ?? levelTones[0];
+}
 
 /**
  * Powrót na ekran kursu — `dismissTo`, nie `replace`.
@@ -474,7 +489,13 @@ function Progress({
             Etap {stage}/{stages}
           </Chip>
         )}
-        {level > 1 && <Chip>{level === 2 ? 'Poziom średni' : 'Poziom trudny'}</Chip>}
+        {/* Poziom na każdym wejściu i kolorem, nie tylko napisem na średnim i trudnym. Kwadracik
+            jest ten sam i w tym samym kolorze co na ekranie kursu, więc dziecko w trakcie zadań
+            poznaje poziom tak samo jak przy wybieraniu lekcji. Pełna nazwa idzie do etykiety dla
+            czytnika ekranu — na telefonie nie ma dymka, a rząd znaczników ma być krótki. */}
+        <Chip tint={levelColor(level)} label={`Poziom ${levelName(level).toLowerCase()}`}>
+          {levelName(level)}
+        </Chip>
         {/* Bez tego napisu dziecko widzi tylko, że ekran pokazuje coś, co już było. */}
         {repeat && <Chip>🔁 Jeszcze raz</Chip>}
       </View>

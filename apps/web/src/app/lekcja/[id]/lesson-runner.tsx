@@ -19,6 +19,16 @@ import { askHint, finishLesson, startLesson, submitAnswer, type Summary, type Ve
 
 type Phase = "answering" | "checking" | "feedback" | "done";
 
+/**
+ * Nazwa poziomu w znaczniku. Krótka, bo znacznik stoi w jednym rzędzie z etapem, podpowiedziami
+ * i licznikiem zadań — pełne „Poziom trudny" idzie do dymka i do etykiety dla czytnika ekranu.
+ */
+function levelName(level: number) {
+  if (level === 2) return "Średni";
+  if (level === 3) return "Trudny";
+  return "Łatwy";
+}
+
 
 /**
  * Przebieg lekcji. Komponent pilnuje tylko kolejności zadań i tego, co widać na ekranie —
@@ -370,8 +380,21 @@ export function LessonRunner({
             Etap {stage}/{stages}
           </span>
         )}
-        {/* Trudniejsze wejście wygląda jak lekcja, więc musi powiedzieć, że to inny kwadracik. */}
-        {level > 1 && <span className="chip">{level === 2 ? "Poziom średni" : "Poziom trudny"}</span>}
+        {/* Poziom na każdym wejściu i kolorem, nie tylko napisem na średnim i trudnym. Na łatwym
+            nie było dotąd o poziomie ani słowa, a trudniejsze wejścia różniły się od zwykłej
+            lekcji samym napisem — który dziecko musiało przeczytać i jeszcze skojarzyć
+            z kwadracikiem na ekranie kursu. Teraz kwadracik jest ten sam i w tym samym kolorze,
+            a pełna nazwa siedzi w dymku i w etykiecie dla czytnika ekranu: rząd ma 48 rem
+            i „Poziom łatwy" przy każdej lekcji spychałby licznik zadań do drugiego wiersza. */}
+        <span
+          className="chip chip-level"
+          data-level={level}
+          role="img"
+          title={`Poziom ${levelName(level).toLowerCase()}`}
+          aria-label={`Poziom ${levelName(level).toLowerCase()}`}
+        >
+          <span aria-hidden>{levelName(level)}</span>
+        </span>
         {/* Podgląd z panelu wygląda dokładnie jak lekcja dziecka — a przecież omija zamki.
             Bez tego napisu administrator nie odróżniłby „lekcja jest otwarta" od „wszedłem
             tylnymi drzwiami". */}
