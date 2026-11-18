@@ -456,7 +456,7 @@ function Progress({
       <View style={styles.headRow}>
         {/* Wyjście jest napisem, nie krzyżykiem: dziecko w drugiej klasie czyta „Wyjdź", a ✕ musi
             sobie wytłumaczyć. Czerwień mówi, że to wyjście bez dokończenia etapu. */}
-        <Button kind="danger" label="Wyjdź" onPress={() => backToCourse(router, courseSlug)} />
+        <Button kind="danger" compact label="Wyjdź" onPress={() => backToCourse(router, courseSlug)} />
         <View style={styles.bar}>
           <View style={[styles.barFill, { width: `${Math.round((index / total) * 100)}%` }]} />
         </View>

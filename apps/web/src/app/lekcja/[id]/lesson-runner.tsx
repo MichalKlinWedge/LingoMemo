@@ -333,7 +333,7 @@ export function LessonRunner({
           je od wszystkiego innego na ekranie lekcji. Rząd zawija się, bo przycisk zajmuje więcej
           miejsca niż krzyżyk i na wąskim ekranie zepchnąłby licznik zadań poza widok. */}
       <div className="flex flex-wrap items-center gap-3">
-        <Link href={`/kurs/${courseSlug}`} className="btn-danger shrink-0" aria-label="Wyjdź z lekcji">
+        <Link href={`/kurs/${courseSlug}`} className="btn-danger btn-compact shrink-0" aria-label="Wyjdź z lekcji">
           Wyjdź
         </Link>
         <div

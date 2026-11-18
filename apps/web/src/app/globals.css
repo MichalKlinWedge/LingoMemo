@@ -207,6 +207,19 @@ h2 {
     background: #8f2420;
   }
 
+  /* Przycisk w rzędzie ze znacznikami — jedyne miejsce, gdzie schodzimy poniżej 56 px.
+     Pasek lekcji ma w jednym wierszu dzwonek, etap, podpowiedzi i licznik zadań (2,75 rem
+     wysokości); przycisk o pełnej wysokości sterczał nad nimi o pół centymetra i rozpychał
+     pasek, zabierając miejsce zadaniu. 2,75 rem to nadal próg, poniżej którego trafienie
+     palcem staje się loterią — tyle samo ma dzwonek obok. */
+  .btn-compact {
+    min-height: 2.75rem;
+    padding: 0.25rem 1rem;
+    border-radius: 1rem;
+    font-size: 1.0625rem;
+    line-height: 1.25;
+  }
+
   /* Wciśnięcie „dociska” przycisk — widoczna reakcja bez animacji. */
   .btn-primary:active:not(:disabled),
   .btn-secondary:active:not(:disabled),

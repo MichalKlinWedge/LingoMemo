@@ -80,12 +80,15 @@ export function Button({
   label,
   onPress,
   kind = 'primary',
+  compact,
   disabled,
   busy,
 }: {
   label: string;
   onPress: () => void;
   kind?: 'primary' | 'answer' | 'quiet' | 'danger';
+  /** Przycisk w rzędzie ze znacznikami — patrz `buttonCompact`. */
+  compact?: boolean;
   disabled?: boolean;
   busy?: boolean;
 }) {
@@ -101,6 +104,7 @@ export function Button({
         kind === 'answer' && styles.buttonAnswer,
         kind === 'quiet' && styles.buttonQuiet,
         kind === 'danger' && styles.buttonDanger,
+        compact === true && styles.buttonCompact,
         pressed && styles.buttonPressed,
         off && styles.buttonOff,
       ]}
@@ -108,7 +112,13 @@ export function Button({
       {busy === true ? (
         <ActivityIndicator color={kind === 'primary' || kind === 'danger' ? '#ffffff' : color.brand} />
       ) : (
-        <Text style={[styles.buttonText, kind !== 'primary' && kind !== 'danger' && styles.buttonTextDark]}>
+        <Text
+          style={[
+            styles.buttonText,
+            kind !== 'primary' && kind !== 'danger' && styles.buttonTextDark,
+            compact === true && styles.buttonTextCompact,
+          ]}
+        >
           {label}
         </Text>
       )}
@@ -163,10 +173,15 @@ const styles = StyleSheet.create({
   // Czerwień znaczy „to przerywa” — na telefonie tylko wyjście z lekcji. Biały napis zostaje,
   // więc `buttonTextDark` tego rodzaju nie dotyczy.
   buttonDanger: { backgroundColor: color.coral },
+  // Jedyne miejsce, gdzie schodzimy poniżej 56 px: przycisk stoi w rzędzie z paskiem postępu
+  // i licznikiem zadań, a pełna wysokość rozpychała nagłówek lekcji — przy zadaniu z klawiaturą
+  // brakuje wtedy miejsca na treść. 44 px to nadal próg trafienia palcem.
+  buttonCompact: { minHeight: 44, paddingHorizontal: 14 },
   buttonPressed: { opacity: 0.8 },
   buttonOff: { opacity: 0.45 },
   buttonText: { color: '#ffffff', fontSize: size.text, fontWeight: '700', textAlign: 'center' },
   buttonTextDark: { color: color.text },
+  buttonTextCompact: { fontSize: 17 },
   field: {
     backgroundColor: color.surface,
     borderColor: color.line,
