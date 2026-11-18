@@ -1578,3 +1578,25 @@ co się napisało, a po to słówko jest w lekcji.
 | Związek z wersją z kafelkami | `fill_blank_choice.easy_for` wskazuje nowe zadanie | podpowiedź w trudnym zadaniu zamienia je na TO SAMO zdanie z listą do wyboru (`…_hints.sql`), a nie na losowe łatwiejsze zadanie z tego słówka | brak związku (podpowiedź dawała co innego niż to, nad czym dziecko siedzi) |
 | Skąd znaczenie przy odsłuchu | `submit_attempt` dokłada je do werdyktu | w payloadzie zadania znaczenie stałoby na ekranie PRZED odpowiedzią, a przy odsłuchu ze zrozumieniem byłoby wprost kluczem odpowiedzi (dlatego funkcja nie wydaje go, gdy polskie słowo jest w `accepted`) | pole `meaning` w payloadzie (podpowiedź dla zadania, które ma jej nie mieć) |
 | Walidacja nowego payloadu | `coalesce(..., false)` | brakujący klucz daje NULL, a CHECK przepuszcza NULL jak prawdę — payload bez `sentence` wszedłby do tabeli | powtórzenie wzorca z pozostałych gałęzi (mają tę dziurę od pierwszej migracji; zatykanie jej wszystkim naraz to osobna zmiana) |
+
+## Nowa wersja aplikacji pod jedną ikoną w pasku (2026-11-18)
+
+Dotąd nowa wersja docierała do tabletu sama, ale dopiero po drugim uruchomieniu:
+`checkAutomatically: ON_LOAD` z `fallbackToCacheTimeout: 0` pobiera paczkę w tle i włącza ją przy
+NASTĘPNYM starcie. W praktyce kończyło się to instrukcją „zamknij aplikację z listy ostatnich
+i otwórz od nowa" po każdej poprawce. Od teraz w pasku, obok zębatki, staje strzałka pobrania,
+a dotknięcie włącza nową wersję od razu.
+
+Jedna ikona obsługuje dwie zupełnie różne rzeczy: poprawkę JS z kanału `preview` (częstą, idzie
+w sekundy) i nowy APK wystawiony jako release na GitHubie (rzadki, potrzebny tylko przy zmianie
+części natywnej). Pierwsza ma pierwszeństwo, bo jest tańsza dla dziecka.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Ikona | strzałka w dół obok zębatki | zębatka obok prowadzi do ustawień; dwie takie same ikony w jednym pasku znaczyłyby dwie różne rzeczy | druga zębatka (dokładnie to zamówienie, ale na ekranie nie do odróżnienia) |
+| Skąd wiadomo o poprawce JS | `Updates.useUpdates()` | `isUpdateAvailable` zapala się po sprawdzeniu przy uruchomieniu, `isUpdatePending` gdy paczka już leży pobrana — oba znaczą dla dziecka to samo | własne `checkForUpdateAsync` w pętli (to samo, tylko ręcznie i częściej) |
+| Skąd wiadomo o nowym APK | najnowszy release z publicznego API GitHuba, raz na uruchomienie | plik i tak tam leży, a API nie wymaga tokenu; limit 60 zapytań na godzinę z adresu wystarcza z zapasem | sprawdzanie przy każdej zmianie ekranu (pasek wisi nad wszystkimi, więc byłoby to kilkadziesiąt zapytań na lekcję) |
+| Z czym porównujemy release | ze znacznikiem zapamiętanym w `localStorage` | `versionCode` zainstalowanej paczki nie ma skąd przeczytać: `expo-constants` oddaje na Androidzie pustą mapę, a `expo-application` to moduł natywny — trzeba by wydać nowy APK, żeby aplikacja umiała powiedzieć, że jest nowy APK | dodanie `expo-application` (nowy moduł natywny nie dojedzie OTA do paczek, które już są na telefonach, a przy `runtimeVersion: appVersion` dostałyby paczkę JS wołającą modułu, którego nie mają) |
+| Pierwsze uruchomienie | zapamiętuje to, co jest na GitHubie, i nic nie pokazuje | paczka jest wtedy świeżo zainstalowana, a porównać nie ma czego | pokazanie ikony od razu (dziecko po instalacji dostawałoby propozycję pobrania tego, co właśnie zainstalowało) |
+| Ikona w lekcji | nie ma jej | włączenie nowej wersji startuje aplikację od nowa, czyli w połowie etapu zabrałoby dziecku zadania, które właśnie robi | pokazywanie z ostrzeżeniem (dziecko i tak dotknie) |
+| Błąd pobrania | ikona zmienia się w ostrzeżenie i da się dotknąć jeszcze raz | aplikacja na telefonie nie ma okien z komunikatami, a pasek nie ma miejsca na zdanie | `Alert` (pierwszy w całej aplikacji, do jednego przypadku) |

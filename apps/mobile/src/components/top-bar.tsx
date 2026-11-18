@@ -1,19 +1,23 @@
 import { DAYS, HINTS, plural, POINTS, UNLOCKS, WORDS } from '@lingomemo/core';
 import { usePathname, useRouter } from 'expo-router';
-import { type ImageSourcePropType, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import * as Updates from 'expo-updates';
+import { type ImageSourcePropType, AppState, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useEffect, useState, useSyncExternalStore } from 'react';
 
 import { Chip } from '@/components/ui';
 import { color, size } from '@/constants/theme';
 import { type BarData, barVersion, loadBar, subscribeBar } from '@/features/stats/load';
+import { type NewVersion, applyNewVersion, checkRelease } from '@/features/update/check';
 import { useSession } from '@/lib/session';
 
 const IKONA = require('../../assets/ikona.png') as ImageSourcePropType;
 
 /**
  * Wspólny pasek nad każdym ekranem — ten sam, co na webie
- * (`apps/web/src/components/top-bar.tsx`): sowa, imię, stan konta i zębatka.
+ * (`apps/web/src/components/top-bar.tsx`): sowa, imię, stan konta i zębatka. Obok zębatki staje
+ * strzałka pobrania, gdy czeka nowa wersja aplikacji (`features/update/check.ts`) — na webie jej
+ * nie ma, bo tam nowa wersja przychodzi sama przy odświeżeniu strony.
  *
  * Dotąd stan konta stał kartą na ekranie kursów, czyli w treści: odjeżdżał przy przewijaniu
  * i znikał na każdym innym ekranie. Punkty zdobywa się w lekcji, a patrzy na nie wszędzie,
@@ -34,6 +38,13 @@ export function TopBar() {
   // Numer wersji danych paska. Rośnie, gdy lekcja wyda podpowiedź albo zamknie etap — wtedy
   // liczby są już inne, a ekran się nie zmienił, więc sam adres by tego nie wychwycił.
   const wersja = useSyncExternalStore(subscribeBar, barVersion, barVersion);
+  // Poprawka JS z kanału `preview`: `isUpdateAvailable` zapala się po sprawdzeniu przy
+  // uruchomieniu (`checkAutomatically: ON_LOAD`), `isUpdatePending` gdy paczka jest już pobrana
+  // i czeka na start aplikacji. Dla dziecka to jedno i to samo: jest nowa wersja.
+  const { isUpdateAvailable, isUpdatePending } = Updates.useUpdates();
+  const [release, setRelease] = useState<NewVersion | null>(null);
+  const [downloading, setDownloading] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   /**
    * Odczyt przy każdej zmianie ekranu: po lekcji punktów i zaległych jest już inaczej.
@@ -53,6 +64,26 @@ export function TopBar() {
     };
   }, [userId, pathname, wersja]);
 
+  /** Nowy APK na GitHubie — raz na uruchomienie, bo pasek wisi nad wszystkimi ekranami. */
+  useEffect(() => {
+    let alive = true;
+    void checkRelease().then((found) => {
+      if (alive) setRelease(found);
+    });
+
+    // Powrót do aplikacji po przerwie. Paczkę JS sprawdza samo `expo-updates`, ale tylko przy
+    // uruchomieniu, a tablet potrafi stać z aplikacją w tle całymi dniami.
+    const listener = AppState.addEventListener('change', (state) => {
+      if (state !== 'active' || !Updates.isEnabled) return;
+      void Updates.checkForUpdateAsync().catch(() => undefined);
+    });
+
+    return () => {
+      alive = false;
+      listener.remove();
+    };
+  }, []);
+
   if (session === null || session === undefined) return null;
 
   /**
@@ -70,6 +101,33 @@ export function TopBar() {
    * Dzięki temu powrót z nagród i postępów prowadzi zawsze do kursu, z którego dziecko weszło,
    * niezależnie od tego, ile razy przeskakiwało między nimi paskiem.
    */
+  /**
+   * Jedna ikona na dwie drogi do nowej wersji. Pierwsza jest poprawka JS: przychodzi częściej,
+   * pobiera się w sekundy i nie wymaga niczego od człowieka. Nowy APK pokazujemy tylko wtedy,
+   * gdy poprawki nie ma.
+   *
+   * W lekcji ikony nie ma: włączenie nowej wersji startuje aplikację od nowa, czyli w połowie
+   * etapu zabrałoby dziecku zadania, które właśnie robi.
+   */
+  const newVersion: NewVersion | null = isUpdateAvailable || isUpdatePending ? { kind: 'ota' } : release;
+  const showUpdate = newVersion !== null && !pathname.startsWith('/lekcja/');
+
+  const download = () => {
+    if (newVersion === null || downloading) return;
+    setFailed(false);
+    setDownloading(true);
+    void applyNewVersion(newVersion)
+      .then(() => {
+        // Przy poprawce JS aplikacja jest już w tym momencie przeładowana i tu nie dojdzie.
+        setRelease(null);
+        setDownloading(false);
+      })
+      .catch(() => {
+        setDownloading(false);
+        setFailed(true);
+      });
+  };
+
   const POBOCZNE: string[] = ['/nagrody', '/statystyki', '/ustawienia'];
   const otworz = (href: '/nagrody' | '/statystyki' | '/ustawienia') => {
     if (pathname === href) return;
@@ -93,6 +151,29 @@ export function TopBar() {
             Cześć, {bar?.name ?? 'uczniu'}!
           </Text>
         </Pressable>
+
+        {/* Strzałka w dół, nie druga zębatka: zębatka obok prowadzi do ustawień, a dwie takie
+            same ikony w jednym pasku znaczyłyby dwie różne rzeczy. Strzałka mówi wprost, co się
+            stanie po dotknięciu. */}
+        {showUpdate && (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={
+              failed
+                ? 'Nie udało się pobrać nowej wersji — dotknij, żeby spróbować jeszcze raz'
+                : downloading
+                  ? 'Pobieram nową wersję'
+                  : newVersion?.kind === 'ota'
+                    ? 'Nowa wersja gotowa — dotknij, żeby ją włączyć'
+                    : 'Nowa wersja do pobrania — dotknij, żeby otworzyć plik'
+            }
+            hitSlop={8}
+            onPress={download}
+            style={({ pressed }) => [styles.gear, pressed && styles.pressed]}
+          >
+            <Text style={styles.gearIcon}>{failed ? '⚠️' : downloading ? '⏳' : '⬇️'}</Text>
+          </Pressable>
+        )}
 
         <Pressable
           accessibilityRole="button"
@@ -158,7 +239,8 @@ const styles = StyleSheet.create({
   name: { alignItems: 'center', flex: 1, flexDirection: 'row', gap: 10, minHeight: 44 },
   logo: { height: 32, width: 32 },
   nameText: { color: color.text, flexShrink: 1, fontSize: 20, fontWeight: '700' },
-  // Zębatka: 44 px plus `hitSlop`, bo wymagane 56 rozepchnęłoby pasek nad każdym ekranem.
+  // Zębatka i strzałka pobrania: 44 px plus `hitSlop`, bo wymagane 56 rozepchnęłoby pasek nad
+  // każdym ekranem.
   gear: { alignItems: 'center', height: 44, justifyContent: 'center', width: 44 },
   gearIcon: { fontSize: 24 },
   pressed: { opacity: 0.6 },

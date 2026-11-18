@@ -77,6 +77,13 @@ build nie zużywa puli. Paczka wychodzi taka sama jak z chmury — ten sam keyst
 wymaga sekretu `EXPO_TOKEN` (token z <https://expo.dev/settings/access-tokens>, wklejony
 w Settings → Secrets and variables → Actions).
 
+**Aplikacja sama mówi o nowej wersji.** W pasku, obok zębatki, staje strzałka pobrania, gdy czeka
+poprawka JS z kanału `preview` albo gdy na GitHubie pojawił się nowy release z APK
+(`src/features/update/check.ts`). Release rozpoznajemy po znaczniku zapamiętanym w `localStorage`,
+a nie po `versionCode` zainstalowanej paczki — tego nie ma skąd przeczytać bez modułu natywnego
+(szczegóły w `docs/DECYZJE.md`). Dlatego **wystawiając nowy APK, wystaw go jako release** z plikiem
+`.apk` w załącznikach; inaczej telefony się o nim nie dowiedzą.
+
 Na Windowsie `eas build --local` nie zadziała („macOS or Linux is required to build apps for
 Android"), a droga przez `npx expo prebuild` + gradle daje APK podpisany innym kluczem (nie
 zainstaluje się po wierzchu) i bez kanału OTA — kanał wstrzykuje EAS z `eas.json`.
