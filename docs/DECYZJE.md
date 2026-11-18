@@ -1551,3 +1551,30 @@ sprawdzany dla kierunku na język kursu osobno, nowym generatorem.
 | Źródło treści | słownik (`terms`), nie istniejące zadanie | słówko, które ma w lekcji tylko zadanie ze słuchu, nie ma z czego zrobić wpisywania metodą „weź tłumaczenie i zabierz mu kafelki" | kopiowanie payloadu zadania z kafelkami (działa tylko wtedy, gdy takie zadanie jest) |
 | Zwroty wielowyrazowe | pomijane, również jako synonimy w `accepted` | wpisanie zdania z klawiatury to poziom trudny i ma własne zadania (ze słuchu, rozsypanka); jeden wielowyrazowy synonim podniósłby poziom całego zadania do 3, a wtedy słówko dalej nie miałoby średniego i dostałoby drugie, prawie identyczne | wpisywanie całych zwrotów na średnim poziomie |
 | Kolejność generatorów | wpisywanie przed `build_medium_variants` | oba potrafią zrobić słówku poziom średni, a ten pierwszy robi go w kierunku, o który chodzi | po nim (powstawałyby dwa zadania o tej samej treści) |
+
+## Zdanie z luką do wpisania jako drugi rodzaj zadania trudnego (2026-11-18)
+
+Zgłoszone z ekranu: na poziomie trudnym wszystkie zadania są tego samego rodzaju. Tak było —
+jedynym generatorem poziomu 3 jest `build_hard_variants`, a on umie zrobić tylko pisanie ze
+słuchu. Wejście na trudny bierze osiem słówek po jednym zadaniu, więc dziecko dostawało osiem
+razy ten sam ekran: głośnik i pole tekstowe.
+
+Nowy rodzaj zadania powstaje z treści, która już jest. Każda lekcja ma zdania z luką
+(`fill_blank_choice`), gdzie dziecko wybiera brakujące słowo z kafelków — dwa w kursach
+demonstracyjnych, kilkanaście w „Angielskim klasa 4". Ta sama luka bez kafelków jest zadaniem
+trudnym: trzeba przeczytać zdanie w języku kursu, zrozumieć, czego w nim brakuje, i napisać
+słowo z pamięci. W bazie to nowy typ `fill_blank_typing`, dorabiany szóstym generatorem.
+
+Przy okazji, z tego samego zgłoszenia: po odpowiedzi na zadanie ze słuchu werdykt niesie
+`meaning` — co usłyszane słowo znaczy po polsku. Pisanie ze słuchu da się zaliczyć, nie wiedząc,
+co się napisało, a po to słówko jest w lekcji.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Skąd drugi rodzaj zadania trudnego | nowy typ `fill_blank_typing` z istniejących `fill_blank_choice` | treść jest już napisana, a ekran jest inny niż głośnik z polem — o to w zgłoszeniu chodziło | „posłuchaj i napisz po polsku" (znów głośnik i pole, różnicy dziecko nie widzi); dopisywanie luk do plików treści (siedemdziesiąt plików, a następny import i tak by ich nie miał) |
+| Nowy typ, nie `fill_blank_choice` bez `options` | nowa wartość enuma | nazwa typu kłamałaby („choice" bez wyboru), a poziom liczy się z typu i payloadu | luzowanie walidacji istniejącego typu |
+| Poziom | 3, choć wpisuje się jedno słowo | dziecko najpierw czyta zdanie w języku kursu i rozumie, czego brakuje, a dopiero potem pisze — to dwie rzeczy naraz, nie jedna jak przy tłumaczeniu słowa | 2 (wtedy poziom trudny dalej miałby jeden rodzaj zadania) |
+| `translation` w nowym payloadzie | nie ma go | polskie tłumaczenie zdania mówi, jakie słowo z niego wypadło; w wersji z listą jest pomocą w czytaniu, w tej byłoby odpowiedzią | przeniesienie tłumaczenia do werdyktu (dodatkowy ekran do napisania, a zdanie i tak stoi przed dzieckiem) |
+| Związek z wersją z kafelkami | `fill_blank_choice.easy_for` wskazuje nowe zadanie | podpowiedź w trudnym zadaniu zamienia je na TO SAMO zdanie z listą do wyboru (`…_hints.sql`), a nie na losowe łatwiejsze zadanie z tego słówka | brak związku (podpowiedź dawała co innego niż to, nad czym dziecko siedzi) |
+| Skąd znaczenie przy odsłuchu | `submit_attempt` dokłada je do werdyktu | w payloadzie zadania znaczenie stałoby na ekranie PRZED odpowiedzią, a przy odsłuchu ze zrozumieniem byłoby wprost kluczem odpowiedzi (dlatego funkcja nie wydaje go, gdy polskie słowo jest w `accepted`) | pole `meaning` w payloadzie (podpowiedź dla zadania, które ma jej nie mieć) |
+| Walidacja nowego payloadu | `coalesce(..., false)` | brakujący klucz daje NULL, a CHECK przepuszcza NULL jak prawdę — payload bez `sentence` wszedłby do tabeli | powtórzenie wzorca z pozostałych gałęzi (mają tę dziurę od pierwszej migracji; zatykanie jej wszystkim naraz to osobna zmiana) |

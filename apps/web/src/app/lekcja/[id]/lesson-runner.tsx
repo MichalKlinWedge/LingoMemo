@@ -623,6 +623,13 @@ function Feedback({
           Poprawnie: <strong>{shown}</strong>
         </p>
       )}
+      {/* Znaczenie przychodzi z bazy tylko przy zadaniu ze słuchu — tam dziecko pisze słowo,
+          którego mogło nie zrozumieć, i bez tego wiersza nic by się o nim nie dowiedziało. */}
+      {typeof verdict.meaning === "string" && verdict.meaning !== "" && (
+        <p style={{ color: verdict.correct ? "#0f5c37" : "#8f2420" }}>
+          To znaczy: <strong>{verdict.meaning}</strong>
+        </p>
+      )}
       {verdict.correct && verdict.points > 0 && <p style={{ color: "#0f5c37" }}>+{verdict.points} punktów</p>}
       <button type="button" className="btn-primary relative overflow-hidden" onClick={onNext} autoFocus>
         {last ? lastLabel : "Dalej"}

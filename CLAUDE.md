@@ -76,8 +76,13 @@ Pojedynczy test: `npx vitest run src/__tests__/x.test.ts` wewnątrz pakietu.
   Etap to piętnaście zadań (`ceil(zadań / 15)`), więc dwa etapy znaczą szesnaście zadań poziomu
   pierwszego. Poziomu nie podaje się w pliku — wylicza go `default_exercise_level` z typu
   i payloadu: wskazywanie i układanie klocków to 1, wpisanie jednego słowa 2, zdanie, pisanie
-  ze słuchu i odmiana 3. Lekcja na jeden etap wygląda dla dziecka na zaliczoną po jednym
-  podejściu i nie ma z czego robić powtórek na wyższych poziomach.
+  ze słuchu, odmiana i uzupełnianie zdania z klawiatury 3. Lekcja na jeden etap wygląda dla
+  dziecka na zaliczoną po jednym podejściu i nie ma z czego robić powtórek na wyższych poziomach.
+- **Brakujące warianty zadań dorabia baza, nie plik treści.** Sześć generatorów w wyzwalaczu
+  `exercises_variants` (patrz najpóźniejsza migracja z `build_variants_after_insert`) uzupełnia
+  każde słówko na każdym poziomie i dokłada drugi rodzaj zadania na trudnym. Nowy rodzaj zadania
+  dopisuj tam, a nie do siedemdziesięciu plików w `content/` — następny import i tak by ich
+  nie miał.
 - Jedna szerokość treści dla wszystkich stron — `<Shell>`. Strona nie dobiera sobie własnej.
 - Nawigacja zawsze jako `<Link>`, nigdy `router.push` z `<button>`.
 - Autoryzacja w **każdej** stronie i akcji przez `requireUser()` — Server Actions omijają matcher

@@ -127,6 +127,16 @@ const exercise = z.discriminatedUnion('type', [
         message: 'opcje nie mogą się powtarzać',
       }),
   }),
+  // Uzupełnianie zdania z klawiatury. Bez `translation`: tłumaczenie zdania na polski zdradza
+  // brakujące słowo, czyli odpowiedź. Wersja z listą może je mieć, ta nie.
+  z.object({
+    ...exerciseBase,
+    type: z.literal('fill_blank_typing'),
+    payload: z.object({
+      sentence: nonEmpty.refine((value) => value.includes('{{blank}}'), 'zdanie musi zawierać {{blank}}'),
+      accepted: z.array(nonEmpty).min(1, 'podaj przynajmniej jedną poprawną odpowiedź'),
+    }),
+  }),
   z.object({
     ...exerciseBase,
     type: z.literal('image_choice'),

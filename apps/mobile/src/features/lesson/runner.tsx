@@ -552,6 +552,13 @@ function Feedback({
           Poprawnie: <Text style={styles.strong}>{shown}</Text>
         </Text>
       )}
+      {/* Znaczenie przychodzi z bazy tylko przy zadaniu ze słuchu — tam dziecko pisze słowo,
+          którego mogło nie zrozumieć, i bez tego wiersza nic by się o nim nie dowiedziało. */}
+      {typeof verdict.meaning === 'string' && verdict.meaning !== '' && (
+        <Text style={styles.feedbackLine}>
+          To znaczy: <Text style={styles.strong}>{verdict.meaning}</Text>
+        </Text>
+      )}
       {verdict.correct && verdict.points > 0 && <Text style={styles.feedbackLine}>+{verdict.points} punktów</Text>}
       <Button label={last ? lastLabel : 'Dalej'} onPress={onNext} />
     </View>

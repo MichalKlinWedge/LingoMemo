@@ -6,9 +6,9 @@ import { SpeakButton } from "./speak-button";
 import { type ExerciseProps, str } from "./types";
 
 /**
- * Zadanie z pisaniem: tłumaczenie na polski i odmiana. Porównania dokonuje baza — bez wielkości
- * liter, bez ogonków i z tolerancją jednej literówki — więc tu nie ma żadnej walidacji poza
- * sprawdzeniem, czy dziecko w ogóle coś napisało.
+ * Zadanie z pisaniem: tłumaczenie, odmiana i zdanie z luką do uzupełnienia. Porównania dokonuje
+ * baza — bez wielkości liter, bez ogonków i z tolerancją jednej literówki — więc tu nie ma żadnej
+ * walidacji poza sprawdzeniem, czy dziecko w ogóle coś napisało.
  */
 export function TypingExercise({
   exercise,
@@ -20,7 +20,11 @@ export function TypingExercise({
   const [value, setValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const isInflection = exercise.type === "inflection";
+  const isBlank = exercise.type === "fill_blank_typing";
   const prompt = isInflection ? str(exercise.payload.base) : str(exercise.payload.prompt);
+  // Zdanie z luką. Ta sama treść, co w wersji z kafelkami (`choice.tsx`), tylko bez listy
+  // i bez tłumaczenia na polski — ono mówiłoby, jakie słowo z tego zdania wypadło.
+  const [before, after] = isBlank ? str(exercise.payload.sentence).split("{{blank}}") : ["", ""];
 
   // Kursor wraca do pola także po odblokowaniu: przy prośbie o poprawienie literówki
   // zadanie zostaje to samo, a pole było w międzyczasie wyłączone i straciło kursor.
@@ -53,10 +57,27 @@ export function TypingExercise({
         {isInflection && (
           <p className="chip">{str(exercise.payload.instruction) || str(exercise.payload.formLabel)}</p>
         )}
-        <div className="flex items-center gap-3">
-          <p style={{ fontSize: "2.5rem", fontWeight: 700 }}>{prompt}</p>
-          <SpeakButton text={prompt} lang={promptLang} />
-        </div>
+        {isBlank ? (
+          // Luka pokazuje to, co dziecko właśnie wpisuje: zdanie składa się na oczach, więc
+          // widać, czy brzmi sensownie — a o to w tym zadaniu chodzi.
+          <div className="card w-full p-5 text-center">
+            <p style={{ fontSize: "1.5rem", lineHeight: 1.5 }}>
+              {before}
+              <span
+                className="mx-1 inline-block rounded-xl px-6"
+                style={{ background: "var(--color-brand-light)", borderBottom: "3px solid var(--color-brand)" }}
+              >
+                {value.trim() === "" ? "…" : value}
+              </span>
+              {after}
+            </p>
+          </div>
+        ) : (
+          <div className="flex items-center gap-3">
+            <p style={{ fontSize: "2.5rem", fontWeight: 700 }}>{prompt}</p>
+            <SpeakButton text={prompt} lang={promptLang} />
+          </div>
+        )}
       </div>
 
       <input

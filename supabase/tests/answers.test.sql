@@ -6,7 +6,7 @@
 -- Ten plik pilnuje, żeby każda droga odpowiedzi przechodziła przez tę samą normalizację.
 
 begin;
-select plan(15);
+select plan(17);
 
 create or replace function pg_temp.make_user(p_email text) returns uuid
 language plpgsql as $$
@@ -75,6 +75,33 @@ select id, 'match_pairs', 4,
          jsonb_build_object('a', 'gęś', 'b', 'goose'),
          jsonb_build_object('a', 'łódź', 'b', 'boat'))), 10 from t_lesson;
 
+-- Zdanie z luką do wpisania: ta sama gałąź porównania co tłumaczenie, więc bez ogonków też ma
+-- się zaliczyć. Bez `concept_id`, jak reszta zadań wyżej.
+insert into public.exercises (lesson_id, type, sort_order, payload, points)
+select id, 'fill_blank_typing', 5,
+       jsonb_build_object('sentence', 'To moja {{blank}}.',
+         'accepted', jsonb_build_array('książka')), 15 from t_lesson;
+
+-- Zadanie ze słuchu MUSI mieć słówko: po odpowiedzi werdykt niesie jego znaczenie po polsku,
+-- a bierze się ono ze słownika pojęcia.
+with p as (
+  insert into public.concepts (course_id, key, tags)
+  select u.course_id, 'animal.turtle', '{}'
+    from public.lessons l join public.units u on u.id = l.unit_id
+   where l.id = (select id from t_lesson)
+  returning id
+), t as (
+  insert into public.terms (concept_id, lang, text, is_primary)
+  select id, 'pl', 'żółw', true from p
+  union all
+  select id, 'en', 'turtle', true from p
+  returning concept_id
+)
+insert into public.exercises (lesson_id, type, sort_order, concept_id, payload, points)
+select (select id from t_lesson), 'listening', 6, (select id from p),
+       jsonb_build_object('speak', 'turtle', 'lang', 'en-US',
+         'accepted', jsonb_build_array('turtle')), 15;
+
 create temporary table t_ex as
 select e.type::text as type, e.id from public.exercises e where e.lesson_id = (select id from t_lesson);
 
@@ -139,6 +166,22 @@ select is(
        jsonb_build_object('a', 'lodz', 'b', 'boat')))) ->> 'correct'),
   'true',
   'pary łączą się mimo braku ogonków po lewej stronie'
+);
+
+select is(
+  (select public.submit_attempt((select id from t_session), (select id from t_ex where type = 'fill_blank_typing'),
+     jsonb_build_object('text', 'ksiazka')) ->> 'correct'),
+  'true',
+  'wpisana luka w zdaniu przyjmuje odpowiedź bez ogonków'
+);
+
+-- Po odpowiedzi werdykt mówi, co dziecko właśnie napisało ze słuchu. Bez tego da się zaliczyć
+-- „turtle", nie wiedząc, że to żółw.
+select is(
+  (select public.submit_attempt((select id from t_session), (select id from t_ex where type = 'listening'),
+     jsonb_build_object('text', 'turtle')) ->> 'meaning'),
+  'żółw',
+  'werdykt zadania ze słuchu niesie znaczenie słowa po polsku'
 );
 
 reset role;

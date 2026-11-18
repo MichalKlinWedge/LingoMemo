@@ -935,6 +935,9 @@ isOneToOne: false
 "build_easy_variants":
 { Args: { "p_lesson": string }; Returns: number
                            },
+"build_fill_blank_typing":
+{ Args: { "p_lesson": string }; Returns: number
+                           },
 "build_hard_variants":
 { Args: { "p_lesson": string }; Returns: number
                            },
@@ -1268,7 +1271,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "exercise_type": "translate_ab"|"translate_ba"|"fill_blank_choice"|"inflection"|"listening"|"match_pairs"|"sentence_order"|"listen_match"|"image_choice","lesson_kind": "standard"|"review"|"test","part_of_speech": "noun"|"verb"|"adjective"|"adverb"|"phrase"|"other","point_reason": "exercise_correct"|"lesson_completed"|"streak_day"|"badge"|"review_completed"|"manual","progress_status": "in_progress"|"completed"
+            "exercise_type": "translate_ab"|"translate_ba"|"fill_blank_choice"|"inflection"|"listening"|"match_pairs"|"sentence_order"|"listen_match"|"image_choice"|"fill_blank_typing","lesson_kind": "standard"|"review"|"test","part_of_speech": "noun"|"verb"|"adjective"|"adverb"|"phrase"|"other","point_reason": "exercise_correct"|"lesson_completed"|"streak_day"|"badge"|"review_completed"|"manual","progress_status": "in_progress"|"completed"
           }
           CompositeTypes: {
             "fsrs_state": {
@@ -1386,7 +1389,7 @@ export type CompositeTypes<
 export const Constants = {
   "public": {
           Enums: {
-            "exercise_type": ["translate_ab", "translate_ba", "fill_blank_choice", "inflection", "listening", "match_pairs", "sentence_order", "listen_match", "image_choice"],"lesson_kind": ["standard", "review", "test"],"part_of_speech": ["noun", "verb", "adjective", "adverb", "phrase", "other"],"point_reason": ["exercise_correct", "lesson_completed", "streak_day", "badge", "review_completed", "manual"],"progress_status": ["in_progress", "completed"]
+            "exercise_type": ["translate_ab", "translate_ba", "fill_blank_choice", "inflection", "listening", "match_pairs", "sentence_order", "listen_match", "image_choice", "fill_blank_typing"],"lesson_kind": ["standard", "review", "test"],"part_of_speech": ["noun", "verb", "adjective", "adverb", "phrase", "other"],"point_reason": ["exercise_correct", "lesson_completed", "streak_day", "badge", "review_completed", "manual"],"progress_status": ["in_progress", "completed"]
           }
         }
 } as const

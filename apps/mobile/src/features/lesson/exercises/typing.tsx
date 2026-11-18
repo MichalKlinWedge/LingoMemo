@@ -8,9 +8,9 @@ import { SpeakButton } from './speak-button';
 import { type ExerciseProps, str } from './types';
 
 /**
- * Zadanie z pisaniem: tłumaczenie i odmiana. Porównania dokonuje baza — bez wielkości liter,
- * bez ogonków i z tolerancją jednej literówki — więc tu nie ma żadnej walidacji poza tym,
- * czy dziecko w ogóle coś napisało.
+ * Zadanie z pisaniem: tłumaczenie, odmiana i zdanie z luką do uzupełnienia. Porównania dokonuje
+ * baza — bez wielkości liter, bez ogonków i z tolerancją jednej literówki — więc tu nie ma żadnej
+ * walidacji poza tym, czy dziecko w ogóle coś napisało.
  */
 export function TypingExercise({
   exercise,
@@ -21,7 +21,11 @@ export function TypingExercise({
 }: ExerciseProps & { promptLang: string }) {
   const [value, setValue] = useState('');
   const isInflection = exercise.type === 'inflection';
+  const isBlank = exercise.type === 'fill_blank_typing';
   const prompt = isInflection ? str(exercise.payload.base) : str(exercise.payload.prompt);
+  // Zdanie z luką. Ta sama treść, co w wersji z kafelkami (`choice.tsx`), tylko bez listy
+  // i bez tłumaczenia na polski — ono mówiłoby, jakie słowo z tego zdania wypadło.
+  const [before, after] = isBlank ? str(exercise.payload.sentence).split('{{blank}}') : ['', ''];
 
   const change = (text: string) => {
     setValue(text);
@@ -33,10 +37,22 @@ export function TypingExercise({
       {isInflection && (
         <Body muted>{str(exercise.payload.instruction) || str(exercise.payload.formLabel)}</Body>
       )}
-      <View style={styles.prompt}>
-        <Text style={styles.word}>{prompt}</Text>
-        <SpeakButton text={prompt} lang={promptLang} />
-      </View>
+      {isBlank ? (
+        // Luka pokazuje to, co dziecko właśnie wpisuje: zdanie składa się na oczach, więc widać,
+        // czy brzmi sensownie — a o to w tym zadaniu chodzi.
+        <View style={styles.card}>
+          <Text style={styles.sentence}>
+            {before}
+            <Text style={styles.blank}> {value.trim() === '' ? '…' : value} </Text>
+            {after}
+          </Text>
+        </View>
+      ) : (
+        <View style={styles.prompt}>
+          <Text style={styles.word}>{prompt}</Text>
+          <SpeakButton text={prompt} lang={promptLang} />
+        </View>
+      )}
 
       <Field
         value={value}
@@ -69,4 +85,16 @@ const styles = StyleSheet.create({
   wrap: { gap: size.gap * 1.5 },
   prompt: { alignItems: 'center', flexDirection: 'row', gap: size.gap, justifyContent: 'center' },
   word: { color: color.text, fontSize: size.prompt, fontWeight: '700', textAlign: 'center' },
+  // Zdanie z luką — te same wymiary co w wersji z kafelkami, żeby podpowiedź (ta sama luka,
+  // tylko z listą) nie przestawiała ekranu dziecku pod palcem.
+  card: {
+    backgroundColor: color.surface,
+    borderColor: color.line,
+    borderRadius: size.radius,
+    borderWidth: 1,
+    gap: size.gap,
+    padding: size.pad,
+  },
+  sentence: { color: color.text, fontSize: 24, lineHeight: 36, textAlign: 'center' },
+  blank: { backgroundColor: color.brandLight, color: color.brandDark, fontWeight: '700' },
 });

@@ -43,6 +43,11 @@ export type Verdict = {
   grade: number;
   points: number;
   correctAnswer: Json;
+  /**
+   * Co usłyszane słowo znaczy po polsku. Tylko przy zadaniu ze słuchu i tylko po odpowiedzi:
+   * „sandwich” da się napisać ze słuchu, nie wiedząc, co się napisało.
+   */
+  meaning?: string | null;
 };
 
 export type Summary = {

@@ -9,6 +9,7 @@ export const EXERCISE_TYPES = [
   'sentence_order',
   'listen_match',
   'image_choice',
+  'fill_blank_typing',
 ] as const;
 
 export type ExerciseType = (typeof EXERCISE_TYPES)[number];
@@ -21,6 +22,12 @@ export type ExercisePayload =
   | { type: 'translate_ab'; prompt: string; hint?: string }
   | { type: 'translate_ba'; prompt: string; hint?: string }
   | { type: 'fill_blank_choice'; sentence: string; options: string[]; translation?: string }
+  /**
+   * Uzupełnianie zdania z klawiatury. Ten sam `sentence` z `{{blank}}` co w wersji z listą,
+   * tylko bez `options` — i bez `translation`: tłumaczenie zdania na polski mówi, jakie słowo
+   * wypadło, co w wersji z wpisywaniem jest po prostu odpowiedzią.
+   */
+  | { type: 'fill_blank_typing'; sentence: string }
   | { type: 'inflection'; base: string; formLabel: string; instruction?: string }
   | { type: 'listening'; speak: string; lang: string; audioPath?: string }
   | { type: 'match_pairs'; instruction?: string; pairsLeft: string[]; pairsRight: string[] }
@@ -49,6 +56,7 @@ export const EXERCISE_LABEL: Record<ExerciseType, string> = {
   translate_ab: 'Przetłumacz',
   translate_ba: 'Przetłumacz na polski',
   fill_blank_choice: 'Uzupełnij zdanie',
+  fill_blank_typing: 'Wpisz brakujące słowo',
   inflection: 'Odmień słowo',
   listening: 'Posłuchaj i napisz',
   match_pairs: 'Połącz w pary',
