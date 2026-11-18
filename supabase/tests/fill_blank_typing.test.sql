@@ -2,11 +2,11 @@
 --
 -- Poziom trudny miał jeden rodzaj zadania (pisanie ze słuchu), bo tylko taki umiał dorobić
 -- generator. Drugi bierze się z treści, która już jest: z każdego `fill_blank_choice` powstaje
--- to samo zdanie bez listy. Sprawdzamy, że powstaje raz, zabiera tłumaczenie i wiąże się
--- z pierwowzorem przez `easy_for` — to po nim podpowiedź wie, czym zamienić zadanie.
+-- to samo zdanie bez listy. Sprawdzamy, że powstaje raz, zabiera ze sobą polskie zdanie i wiąże
+-- się z pierwowzorem przez `easy_for` — to po nim podpowiedź wie, czym zamienić zadanie.
 
 begin;
-select plan(8);
+select plan(10);
 
 -- 1. Walidacja payloadu.
 select ok(
@@ -82,8 +82,11 @@ select is(
 select is(
   (select e.payload from public.exercises e
     where e.lesson_id = (select lesson_id from t_ctx) and e.type = 'fill_blank_typing'),
-  jsonb_build_object('sentence', 'I have a {{blank}}.', 'accepted', jsonb_build_array('cat')),
-  'payload ma zdanie i odpowiedź, a tłumaczenia nie — ono zdradza brakujące słowo');
+  jsonb_build_object(
+    'sentence', 'I have a {{blank}}.',
+    'translation', 'Mam kota.',
+    'accepted', jsonb_build_array('cat')),
+  'payload ma zdanie, polskie tłumaczenie i odpowiedź');
 
 select ok(
   exists (
@@ -100,6 +103,30 @@ select is(
   public.build_fill_blank_typing((select lesson_id from t_ctx)),
   0,
   'drugi przebieg nic nie dokłada');
+
+-- 4. Zdanie bez tłumaczenia w treści. Klucza nie ma wtedy WCALE, nie jako `null`: null
+-- przeszedłby walidację i wyszedł pustym wierszem pod luką na ekranie dziecka.
+insert into public.exercises (lesson_id, type, sort_order, concept_id, payload, points)
+select lesson_id, 'fill_blank_choice', 2, concept_id,
+       jsonb_build_object(
+         'sentence', 'I see a {{blank}}.',
+         'options', jsonb_build_array('cat', 'dog', 'bird'),
+         'answer', 'dog'),
+       10
+  from t_ctx;
+
+select is(
+  public.build_fill_blank_typing((select lesson_id from t_ctx)),
+  1,
+  'generator dorabia wersję także dla zdania bez tłumaczenia');
+
+select is(
+  (select e.payload from public.exercises e
+    where e.lesson_id = (select lesson_id from t_ctx)
+      and e.type = 'fill_blank_typing'
+      and e.payload ->> 'sentence' = 'I see a {{blank}}.'),
+  jsonb_build_object('sentence', 'I see a {{blank}}.', 'accepted', jsonb_build_array('dog')),
+  'bez tłumaczenia w pierwowzorze klucza „translation" nie ma w payloadzie wcale');
 
 select * from finish();
 rollback;

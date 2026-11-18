@@ -23,8 +23,7 @@ export function TypingExercise({
   const isInflection = exercise.type === 'inflection';
   const isBlank = exercise.type === 'fill_blank_typing';
   const prompt = isInflection ? str(exercise.payload.base) : str(exercise.payload.prompt);
-  // Zdanie z luką. Ta sama treść, co w wersji z kafelkami (`choice.tsx`), tylko bez listy
-  // i bez tłumaczenia na polski — ono mówiłoby, jakie słowo z tego zdania wypadło.
+  // Zdanie z luką. Ta sama treść, co w wersji z kafelkami (`choice.tsx`), tylko bez listy.
   const [before, after] = isBlank ? str(exercise.payload.sentence).split('{{blank}}') : ['', ''];
 
   const change = (text: string) => {
@@ -46,6 +45,13 @@ export function TypingExercise({
             <Text style={styles.blank}> {value.trim() === '' ? '…' : value} </Text>
             {after}
           </Text>
+          {/* Polskie zdanie pod luką, drobnym drukiem — tak samo jak w wersji z kafelkami.
+              Nie jest podpowiedzią do usunięcia, a warunkiem odpowiadalności: bez niego i bez
+              listy dziecko nie ma po czym pojąć, którego słowa brakuje. Napisać i tak musi je
+              z pamięci, w języku kursu. */}
+          {str(exercise.payload.translation) !== '' && (
+            <Body muted>{str(exercise.payload.translation)}</Body>
+          )}
         </View>
       ) : (
         <View style={styles.prompt}>

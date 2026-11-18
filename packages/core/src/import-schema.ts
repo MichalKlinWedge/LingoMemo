@@ -127,13 +127,16 @@ const exercise = z.discriminatedUnion('type', [
         message: 'opcje nie mogą się powtarzać',
       }),
   }),
-  // Uzupełnianie zdania z klawiatury. Bez `translation`: tłumaczenie zdania na polski zdradza
-  // brakujące słowo, czyli odpowiedź. Wersja z listą może je mieć, ta nie.
+  // Uzupełnianie zdania z klawiatury — z polskim zdaniem, tak samo jak wersja z listą.
+  // Tłumaczenie nie jest odpowiedzią: podaje znaczenie, a napisać trzeba słowo w języku kursu.
+  // Bez niego zdanie „Ho … cani" nie pyta o słówko, tylko o to, które z kilkuset autor miał
+  // na myśli — i dziecko nie ma jak odpowiedzieć.
   z.object({
     ...exerciseBase,
     type: z.literal('fill_blank_typing'),
     payload: z.object({
       sentence: nonEmpty.refine((value) => value.includes('{{blank}}'), 'zdanie musi zawierać {{blank}}'),
+      translation: z.string().optional(),
       accepted: z.array(nonEmpty).min(1, 'podaj przynajmniej jedną poprawną odpowiedź'),
     }),
   }),

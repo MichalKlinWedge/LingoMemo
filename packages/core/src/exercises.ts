@@ -23,11 +23,14 @@ export type ExercisePayload =
   | { type: 'translate_ba'; prompt: string; hint?: string }
   | { type: 'fill_blank_choice'; sentence: string; options: string[]; translation?: string }
   /**
-   * Uzupełnianie zdania z klawiatury. Ten sam `sentence` z `{{blank}}` co w wersji z listą,
-   * tylko bez `options` — i bez `translation`: tłumaczenie zdania na polski mówi, jakie słowo
-   * wypadło, co w wersji z wpisywaniem jest po prostu odpowiedzią.
+   * Uzupełnianie zdania z klawiatury. Ten sam `sentence` z `{{blank}}` i to samo polskie
+   * `translation` co w wersji z listą, tylko bez `options`.
+   *
+   * Tłumaczenie nie jest tu odpowiedzią, a warunkiem odpowiadalności: podaje znaczenie zdania,
+   * a dziecko ma z pamięci napisać brakujące słowo w języku kursu. Bez niego, i bez listy do
+   * wyboru, zdanie z luką nie pyta o słówko — pyta, które z kilkuset autor miał na myśli.
    */
-  | { type: 'fill_blank_typing'; sentence: string }
+  | { type: 'fill_blank_typing'; sentence: string; translation?: string }
   | { type: 'inflection'; base: string; formLabel: string; instruction?: string }
   | { type: 'listening'; speak: string; lang: string; audioPath?: string }
   | { type: 'match_pairs'; instruction?: string; pairsLeft: string[]; pairsRight: string[] }

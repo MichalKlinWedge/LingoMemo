@@ -1600,3 +1600,23 @@ części natywnej). Pierwsza ma pierwszeństwo, bo jest tańsza dla dziecka.
 | Pierwsze uruchomienie | zapamiętuje to, co jest na GitHubie, i nic nie pokazuje | paczka jest wtedy świeżo zainstalowana, a porównać nie ma czego | pokazanie ikony od razu (dziecko po instalacji dostawałoby propozycję pobrania tego, co właśnie zainstalowało) |
 | Ikona w lekcji | nie ma jej | włączenie nowej wersji startuje aplikację od nowa, czyli w połowie etapu zabrałoby dziecku zadania, które właśnie robi | pokazywanie z ostrzeżeniem (dziecko i tak dotknie) |
 | Błąd pobrania | ikona zmienia się w ostrzeżenie i da się dotknąć jeszcze raz | aplikacja na telefonie nie ma okien z komunikatami, a pasek nie ma miejsca na zdanie | `Alert` (pierwszy w całej aplikacji, do jednego przypadku) |
+
+## Polskie zdanie pod luką także przy wpisywaniu (2026-11-18)
+
+Zadanie „uzupełnij zdanie z klawiatury" powstało dzień wcześniej **bez** polskiego tłumaczenia:
+z założenia, że tłumaczenie mówi, jakie słowo z tego zdania wypadło, czyli zdradza odpowiedź.
+Na tablecie okazało się, że to nie robi zadania trudniejszym, tylko nieodpowiadalnym. „Ho …
+cani", bez listy i bez polskiego zdania, nie pyta o słówko — pyta, które z kilkuset słów autor
+miał na myśli. Dziecko nie ma po czym zgadnąć, więc trafia na „Nie wiem, pomiń".
+
+Tłumaczenie nie jest tu odpowiedzią, bo odpowiedź jest w języku kursu: polskie „Mam dwa psy."
+podaje znaczenie, a napisać trzeba `due`. Dokładnie tak samo działa wersja z kafelkami, gdzie
+polskie zdanie stoi pod luką od pierwszej migracji — różnica między nimi ma polegać na tym, czy
+odpowiedź się wskazuje, czy pisze z pamięci, a nie na tym, czy wiadomo, o co pytanie.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Skąd bierze się polskie zdanie | z `fill_blank_choice`, z którego generator robi wersję z wpisywaniem | to ten sam `sentence`, więc i to samo tłumaczenie; pliki treści mają je przy każdym zdaniu z luką | osobne pole w siedemdziesięciu plikach `content/` (następny import i tak by ich nie miał) |
+| Zdanie bez tłumaczenia w treści | klucza `translation` nie ma w payloadzie wcale | `"translation": null` przechodzi walidację i wychodzi pustym wierszem pod luką; `jsonb_strip_nulls` zdejmuje go w generatorze | wymaganie tłumaczenia (zablokowałoby import zdań, które go nie mają) |
+| Zadania dorobione wcześniej | uzupełniane wprost `UPDATE` w migracji | generator pomija zdanie, które wersję z wpisywaniem już ma, więc ponowne uruchomienie wyzwalacza nic by nie naprawiło | `db:reset` (w chmurze nie do zrobienia) |
+| Rozmiar tekstu | ten sam, co w wersji z kafelkami: `Body muted` na telefonie, `text-base` na webie | dwa warianty tego samego zadania mają wyglądać jak jedno zadanie w dwóch trybach | większy (konkurowałby ze zdaniem w języku kursu, które jest treścią zadania) |
