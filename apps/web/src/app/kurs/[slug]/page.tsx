@@ -245,7 +245,7 @@ async function CourseScreen({ params }: { params: PageProps<"/kurs/[slug]">["par
                 ? "Najpierw zdaj test powtórkowy"
                 : unitLocked
                   ? "Najpierw zdaj test poprzedniego działu"
-                  : lesson.kind === "test"
+                  : lesson.kind === "test" || lesson.kind === "review"
                     ? "Najpierw skończ wszystkie lekcje działu"
                     : lesson.is_unlockable
                       ? "Najpierw skończ poprzednią lekcję albo zdobądź punkt odblokowania na poziomie trudnym"

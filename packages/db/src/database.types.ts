@@ -1151,6 +1151,11 @@ isOneToOne: false
               "concept_id": string,"exercise_id": string,"priority": number
             }[]
                            },
+"pick_unit_exercises":
+{ Args: { "p_unit": string }; Returns: {
+              "concept_id": string,"exercise_id": string,"priority": number
+            }[]
+                           },
 "request_child_access":
 { Args: Record<PropertyKey, never>; Returns: undefined
                            },
@@ -1218,6 +1223,9 @@ isOneToOne: false
 { Args: { "p_answer": Json,"p_exercise": string,"p_hint_used"?: boolean,"p_response_ms"?: number,"p_session": string }; Returns: Json
                            },
 "test_limit":
+{ Args: Record<PropertyKey, never>; Returns: number
+                           },
+"unit_practice_limit":
 { Args: Record<PropertyKey, never>; Returns: number
                            },
 "unlock_lesson":

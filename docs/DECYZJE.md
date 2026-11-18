@@ -1458,3 +1458,35 @@ Na telefonie `filter` wymaga nowej architektury Reacta Native — domyślnej od 
 tej, na której aplikacja stoi. Gdyby jej kiedyś nie było, filtr nic nie zrobi, dlatego szarość nie
 wisi na nim samym: kwadraciki dostają szary kolor wprost, strzałkę zastępuje szara kłódka, a całe
 pudełko przygasza `opacity`.
+
+## Powtórka działu: dobrowolna, losowa, bez stawki (2026-11-18)
+
+Dział kończył się jednym kafelkiem — „Testem działu". Test jest bramką: ma próg, otwiera
+następny dział i robi się go raz, bo po zdaniu nie ma po co wracać. Nie było więc niczego, czym
+dziecko mogłoby przećwiczyć dział jeszcze raz dla samego ćwiczenia.
+
+Od teraz każdy dział ze słówkami dostaje drugi kafelek końcowy, **Powtórkę działu** (🔁):
+piętnaście zadań losowanych z całego działu, po jednym na słówko, losowy typ zadania. Powstaje
+sama, tym samym wyzwalaczem co test (`add_unit_test`), więc nie ma działów, w których ktoś
+o niej zapomniał.
+
+Rodzaj `review` z zasięgiem działu istniał od pierwszych migracji i robił prawie to samo — tyle
+że brał słówka wyłącznie z kolejki FSRS (`srs_state`), czyli te, które dziecko już widziało
+i które akurat są zaległe. Dla „chcę przećwiczyć dział" to zły dobór: tuż po przerobieniu działu
+zaległych nie ma prawie wcale, więc powtórka bywała pusta dokładnie wtedy, kiedy jest
+najbardziej potrzebna.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Rodzaj lekcji | istniejący `review` z `review_scope_unit_id` | to samo zachowanie już się tak nazywało; zmienia się dobór słówek, nie pojęcie | czwarta wartość w `lesson_kind` (trzecia gałąź do dopisania w każdej funkcji pytającej o rodzaj) |
+| Dobór słówek | losowo z całego działu | powtórka ma utrwalać dział, także słówka nigdy nie powtarzane; od kolejki zaległych jest osobny test powtórkowy kursu | dobór ważony FSRS z dopełnieniem losowymi (dziecko wybiera powtórkę, żeby przećwiczyć dział, a nie żeby baza wybrała za nie) |
+| Kiedy się otwiera | razem z testem działu, po komplecie zaliczonych lekcji | „powtórz" ma sens dopiero wtedy, gdy jest co powtarzać | po pierwszej zaliczonej lekcji (tak było i znaczyło „powtórz dział, którego jeszcze nie przerobiłeś") |
+| Co blokuje | nic | jest dobrowolna; następny dział nadal otwiera wyłącznie zdany test | powtórka jako warunek testu (dołożona praca obowiązkowa pod nazwą „dodatkowa") |
+| Ile zadań | 15, czyli `stage_size` | jedno podejście, a nie kilka etapów pod rząd; tyle samo co test | 12 jak w teście powtórkowym kursu (tam limit wynika z kolejki zaległych, nie z długości lekcji) |
+| Powtarzanie | bez ograniczeń, każde podejście losuje od nowa | o to w niej chodzi | limit podejść dziennie (próg wzięty z powietrza) |
+| Punkty za podejście | pełne `xp_reward` (30) za każde zdane | zwykła lekcja robiona drugi raz też płaci, a tu trzeba poprawnie odpowiedzieć piętnaście razy | zero punktów za powtórzone podejście (karanie za ćwiczenie) |
+| Kolejność kafelków | powtórka ZA testem (`sort_order` 110) | oba otwierają się w tej samej chwili, więc pierwszy ma być ten, który prowadzi dalej | przed testem (rozgrzewka przed bramką — ale wtedy droga dalej jest drugim kafelkiem od końca) |
+
+Seed przestał zakładać powtórki sam: robi to wyzwalacz, a dopisanie ich w `seed.sql` dawało
+w każdym dziale dwie. `review.test.sql` opisuje teraz stan po zmianie — że powtórka czeka na
+komplet lekcji, bierze słówka nigdy nie powtarzane i otwiera się po raz drugi.

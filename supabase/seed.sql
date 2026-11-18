@@ -182,11 +182,8 @@ begin
          jsonb_build_object('a', 'ptak', 'b', 'bird'),
          jsonb_build_object('a', 'ryba', 'b', 'fish'))), 20);
 
-  -- Po jednej powtórce na dział. Nie ma własnych zadań — zestaw buduje się z tego, co według
-  -- FSRS czeka na powtórzenie u konkretnego dziecka.
-  for u in select un.id, un.title from public.units un where un.course_id = v_course loop
-    insert into public.lessons (unit_id, slug, title, icon, kind, sort_order, review_scope_unit_id, xp_reward, is_published)
-    values (u.id, 'powtorka', 'Powtórka', '🔁', 'review', 99, u.id, 30, true);
-  end loop;
+  -- Testu działu ani powtórki działu seed nie zakłada: oba kafelki końcowe dokłada wyzwalacz
+  -- `add_unit_test` przy pierwszym słówku w dziale (`…_unit_test.sql`, `…_unit_practice.sql`).
+  -- Dopisanie ich tutaj dawało drugą powtórkę w każdym dziale.
 end;
 $seed$;

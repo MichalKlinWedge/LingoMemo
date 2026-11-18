@@ -1,10 +1,11 @@
--- Lekcje powtórkowe: co się w nich pojawia i kiedy w ogóle są dostępne.
+-- Powtórka działu: dobrowolny kafelek na końcu działu, do zrobienia ile razy się chce.
 --
--- Powtórka ma pokazywać słówka zaległe według FSRS i te, na których dziecko się myli — a nie
--- losowy zestaw z całego działu.
+-- Bierze słówka z CAŁEGO działu, także te, których dziecko nigdy nie powtarzało — po to jest
+-- (`…_unit_practice.sql`). Otwiera się razem z testem działu, czyli po komplecie lekcji,
+-- a sama niczego nie otwiera: następny dział nadal czeka na zdany test.
 
 begin;
-select plan(10);
+select plan(12);
 
 create or replace function pg_temp.make_user(p_email text) returns uuid
 language plpgsql as $$
@@ -31,6 +32,13 @@ create temporary table t_unit as
   join public.courses c on c.id = u.course_id
   where c.slug = 'pl-en-starter' and u.sort_order = 1;
 
+create temporary table t_next as
+  select u.id from public.units u
+  join public.courses c on c.id = u.course_id
+  where c.slug = 'pl-en-starter' and u.sort_order = 2;
+
+-- Powtórka DZIAŁU, nie test powtórkowy kursu: ten drugi też ma `kind = 'review'`, ale wiesza się
+-- na kursie (`review_scope_course_id`) i rządzi się kolejką zaległych.
 create temporary table t_review as
   select l.id from public.lessons l
   where l.kind = 'review' and l.review_scope_unit_id = (select id from t_unit);
@@ -38,6 +46,13 @@ create temporary table t_review as
 create temporary table t_first as
   select l.id from public.lessons l
   where l.unit_id = (select id from t_unit) and l.kind = 'standard' and l.sort_order = 1;
+
+-- Ile słówek ma cały dział — tyle zadań powinna wydać powtórka, dopóki mieści się w limicie.
+create temporary table t_words as
+  select count(distinct li.concept_id)::integer as n
+    from public.lesson_items li
+    join public.lessons l on l.id = li.lesson_id
+   where l.unit_id = (select id from t_unit);
 
 -- Nauka wymaga zapisu na kurs (`…_course_access_request.sql`), więc dziecko z tego pliku
 -- musi go mieć — bez zapisu lekcja jest zamknięta, zanim zacznie się to, co sprawdzamy.
@@ -48,11 +63,14 @@ select (select id from t_user), u.course_id
  where l.id = (select id from t_review)
 on conflict do nothing;
 
-grant select on t_user, t_unit, t_review, t_first to authenticated;
+grant select on t_user, t_unit, t_next, t_review, t_first, t_words to authenticated;
 
-select is((select count(*)::integer from t_review), 1, 'dział ma jedną lekcję powtórkową');
+select is((select count(*)::integer from t_review), 1, 'dział ma jedną powtórkę, założoną wyzwalaczem');
 
--- --- zanim cokolwiek zaliczono ---
+-- --- pierwsza lekcja zaliczona, reszta działu jeszcze nie ---
+insert into public.lesson_progress (user_id, lesson_id, status, best_score, stars)
+values ((select id from t_user), (select id from t_first), 'completed', 1.0, 3);
+
 select set_config('role', 'authenticated', true),
        set_config('request.jwt.claims',
          (select json_build_object('sub', u.id, 'role', 'authenticated', 'app_metadata', '{}'::jsonb)::text
@@ -61,7 +79,7 @@ select set_config('role', 'authenticated', true),
 select is(
   (select is_unlocked from public.v_my_lessons where id = (select id from t_review)),
   false,
-  'powtórka jest zamknięta, dopóki w dziale nic nie jest zaliczone'
+  'jedna zaliczona lekcja to za mało — powtórka czeka na komplet, tak jak test działu'
 );
 
 select throws_ok(
@@ -73,22 +91,16 @@ select throws_ok(
 
 select set_config('role', 'postgres', true), set_config('request.jwt.claims', '', true);
 
--- --- pierwsza lekcja zaliczona, dwa słówka zaległe, jedno na przyszłość ---
+-- --- cały dział zaliczony, ani jednego słówka w kolejce powtórek ---
+--
+-- `srs_state` zostaje puste celowo: powtórka ma działać także tuż po przerobieniu działu, gdy
+-- zaległych nie ma jeszcze wcale. Wcześniejsza wersja brała słówka wyłącznie stamtąd i wydawała
+-- wtedy pustą lekcję.
 insert into public.lesson_progress (user_id, lesson_id, status, best_score, stars)
-values ((select id from t_user), (select id from t_first), 'completed', 1.0, 3);
-
-create temporary table t_concepts as
-  select li.concept_id, row_number() over (order by li.sort_order) as nr
-  from public.lesson_items li where li.lesson_id = (select id from t_first);
-
-insert into public.srs_state (user_id, concept_id, course_id, stability, difficulty, due_on, lapses, reps)
-select (select id from t_user), c.concept_id,
-       (select id from public.courses where slug = 'pl-en-starter'),
-       5, 5,
-       case when c.nr <= 2 then current_date - 1 else current_date + 30 end,
-       case when c.nr = 1 then 4 else 0 end,
-       3
-from t_concepts c;
+select (select id from t_user), l.id, 'completed', 1.0, 3
+  from public.lessons l
+ where l.unit_id = (select id from t_unit) and l.kind = 'standard'
+on conflict (user_id, lesson_id) do nothing;
 
 select set_config('role', 'authenticated', true),
        set_config('request.jwt.claims',
@@ -98,24 +110,20 @@ select set_config('role', 'authenticated', true),
 select is(
   (select is_unlocked from public.v_my_lessons where id = (select id from t_review)),
   true,
-  'po zaliczeniu lekcji powtórka się otwiera'
+  'po komplecie lekcji działu powtórka się otwiera'
 );
 
 select is(
   (select count(*)::integer from public.get_lesson_exercises((select id from t_review))),
-  4,
-  'powtórka bierze wszystkie przerobione słówka działu'
+  (select n from t_words),
+  'powtórka bierze słówka z całego działu, także te nigdy nie powtarzane'
 );
 
--- Najpierw zaległe: dwa pierwsze zadania dotyczą słówek z terminem w przeszłości.
-select is(
-  (select count(*)::integer
-     from (select concept_id from public.get_lesson_exercises((select id from t_review))
-            order by sort_order limit 2) g
-     join public.srs_state s on s.concept_id = g.concept_id and s.user_id = (select id from t_user)
-    where s.due_on <= current_date),
-  2,
-  'zaległe słówka idą na początek powtórki'
+select cmp_ok(
+  (select count(*)::integer from public.get_lesson_exercises((select id from t_review))),
+  '<=',
+  public.unit_practice_limit(),
+  'powtórka nie przekracza swojego limitu zadań'
 );
 
 select is(
@@ -177,8 +185,38 @@ select is(
 
 select is(
   (select total_exercises from public.lesson_sessions where id = (select id from t_sess)),
-  4,
+  (select n from t_words),
   'sesja powtórki zna liczbę swoich zadań'
+);
+
+-- --- drugie podejście: powtórkę wolno robić wielokrotnie ---
+select set_config('role', 'postgres', true), set_config('request.jwt.claims', '', true);
+
+insert into public.lesson_progress (user_id, lesson_id, status, best_score, stars)
+values ((select id from t_user), (select id from t_review), 'completed', 1.0, 3)
+on conflict (user_id, lesson_id) do update set status = 'completed';
+
+select set_config('role', 'authenticated', true),
+       set_config('request.jwt.claims',
+         (select json_build_object('sub', u.id, 'role', 'authenticated', 'app_metadata', '{}'::jsonb)::text
+            from auth.users u where u.id = (select id from t_user)), true);
+
+-- Sesję zakładamy osobnym poleceniem: `start_lesson_session` dopisuje wiersz, a zapytanie,
+-- które ją woła w swoim własnym `where`, tego wiersza jeszcze nie widzi.
+create temporary table t_sess2 as
+  select public.start_lesson_session((select id from t_review), 'powtorka-2') as id;
+
+select is(
+  (select total_exercises from public.lesson_sessions where id = (select id from t_sess2)),
+  (select n from t_words),
+  'zrobiona powtórka otwiera się po raz drugi z pełnym zestawem'
+);
+
+-- Powtórka jest dobrowolna: zaliczona nie zastępuje testu, więc następny dział nadal czeka.
+select is(
+  public.is_unit_unlocked((select id from t_next), (select id from t_user)),
+  false,
+  'zrobiona powtórka nie otwiera następnego działu — to robi dopiero zdany test działu'
 );
 
 select set_config('role', 'postgres', true), set_config('request.jwt.claims', '', true);
