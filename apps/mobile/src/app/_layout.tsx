@@ -35,7 +35,7 @@ export default function Layout() {
       >
         {/* Ekran kursów nie ma własnego nagłówka: „Twoje kursy" zastąpiły sowa i imię w pasku,
             a drugi wiersz z tym samym znaczeniem tylko zabierałby wysokość. Pozostałe ekrany
-            nagłówek zachowują — to w nim jest strzałka powrotu. */}
+            nagłówek zachowują — jako tytuł strony, a gdzieniegdzie też jako drogę wstecz. */}
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="logowanie" options={{ title: 'Logowanie' }} />
         <Stack.Screen name="ustawienia" options={{ title: 'Ustawienia' }} />
@@ -47,8 +47,16 @@ export default function Layout() {
             zabierałby wysokość ekranu, której przy zadaniu z klawiaturą i tak brakuje. */}
         <Stack.Screen name="lekcja/[id]/index" options={{ headerShown: false }} />
         <Stack.Screen name="lekcja/[id]/nauka" options={{ title: 'Słówka lekcji' }} />
-        <Stack.Screen name="nagrody" options={{ title: 'Nagrody' }} />
-        <Stack.Screen name="statystyki" options={{ title: 'Twoje postępy' }} />
+        {/* Nagrody i postępy bez strzałki powrotu: ten wiersz jest TYTUŁEM strony, a nie drogą
+            wstecz. Strzałka obok napisu kazała czytać „Nagrody" jako miejsce, do którego się
+            wraca — a wchodzi się tu znacznikiem z paska, który stoi dwa centymetry wyżej i tam
+            też prowadzi z powrotem (sowa wraca na listę kursów). Android ma do tego swój gest
+            i przycisk wstecz, więc nic nie ginie. */}
+        <Stack.Screen name="nagrody" options={{ title: 'Nagrody', headerBackVisible: false }} />
+        <Stack.Screen
+          name="statystyki"
+          options={{ title: 'Twoje postępy', headerBackVisible: false }}
+        />
         <Stack.Screen name="zadanie" options={{ title: 'PoC-M1 — zadanie z bazy' }} />
         <Stack.Screen name="mowa" options={{ title: 'PoC-M2 — mowa' }} />
         <Stack.Screen name="powiadomienia" options={{ title: 'PoC-M3 — przypomnienia' }} />
