@@ -31,11 +31,29 @@ export async function TopBar() {
   return (
     <header className="app-bar">
       <div className="app-bar-inner">
-        {/* Imię prowadzi na stronę główną — to jest „wyjście” z każdego miejsca aplikacji. */}
-        <Link href="/" className="app-bar-name flex items-center gap-2">
-          <Logo size={36} />
-          Cześć, {profile?.display_name ?? "uczniu"}!
-        </Link>
+        {/* Pierwszy wiersz: imię po lewej, wyjścia po prawej — na tej samej wysokości.
+            Wcześniej „Panel" i „Wyloguj" stały w jednym rzędzie ze znacznikami i spadały pod nie
+            trzecim wierszem (pasek i tak nigdy nie mieści wszystkiego w 48 rem). */}
+        <div className="app-bar-top">
+          {/* Imię prowadzi na stronę główną — to jest „wyjście” z każdego miejsca aplikacji. */}
+          <Link href="/" className="app-bar-name flex items-center gap-2">
+            <Logo size={36} />
+            Cześć, {profile?.display_name ?? "uczniu"}!
+          </Link>
+
+          <div className="app-bar-actions">
+            {isAdmin && (
+              <Link href="/admin" className="btn-secondary">
+                Panel
+              </Link>
+            )}
+            <form action={signOut}>
+              <button type="submit" className="btn-secondary">
+                Wyloguj
+              </button>
+            </form>
+          </div>
+        </div>
 
         <nav className="flex flex-wrap items-center gap-2">
           <Link href="/nagrody" className="chip">
@@ -63,19 +81,6 @@ export async function TopBar() {
             </Link>
           )}
         </nav>
-
-        <div className="app-bar-actions">
-          {isAdmin && (
-            <Link href="/admin" className="btn-secondary">
-              Panel
-            </Link>
-          )}
-          <form action={signOut}>
-            <button type="submit" className="btn-secondary">
-              Wyloguj
-            </button>
-          </form>
-        </div>
       </div>
     </header>
   );
