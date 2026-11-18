@@ -19,9 +19,10 @@ const IKONA = require('../../assets/ikona.png') as ImageSourcePropType;
  * i znikał na każdym innym ekranie. Punkty zdobywa się w lekcji, a patrzy na nie wszędzie,
  * więc pasek należy do ramy aplikacji, nie do jednego ekranu.
  *
- * Nie pokazuje się na dwa sposoby: niezalogowanemu (ekran powitalny i logowanie — nie ma czego
- * pokazywać) i w trakcie lekcji. Lekcja ma własny pasek z krzyżykiem wyjścia i postępem, a przy
- * zadaniu z klawiaturą liczy się każdy wiersz wysokości.
+ * Nie pokazuje się tylko niezalogowanemu — na ekranie powitalnym i przy logowaniu nie ma czego
+ * pokazywać. W lekcji jest, choć lekcja ma już własny pasek z krzyżykiem wyjścia i postępem:
+ * dziecko ma widzieć punkty tam, gdzie je zdobywa, a nie dopiero po wyjściu. Kosztuje to dwa
+ * wiersze wysokości przy zadaniu z klawiaturą — o tyle krótsza jest wtedy treść zadania.
  */
 export function TopBar() {
   const session = useSession();
@@ -50,9 +51,6 @@ export function TopBar() {
   }, [userId, pathname]);
 
   if (session === null || session === undefined) return null;
-  // Sama lekcja, czyli ekran z zadaniami — ale już nie plansza ze słówkami („…/nauka"), która
-  // jest zwykłym ekranem do czytania i ma własną strzałkę powrotu.
-  if (pathname.startsWith('/lekcja/') && !pathname.endsWith('/nauka')) return null;
 
   return (
     <View style={[styles.bar, { paddingTop: insets.top + 8 }]}>
