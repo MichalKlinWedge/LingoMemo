@@ -328,14 +328,13 @@ export function LessonRunner({
 
   return (
     <div className="flex flex-1 flex-col gap-6">
-      <div className="flex items-center gap-3">
-        <Link
-          href={`/kurs/${courseSlug}`}
-          className="back-link justify-center"
-          style={{ minWidth: "2.75rem", minHeight: "2.75rem" }}
-          aria-label="Przerwij lekcję"
-        >
-          ✕
+      {/* Wyjście jest napisem, nie krzyżykiem: dziecko w drugiej klasie czyta „Wyjdź", a ✕ musi
+          sobie wytłumaczyć. Czerwień mówi, że to wyjście bez zapisania etapu do końca, i odróżnia
+          je od wszystkiego innego na ekranie lekcji. Rząd zawija się, bo przycisk zajmuje więcej
+          miejsca niż krzyżyk i na wąskim ekranie zepchnąłby licznik zadań poza widok. */}
+      <div className="flex flex-wrap items-center gap-3">
+        <Link href={`/kurs/${courseSlug}`} className="btn-danger shrink-0" aria-label="Wyjdź z lekcji">
+          Wyjdź
         </Link>
         <div
           className="h-4 flex-1 overflow-hidden rounded-full"

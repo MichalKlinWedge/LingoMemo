@@ -454,14 +454,9 @@ function Progress({
   return (
     <View style={styles.head}>
       <View style={styles.headRow}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Przerwij lekcję"
-          onPress={() => backToCourse(router, courseSlug)}
-          style={styles.close}
-        >
-          <Text style={styles.closeText}>✕</Text>
-        </Pressable>
+        {/* Wyjście jest napisem, nie krzyżykiem: dziecko w drugiej klasie czyta „Wyjdź", a ✕ musi
+            sobie wytłumaczyć. Czerwień mówi, że to wyjście bez dokończenia etapu. */}
+        <Button kind="danger" label="Wyjdź" onPress={() => backToCourse(router, courseSlug)} />
         <View style={styles.bar}>
           <View style={[styles.barFill, { width: `${Math.round((index / total) * 100)}%` }]} />
         </View>
@@ -642,13 +637,6 @@ const styles = StyleSheet.create({
   head: { gap: size.gap, paddingHorizontal: size.pad, paddingTop: size.gap },
   headRow: { alignItems: 'center', flexDirection: 'row', gap: size.gap },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  close: {
-    alignItems: 'center',
-    height: 44,
-    justifyContent: 'center',
-    width: 44,
-  },
-  closeText: { color: color.muted, fontSize: 24 },
   bar: { backgroundColor: color.line, borderRadius: 999, flex: 1, height: 16, overflow: 'hidden' },
   barFill: { backgroundColor: color.grass, borderRadius: 999, height: '100%' },
   counter: { color: color.muted, fontSize: 16, fontWeight: '700' },

@@ -85,7 +85,7 @@ export function Button({
 }: {
   label: string;
   onPress: () => void;
-  kind?: 'primary' | 'answer' | 'quiet';
+  kind?: 'primary' | 'answer' | 'quiet' | 'danger';
   disabled?: boolean;
   busy?: boolean;
 }) {
@@ -100,14 +100,17 @@ export function Button({
         styles.button,
         kind === 'answer' && styles.buttonAnswer,
         kind === 'quiet' && styles.buttonQuiet,
+        kind === 'danger' && styles.buttonDanger,
         pressed && styles.buttonPressed,
         off && styles.buttonOff,
       ]}
     >
       {busy === true ? (
-        <ActivityIndicator color={kind === 'primary' ? '#ffffff' : color.brand} />
+        <ActivityIndicator color={kind === 'primary' || kind === 'danger' ? '#ffffff' : color.brand} />
       ) : (
-        <Text style={[styles.buttonText, kind !== 'primary' && styles.buttonTextDark]}>{label}</Text>
+        <Text style={[styles.buttonText, kind !== 'primary' && kind !== 'danger' && styles.buttonTextDark]}>
+          {label}
+        </Text>
       )}
     </Pressable>
   );
@@ -152,6 +155,9 @@ const styles = StyleSheet.create({
   },
   buttonAnswer: { backgroundColor: color.surface, borderColor: color.line, borderWidth: 2, minHeight: size.tapAnswer },
   buttonQuiet: { backgroundColor: color.brandLight },
+  // Czerwień znaczy „to przerywa” — na telefonie tylko wyjście z lekcji. Biały napis zostaje,
+  // więc `buttonTextDark` tego rodzaju nie dotyczy.
+  buttonDanger: { backgroundColor: color.coral },
   buttonPressed: { opacity: 0.8 },
   buttonOff: { opacity: 0.45 },
   buttonText: { color: '#ffffff', fontSize: size.text, fontWeight: '700', textAlign: 'center' },
