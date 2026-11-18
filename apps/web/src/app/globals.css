@@ -40,6 +40,12 @@
 
   --font-sans: var(--font-nunito), system-ui, sans-serif;
   --font-display: var(--font-baloo), var(--font-nunito), system-ui, sans-serif;
+
+  /* Szerokość treści — jedna dla `<Shell>` (klasa `max-w-tresc`) i dla paska górnego. Bierze się
+     z ekranu kursu: cztery kolumny lekcji po 12 rem i trzy przerwy po 1 rem to 51 rem, plus
+     margines 1 rem z każdej strony. Trzymana była w dwóch miejscach i zaraz się rozjechała —
+     treść urosła do 56 rem, a pasek został przy 48 i wystawał nad nią węższy. */
+  --container-tresc: 56rem;
 }
 
 :root {
@@ -481,19 +487,19 @@ h2 {
     background: var(--surface);
   }
 
-  /* Ta sama szerokość co treść w `<Shell>` (max-w-3xl), żeby nic się nie rozjeżdżało. */
+  /* Ta sama szerokość co treść w `<Shell>` — oba miejsca czytają `--container-tresc`. */
   .app-bar-inner {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
     width: 100%;
-    max-width: 48rem;
+    max-width: var(--container-tresc);
     margin: 0 auto;
     padding: 0.75rem 1rem;
   }
 
   /* Imię i wyjścia w jednym wierszu, znaczniki pod nimi. Wszystko trzema elementami w jednym
-     rzędzie wyglądało dobrze tylko na papierze: pasek ma 48 rem, a imię, cztery znaczniki
+     rzędzie wyglądało dobrze tylko na papierze: pasek ma 56 rem, a imię, cztery znaczniki
      i dwa przyciski nigdy się w nich nie mieszczą, więc zawijanie spychało przyciski
      pod znaczniki — najdalej od miejsca, w którym ich się szuka. */
   .app-bar-top {
