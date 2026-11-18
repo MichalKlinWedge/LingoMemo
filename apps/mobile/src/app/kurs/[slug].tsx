@@ -34,6 +34,10 @@ export default function CourseScreen() {
    * z powrotem na górę działu, nawet gdy właśnie przewinęło ekran ręką.
    */
   const ustawiony = useRef(false);
+  /** Zmierzone położenie każdego działu w treści przewijanej: identyfikator działu -> `y`. */
+  const yDzialu = useRef(new Map<string, number>());
+  /** Wysokość całej treści — zero znaczy „native jeszcze nie wie, jak wysoki jest ekran". */
+  const wysokoscTresci = useRef(0);
 
   /**
    * Wczytanie kursu. Ta sama funkcja obsługuje wejście na ekran (po lekcji zmieniają się gwiazdki
@@ -42,6 +46,8 @@ export default function CourseScreen() {
   const load = useCallback(() => {
     if (userId === null) return;
     ustawiony.current = false;
+    yDzialu.current.clear();
+    wysokoscTresci.current = 0;
     let alive = true;
     void loadCourse(slug, userId).then((result) => {
       if (!alive) return;
@@ -102,8 +108,36 @@ export default function CourseScreen() {
   const doUstawienia =
     data.gate?.active === true || kolejny <= 0 ? null : data.units[kolejny].id;
 
+  /**
+   * Przewinięcie na ten dział — wołane z dwu stron, bo potrzebuje dwu różnych pomiarów i żaden
+   * nie wystarcza sam:
+   *
+   *   * `onLayout` działu daje jego `y` w treści,
+   *   * `onContentSizeChange` mówi, że native zna już całą wysokość treści.
+   *
+   * Drugie jest tu sednem poprawki: `scrollTo` poza znaną natywnie wysokość jest **obcinane
+   * do końca treści**, a przy wejściu na ekran ta wysokość to jeszcze zero. Wywołanie
+   * z samego `onLayout` trafiało więc w zero i ekran zostawał na górze — na webie tego nie ma,
+   * bo tam przewija się całe okno, które zna swoją wysokość od początku. Kolejność obu
+   * pomiarów nie jest obiecana, dlatego próbujemy po każdym, a jedno `ustawiony` pilnuje,
+   * żeby skok wyszedł raz.
+   */
+  const ustawNaDziale = () => {
+    if (ustawiony.current || doUstawienia === null || wysokoscTresci.current === 0) return;
+    const y = yDzialu.current.get(doUstawienia);
+    if (y === undefined) return;
+    ustawiony.current = true;
+    scroll.current?.scrollTo({ y: Math.max(y - size.gap, 0), animated: false });
+  };
+
   return (
-    <Screen scrollRef={scroll}>
+    <Screen
+      scrollRef={scroll}
+      onContentSizeChange={(_width, height) => {
+        wysokoscTresci.current = height;
+        ustawNaDziale();
+      }}
+    >
       {/* Flaga obok tytułu, a nie w nim: obrazek wewnątrz <Text> Android rysuje po swojemu. */}
       <View style={styles.courseHead}>
         <Flag code={data.course.target_lang} fallback={data.course.icon} size={36} />
@@ -146,18 +180,12 @@ export default function CourseScreen() {
           <View
             key={unit.id}
             style={styles.unit}
-            /**
-             * Przewijamy z `onLayout`, a nie zaraz po wczytaniu danych: dopóki Android nie
-             * rozmierzy kafelków, dział nie ma jeszcze swojego `y`, a `scrollTo` poszłoby
-             * w miejsce, które za chwilę będzie gdzie indziej.
-             */
+            /* Położenie działu znamy dopiero po rozmierzeniu kafelków — stąd `onLayout`,
+               a nie wyliczanie czegokolwiek z góry. Samo przewinięcie robi `ustawNaDziale`,
+               bo czeka jeszcze na wysokość treści. */
             onLayout={(event) => {
-              if (unit.id !== doUstawienia || ustawiony.current) return;
-              ustawiony.current = true;
-              scroll.current?.scrollTo({
-                y: Math.max(event.nativeEvent.layout.y - size.gap, 0),
-                animated: false,
-              });
+              yDzialu.current.set(unit.id, event.nativeEvent.layout.y);
+              ustawNaDziale();
             }}
           >
             <Text style={styles.unitTitle}>

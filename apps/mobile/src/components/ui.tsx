@@ -27,9 +27,12 @@ import { color, size } from '@/constants/theme';
 export function Screen({
   children,
   scrollRef,
+  onContentSizeChange,
 }: {
   children: ReactNode;
   scrollRef?: RefObject<ScrollViewInstance | null>;
+  /** Wysokość treści jest znana dopiero stąd — i dopiero wtedy `scrollTo` nie jest obcinane. */
+  onContentSizeChange?: (width: number, height: number) => void;
 }) {
   // Zapas na dole wielkości paska nawigacji Androida: w trybie edge-to-edge pasek leży NA
   // treści, więc bez tego ostatni przycisk ekranu zostaje pod przyciskami systemu.
@@ -37,6 +40,7 @@ export function Screen({
   return (
     <ScrollView
       ref={scrollRef}
+      onContentSizeChange={onContentSizeChange}
       style={styles.screen}
       contentContainerStyle={[styles.screenInner, { paddingBottom: 32 + insets.bottom }]}
       keyboardShouldPersistTaps="handled"
