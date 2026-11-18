@@ -346,18 +346,25 @@ export function LessonRunner({
         <Link href={`/kurs/${courseSlug}`} className="btn-danger btn-compact shrink-0" aria-label="Wyjdź z lekcji">
           Wyjdź
         </Link>
+        {/* Poziom mówi kolorem paska postępu, a nie własnym znacznikiem z napisem: rząd ma 48 rem
+            i „Poziom łatwy" przy każdej lekcji spychał licznik zadań do drugiego wiersza. Kolory
+            te same co kwadraciki na ekranie kursu (zielony → żółty → czerwony), więc dziecko
+            poznaje poziom tym samym znakiem, którym go wybierało. Obrys jest konieczny: na
+            pierwszym zadaniu wypełnienie ma zerową szerokość i nie byłoby po czym poznać. */}
         <div
-          className="h-4 flex-1 overflow-hidden rounded-full"
+          className="lesson-bar h-5 flex-1 overflow-hidden rounded-full"
+          data-level={level}
           style={{ background: "var(--color-zinc-200)" }}
           role="progressbar"
           aria-valuenow={index}
           aria-valuemin={0}
           aria-valuemax={total}
-          aria-label="Postęp lekcji"
+          aria-label={`Postęp lekcji — poziom ${levelName(level).toLowerCase()}`}
+          title={`Poziom ${levelName(level).toLowerCase()}`}
         >
           <div
             className="h-full rounded-full transition-all"
-            style={{ width: `${Math.round((index / total) * 100)}%`, background: "var(--color-grass)" }}
+            style={{ width: `${Math.round((index / total) * 100)}%` }}
           />
         </div>
         <button
@@ -380,21 +387,6 @@ export function LessonRunner({
             Etap {stage}/{stages}
           </span>
         )}
-        {/* Poziom na każdym wejściu i kolorem, nie tylko napisem na średnim i trudnym. Na łatwym
-            nie było dotąd o poziomie ani słowa, a trudniejsze wejścia różniły się od zwykłej
-            lekcji samym napisem — który dziecko musiało przeczytać i jeszcze skojarzyć
-            z kwadracikiem na ekranie kursu. Teraz kwadracik jest ten sam i w tym samym kolorze,
-            a pełna nazwa siedzi w dymku i w etykiecie dla czytnika ekranu: rząd ma 48 rem
-            i „Poziom łatwy" przy każdej lekcji spychałby licznik zadań do drugiego wiersza. */}
-        <span
-          className="chip chip-level"
-          data-level={level}
-          role="img"
-          title={`Poziom ${levelName(level).toLowerCase()}`}
-          aria-label={`Poziom ${levelName(level).toLowerCase()}`}
-        >
-          <span aria-hidden>{levelName(level)}</span>
-        </span>
         {/* Podgląd z panelu wygląda dokładnie jak lekcja dziecka — a przecież omija zamki.
             Bez tego napisu administrator nie odróżniłby „lekcja jest otwarta" od „wszedłem
             tylnymi drzwiami". */}

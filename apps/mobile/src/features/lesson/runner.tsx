@@ -307,10 +307,7 @@ export function LessonRunner({
       <Progress
         index={index}
         total={total}
-        stage={stage}
-        stages={stages}
         level={level}
-        hints={hints}
         repeat={repeat}
         courseSlug={courseSlug}
       />
@@ -452,19 +449,13 @@ export function LessonRunner({
 function Progress({
   index,
   total,
-  stage,
-  stages,
   level,
-  hints,
   repeat,
   courseSlug,
 }: {
   index: number;
   total: number;
-  stage: number;
-  stages: number;
   level: number;
-  hints: number;
   /** Zadanie, które wróciło po błędzie — dziecko ma wiedzieć, że to drugie podejście. */
   repeat: boolean;
   courseSlug: string;
@@ -484,7 +475,7 @@ function Progress({
         <View
           style={[styles.bar, { borderColor: levelColor(level) }]}
           accessibilityRole="progressbar"
-          accessibilityLabel={`Postęp lekcji — poziom ${levelName(level)}`}
+          accessibilityLabel={`Postęp lekcji — poziom ${levelName(level).toLowerCase()}`}
           accessibilityValue={{ min: 0, max: total, now: index }}
         >
           <View
@@ -498,15 +489,15 @@ function Progress({
           {index + 1}/{total}
         </Text>
       </View>
-      <View style={styles.chips}>
-        {stages > 1 && (
-          <Chip>
-            Etap {stage}/{stages}
-          </Chip>
-        )}
-        {/* Bez tego napisu dziecko widzi tylko, że ekran pokazuje coś, co już było. */}
-        {repeat && <Chip>🔁 Jeszcze raz</Chip>}
-      </View>
+      {/* Cały wiersz pod paskiem tylko wtedy, gdy jest co w nim postawić: pusty widok z odstępem
+          zabierał dziecku 12 px wysokości zadania na nic. Numer etapu stąd zniknął — na ekranie
+          telefonu liczy się miejsce na treść, a licznik zadań przy pasku mówi dość. */}
+      {repeat && (
+        <View style={styles.chips}>
+          {/* Bez tego napisu dziecko widzi tylko, że ekran pokazuje coś, co już było. */}
+          <Chip>🔁 Jeszcze raz</Chip>
+        </View>
+      )}
     </View>
   );
 }
