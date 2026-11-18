@@ -88,11 +88,9 @@ export default function CourseScreen() {
         </Chip>
       )}
 
-      {/* Stan konta punktów odblokowania. Bez tego dziecko nie wie, że kłódka z kluczykiem jest
-          dla niego — punkt zdobyło kilka lekcji wcześniej, na poziomie trudnym. */}
-      {data.unlockLeft > 0 && (
-        <Chip>🔑 {plural(data.unlockLeft, UNLOCKS)} — dotknij kłódki z kluczykiem</Chip>
-      )}
+      {/* Stanu konta punktów odblokowania tu NIE ma: stoi znacznikiem „🔑" w pasku nad każdym
+          ekranem, tak samo jak na webie. Dwa razy to samo na jednym ekranie, a pasek i tak
+          jest wyżej. Czego szukać, mówi kłódka z kluczykiem na kafelku. */}
 
       {/* Zamknięty kurs: jedno wejście, od razu na wierzchu. Kafelków lekcji nie ukrywamy —
           dziecko ma widzieć, co się otworzy, gdy zda test. */}
