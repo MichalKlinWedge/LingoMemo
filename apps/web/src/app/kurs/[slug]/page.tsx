@@ -99,6 +99,10 @@ async function CourseScreen({ params }: { params: PageProps<"/kurs/[slug]">["par
     lessonId: string | null;
     passedToday: boolean;
     triedToday: boolean;
+    /** Czy test powtórkowy da się teraz zrobić. Liczy to baza — ta sama reguła, co wejście. */
+    testOpen: boolean;
+    /** Od ilu zaległych słówek test się otwiera. */
+    testFrom: number;
   } | null;
 
   const punkty = (punktyRow as { left?: number } | null)?.left ?? 0;
@@ -192,7 +196,7 @@ async function CourseScreen({ params }: { params: PageProps<"/kurs/[slug]">["par
           wszystkie kursy, a blokada liczy każdy kurs osobno — stąd własny licznik. Wejście
           jest tu dobrowolne: dziecko z długą kolejką zbija ją od razu, zamiast czekać, aż
           jutro zamknie mu lekcje. Przy stojącej bramce tego nie pokazujemy — mówi to jej karta. */}
-      {bramka && !bramka.active && bramka.due > 0 && bramka.lessonId && (
+      {bramka && !bramka.active && bramka.testOpen && bramka.lessonId && (
         <section className="card flex flex-col gap-3 p-5">
           <h2 className="card-title">
             <span aria-hidden>🔁 </span>Powtórki
@@ -205,6 +209,16 @@ async function CourseScreen({ params }: { params: PageProps<"/kurs/[slug]">["par
             Powtórz teraz
           </Link>
         </section>
+      )}
+
+      {/* Krótka kolejka: sam licznik, bez wejścia. Test z dwóch zadań nie jest wart otwierania,
+          więc karta z przyciskiem zamienia się w zdanie, które mówi, kiedy wróci — inaczej
+          licznik „🔁 3" w pasku na górze wyglądałby na coś, czego nie da się zrobić. */}
+      {bramka && !bramka.active && !bramka.testOpen && bramka.due > 0 && (
+        <p className="chip self-start">
+          🔁 {plural(bramka.due, WORDS)} do powtórzenia w tym kursie — test powtórkowy otworzy się
+          przy {bramka.testFrom}
+        </p>
       )}
 
       {/* Stanu konta punktów odblokowania tu NIE ma: mówi o nim chip `🔑 … do odblokowania`

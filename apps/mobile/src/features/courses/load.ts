@@ -54,6 +54,10 @@ export type Gate = {
   lessonId: string | null;
   passedToday: boolean;
   triedToday: boolean;
+  /** Czy test powtórkowy da się teraz zrobić. Liczy to baza — ta sama reguła, co wejście. */
+  testOpen: boolean;
+  /** Od ilu zaległych słówek test się otwiera. */
+  testFrom: number;
 };
 
 export type CourseData = {

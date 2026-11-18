@@ -1183,6 +1183,12 @@ isOneToOne: false
 "review_limit":
 { Args: Record<PropertyKey, never>; Returns: number
                            },
+"review_test_min":
+{ Args: Record<PropertyKey, never>; Returns: number
+                           },
+"review_test_open":
+{ Args: { "p_course": string,"p_user": string }; Returns: boolean
+                           },
 "revoke_invite":
 { Args: { "p_id": string }; Returns: undefined
                            },

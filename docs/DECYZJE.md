@@ -1490,3 +1490,20 @@ najbardziej potrzebna.
 Seed przestał zakładać powtórki sam: robi to wyzwalacz, a dopisanie ich w `seed.sql` dawało
 w każdym dziale dwie. `review.test.sql` opisuje teraz stan po zmianie — że powtórka czeka na
 komplet lekcji, bierze słówka nigdy nie powtarzane i otwiera się po raz drugi.
+
+## Test powtórkowy dopiero od pięciu zaległych (2026-11-18)
+
+Otwarcie testu „na żądanie" (wpis wyżej) poszło o krok za daleko: kafelek stał otworem już przy
+jednym zaległym słówku, więc ekran kursu witał kartą „Powtórki" z przyciskiem „Powtórz teraz",
+za którym czekały dwa zadania. Lekcja, która kończy się, zanim dziecko zdąży się w nią wciągnąć,
+nie jest warta zajmowania pierwszego miejsca na ekranie.
+
+Od teraz test otwiera się od **pięciu** zaległych słówek (`review_test_min`), a przy krótszej
+kolejce karta zamienia się w sam licznik: „🔁 3 słówka do powtórzenia — test otworzy się przy 5".
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Próg otwarcia | pięć zaległych słówek | tyle, żeby podejście było lekcją, a nie dwoma kliknięciami; kolejka i tak urośnie do jutra | trzy (wciąż chwila); dziesięć, czyli próg bramki (znosiłoby całe „na żądanie" — test pojawiałby się dokładnie wtedy, gdy i tak nie ma czego innego kliknąć) |
+| Stojąca bramka a próg | bramka wygrywa: stoi, to test jest otwarty | po oblanym teście licznik spada poniżej pięciu (błędna odpowiedź też przesuwa termin), a kurs zostaje zamknięty zatrzaskiem — próg zamknąłby wtedy jedyne wyjście | próg bez wyjątku (kurs bez ani jednego otwartego wejścia) |
+| Gdzie mieszka reguła | `review_test_open` w bazie, używana i przez `is_lesson_unlocked`, i przez `review_gate` | ekran nie liczy progu po swojemu, więc karta i kafelek nie mogą się rozjechać | porównanie `due >= 5` w przeglądarce i w telefonie (ta sama liczba w trzech miejscach) |
+| Co widzi dziecko przy krótkiej kolejce | licznik z progiem, bez przycisku | bez tego „🔁 3" w pasku na górze wygląda na zadanie, którego nie da się wykonać | ukrycie licznika (dziecko nie wie, że coś czeka); przycisk prowadzący donikąd |

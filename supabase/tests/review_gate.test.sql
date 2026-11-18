@@ -13,7 +13,7 @@
 --     w tym samym kursie) — inaczej po dłuższej przerwie dziecko dostawałoby test za testem.
 
 begin;
-select plan(28);
+select plan(33);
 
 create or replace function pg_temp.make_user(p_email text) returns uuid
 language plpgsql as $$
@@ -36,6 +36,7 @@ $$;
 create temporary table t_ids (name text primary key, id uuid);
 insert into t_ids values ('uczen', pg_temp.make_user('uczen-bramka@test.local'));
 insert into t_ids values ('uczen2', pg_temp.make_user('uczen2-bramka@test.local'));
+insert into t_ids values ('uczen3', pg_temp.make_user('uczen3-bramka@test.local'));
 insert into t_ids values ('admin', pg_temp.make_user('admin-bramka@test.local'));
 insert into app_private.admin_users (user_id) values ((select id from t_ids where name = 'admin'));
 
@@ -57,7 +58,7 @@ select l.id from public.lessons l
  where un.course_id = (select id from t_kurs) and l.slug = 'lekcja';
 
 insert into public.enrollments (user_id, course_id)
-select t.id, (select id from t_kurs) from t_ids t where t.name in ('uczen', 'uczen2');
+select t.id, (select id from t_kurs) from t_ids t where t.name in ('uczen', 'uczen2', 'uczen3');
 
 create temporary table t_claims as
 select t.name,
@@ -371,6 +372,57 @@ select ok(
   not public.is_lesson_unlocked((select id from t_gate), (select id from t_ids where name = 'uczen2')),
   'bez zaległych słówek kafelek testu znika'
 );
+
+-- --- etap 6: próg otwarcia testu ---
+--
+-- Trzecie dziecko, czysta kolejka. Pojedyncze zaległe słówko nie ma otwierać testu: wyszłaby
+-- z tego lekcja z dwoma zadaniami i karta „Powtórz teraz" nad całym ekranem kursu. Test wraca
+-- od `review_test_min` słówek — i to jest inny próg niż ten, przy którym zamyka się kurs.
+
+insert into public.srs_state (user_id, concept_id, course_id, stability, difficulty, due_on, reps)
+select (select id from t_ids where name = 'uczen3'), s.concept_id, (select id from t_kurs),
+       10, 5, current_date - 1, 2
+  from t_slowka s
+ where s.nr <= 3;
+
+select set_config('request.jwt.claims', (select claims from t_claims where name = 'uczen3'), true),
+       set_config('role', 'authenticated', true);
+
+select is(public.review_test_min(), 5, 'test powtórkowy otwiera się od pięciu zaległych słówek');
+
+select cmp_ok(
+  public.review_test_min(), '<', public.review_gate_limit(),
+  'test otwiera się wcześniej, niż zamyka się kurs'
+);
+
+select is(
+  public.course_due_words((select id from t_kurs), (select id from t_ids where name = 'uczen3')),
+  3,
+  'trzecie dziecko ma trzy zaległe słówka'
+);
+
+select ok(
+  not public.is_lesson_unlocked((select id from t_gate), (select id from t_ids where name = 'uczen3')),
+  'trzy zaległe to za mało na test — kafelek zamknięty'
+);
+
+reset role;
+
+insert into public.srs_state (user_id, concept_id, course_id, stability, difficulty, due_on, reps)
+select (select id from t_ids where name = 'uczen3'), s.concept_id, (select id from t_kurs),
+       10, 5, current_date - 1, 2
+  from t_slowka s
+ where s.nr between 4 and 5;
+
+select set_config('request.jwt.claims', (select claims from t_claims where name = 'uczen3'), true),
+       set_config('role', 'authenticated', true);
+
+select ok(
+  public.is_lesson_unlocked((select id from t_gate), (select id from t_ids where name = 'uczen3')),
+  'piąte zaległe słówko otwiera test, choć kurs jest dalej otwarty'
+);
+
+reset role;
 
 select * from finish();
 rollback;

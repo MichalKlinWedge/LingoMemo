@@ -75,8 +75,17 @@ export default function CourseScreen() {
           sumuje wszystkie kursy, a blokada liczy każdy kurs osobno — stąd własny licznik.
           Wejście jest tu dobrowolne: dziecko z długą kolejką zbija ją od razu, zamiast czekać,
           aż jutro zamknie mu lekcje. Przy stojącej bramce mówi to już karta bramki. */}
-      {data.gate !== null && !data.gate.active && data.gate.due > 0 && data.gate.lessonId !== null && (
+      {data.gate !== null && !data.gate.active && data.gate.testOpen && data.gate.lessonId !== null && (
         <ReviewCard gate={data.gate} />
+      )}
+
+      {/* Krótka kolejka: sam licznik, bez wejścia. Test z dwóch zadań nie jest wart otwierania,
+          więc karta z przyciskiem zamienia się w zdanie, które mówi, kiedy wróci. */}
+      {data.gate !== null && !data.gate.active && !data.gate.testOpen && data.gate.due > 0 && (
+        <Chip>
+          🔁 {plural(data.gate.due, WORDS)} do powtórzenia — test otworzy się przy{' '}
+          {data.gate.testFrom}
+        </Chip>
       )}
 
       {/* Stan konta punktów odblokowania. Bez tego dziecko nie wie, że kłódka z kluczykiem jest
