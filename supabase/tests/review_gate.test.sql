@@ -13,7 +13,7 @@
 --     w tym samym kursie) — inaczej po dłuższej przerwie dziecko dostawałoby test za testem.
 
 begin;
-select plan(26);
+select plan(28);
 
 create or replace function pg_temp.make_user(p_email text) returns uuid
 language plpgsql as $$
@@ -144,9 +144,11 @@ select ok(
   'zwykła lekcja jest otwarta, dopóki bramka nie stoi'
 );
 
+-- Dziewięć zaległych nie zamyka jeszcze lekcji, ale test już stoi otworem: kto chce, nadrabia
+-- od razu, zamiast czekać, aż kolejka urośnie do progu i zatrzaśnie kurs.
 select ok(
-  not public.is_lesson_unlocked((select id from t_gate), (select id from t_ids where name = 'uczen')),
-  'test powtórkowy jest zamknięty, gdy nie ma czego nadrabiać'
+  public.is_lesson_unlocked((select id from t_gate), (select id from t_ids where name = 'uczen')),
+  'test powtórkowy jest otwarty, choć bramka jeszcze nie stoi'
 );
 
 -- --- etap 2: piętnaście zaległych, kurs zamknięty ---
@@ -353,7 +355,22 @@ select ok(
   'drugie dziecko wraca do lekcji'
 );
 
+-- Zdany test zwalnia lekcje, ale sam zostaje otwarty: kolejka ma czterdzieści słówek, a jedno
+-- podejście bierze dwanaście. Bez tego resztę dałoby się powtórzyć dopiero jutro.
+select ok(
+  public.is_lesson_unlocked((select id from t_gate), (select id from t_ids where name = 'uczen2')),
+  'test powtórkowy zostaje otwarty, dopóki jest co powtarzać'
+);
+
 reset role;
+
+-- Pusta kolejka zamyka test: nie ma z czego go ułożyć, więc kafelek znika.
+delete from public.srs_state where user_id = (select id from t_ids where name = 'uczen2');
+
+select ok(
+  not public.is_lesson_unlocked((select id from t_gate), (select id from t_ids where name = 'uczen2')),
+  'bez zaległych słówek kafelek testu znika'
+);
 
 select * from finish();
 rollback;

@@ -188,14 +188,23 @@ async function CourseScreen({ params }: { params: PageProps<"/kurs/[slug]">["par
         </section>
       )}
 
-      {/* Ile zaległych słówek ma TEN kurs. Pasek na górze sumuje wszystkie kursy, więc „🔁 22"
-          potrafiło wisieć nad kursem, w którym do powtórzenia jest pięć słówek — a bramka liczy
-          każdy kurs osobno. Przy stojącej bramce tego nie pokazujemy: mówi to już jej karta. */}
-      {bramka && !bramka.active && bramka.due > 0 && (
-        <p className="chip self-start">
-          🔁 {plural(bramka.due, WORDS)} do powtórzenia w tym kursie — przy {bramka.limit} lekcje
-          poczekają na test powtórkowy
-        </p>
+      {/* Zaległe powtórki tego kursu, póki bramka jeszcze nie stoi. Pasek na górze sumuje
+          wszystkie kursy, a blokada liczy każdy kurs osobno — stąd własny licznik. Wejście
+          jest tu dobrowolne: dziecko z długą kolejką zbija ją od razu, zamiast czekać, aż
+          jutro zamknie mu lekcje. Przy stojącej bramce tego nie pokazujemy — mówi to jej karta. */}
+      {bramka && !bramka.active && bramka.due > 0 && bramka.lessonId && (
+        <section className="card flex flex-col gap-3 p-5">
+          <h2 className="card-title">
+            <span aria-hidden>🔁 </span>Powtórki
+          </h2>
+          <p className="text-base text-zinc-600 dark:text-zinc-400">
+            {plural(bramka.due, WORDS)} czeka na powtórzenie. Przy {bramka.limit} lekcje poczekają,
+            aż zrobisz test.
+          </p>
+          <Link href={`/lekcja/${bramka.lessonId}`} className="btn-secondary self-start">
+            Powtórz teraz
+          </Link>
+        </section>
       )}
 
       {/* Stan konta punktów odblokowania. Bez tego dziecko nie wie, że kłódka z kluczykiem jest
@@ -251,6 +260,12 @@ async function CourseScreen({ params }: { params: PageProps<"/kurs/[slug]">["par
               // Znikające kwadraciki wyglądały jak usterka: rząd pod jedną lekcją był krótszy
               // od sąsiednich i kolumny przestawały się zgadzać. Zrobioną lekcję poznaje się
               // po zielonym kafelku i gwiazdkach, nie po braku kwadracików.
+              // Zamknięta lekcja szarzeje w całości: kafelek sam w sobie zostawiał w kolorze
+              // gwiazdki, liczbę słówek i kwadraciki etapów, więc przy stojącej bramce powtórek
+              // (zamknięty cały kurs) ekran dalej wyglądał na otwarty. Kłódki do otwarcia
+              // punktem to nie dotyczy — tam lekcja jest w zasięgu i szary by kłamał.
+              const szara = state === "locked" && !(lesson.is_unlockable && punkty > 0);
+
               const etapy = lesson.stage_count ?? 1;
               // Zaliczona lekcja ma z definicji wszystkie etapy za sobą — nie opieramy się tu
               // na liczniku, bo ten liczy postępy bieżącego podejścia.
@@ -272,7 +287,7 @@ async function CourseScreen({ params }: { params: PageProps<"/kurs/[slug]">["par
               // poza kafelek i wchodziły sąsiadowi w gap. Etap jest szerszy od swojego
               // kwadracika, bo nad każdym stoją trzy gwiazdki; stąd 12 rem, nie 9,5.
               return (
-                <li key={lesson.id} className="card lesson-box">
+                <li key={lesson.id} className={`card lesson-box${szara ? " locked-gray" : ""}`}>
                   {state === "locked" ? (
                     // Kłódka do otwarcia punktem jest przyciskiem, a nie martwym kwadratem —
                     // ale tylko wtedy, gdy punkt jest. Bez punktu zostaje zwykły zamek, którego

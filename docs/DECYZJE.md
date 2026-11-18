@@ -1412,3 +1412,26 @@ kanał, jedno `npm run ota`, jedno `npm run apk`.
 Nazwa `preview` zostaje, choć kanał jest już jedyny: siedzi w APK właściciela, więc zmiana nazwy
 znaczyłaby nowy plik także dla niego. To jest nazwa dystrybucji wewnętrznej w EAS, nie obietnica,
 że wersja jest próbna.
+
+## Test powtórkowy otwarty, dopóki są zaległe (2026-11-18)
+
+Bramka zaległych powtórek działała, ale miała jedną prędkość: dwanaście słówek dziennie. Kafelek
+testu był otwarty dokładnie wtedy, gdy stała bramka, a zdany test zdejmował blokadę do końca dnia
+— i zabierał ze sobą test. Dziecko, któremu po tygodniu przerwy uzbierało się czterdzieści
+zaległych słówek, odrabiało dziś dwanaście i na resztę musiało czekać do jutra. Kolejka z jednego
+tygodnia schodziła tygodniami, choć dziecko chciało ją zbić od razu.
+
+Rozdzielamy więc dwie rzeczy, które dotąd liczyła jedna funkcja: **blokada lekcji** zostaje jak
+była (`review_gate_on`: dziesięć zaległych zamyka kurs, zdany test zwalnia do końca dnia), a
+**test** jest otwarty, dopóki w kursie jest choć jedno zaległe słówko z zadaniem.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Kiedy test jest otwarty | `course_due_words > 0`, niezależnie od bramki | powtarzanie z własnej woli ma być możliwe zawsze, a nie tylko pod przymusem zamkniętych lekcji | otwarty tylko przy stojącej bramce (tak było: po zdanym teście kolejka czekała do jutra) |
+| Czy zdjąć zwolnienie „do końca dnia" | nie | blokada trzymana aż do opróżnienia kolejki nie puściłaby po przerwie do żadnej lekcji — to ten sam błąd, przed którym broni wpis o bramce | blokada do spadku poniżej progu |
+| Ile testów dziennie | tyle, ile starczy zaległych słówek | każde podejście bierze kolejne dwanaście najdłużej zaległych, a każda odpowiedź przesuwa termin — kolejka ogranicza się sama | sztywny limit trzech dziennie (próg wzięty z powietrza) |
+| Punkty za kolejne podejścia | normalne, jak za każdą zdaną sesję | to dwanaście prawdziwych odpowiedzi, a nie klikanie w kółko: po kilku podejściach nie ma już z czego ułożyć testu | nagroda tylko za pierwszy test w dniu (karze za nadrabianie) |
+| Wejście na ekranie | karta „🔁 Powtórki" z przyciskiem „Powtórz teraz", gdy bramka nie stoi | kafelek testu jest schowany między działami, a dziecko ma widzieć kolejkę swojego kursu — pasek u góry sumuje wszystkie kursy | sam licznik bez przycisku (dziecko widzi liczbę i nie ma jak nic z nią zrobić) |
+
+Opróżniona kolejka oznacza, że kafelek znika sam: `course_due_words` spada do zera i test nie ma
+z czego powstać. Dlatego nie potrzeba osobnego warunku „dość na dziś".

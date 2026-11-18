@@ -71,14 +71,12 @@ export default function CourseScreen() {
       </View>
       <Body muted>Ukończone: {plural(data.done, LESSONS)}</Body>
 
-      {/* Ile zaległych słówek ma TEN kurs. Pasek na ekranie kursów sumuje wszystkie kursy, więc
-          „🔁 22" potrafiło wisieć nad kursem, w którym do powtórzenia jest pięć słówek — a bramka
-          liczy każdy kurs osobno. Przy stojącej bramce tego nie pokazujemy: mówi to już jej karta. */}
-      {data.gate !== null && !data.gate.active && data.gate.due > 0 && (
-        <Chip>
-          🔁 {plural(data.gate.due, WORDS)} do powtórzenia — przy {data.gate.limit} lekcje poczekają
-          na test powtórkowy
-        </Chip>
+      {/* Zaległe powtórki tego kursu, póki bramka jeszcze nie stoi. Pasek na ekranie kursów
+          sumuje wszystkie kursy, a blokada liczy każdy kurs osobno — stąd własny licznik.
+          Wejście jest tu dobrowolne: dziecko z długą kolejką zbija ją od razu, zamiast czekać,
+          aż jutro zamknie mu lekcje. Przy stojącej bramce mówi to już karta bramki. */}
+      {data.gate !== null && !data.gate.active && data.gate.due > 0 && data.gate.lessonId !== null && (
+        <ReviewCard gate={data.gate} />
       )}
 
       {/* Stan konta punktów odblokowania. Bez tego dziecko nie wie, że kłódka z kluczykiem jest
@@ -125,6 +123,24 @@ export default function CourseScreen() {
         );
       })}
     </Screen>
+  );
+}
+
+/**
+ * Powtórki bez przymusu: kolejka jest, ale jeszcze nie zamknęła lekcji. Przycisk prowadzi
+ * w ten sam test co karta bramki — baza trzyma go otwartym, dopóki jest co powtarzać.
+ */
+function ReviewCard({ gate }: { gate: NonNullable<CourseData['gate']> }) {
+  const router = useRouter();
+  return (
+    <Card>
+      <Title>🔁 Powtórki</Title>
+      <Body>
+        {plural(gate.due, WORDS)} czeka na powtórzenie. Przy {gate.limit} lekcje poczekają, aż
+        zrobisz test.
+      </Body>
+      <Button kind="quiet" label="Powtórz teraz" onPress={() => router.push(`/lekcja/${gate.lessonId}`)} />
+    </Card>
   );
 }
 
