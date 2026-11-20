@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Body, Button, Field } from '@/components/ui';
 import { color, size } from '@/constants/theme';
+import { useSpeak } from '@/lib/speak';
 
 import { SpeakButton } from './speak-button';
 import { type ExerciseProps, str } from './types';
@@ -25,6 +26,25 @@ export function TypingExercise({
   const prompt = isInflection ? str(exercise.payload.base) : str(exercise.payload.prompt);
   // Zdanie z luką. Ta sama treść, co w wersji z kafelkami (`choice.tsx`), tylko bez listy.
   const [before, after] = isBlank ? str(exercise.payload.sentence).split('{{blank}}') : ['', ''];
+
+  // Tłumaczenie NA polski: nad polem stoi słowo w języku kursu, więc czytamy je samo, zaraz po
+  // wejściu — tak samo jak w zadaniu ze słuchu. W drugą stronę (`translate_ab`) tego nie robimy:
+  // tam słowo jest po polsku, a głośnik czytający dziecku „czarny" po polsku niczego nie uczy.
+  const samoCzyta = exercise.type === 'translate_ba';
+  const { speak, hasVoice, voicesLoaded } = useSpeak(promptLang);
+
+  /**
+   * Zależnością jest `exercise.id`, nie każdy render: po odpowiedzi zadanie zostaje na ekranie
+   * z werdyktem, a drugie czytanie w środku sprawdzania brzmiałoby jak usterka. Czekamy na listę
+   * głosów i dokładamy tę samą ćwierć sekundy co zadanie ze słuchu — ekran ma się najpierw
+   * pojawić, a potem odezwać. Bez głosu dla tego języka nie próbujemy wcale; zostaje głośnik
+   * przy słowie, który sam się wtedy nie pokazuje.
+   */
+  useEffect(() => {
+    if (!samoCzyta || !voicesLoaded || !hasVoice || prompt.trim() === '') return;
+    const timer = setTimeout(() => speak(prompt), 250);
+    return () => clearTimeout(timer);
+  }, [exercise.id, samoCzyta, voicesLoaded, hasVoice, speak, prompt]);
 
   const change = (text: string) => {
     setValue(text);

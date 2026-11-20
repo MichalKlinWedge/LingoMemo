@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { useSpeak } from "@/lib/use-speak";
+
 import { SpeakButton } from "./speak-button";
 import { type ExerciseProps, str } from "./types";
 
@@ -24,12 +26,35 @@ export function TypingExercise({
   const prompt = isInflection ? str(exercise.payload.base) : str(exercise.payload.prompt);
   // Zdanie z luką. Ta sama treść, co w wersji z kafelkami (`choice.tsx`), tylko bez listy.
   const [before, after] = isBlank ? str(exercise.payload.sentence).split("{{blank}}") : ["", ""];
+  // Tłumaczenie NA polski: nad polem stoi słowo w języku kursu, więc czytamy je samo, zaraz
+  // po wejściu — tak samo jak w zadaniu ze słuchu. W drugą stronę (`translate_ab`) tego nie
+  // robimy: tam słowo jest po polsku, a głośnik czytający dziecku „czarny" po polsku niczego
+  // nie uczy. Głośnik przy słowie zostaje — stąd bierze się powtórzenie.
+  const samoCzyta = exercise.type === "translate_ba";
+  const { speak, voicesLoaded } = useSpeak(promptLang);
 
   // Kursor wraca do pola także po odblokowaniu: przy prośbie o poprawienie literówki
   // zadanie zostaje to samo, a pole było w międzyczasie wyłączone i straciło kursor.
   useEffect(() => {
     if (!locked) inputRef.current?.focus();
   }, [exercise.id, locked]);
+
+  /**
+   * Odezwanie się samo po wejściu na zadanie. Zależnością jest `exercise.id`, nie każdy render:
+   * po odpowiedzi zadanie zostaje na ekranie z werdyktem i drugie czytanie w środku sprawdzania
+   * brzmiałoby jak usterka.
+   *
+   * Czekamy na listę głosów (`voicesLoaded`) i dokładamy tę samą ćwierć sekundy co zadanie
+   * ze słuchu: przeglądarka wystawia głosy chwilę po pierwszym renderze, a wypowiedź wydana
+   * zbyt wcześnie bywa ucinana w połowie pierwszej głoski. Na iOS mowa idzie wyłącznie po
+   * dotknięciu ekranu, więc tam po prostu nic się nie odezwie — i dlatego głośnik przy słowie
+   * jest podstawą, a to tylko ułatwieniem.
+   */
+  useEffect(() => {
+    if (!samoCzyta || !voicesLoaded || prompt.trim() === "") return;
+    const timer = setTimeout(() => speak(prompt), 250);
+    return () => clearTimeout(timer);
+  }, [exercise.id, samoCzyta, voicesLoaded, speak, prompt]);
 
   // Gdy w polu coś jest, przebieg lekcji chowa „Nie wiem, pomiń" — ten przycisk wysyła samo
   // pominięcie i nie zagląda do pola, więc kasował wpisaną odpowiedź. Zgłaszamy to przy zmianie
