@@ -23,16 +23,18 @@ import { color, size } from '@/constants/theme';
  * `scrollRef` jest po to, żeby ekran mógł się sam ustawić w miejscu, które ma pokazać — kurs
  * otwiera się na pierwszym niezaliczonym dziale, a nie na początku historii nauki. Przewijanie
  * zostaje po stronie ekranu, który wie, co jest ważne; `Screen` tylko wydaje uchwyt.
+ *
+ * `onScrollBeginDrag` idzie w parze z tym samym: ekran, który ustawia się sam, musi wiedzieć,
+ * że dziecko właśnie przewinęło palcem — i wtedy przestać się wtrącać.
  */
 export function Screen({
   children,
   scrollRef,
-  onContentSizeChange,
+  onScrollBeginDrag,
 }: {
   children: ReactNode;
   scrollRef?: RefObject<ScrollViewInstance | null>;
-  /** Wysokość treści jest znana dopiero stąd — i dopiero wtedy `scrollTo` nie jest obcinane. */
-  onContentSizeChange?: (width: number, height: number) => void;
+  onScrollBeginDrag?: () => void;
 }) {
   // Zapas na dole wielkości paska nawigacji Androida: w trybie edge-to-edge pasek leży NA
   // treści, więc bez tego ostatni przycisk ekranu zostaje pod przyciskami systemu.
@@ -40,7 +42,7 @@ export function Screen({
   return (
     <ScrollView
       ref={scrollRef}
-      onContentSizeChange={onContentSizeChange}
+      onScrollBeginDrag={onScrollBeginDrag}
       style={styles.screen}
       contentContainerStyle={[styles.screenInner, { paddingBottom: 32 + insets.bottom }]}
       keyboardShouldPersistTaps="handled"

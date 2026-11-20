@@ -1,6 +1,6 @@
 import { LESSONS, plural, UNLOCKS, WORDS } from '@lingomemo/core';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Modal,
   Pressable,
@@ -28,16 +28,10 @@ export default function CourseScreen() {
   const [data, setData] = useState<CourseData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const scroll = useRef<ScrollViewInstance>(null);
-  /**
-   * Czy ekran już sam się ustawił na kolejnym dziale. Raz na wejście: bez tego każdy ponowny
-   * pomiar wysokości (obrót tabletu, dorysowana kłódka po wydanym punkcie) odrzucałby dziecko
-   * z powrotem na górę działu, nawet gdy właśnie przewinęło ekran ręką.
-   */
-  const ustawiony = useRef(false);
   /** Zmierzone położenie każdego działu w treści przewijanej: identyfikator działu -> `y`. */
   const yDzialu = useRef(new Map<string, number>());
-  /** Wysokość całej treści — zero znaczy „native jeszcze nie wie, jak wysoki jest ekran". */
-  const wysokoscTresci = useRef(0);
+  /** Dziecko przewinęło palcem — od tej chwili ekran przestaje się ustawiać sam. */
+  const recznie = useRef(false);
 
   /**
    * Wczytanie kursu. Ta sama funkcja obsługuje wejście na ekran (po lekcji zmieniają się gwiazdki
@@ -45,9 +39,7 @@ export default function CourseScreen() {
    */
   const load = useCallback(() => {
     if (userId === null) return;
-    ustawiony.current = false;
     yDzialu.current.clear();
-    wysokoscTresci.current = 0;
     let alive = true;
     void loadCourse(slug, userId).then((result) => {
       if (!alive) return;
@@ -65,9 +57,70 @@ export default function CourseScreen() {
 
   useFocusEffect(load);
 
+  /**
+   * Dział, na którym ekran ma się otworzyć: pierwszy bez zdanego testu działu — dokładnie jak
+   * na webie (`apps/web/src/app/kurs/[slug]/page.tsx`). Zaliczone działy zostają na widoku, bo
+   * dziecko ma do czego wracać, ale po kilku zdanych testach to, co jest do zrobienia dziś, leży
+   * kilka ekranów niżej.
+   *
+   * Dwa wyjątki: pierwszy dział niezaliczony (albo wszystkie zaliczone) — nie ma po co skakać;
+   * oraz stojąca bramka powtórek — wtedy na górze stoi karta testu powtórkowego, a działy
+   * niżej są i tak zamknięte.
+   *
+   * Liczone nad wczesnymi wyjściami, bo karmi haka niżej, a haka nie wolno wołać warunkowo.
+   */
+  const doUstawienia = useMemo(() => {
+    if (data === null || data.gate?.active === true) return null;
+    const kolejny = data.units.findIndex(
+      (unit) =>
+        !data.lessons.some(
+          (lesson) =>
+            lesson.unit_id === unit.id && lesson.kind === 'test' && lesson.status === 'completed',
+        ),
+    );
+    return kolejny <= 0 ? null : data.units[kolejny].id;
+  }, [data]);
+
+  /**
+   * Ustawienie ekranu na tym dziale — kilka prób przez pierwszą sekundę, a nie jedna.
+   *
+   * Pojedyncze `scrollTo` na telefonie bywa zjadane i to z dwu niezależnych powodów, których
+   * z kodu nie da się odróżnić:
+   *
+   *   * natywny `ScrollView` obcina skok do wysokości treści, którą w tym momencie zna —
+   *     a zaraz po wejściu na ekran ta wysokość bywa jeszcze zerowa;
+   *   * ekran wchodzi z animacją stosu nawigacji, a `react-native-screens` potrafi po jej
+   *     skończeniu oddać widokowi pozycję zerową — czyli skasować skok wykonany w trakcie.
+   *
+   * Dlatego ponawiamy: powtórzony skok w to samo miejsce nic nie psuje, a przegraną pierwszą
+   * próbę odrabia druga albo trzecia. Na webie tego problemu nie ma, bo tam przewija się całe
+   * okno, które zna swoją wysokość od początku i nie wjeżdża animacją.
+   *
+   * Dotknięcie ekranu (`recznie`) odwołuje dalsze próby: jeśli dziecko przewinęło palcem
+   * w tej sekundzie, ma zostać tam, gdzie chciało, a nie zostać szarpnięte z powrotem.
+   */
+  useEffect(() => {
+    recznie.current = false;
+    if (doUstawienia === null) return;
+    const skok = () => {
+      if (recznie.current) return;
+      const y = yDzialu.current.get(doUstawienia);
+      if (y === undefined || scroll.current === null) return;
+      scroll.current.scrollTo({ y: Math.max(y - size.gap, 0), animated: false });
+    };
+    const timery = [0, 150, 400, 800].map((ms) => setTimeout(skok, ms));
+    return () => {
+      for (const timer of timery) clearTimeout(timer);
+    };
+  }, [doUstawienia, data]);
+
+  // Uchwyt do przewijania idzie do KAŻDEJ gałęzi, także do tych bez treści kursu. `ScrollView`
+  // montuje się raz, jeszcze przy „Wczytuję kurs…", i gdyby `ref` dochodził dopiero z gotowymi
+  // danymi, React musiałby przewiązać go w trakcie życia widoku. Tak jest przywiązany od
+  // pierwszej chwili i w momencie skoku pewnie nie jest pusty.
   if (error !== null) {
     return (
-      <Screen>
+      <Screen scrollRef={scroll}>
         <Message kind="error" text={error} />
       </Screen>
     );
@@ -75,7 +128,7 @@ export default function CourseScreen() {
 
   if (data === null) {
     return (
-      <Screen>
+      <Screen scrollRef={scroll}>
         <Body muted>Wczytuję kurs…</Body>
       </Screen>
     );
@@ -83,59 +136,11 @@ export default function CourseScreen() {
 
   const byUnit = (unitId: string) => data.lessons.filter((lesson) => lesson.unit_id === unitId);
 
-  /**
-   * Czy dział jest zaliczony, czyli ma zdany test działu. Tą samą rzeczą baza otwiera następny
-   * dział (`is_unit_unlocked`), więc ekran nie wymyśla własnej definicji „zrobionego".
-   */
-  const unitPassed = (unitId: string) =>
-    data.lessons.some(
-      (lesson) => lesson.unit_id === unitId && lesson.kind === 'test' && lesson.status === 'completed',
-    );
-
-  /**
-   * Dział, na którym ekran ma się otworzyć: pierwszy niezaliczony — dokładnie jak na webie
-   * (`apps/web/src/app/kurs/[slug]/page.tsx`).
-   *
-   * Zaliczone działy zostają na widoku, bo dziecko ma do czego wracać i czym się chwalić — ale
-   * po kilku zdanych testach to, co jest do zrobienia dziś, leży kilka ekranów niżej, a na
-   * tablecie przewija się to palcem za każdym wejściem.
-   *
-   * Dwa wyjątki: pierwszy dział niezaliczony (albo wszystkie zaliczone) — nie ma po co skakać;
-   * oraz stojąca bramka powtórek — wtedy na górze stoi karta testu powtórkowego, a działy
-   * niżej są i tak zamknięte.
-   */
-  const kolejny = data.units.findIndex((unit) => !unitPassed(unit.id));
-  const doUstawienia =
-    data.gate?.active === true || kolejny <= 0 ? null : data.units[kolejny].id;
-
-  /**
-   * Przewinięcie na ten dział — wołane z dwu stron, bo potrzebuje dwu różnych pomiarów i żaden
-   * nie wystarcza sam:
-   *
-   *   * `onLayout` działu daje jego `y` w treści,
-   *   * `onContentSizeChange` mówi, że native zna już całą wysokość treści.
-   *
-   * Drugie jest tu sednem poprawki: `scrollTo` poza znaną natywnie wysokość jest **obcinane
-   * do końca treści**, a przy wejściu na ekran ta wysokość to jeszcze zero. Wywołanie
-   * z samego `onLayout` trafiało więc w zero i ekran zostawał na górze — na webie tego nie ma,
-   * bo tam przewija się całe okno, które zna swoją wysokość od początku. Kolejność obu
-   * pomiarów nie jest obiecana, dlatego próbujemy po każdym, a jedno `ustawiony` pilnuje,
-   * żeby skok wyszedł raz.
-   */
-  const ustawNaDziale = () => {
-    if (ustawiony.current || doUstawienia === null || wysokoscTresci.current === 0) return;
-    const y = yDzialu.current.get(doUstawienia);
-    if (y === undefined) return;
-    ustawiony.current = true;
-    scroll.current?.scrollTo({ y: Math.max(y - size.gap, 0), animated: false });
-  };
-
   return (
     <Screen
       scrollRef={scroll}
-      onContentSizeChange={(_width, height) => {
-        wysokoscTresci.current = height;
-        ustawNaDziale();
+      onScrollBeginDrag={() => {
+        recznie.current = true;
       }}
     >
       {/* Flaga obok tytułu, a nie w nim: obrazek wewnątrz <Text> Android rysuje po swojemu. */}
@@ -181,11 +186,10 @@ export default function CourseScreen() {
             key={unit.id}
             style={styles.unit}
             /* Położenie działu znamy dopiero po rozmierzeniu kafelków — stąd `onLayout`,
-               a nie wyliczanie czegokolwiek z góry. Samo przewinięcie robi `ustawNaDziale`,
-               bo czeka jeszcze na wysokość treści. */
+               a nie wyliczanie czegokolwiek z góry. Tu tylko zapamiętujemy; skok robi hak
+               wyżej, który ponawia próby przez pierwszą sekundę. */
             onLayout={(event) => {
               yDzialu.current.set(unit.id, event.nativeEvent.layout.y);
-              ustawNaDziale();
             }}
           >
             <Text style={styles.unitTitle}>
