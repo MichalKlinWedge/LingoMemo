@@ -1,6 +1,6 @@
 # Aplikacja na telefonie i tablecie dziecka
 
-Aplikacja LingoMemo (Android) służy wyłącznie do nauki. Panelu administratora i widoku rodzica
+Aplikacja Lingo Memo (Android) służy wyłącznie do nauki. Panelu administratora i widoku rodzica
 w niej nie ma — to zostaje na stronie w przeglądarce. Plan i etapy: `docs/PLAN_MOBILE.md`.
 
 ---

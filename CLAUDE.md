@@ -1,4 +1,4 @@
-# LingoMemo — zasady pracy
+# Lingo Memo — zasady pracy
 
 Aplikacja webowa do nauki słówek i prostych zwrotów, dla dzieci. Next.js na Vercel + Supabase.
 Dostęp zamknięty: konto powstaje wyłącznie z linku z zaproszeniem wygenerowanego przez admina.

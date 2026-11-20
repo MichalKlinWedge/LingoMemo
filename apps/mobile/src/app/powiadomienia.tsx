@@ -108,7 +108,7 @@ export default function Powiadomienia() {
 
   const inAMinute = async () => {
     await Notifications.scheduleNotificationAsync({
-      content: { title: 'LingoMemo', body: body(), data: { kind: KIND } },
+      content: { title: 'Lingo Memo', body: body(), data: { kind: KIND } },
       trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 60, channelId: CHANNEL },
     });
     setNote('Zaplanowane za minutę. Zgaś ekran i policz, ile naprawdę minęło.');

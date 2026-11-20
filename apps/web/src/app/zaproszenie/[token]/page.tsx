@@ -56,7 +56,7 @@ async function Invite({ params }: { params: PageProps<"/zaproszenie/[token]">["p
         <span className="text-6xl" aria-hidden>
           🎉
         </span>
-        <h1>{preview.displayName ? `Cześć, ${preview.displayName}!` : "Witaj w LingoMemo"}</h1>
+        <h1>{preview.displayName ? `Cześć, ${preview.displayName}!` : "Witaj w Lingo Memo"}</h1>
         <p className="text-zinc-600 dark:text-zinc-400">
           {preview.courseTitle ? `Czeka na ciebie kurs „${preview.courseTitle}”.` : "Załóż konto i zaczynamy naukę."}
         </p>

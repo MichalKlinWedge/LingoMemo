@@ -2,7 +2,7 @@
  * Sowa z ikony aplikacji, użyta jako element strony.
  *
  * Ten sam plik, który trafia do zakładki przeglądarki i na pulpit — żeby dziecko widziało
- * wszędzie ten sam znak. Rysunek jest ozdobą obok nazwy „LingoMemo", więc dla czytnika
+ * wszędzie ten sam znak. Rysunek jest ozdobą obok nazwy „Lingo Memo", więc dla czytnika
  * ekranu jest niewidoczny; nazwa i tak stoi obok jako tekst.
  */
 export function Logo({ size = 40 }: { size?: number }) {

@@ -20,9 +20,9 @@ const baloo = Baloo_2({
 });
 
 export const metadata: Metadata = {
-  title: "LingoMemo",
+  title: "Lingo Memo",
   description: "Nauka słówek i zwrotów dla dzieci",
-  applicationName: "LingoMemo",
+  applicationName: "Lingo Memo",
   // Adres bazowy dla `opengraph-image.png`: komunikator potrzebuje pełnego adresu obrazka,
   // a nie ścieżki. Bez tego Next wstawia localhost i miniatura nie pokazuje się nigdzie.
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
@@ -31,8 +31,8 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "pl_PL",
-    siteName: "LingoMemo",
-    title: "LingoMemo — nauka słówek",
+    siteName: "Lingo Memo",
+    title: "Lingo Memo — nauka słówek",
     description: "Nauka słówek i zwrotów dla dzieci",
   },
   // Ikony wskazane wprost, a nie przez pliki `icon.*` w katalogu `app`: wszystkie warianty
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     ],
     apple: { url: "/ikony/ikona-apple-180.png", sizes: "180x180" },
   },
-  appleWebApp: { capable: true, title: "LingoMemo", statusBarStyle: "default" },
+  appleWebApp: { capable: true, title: "Lingo Memo", statusBarStyle: "default" },
 };
 
 /** Kolor paska przeglądarki na telefonie: fiolet marki, a w ciemnym motywie tło aplikacji. */

@@ -59,7 +59,7 @@ export default function InvitesPage() {
       <PageHeader
         crumbs={[CRUMB_HOME, CRUMB_PANEL]}
         title="Zaproszenia"
-        intro="Konto w LingoMemo zakłada się wyłącznie z linku. Każdy link działa raz."
+        intro="Konto w Lingo Memo zakłada się wyłącznie z linku. Każdy link działa raz."
       />
       <Suspense fallback={<Loading />}>
         <Invites />

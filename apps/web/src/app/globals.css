@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /*
- * Motyw „LingoMemo”: ciepłe, jasne tło, fiolet jako kolor akcji, zieleń i koral wyłącznie jako
+ * Motyw „Lingo Memo”: ciepłe, jasne tło, fiolet jako kolor akcji, zieleń i koral wyłącznie jako
  * odpowiedź „dobrze / źle”, słoneczny żółty na punkty i gwiazdki. Skala `zinc` jest przemalowana
  * na cieplejszą, więc istniejące klasy `zinc-*` od razu pasują do motywu.
  */

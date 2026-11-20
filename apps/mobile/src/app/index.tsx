@@ -72,7 +72,7 @@ export default function Home() {
           <Title>Nie masz jeszcze kursu</Title>
           <Body muted>
             Kurs otwiera administrator. Gdy Cię dopisze, pojawi się tutaj — poproś go o to przez
-            stronę LingoMemo w przeglądarce.
+            stronę Lingo Memo w przeglądarce.
           </Body>
         </Card>
       )}
@@ -120,7 +120,7 @@ function Welcome() {
   return (
     <Screen>
       <Card>
-        <Title>LingoMemo</Title>
+        <Title>Lingo Memo</Title>
         <Body>Zaloguj się, żeby uczyć się słówek.</Body>
         <Button label="Zaloguj się" onPress={() => router.push('/logowanie')} />
         <Body muted>

@@ -1,4 +1,4 @@
-# LingoMemo
+# Lingo Memo
 
 Aplikacja webowa do nauki słówek i prostych zwrotów obcego języka — dla dzieci. Duże przyciski,
 duże litery, obrazki, punkty i nagrody. Dostęp zamknięty: konto zakłada się wyłącznie z linku

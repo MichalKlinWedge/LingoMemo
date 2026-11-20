@@ -12,7 +12,7 @@
  * nie przeliczy się plik na moim dysku.
  *
  * Dlaczego nie `sharp` jak przy ikonach: jego renderer SVG (librsvg) ignoruje `@font-face`
- * i rysuje tekst wyłącznie fontami zainstalowanymi w systemie — „LingoMemo" wychodziło
+ * i rysuje tekst wyłącznie fontami zainstalowanymi w systemie — „Lingo Memo" wychodziło
  * szeryfowym Times zamiast firmowym Baloo. `ImageResponse` (satori) przyjmuje plik fontu
  * wprost, więc napis jest tą samą czcionką, co nagłówki w aplikacji.
  */
@@ -84,7 +84,7 @@ const element = {
           children: [
             {
               type: 'div',
-              props: { style: { fontSize: 104, fontWeight: 800, color: TEKST, lineHeight: 1.1 }, children: 'LingoMemo' },
+              props: { style: { fontSize: 104, fontWeight: 800, color: TEKST, lineHeight: 1.1 }, children: 'Lingo Memo' },
             },
             {
               type: 'div',

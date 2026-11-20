@@ -21,7 +21,7 @@ export default function LoginPage({ searchParams }: PageProps<"/login">) {
     <Shell>
       <div className="flex flex-col items-center gap-2 pt-6 text-center">
         <Logo size={96} />
-        <h1>LingoMemo</h1>
+        <h1>Lingo Memo</h1>
         <p className="text-zinc-600 dark:text-zinc-400">Zaloguj się i ucz się słówek.</p>
       </div>
       <Suspense fallback={<Loading />}>

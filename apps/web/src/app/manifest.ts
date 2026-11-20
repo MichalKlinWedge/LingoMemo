@@ -10,8 +10,8 @@ import type { MetadataRoute } from "next";
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "LingoMemo — nauka słówek",
-    short_name: "LingoMemo",
+    name: "Lingo Memo — nauka słówek",
+    short_name: "Lingo Memo",
     description: "Nauka słówek i zwrotów dla dzieci",
     lang: "pl",
     start_url: "/",
