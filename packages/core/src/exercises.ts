@@ -54,6 +54,30 @@ export type ExercisePayload =
    */
   | { type: 'image_choice'; prompt: string; options: string[]; speak?: string; lang?: string };
 
+/**
+ * Znacznik rodzaju zadania — stoi przed poleceniem, w lekcji i w panelu.
+ *
+ * Emoji, a nie kolor: barwy w tej aplikacji już coś znaczą (poziom lekcji na pasku postępu,
+ * zieleń i czerwień werdyktu, barwa marki na tym, co da się dotknąć), więc trzeci zestaw na tym
+ * samym ekranie zacząłby z nimi walczyć. Znaczek działa też u dziecka, które jeszcze czyta
+ * z trudem, i wygląda tak samo w trybie jasnym i ciemnym.
+ *
+ * Rodziny zadań dzielą znaczek (dwa tłumaczenia, dwa ze słuchu, dwie luki w zdaniu) — różnicę
+ * mówi polecenie obok. Tak samo jak zrobiłby to kolor.
+ */
+export const EXERCISE_ICON: Record<ExerciseType, string> = {
+  translate_ab: '🔤',
+  translate_ba: '🔤',
+  fill_blank_choice: '🧩',
+  fill_blank_typing: '🧩',
+  inflection: '✍️',
+  listening: '👂',
+  match_pairs: '🔗',
+  sentence_order: '🧱',
+  listen_match: '👂',
+  image_choice: '🖼️',
+};
+
 /** Co dziecko widzi nad zadaniem. Jedno miejsce, żeby nazwy nie rozjechały się między ekranami. */
 export const EXERCISE_LABEL: Record<ExerciseType, string> = {
   translate_ab: 'Przetłumacz',
@@ -67,3 +91,16 @@ export const EXERCISE_LABEL: Record<ExerciseType, string> = {
   listen_match: 'Posłuchaj i dopasuj',
   image_choice: 'Wskaż obrazek',
 };
+
+/**
+ * Znaczek i polecenie dla zadania, które przyszło z bazy.
+ *
+ * Typ jest tam zwykłym tekstem (`get_lesson_exercises` oddaje kolumnę enuma), więc nieznana
+ * nazwa — na przykład po dodaniu rodzaju zadania w bazie przed wydaniem nowej aplikacji —
+ * daje `null`. Lepiej wtedy nie pokazać polecenia niż pokazać surowe `fill_blank_typing`.
+ */
+export function exerciseHeading(type: string): { icon: string; label: string } | null {
+  if (!(EXERCISE_TYPES as readonly string[]).includes(type)) return null;
+  const key = type as ExerciseType;
+  return { icon: EXERCISE_ICON[key], label: EXERCISE_LABEL[key] };
+}

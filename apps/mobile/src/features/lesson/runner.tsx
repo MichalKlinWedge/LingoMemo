@@ -1,4 +1,4 @@
-import { HINTS, plural, UNLOCKS } from '@lingomemo/core';
+import { exerciseHeading, HINTS, plural, UNLOCKS } from '@lingomemo/core';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -293,6 +293,14 @@ export function LessonRunner({
   // `translate_ab` raz ma `options`, a raz nie. Baza przyjmuje oba warianty (`text`/`choice`).
   const options = exercise.payload.options;
   const hasOptions = Array.isArray(options) && options.length >= 2;
+  /**
+   * Krótkie polecenie nad zadaniem, ze znaczkiem rodzaju — to samo co na webie.
+   *
+   * Dotąd dziecko widziało samą treść i musiało się domyślić, co z nią zrobić: „a house"
+   * z czterema kafelkami może znaczyć „wskaż tłumaczenie", a to samo słowo w polu tekstowym —
+   * „napisz po polsku".
+   */
+  const heading = exerciseHeading(exercise.type);
 
   return (
     <View
@@ -319,6 +327,17 @@ export function LessonRunner({
         contentContainerStyle={[styles.body, { paddingBottom: 24 + insets.bottom }]}
         keyboardShouldPersistTaps="handled"
       >
+        {/* Polecenie stoi nad zadaniem, a nie w pasku postępu: w pasku konkurowałoby z postępem
+            i licznikiem, a to jedyny napis na tym ekranie, który trzeba przeczytać PRZED
+            odpowiedzią. */}
+        {heading !== null && (
+          <View style={styles.heading}>
+            <Chip>
+              {heading.icon} {heading.label}
+            </Chip>
+          </View>
+        )}
+
         {exercise.type === 'listening' ? (
           <ListeningExercise
             key={`${index}-${exercise.id}`}
@@ -681,6 +700,8 @@ const styles = StyleSheet.create({
   barFill: { borderRadius: 999, height: '100%' },
   counter: { color: color.muted, fontSize: 16, fontWeight: '700' },
   body: { gap: size.gap * 1.5, padding: size.pad, paddingBottom: 40 },
+  // Znacznik ma zająć tyle, ile tekst — w kolumnie rozciągnąłby się na całą szerokość.
+  heading: { alignItems: 'flex-start' },
   skip: { alignItems: 'center', justifyContent: 'center', minHeight: 44 },
   skipText: { color: color.muted, fontSize: 17, textDecorationLine: 'underline' },
   feedback: { borderRadius: size.radius, borderWidth: 2, gap: size.gap, padding: size.pad },

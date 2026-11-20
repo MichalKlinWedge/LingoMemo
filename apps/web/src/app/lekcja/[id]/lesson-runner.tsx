@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { HINTS, plural, UNLOCKS } from "@lingomemo/core";
+import { exerciseHeading, HINTS, plural, UNLOCKS } from "@lingomemo/core";
 
 import { ChoiceExercise } from "@/components/exercises/choice";
 import { ImageChoiceExercise } from "@/components/exercises/image-choice";
@@ -335,6 +335,15 @@ export function LessonRunner({
   // dziecko nie miało czym odpowiedzieć. Baza przyjmuje oba warianty (`text` albo `choice`).
   const options = exercise.payload.options;
   const hasOptions = Array.isArray(options) && options.length >= 2;
+  /**
+   * Krótkie polecenie nad zadaniem, ze znaczkiem rodzaju.
+   *
+   * Dotąd dziecko widziało samą treść i musiało się domyślić, co z nią zrobić: „a house"
+   * z czterema kafelkami może znaczyć „wskaż tłumaczenie", a to samo słowo w polu tekstowym —
+   * „napisz po polsku". Polecenie jest jedno dla całego rodzaju zadania (`EXERCISE_LABEL`), więc
+   * brzmi tak samo w lekcji, w panelu i w statystykach.
+   */
+  const heading = exerciseHeading(exercise.type);
 
   return (
     <div className="flex flex-1 flex-col gap-6">
@@ -401,6 +410,17 @@ export function LessonRunner({
           {index + 1}/{total}
         </span>
       </div>
+
+      {/* Polecenie stoi osobno nad zadaniem, a nie w rzędzie znaczników u góry: tam konkurowałoby
+          o uwagę z postępem i licznikiem, a to jedyny napis na tym ekranie, który trzeba
+          przeczytać PRZED odpowiedzią. `self-start` zostawia mu tylko tyle miejsca, ile zajmuje
+          tekst. */}
+      {heading !== null && (
+        <p className="chip self-start">
+          <span aria-hidden>{heading.icon} </span>
+          {heading.label}
+        </p>
+      )}
 
       {/* Klucz z pozycji w kolejce i identyfikatora zadania. Bez niego React przy przejściu
           dalej zostawia ten sam komponent, a w nim stan poprzedniego zadania: wpisaną odpowiedź,

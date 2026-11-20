@@ -1620,3 +1620,22 @@ odpowiedź się wskazuje, czy pisze z pamięci, a nie na tym, czy wiadomo, o co 
 | Zdanie bez tłumaczenia w treści | klucza `translation` nie ma w payloadzie wcale | `"translation": null` przechodzi walidację i wychodzi pustym wierszem pod luką; `jsonb_strip_nulls` zdejmuje go w generatorze | wymaganie tłumaczenia (zablokowałoby import zdań, które go nie mają) |
 | Zadania dorobione wcześniej | uzupełniane wprost `UPDATE` w migracji | generator pomija zdanie, które wersję z wpisywaniem już ma, więc ponowne uruchomienie wyzwalacza nic by nie naprawiło | `db:reset` (w chmurze nie do zrobienia) |
 | Rozmiar tekstu | ten sam, co w wersji z kafelkami: `Body muted` na telefonie, `text-base` na webie | dwa warianty tego samego zadania mają wyglądać jak jedno zadanie w dwóch trybach | większy (konkurowałby ze zdaniem w języku kursu, które jest treścią zadania) |
+
+## Polecenie nad zadaniem ze znaczkiem rodzaju (2026-11-20)
+
+Zgłoszone z ekranu: przy zadaniach powinno być polecenie, ewentualnie znacznik rodzaju zadania.
+Dotąd dziecko widziało samą treść i musiało się domyślić, co z nią zrobić — „a house" z czterema
+kafelkami może znaczyć „wskaż tłumaczenie", a to samo słowo nad polem tekstowym „napisz po
+polsku". Nazwy rodzajów zadań istniały (`EXERCISE_LABEL`, od pierwszej migracji z typami), ale
+czytał je tylko panel administratora i statystyki.
+
+Od teraz nad zadaniem stoi znacznik „🔤 Przetłumacz", „🧩 Uzupełnij zdanie", „👂 Posłuchaj
+i napisz" — jeden napis dla całego rodzaju, ten sam na webie i na telefonie.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Skąd treść polecenia | `EXERCISE_LABEL` z `packages/core` | nazwy były już napisane i czyta je też panel; polecenie w lekcji brzmi tak samo, jak nazwa zadania w statystykach | osobne, dłuższe polecenia dla lekcji (drugie źródło prawdy dla tych samych dziesięciu zdań) |
+| Znacznik rodzaju | emoji przed poleceniem (`EXERCISE_ICON`) | barwy na tym ekranie już coś znaczą: poziom lekcji na pasku postępu, zieleń i czerwień werdyktu, barwa marki na tym, co da się dotknąć — czwarty zestaw kolorów walczyłby z nimi o uwagę; znaczek działa też u dziecka, które czyta z trudem, i wygląda tak samo w trybie jasnym i ciemnym | kolor tła znacznika zależny od rodzaju zadania (prośba ze zgłoszenia, ale kolizja z trzema istniejącymi znaczeniami kolorów) |
+| Rodziny zadań | wspólny znaczek, różne polecenia (dwa tłumaczenia 🔤, dwa ze słuchu 👂, dwie luki 🧩) | tyle samo mówi, ile zrobiłby kolor, a różnicę podaje polecenie obok | dziesięć różnych emoji (część nie do odróżnienia na małym ekranie, np. ✍️ i ✏️) |
+| Miejsce na ekranie | osobny wiersz nad zadaniem | w rzędzie znaczników u góry konkurowałoby z postępem i licznikiem, a to jedyny napis, który trzeba przeczytać PRZED odpowiedzią | dołożenie do paska postępu lekcji |
+| Nieznany rodzaj zadania | `exerciseHeading` oddaje `null`, polecenia nie ma | aplikacja starsza od bazy (nowy rodzaj zadania dodany migracją przed wydaniem paczki) pokazałaby surowe `fill_blank_typing` | wyświetlanie nazwy technicznej |
