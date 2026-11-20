@@ -26,11 +26,25 @@ export function TypingExercise({
   const prompt = isInflection ? str(exercise.payload.base) : str(exercise.payload.prompt);
   // Zdanie z luką. Ta sama treść, co w wersji z kafelkami (`choice.tsx`), tylko bez listy.
   const [before, after] = isBlank ? str(exercise.payload.sentence).split("{{blank}}") : ["", ""];
-  // Tłumaczenie NA polski: nad polem stoi słowo w języku kursu, więc czytamy je samo, zaraz
-  // po wejściu — tak samo jak w zadaniu ze słuchu. W drugą stronę (`translate_ab`) tego nie
-  // robimy: tam słowo jest po polsku, a głośnik czytający dziecku „czarny" po polsku niczego
-  // nie uczy. Głośnik przy słowie zostaje — stąd bierze się powtórzenie.
-  const samoCzyta = exercise.type === "translate_ba";
+  /**
+   * Co ma się odezwać samo po wejściu na zadanie — zawsze tekst w JĘZYKU KURSU, bo tylko taki
+   * dziecko ma usłyszeć. Głośnik przy słowie zostaje; stąd bierze się powtórzenie.
+   *
+   *   * tłumaczenie NA polski i odmiana — słowo stojące nad polem,
+   *   * zdanie z luką — zdanie BEZ brakującego słowa, czyli dokładnie to, co dziecko widzi.
+   *     Przeczytanie go z wpisanym słowem byłoby podaniem odpowiedzi, a samo „…" część
+   *     silników czyta na głos jako „kropka kropka kropka" — więc lukę zostawiamy ciszą.
+   *     Zdanie brzmi wtedy niegramatycznie, ale tak samo niegramatycznie wygląda na ekranie.
+   *
+   * `translate_ab` nie czyta nic: tam słowo jest po polsku, a głośnik czytający dziecku
+   * „czarny" po polsku niczego nie uczy.
+   */
+  const samoBrzmi =
+    exercise.type === "translate_ba" || isInflection
+      ? prompt
+      : isBlank
+        ? `${before} ${after}`.replace(/\s+/g, " ").trim()
+        : "";
   const { speak, voicesLoaded } = useSpeak(promptLang);
 
   // Kursor wraca do pola także po odblokowaniu: przy prośbie o poprawienie literówki
@@ -51,10 +65,10 @@ export function TypingExercise({
    * jest podstawą, a to tylko ułatwieniem.
    */
   useEffect(() => {
-    if (!samoCzyta || !voicesLoaded || prompt.trim() === "") return;
-    const timer = setTimeout(() => speak(prompt), 250);
+    if (!voicesLoaded || samoBrzmi === "") return;
+    const timer = setTimeout(() => speak(samoBrzmi), 250);
     return () => clearTimeout(timer);
-  }, [exercise.id, samoCzyta, voicesLoaded, speak, prompt]);
+  }, [exercise.id, samoBrzmi, voicesLoaded, speak]);
 
   // Gdy w polu coś jest, przebieg lekcji chowa „Nie wiem, pomiń" — ten przycisk wysyła samo
   // pominięcie i nie zagląda do pola, więc kasował wpisaną odpowiedź. Zgłaszamy to przy zmianie

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useSpeak } from "@/lib/use-speak";
 
@@ -19,11 +19,32 @@ export function ChoiceExercise({
   result,
 }: ExerciseProps & { targetLang: string; result: "correct" | "wrong" | null }) {
   const [picked, setPicked] = useState<string | null>(null);
-  const { speak } = useSpeak(targetLang);
+  const { speak, voicesLoaded } = useSpeak(targetLang);
   const options = list(exercise.payload.options);
   const isBlank = exercise.type === "fill_blank_choice";
   const sentence = str(exercise.payload.sentence);
   const [before, after] = isBlank ? sentence.split("{{blank}}") : ["", ""];
+
+  /**
+   * Zdanie z luką odzywa się samo po wejściu — tak samo jak w wersji z wpisywaniem
+   * (`typing.tsx`) i jak zadanie ze słuchu. Dwa warianty tego samego zadania mają brzmieć
+   * jednakowo; różnica ma być w tym, czy odpowiedź się wskazuje, czy pisze.
+   *
+   * Czytamy zdanie BEZ brakującego słowa: z nim byłoby to podanie odpowiedzi, a samo „…"
+   * część silników czyta na głos jako „kropka kropka kropka". Opcje z listy nie czytają się
+   * same — dziecko usłyszy wybraną po dotknięciu kafelka, a cztery pod rząd po wejściu
+   * byłyby ścianą dźwięku. Tylko tłumaczenie z listy (`translate_ab`) nie czyta nic: tam
+   * polecenie jest po polsku.
+   */
+  const samoBrzmi = isBlank ? `${before} ${after}`.replace(/\s+/g, " ").trim() : "";
+
+  useEffect(() => {
+    if (!voicesLoaded || samoBrzmi === "") return;
+    // Zależnością jest `exercise.id`, nie każdy render: po wyborze zadanie zostaje na ekranie
+    // z werdyktem, a drugie czytanie w środku sprawdzania brzmiałoby jak usterka.
+    const timer = setTimeout(() => speak(samoBrzmi), 250);
+    return () => clearTimeout(timer);
+  }, [exercise.id, samoBrzmi, voicesLoaded, speak]);
 
   const pick = (option: string) => {
     if (locked) return;

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Body } from '@/components/ui';
@@ -23,11 +23,27 @@ export function ChoiceExercise({
   result,
 }: ExerciseProps & { targetLang: string; result: 'correct' | 'wrong' | null }) {
   const [picked, setPicked] = useState<string | null>(null);
-  const { speak } = useSpeak(targetLang);
+  const { speak, hasVoice, voicesLoaded } = useSpeak(targetLang);
   const options = list(exercise.payload.options);
   const isBlank = exercise.type === 'fill_blank_choice';
   const sentence = str(exercise.payload.sentence);
   const [before, after] = isBlank ? sentence.split('{{blank}}') : ['', ''];
+
+  /**
+   * Zdanie z luką odzywa się samo po wejściu — tak samo jak w wersji z wpisywaniem i jak na
+   * webie (`apps/web/src/components/exercises/choice.tsx`). Czytamy je BEZ brakującego słowa:
+   * z nim byłoby to podanie odpowiedzi. Opcje z listy nie czytają się same — dziecko usłyszy
+   * wybraną po dotknięciu kafelka, a cztery pod rząd po wejściu byłyby ścianą dźwięku.
+   */
+  const samoBrzmi = isBlank ? `${before} ${after}`.replace(/\s+/g, ' ').trim() : '';
+
+  useEffect(() => {
+    if (!voicesLoaded || !hasVoice || samoBrzmi === '') return;
+    // Zależnością jest `exercise.id`, nie każdy render: po wyborze zadanie zostaje na ekranie
+    // z werdyktem, a drugie czytanie w środku sprawdzania brzmiałoby jak usterka.
+    const timer = setTimeout(() => speak(samoBrzmi), 250);
+    return () => clearTimeout(timer);
+  }, [exercise.id, samoBrzmi, voicesLoaded, hasVoice, speak]);
 
   const pick = (option: string) => {
     if (locked) return;

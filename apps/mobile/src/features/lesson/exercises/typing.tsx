@@ -27,10 +27,23 @@ export function TypingExercise({
   // Zdanie z luką. Ta sama treść, co w wersji z kafelkami (`choice.tsx`), tylko bez listy.
   const [before, after] = isBlank ? str(exercise.payload.sentence).split('{{blank}}') : ['', ''];
 
-  // Tłumaczenie NA polski: nad polem stoi słowo w języku kursu, więc czytamy je samo, zaraz po
-  // wejściu — tak samo jak w zadaniu ze słuchu. W drugą stronę (`translate_ab`) tego nie robimy:
-  // tam słowo jest po polsku, a głośnik czytający dziecku „czarny" po polsku niczego nie uczy.
-  const samoCzyta = exercise.type === 'translate_ba';
+  /**
+   * Co ma się odezwać samo po wejściu na zadanie — zawsze tekst w JĘZYKU KURSU. Tak samo jak
+   * na webie (`apps/web/src/components/exercises/typing.tsx`):
+   *
+   *   * tłumaczenie NA polski i odmiana — słowo stojące nad polem,
+   *   * zdanie z luką — zdanie BEZ brakującego słowa, czyli dokładnie to, co dziecko widzi.
+   *     Z wpisanym słowem byłoby to podanie odpowiedzi, a samo „…" część silników czyta jako
+   *     „kropka kropka kropka" — więc lukę zostawiamy ciszą.
+   *
+   * `translate_ab` nie czyta nic: tam słowo jest po polsku i głośnik niczego nie uczy.
+   */
+  const samoBrzmi =
+    exercise.type === 'translate_ba' || isInflection
+      ? prompt
+      : isBlank
+        ? `${before} ${after}`.replace(/\s+/g, ' ').trim()
+        : '';
   const { speak, hasVoice, voicesLoaded } = useSpeak(promptLang);
 
   /**
@@ -41,10 +54,10 @@ export function TypingExercise({
    * przy słowie, który sam się wtedy nie pokazuje.
    */
   useEffect(() => {
-    if (!samoCzyta || !voicesLoaded || !hasVoice || prompt.trim() === '') return;
-    const timer = setTimeout(() => speak(prompt), 250);
+    if (!voicesLoaded || !hasVoice || samoBrzmi === '') return;
+    const timer = setTimeout(() => speak(samoBrzmi), 250);
     return () => clearTimeout(timer);
-  }, [exercise.id, samoCzyta, voicesLoaded, hasVoice, speak, prompt]);
+  }, [exercise.id, samoBrzmi, voicesLoaded, hasVoice, speak]);
 
   const change = (text: string) => {
     setValue(text);
