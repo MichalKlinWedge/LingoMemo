@@ -13,7 +13,7 @@
 --     w tym samym kursie) — inaczej po dłuższej przerwie dziecko dostawałoby test za testem.
 
 begin;
-select plan(36);
+select plan(33);
 
 create or replace function pg_temp.make_user(p_email text) returns uuid
 language plpgsql as $$
@@ -299,12 +299,8 @@ select ok(
 
 -- --- etap 5: drugie dziecko, kolejka dłuższa niż test ---
 --
--- Dwadzieścia cztery zaległe, test obejmuje dwanaście. Po pierwszym zdanym teście zostaje
--- dwanaście zaległych, czyli nie mniej niż próg — i bramka ma stać dalej. To się zmieniło
--- w `20261120090000_review_gate_until_queue_clear.sql`: wcześniej zdany test otwierał kurs do
--- końca dnia, więc dziecko z pięćdziesięcioma zaległymi wracało do lekcji po dwunastu
--- powtórzonych słówkach i dokładało do kolejki nowe, nie ruszając starych.
--- Drugie podejście zbija resztkę i dopiero ono otwiera lekcje.
+-- Dwadzieścia cztery zaległe, test obejmuje dwanaście. Po zdanym teście zostaje dwanaście
+-- zaległych, czyli więcej niż próg — a kurs musi być otwarty do końca dnia.
 
 reset role;
 
@@ -351,53 +347,20 @@ select cmp_ok(
 );
 
 select ok(
-  public.review_gate_on((select id from t_kurs), (select id from t_ids where name = 'uczen2')),
-  'zdany test nie otwiera kursu, dopóki kolejka jest ponad progiem'
-);
-
-select ok(
-  not public.is_lesson_unlocked((select id from t_lesson), (select id from t_ids where name = 'uczen2')),
-  'zwykła lekcja czeka na zbitą kolejkę, nie na jeden zdany test'
-);
-
--- Bramka stoi, ale test zostaje otwarty — inaczej dziecko miałoby zamknięte wszystko i jedyne
--- wyjście dopiero następnego dnia.
-select ok(
-  public.is_lesson_unlocked((select id from t_gate), (select id from t_ids where name = 'uczen2')),
-  'test powtórkowy zostaje otwarty, dopóki jest co powtarzać'
-);
-
--- Drugie podejście tego samego dnia: resztka kolejki i dopiero teraz otwarte lekcje.
-insert into t_sesja
-select 'druga-reszta', public.start_lesson_session((select id from t_gate), 'bramka-drugie-dziecko-2');
-
-do $$
-declare
-  r record;
-begin
-  for r in select o.exercise_id, o.odp from t_odp o where o.nr between 13 and 24 order by o.nr loop
-    perform public.submit_attempt(
-      (select id from t_sesja where nazwa = 'druga-reszta'),
-      r.exercise_id,
-      jsonb_build_object('text', r.odp));
-  end loop;
-end;
-$$;
-
-select is(
-  (select public.finish_lesson_session((select id from t_sesja where nazwa = 'druga-reszta')) ->> 'passed'),
-  'true',
-  'drugie podejście zbija resztkę kolejki'
-);
-
-select ok(
   not public.review_gate_on((select id from t_kurs), (select id from t_ids where name = 'uczen2')),
-  'zbita kolejka zdejmuje bramkę'
+  'zdany test otwiera kurs do końca dnia, choć kolejka nie jest pusta'
 );
 
 select ok(
   public.is_lesson_unlocked((select id from t_lesson), (select id from t_ids where name = 'uczen2')),
-  'drugie dziecko wraca do lekcji po zbiciu całej kolejki'
+  'drugie dziecko wraca do lekcji'
+);
+
+-- Zdany test zwalnia lekcje, ale sam zostaje otwarty: kolejka ma czterdzieści słówek, a jedno
+-- podejście bierze dwanaście. Bez tego resztę dałoby się powtórzyć dopiero jutro.
+select ok(
+  public.is_lesson_unlocked((select id from t_gate), (select id from t_ids where name = 'uczen2')),
+  'test powtórkowy zostaje otwarty, dopóki jest co powtarzać'
 );
 
 reset role;

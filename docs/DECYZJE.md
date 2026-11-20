@@ -1660,3 +1660,22 @@ wraca do lekcji, dokłada nowe słówka do kolejki — a trzydzieści osiem star
 | Próg bramki | zostaje 10 | niższy próg zapalałby blokadę co drugi dzień i rozbijał naukę w tygodniu | próg 5, żeby kolejka nigdy nie rosła |
 | Co pokazuje karta po zdanym teście | „Test zdany — ale do powtórzenia zostało jeszcze N" i przycisk „Zrób kolejny test" | bez tego dziecko widzi zdany test, potem zamknięte lekcje i nie ma z czego pojąć, czy coś się zepsuło | sam licznik (to samo pytanie bez odpowiedzi) |
 | Licznik zaległych | liczy tylko słówka, które test umie wziąć (aktywne zadanie w dziale TEGO kursu) | bramka trzymana kolejką zablokowałaby dziecko na zawsze, gdyby licznik liczył słówko, którego `pick_review_exercises` nie znajduje | zostawienie rozjazdu (nieszkodliwy tylko przy otwarciu na dzień) |
+
+## Bramka powtórek: dwa wyjścia, nie jedno (2026-11-20, poprawka tego samego dnia)
+
+Reguła z wpisu wyżej („bramka stoi do zbitej kolejki") przeżyła jeden dzień. Rachunek, który ją
+uzasadniał, jest nadal prawdziwy — dwanaście słówek na podejście nie wykopie pięćdziesięciu
+zaległych — ale wniosek był zły. W praktyce znaczyła cztery testy pod rząd (około czterdziestu
+ośmiu zadań) przed pierwszą lekcją dnia, a dziecko, które właśnie zdało test, dostawało w nagrodę
+kolejny zamknięty ekran. Blokada ma pilnować, żeby powtórki się nie urwały, a nie odbierać dnia
+nauki.
+
+Od `20261120110000_review_gate_two_ways_out.sql` wyjścia są znowu dwa i niezależne: **jeden zdany
+test powtórkowy** albo **zejście pod próg zaległych**. Kolejka schodzi wolniej, ale schodzi:
+każda odpowiedź przesuwa termin słówka od razu, a bramka wraca następnego dnia, dopóki zaległych
+jest ponad próg — z pięćdziesięciu robi się trzydzieści osiem, potem dwadzieścia sześć.
+
+Z poprzedniej zmiany **zostaje** wyrównanie licznika z doborem zadań: `course_due_words` liczy
+tylko słówka, które test powtórkowy umie wziąć (aktywne zadanie w dziale tego kursu). Tamto nie
+dotyczyło tej reguły i jest prawdziwe niezależnie od niej — licznik nie ma pokazywać liczby,
+której nie da się zbić.
