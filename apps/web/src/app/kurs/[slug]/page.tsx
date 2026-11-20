@@ -208,13 +208,19 @@ async function CourseScreen({ params }: { params: PageProps<"/kurs/[slug]">["par
           <h2 className="card-title">
             <span aria-hidden>🔁 </span>Test powtórkowy
           </h2>
+          {/* Trzy powody, dla których bramka stoi, i każdy możnaą inaczej rozwiązać. Zdany test
+              jest tu pierwszy, bo bez tego zdania dziecko widzi „test zdany", potem zamknięte
+              lekcje i nie ma z czego pojąć, czy coś się zepsuło. Jeden test bierze dwanaście
+              słówek, więc przy dłuższej kolejce podejść jest kilka. */}
           <p className="text-base text-zinc-600 dark:text-zinc-400">
-            {bramka.triedToday
-              ? `Ten test jeszcze nie jest zdany — spróbuj jeszcze raz. ${plural(bramka.due, WORDS)} czeka na powtórzenie.`
-              : `Uzbierało się ${plural(bramka.due, WORDS)} do powtórzenia, więc lekcje chwilę poczekają. Przypomnij sobie te słówka, a potem uczysz się dalej.`}
+            {bramka.passedToday
+              ? `Test zdany — ale do powtórzenia zostało jeszcze ${plural(bramka.due, WORDS)}. Zrób kolejne podejście, a potem wracasz do lekcji.`
+              : bramka.triedToday
+                ? `Ten test jeszcze nie jest zdany — spróbuj jeszcze raz. ${plural(bramka.due, WORDS)} czeka na powtórzenie.`
+                : `Uzbierało się ${plural(bramka.due, WORDS)} do powtórzenia, więc lekcje chwilę poczekają. Przypomnij sobie te słówka, a potem uczysz się dalej.`}
           </p>
           <Link href={`/lekcja/${bramka.lessonId}`} className="btn-primary self-start">
-            Zrób test powtórkowy
+            {bramka.passedToday ? "Zrób kolejny test" : "Zrób test powtórkowy"}
           </Link>
         </section>
       )}

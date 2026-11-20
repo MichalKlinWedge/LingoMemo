@@ -240,12 +240,21 @@ function GateCard({ gate }: { gate: NonNullable<CourseData['gate']> }) {
   return (
     <Card>
       <Title>🔁 Test powtórkowy</Title>
+      {/* Trzy powody, dla których bramka stoi — tak samo jak na webie. Zdany test jest
+          pierwszy, bo bez tego zdania dziecko widzi „test zdany", potem zamknięte lekcje
+          i nie ma z czego pojąć, czy coś się zepsuło. Jeden test bierze dwanaście słówek,
+          więc przy dłuższej kolejce podejść jest kilka. */}
       <Body>
-        {gate.triedToday
-          ? `Ten test jeszcze nie jest zdany — spróbuj jeszcze raz. ${plural(gate.due, WORDS)} czeka na powtórzenie.`
-          : `Uzbierało się ${plural(gate.due, WORDS)} do powtórzenia, więc lekcje chwilę poczekają. Przypomnij sobie te słówka, a potem uczysz się dalej.`}
+        {gate.passedToday
+          ? `Test zdany — ale do powtórzenia zostało jeszcze ${plural(gate.due, WORDS)}. Zrób kolejne podejście, a potem wracasz do lekcji.`
+          : gate.triedToday
+            ? `Ten test jeszcze nie jest zdany — spróbuj jeszcze raz. ${plural(gate.due, WORDS)} czeka na powtórzenie.`
+            : `Uzbierało się ${plural(gate.due, WORDS)} do powtórzenia, więc lekcje chwilę poczekają. Przypomnij sobie te słówka, a potem uczysz się dalej.`}
       </Body>
-      <Button label="Zrób test powtórkowy" onPress={() => router.push(`/lekcja/${gate.lessonId}`)} />
+      <Button
+        label={gate.passedToday ? 'Zrób kolejny test' : 'Zrób test powtórkowy'}
+        onPress={() => router.push(`/lekcja/${gate.lessonId}`)}
+      />
     </Card>
   );
 }

@@ -1639,3 +1639,24 @@ i napisz" — jeden napis dla całego rodzaju, ten sam na webie i na telefonie.
 | Rodziny zadań | wspólny znaczek, różne polecenia (dwa tłumaczenia 🔤, dwa ze słuchu 👂, dwie luki 🧩) | tyle samo mówi, ile zrobiłby kolor, a różnicę podaje polecenie obok | dziesięć różnych emoji (część nie do odróżnienia na małym ekranie, np. ✍️ i ✏️) |
 | Miejsce na ekranie | osobny wiersz nad zadaniem | w rzędzie znaczników u góry konkurowałoby z postępem i licznikiem, a to jedyny napis, który trzeba przeczytać PRZED odpowiedzią | dołożenie do paska postępu lekcji |
 | Nieznany rodzaj zadania | `exerciseHeading` oddaje `null`, polecenia nie ma | aplikacja starsza od bazy (nowy rodzaj zadania dodany migracją przed wydaniem paczki) pokazałaby surowe `fill_blank_typing` | wyświetlanie nazwy technicznej |
+
+## Bramka powtórek stoi do zbitej kolejki, nie do końca dnia (2026-11-20)
+
+Przy pięćdziesięciu zaległych słówkach licznik `🔁` wracał następnego dnia do pięćdziesięciu,
+choć dzień wcześniej dziecko zrobiło około trzydziestu zadań powtórkowych. Nic się nie gubiło:
+`srs_apply` przesuwa termin słówka zaraz po odpowiedzi, niezależnie od wyniku testu — poprawna
+odpowiedź daje 3–36 dni, pomylona dokładnie jeden dzień. Zawodziła przepustowość. Jedno podejście
+do testu bierze `review_limit() = 12` słówek (po jednym zadaniu na słówko), a te trzydzieści
+zadań to w dużej części powtórzenia tych samych dwunastu — w sesji błędne zadanie wraca.
+
+Pierwotna reguła („zdany test otwiera kurs do końca dnia") zakładała, że dwanaście zawsze zbija
+kolejkę pod próg dziesięciu. Przy pięćdziesięciu zaległych to założenie pęka: dziecko zdaje test,
+wraca do lekcji, dokłada nowe słówka do kolejki — a trzydzieści osiem starych dalej w niej leży.
+
+| Decyzja | Wybór | Dlaczego | Odrzucone |
+|---|---|---|---|
+| Kiedy bramka puszcza | gdy zaległych jest mniej niż próg, a nie po pierwszym zdanym teście tego dnia | przy długiej kolejce dziecko robi kilka krótkich podejść pod rząd i dopiero potem wraca do nauki — kolejka realnie schodzi | otwarcie na resztę dnia (dotychczasowe; przy 50 zaległych kolejka nie malała) |
+| Długość testu | zostaje 12 słówek | pięćdziesiąt zadań pod rząd to dla dziecka nie powtórka, tylko kara; kilka krótkich podejść da się przerwać | `review_limit` na 25 |
+| Próg bramki | zostaje 10 | niższy próg zapalałby blokadę co drugi dzień i rozbijał naukę w tygodniu | próg 5, żeby kolejka nigdy nie rosła |
+| Co pokazuje karta po zdanym teście | „Test zdany — ale do powtórzenia zostało jeszcze N" i przycisk „Zrób kolejny test" | bez tego dziecko widzi zdany test, potem zamknięte lekcje i nie ma z czego pojąć, czy coś się zepsuło | sam licznik (to samo pytanie bez odpowiedzi) |
+| Licznik zaległych | liczy tylko słówka, które test umie wziąć (aktywne zadanie w dziale TEGO kursu) | bramka trzymana kolejką zablokowałaby dziecko na zawsze, gdyby licznik liczył słówko, którego `pick_review_exercises` nie znajduje | zostawienie rozjazdu (nieszkodliwy tylko przy otwarciu na dzień) |
